@@ -1,0 +1,34 @@
+# Dependencies and build output
+**/node_modules/
+**/target/
+**/dist/
+**/.cache/
+# Local settings and secrets
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+**/secrets/
+**/credentials/
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/project.private.config.json
+**/.idea/
+**/.vscode/
+# User data, backups, operational artifacts
+**/uploads/
+**/backups/
+**/logs/
+**/*.log
+/work/
+/outputs/
+/handover-2026-10-24/04-生产运行制品证据/
+/handover-2026-10-24/06-品牌与合规参考资料/
+# Bundled toolchain stays local
+**/tools/apache-maven-*/
+**/tools/apache-maven-*-bin.zip
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+{
+  "appid": "wx2971243a0c47d9cc",
+  "compileType": "miniprogram",
+  "libVersion": "3.6.5",
+  "projectname": "runrun-campus-miniprogram",
+  "setting": {
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true,
+    "urlCheck": true,
+    "minifyWXML": true
+  }
+}

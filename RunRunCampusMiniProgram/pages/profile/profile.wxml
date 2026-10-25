@@ -1,0 +1,16 @@
+<view class="page" wx:if="{{session}}">
+  <view class="profile-card">
+    <view class="avatar">{{avatar}}</view>
+    <text class="profile-name">{{session.user.displayName}}</text>
+    <text class="profile-role">{{session.user.role === 'COURIER' ? '骑手账号' : '用户账号'}}</text>
+  </view>
+
+  <view class="card detail-list">
+    <view class="detail-row"><text>手机号</text><text>{{maskedPhone}}</text></view>
+    <view class="detail-row"><text>用户编号</text><text>{{session.user.id}}</text></view>
+    <view class="detail-row"><text>隐私政策版本</text><text>{{session.user.privacyPolicyVersion || '未记录'}}</text></view>
+  </view>
+
+  <text class="error" wx:if="{{error}}">{{error}}</text>
+  <button class="danger" loading="{{loading}}" bindtap="logout">退出登录</button>
+</view>

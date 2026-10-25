@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_DB: runrun_campus
+      POSTGRES_USER: runrun
+      POSTGRES_PASSWORD: change-this-before-public-use
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U runrun -d runrun_campus"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+      - "127.0.0.1:5173:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/runrun_campus
+      SPRING_DATASOURCE_USERNAME: runrun
+      SPRING_DATASOURCE_PASSWORD: change-this-before-public-use
+      SPRING_WEB_RESOURCES_STATIC_LOCATIONS: file:/app/admin/,classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+      PROOF_STORAGE_DIR: /app/uploads/order-proofs
+    volumes:
+      - proofs_data:/app/uploads
+      - ../RunRunCampusAdmin/dist:/app/admin:ro
+
+  backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: runrun_campus
+      POSTGRES_USER: runrun
+      PGPASSWORD: change-this-before-public-use
+      BACKUP_INTERVAL_SECONDS: 86400
+      BACKUP_RETENTION_DAYS: 7
+    entrypoint: ["/bin/sh", "/scripts/backup-loop.sh"]
+    healthcheck:
+      test: ["CMD", "/bin/sh", "/scripts/backup-health.sh"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 10s
+    volumes:
+      - ./backups:/backups
+      - ./deploy/backup-now.sh:/scripts/backup-now.sh:ro
+      - ./deploy/backup-loop.sh:/scripts/backup-loop.sh:ro
+      - ./deploy/backup-health.sh:/scripts/backup-health.sh:ro
+
+volumes:
+  postgres_data:
+  proofs_data:

@@ -1,0 +1,9 @@
+{
+  "desc": "跑跑代取小程序页面索引配置",
+  "rules": [
+    {
+      "action": "disallow",
+      "page": "*"
+    }
+  ]
+}

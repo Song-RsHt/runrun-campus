@@ -1,0 +1,38 @@
+server:
+  forward-headers-strategy: framework
+
+spring:
+  config:
+    import: configtree:/run/secrets/
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      connection-timeout: 10000
+      validation-timeout: 5000
+  flyway:
+    baseline-on-migrate: false
+
+app:
+  push:
+    enabled: ${PUSH_ENABLED:false}
+    app-key: ${PUSH_APP_KEY:0}
+    ecs-role-name: ${PUSH_ECS_ROLE_NAME:${OSS_ECS_ROLE_NAME}}
+    region: ${PUSH_REGION:cn-hangzhou}
+    endpoint: ${PUSH_ENDPOINT:cloudpush.aliyuncs.com}
+    channel-id: ${PUSH_CHANNEL_ID:order_updates}
+    activity: ${PUSH_ACTIVITY:com.zhangxuan.runruncampus.MainActivity}
+  proof-storage:
+    type: ${PROOF_STORAGE_TYPE:oss}
+    oss:
+      region: ${OSS_REGION}
+      bucket: ${OSS_BUCKET}
+      ecs-role-name: ${OSS_ECS_ROLE_NAME}
+      use-internal-endpoint: ${OSS_USE_INTERNAL_ENDPOINT:true}
+  admin:
+    phone: ${APP_ADMIN_PHONE}
+    password: ${APP_ADMIN_PASSWORD}
+    display-name: ${APP_ADMIN_DISPLAY_NAME:平台管理员}

@@ -1,0 +1,13 @@
+CREATE INDEX idx_campus_orders_customer_created ON campus_orders (customer_id, created_at DESC);
+CREATE INDEX idx_campus_orders_courier_created ON campus_orders (courier_id, created_at DESC);
+CREATE INDEX idx_campus_orders_status_created ON campus_orders (status, created_at);
+CREATE INDEX idx_courier_certifications_status_submitted ON courier_certifications (status, submitted_at);
+CREATE INDEX idx_order_events_order_created ON order_events (order_id, created_at);
+CREATE INDEX idx_order_issues_order_created ON order_issues (order_id, created_at);
+CREATE INDEX idx_order_messages_recipient_created ON order_messages (recipient_id, created_at DESC);
+CREATE INDEX idx_user_addresses_user ON user_addresses (user_id);
+CREATE INDEX idx_user_coupons_user ON user_coupons (user_id);
+CREATE INDEX idx_user_feedback_user_created ON user_feedback (user_id, created_at DESC);
+CREATE INDEX idx_user_memberships_user_expires ON user_memberships (user_id, expires_at DESC);
+CREATE INDEX idx_user_sessions_user ON user_sessions (user_id);
+CREATE INDEX idx_user_sessions_expires ON user_sessions (expires_at);

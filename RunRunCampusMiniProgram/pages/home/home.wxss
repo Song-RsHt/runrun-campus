@@ -1,0 +1,54 @@
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-bottom: 38rpx;
+}
+
+.quick-card {
+  padding: 30rpx;
+  border: 1rpx solid #dfeae7;
+  border-radius: 22rpx;
+  background: #ffffff;
+}
+
+.quick-icon {
+  display: flex;
+  width: 58rpx;
+  height: 58rpx;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16rpx;
+  color: #0f766e;
+  background: #dff4ef;
+  font-weight: 750;
+}
+
+.quick-title,
+.quick-note {
+  display: block;
+}
+
+.quick-title {
+  margin-top: 22rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.quick-note {
+  margin-top: 8rpx;
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.section-head {
+  align-items: baseline;
+}
+
+.more {
+  color: #0f766e;
+}
+
+.order-footer {
+  margin-top: 20rpx;
+}

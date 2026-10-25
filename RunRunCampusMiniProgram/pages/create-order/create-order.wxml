@@ -1,0 +1,57 @@
+<view class="page">
+  <view class="hero compact-hero">
+    <text class="eyebrow">NEW ORDER</text>
+    <text class="hero-title">发布代取</text>
+    <text class="hero-subtitle">提交前请核对取件码、取件点与送达位置</text>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">正在读取服务配置…</view>
+  <view wx:else>
+    <view class="kind-tabs">
+      <button class="kind-button {{kind === 'TAKEOUT' ? 'kind-active' : ''}}" data-kind="TAKEOUT" bindtap="selectKind">外卖代取</button>
+      <button class="kind-button {{kind === 'PACKAGE' ? 'kind-active' : ''}}" data-kind="PACKAGE" bindtap="selectKind">快递代取</button>
+    </view>
+
+    <view class="card">
+      <view class="field">
+        <text class="field-label">{{kind === 'PACKAGE' ? '快递驿站 / 快递公司' : '餐品商家'}}</text>
+        <input class="input" maxlength="80" value="{{merchant}}" data-field="merchant" bindinput="bindField" placeholder="请输入名称" />
+      </view>
+      <view class="field">
+        <text class="field-label">{{kind === 'PACKAGE' ? '取件码' : '订单尾号 / 取餐码'}}</text>
+        <input class="input" maxlength="32" value="{{pickupCode}}" data-field="pickupCode" bindinput="bindField" placeholder="请输入取件凭据" />
+      </view>
+      <view class="field">
+        <text class="field-label">取件点</text>
+        <picker mode="selector" range="{{stations}}" range-key="displayName" value="{{stationIndex}}" bindchange="selectStation">
+          <view class="picker">{{stations[stationIndex].displayName || '请选择取件点'}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="field-label">送达区域</text>
+        <picker mode="selector" range="{{zones}}" range-key="displayName" value="{{zoneIndex}}" bindchange="selectZone">
+          <view class="picker">{{zones[zoneIndex].displayName || '请选择送达区域'}}</view>
+        </picker>
+      </view>
+      <view class="field">
+        <text class="field-label">详细送达位置</text>
+        <input class="input" maxlength="120" value="{{destination}}" data-field="destination" bindinput="bindField" placeholder="例如：3号宿舍楼 205" />
+      </view>
+    </view>
+
+    <view class="card">
+      <text class="section-title">服务规格</text>
+      <view class="service-item {{serviceIndex === index ? 'service-active' : ''}}" wx:for="{{services}}" wx:key="code" data-index="{{index}}" bindtap="selectService">
+        <view>
+          <text class="service-name">{{item.label}}</text>
+          <text class="service-hint">{{item.hint}}</text>
+        </view>
+        <view class="radio">{{serviceIndex === index ? '●' : '○'}}</view>
+      </view>
+      <text class="muted notice">实际费用由后端按当前规则计算，以订单结果为准。</text>
+    </view>
+
+    <text class="error" wx:if="{{error}}">{{error}}</text>
+    <button class="primary" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submit">{{submitting ? '正在发布…' : '确认发布'}}</button>
+  </view>
+</view>

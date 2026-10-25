@@ -1,0 +1,45 @@
+<view class="page" wx:if="{{session}}">
+  <view class="hero">
+    <text class="eyebrow">{{session.user.role === 'COURIER' ? 'COURIER' : 'STUDENT SERVICE'}}</text>
+    <text class="hero-title">你好，{{session.user.displayName}}</text>
+    <text class="hero-subtitle" wx:if="{{config}}">{{config.campusName}} · {{config.businessHours}}</text>
+    <text class="hero-subtitle" wx:else>校园代取，进度透明</text>
+  </view>
+
+  <view class="quick-grid">
+    <view class="quick-card" bindtap="createOrder" wx:if="{{session.user.role === 'CUSTOMER'}}">
+      <text class="quick-icon">＋</text>
+      <text class="quick-title">发布代取</text>
+      <text class="quick-note">外卖或快递</text>
+    </view>
+    <view class="quick-card" bindtap="openOrders">
+      <text class="quick-icon">单</text>
+      <text class="quick-title">我的订单</text>
+      <text class="quick-note">查看实时进度</text>
+    </view>
+    <view class="quick-card" bindtap="openCourier" wx:if="{{session.user.role === 'COURIER'}}">
+      <text class="quick-icon">骑</text>
+      <text class="quick-title">骑手工作台</text>
+      <text class="quick-note">认证与接单</text>
+    </view>
+  </view>
+
+  <view class="row section-head">
+    <text class="section-title">进行中的订单</text>
+    <text class="more" bindtap="openOrders">查看全部</text>
+  </view>
+  <view class="loading" wx:if="{{loading}}">正在同步订单…</view>
+  <text class="error" wx:if="{{error}}">{{error}}</text>
+  <view class="empty card" wx:if="{{!loading && !error && activeOrders.length === 0}}">目前没有进行中的订单</view>
+  <view class="order-card" wx:for="{{activeOrders}}" wx:key="id" data-id="{{item.id}}" bindtap="openOrder">
+    <view class="row">
+      <text class="order-title">{{item.merchant}}</text>
+      <text class="tag">{{item.statusText}}</text>
+    </view>
+    <text class="order-meta">{{item.pickupLocation}} → {{item.destination}}</text>
+    <view class="row order-footer">
+      <text class="muted">{{item.createdAtText}}</text>
+      <text class="money">{{item.feeText}}</text>
+    </view>
+  </view>
+</view>

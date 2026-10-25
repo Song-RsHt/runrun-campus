@@ -1,0 +1,63 @@
+services:
+  api:
+    image: ${RUNRUN_IMAGE:-runrun-campus-backend:local}
+    build:
+      context: .
+      dockerfile: Dockerfile.runtime
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:?SPRING_DATASOURCE_URL is required}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:?SPRING_DATASOURCE_USERNAME is required}
+      APP_ADMIN_PHONE: ${APP_ADMIN_PHONE:?APP_ADMIN_PHONE is required}
+      APP_ADMIN_DISPLAY_NAME: ${APP_ADMIN_DISPLAY_NAME:-平台管理员}
+      PROOF_STORAGE_TYPE: oss
+      OSS_REGION: ${OSS_REGION:?OSS_REGION is required}
+      OSS_BUCKET: ${OSS_BUCKET:?OSS_BUCKET is required}
+      OSS_ECS_ROLE_NAME: ${OSS_ECS_ROLE_NAME:?OSS_ECS_ROLE_NAME is required}
+      OSS_USE_INTERNAL_ENDPOINT: ${OSS_USE_INTERNAL_ENDPOINT:-true}
+      PUSH_ENABLED: ${PUSH_ENABLED:-false}
+      PUSH_APP_KEY: ${PUSH_APP_KEY:-0}
+      PUSH_ECS_ROLE_NAME: ${PUSH_ECS_ROLE_NAME:-${OSS_ECS_ROLE_NAME}}
+      PUSH_REGION: ${PUSH_REGION:-cn-hangzhou}
+      PUSH_ENDPOINT: ${PUSH_ENDPOINT:-cloudpush.aliyuncs.com}
+      PUSH_CHANNEL_ID: ${PUSH_CHANNEL_ID:-order_updates}
+      PUSH_ACTIVITY: ${PUSH_ACTIVITY:-com.zhangxuan.runruncampus.MainActivity}
+      ANDROID_UPDATE_VERSION_CODE: ${ANDROID_UPDATE_VERSION_CODE:-0}
+      ANDROID_UPDATE_VERSION_NAME: ${ANDROID_UPDATE_VERSION_NAME:-}
+      ANDROID_UPDATE_DOWNLOAD_URL: ${ANDROID_UPDATE_DOWNLOAD_URL:-}
+      MANUAL_QR_PAYMENT_ENABLED: ${MANUAL_QR_PAYMENT_ENABLED:-false}
+      DB_POOL_MAX_SIZE: ${DB_POOL_MAX_SIZE:-20}
+      DB_POOL_MIN_IDLE: ${DB_POOL_MIN_IDLE:-5}
+      JAVA_TOOL_OPTIONS: ${JAVA_TOOL_OPTIONS:--XX:MaxRAMPercentage=75 -Dfile.encoding=UTF-8}
+    secrets:
+      - source: datasource_password
+        target: SPRING_DATASOURCE_PASSWORD
+      - source: admin_password
+        target: APP_ADMIN_PASSWORD
+      - source: rds_ca_certificate
+        target: RDS_CA_CERTIFICATE
+      - source: admin_mfa_key
+        target: ADMIN_MFA_KEY
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+secrets:
+  admin_mfa_key:
+    file: ${ADMIN_MFA_KEY_FILE:?ADMIN_MFA_KEY_FILE is required}
+  datasource_password:
+    file: ${SPRING_DATASOURCE_PASSWORD_FILE:?SPRING_DATASOURCE_PASSWORD_FILE is required}
+  admin_password:
+    file: ${APP_ADMIN_PASSWORD_FILE:?APP_ADMIN_PASSWORD_FILE is required}
+  rds_ca_certificate:
+    file: ${RDS_CA_CERTIFICATE_FILE:?RDS_CA_CERTIFICATE_FILE is required}

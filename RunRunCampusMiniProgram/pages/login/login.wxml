@@ -1,0 +1,58 @@
+<view class="page login-page">
+  <view class="hero login-hero">
+    <text class="eyebrow">RUNRUN CAMPUS</text>
+    <text class="hero-title">跑跑代取</text>
+    <text class="hero-subtitle">连接同学，让每一次代取清晰可追踪</text>
+  </view>
+
+  <view class="card">
+    <view class="mode-switch">
+      <button class="mode-button {{mode === 'login' ? 'mode-active' : ''}}" bindtap="toggleMode" wx:if="{{mode === 'register'}}">登录</button>
+      <button class="mode-button mode-active" wx:if="{{mode === 'login'}}">登录</button>
+      <button class="mode-button {{mode === 'register' ? 'mode-active' : ''}}" bindtap="toggleMode" wx:if="{{mode === 'login'}}">注册</button>
+      <button class="mode-button mode-active" wx:if="{{mode === 'register'}}">注册</button>
+    </view>
+
+    <view class="field">
+      <text class="field-label">手机号</text>
+      <input class="input" type="number" maxlength="11" value="{{phone}}" data-field="phone" bindinput="bindField" placeholder="请输入 11 位手机号" />
+    </view>
+    <view class="field">
+      <text class="field-label">密码</text>
+      <input class="input" password="{{true}}" maxlength="72" value="{{password}}" data-field="password" bindinput="bindField" placeholder="至少 6 位" />
+    </view>
+
+    <block wx:if="{{mode === 'register'}}">
+      <view class="field">
+        <text class="field-label">昵称</text>
+        <input class="input" maxlength="48" value="{{displayName}}" data-field="displayName" bindinput="bindField" placeholder="在平台中显示的称呼" />
+      </view>
+      <view class="field">
+        <text class="field-label">注册身份</text>
+        <view class="role-row">
+          <button class="role-button {{role === 'CUSTOMER' ? 'role-active' : ''}}" data-role="CUSTOMER" bindtap="selectRole">用户</button>
+          <button class="role-button {{role === 'COURIER' ? 'role-active' : ''}}" data-role="COURIER" bindtap="selectRole">骑手</button>
+        </view>
+      </view>
+    </block>
+
+    <view class="privacy" wx:if="{{privacyPolicy}}">
+      <view class="privacy-check" bindtap="togglePrivacy">
+        <view class="checkbox {{privacyAccepted ? 'checkbox-active' : ''}}">{{privacyAccepted ? '✓' : ''}}</view>
+        <text>我已阅读并同意《{{privacyPolicy.title}}》</text>
+      </view>
+      <text class="privacy-link" bindtap="togglePrivacyContent">{{privacyExpanded ? '收起内容' : '查看内容'}}</text>
+      <scroll-view class="privacy-content" scroll-y="{{true}}" wx:if="{{privacyExpanded}}">{{privacyPolicy.content}}</scroll-view>
+    </view>
+
+    <view class="captcha" wx:if="{{mode === 'login' && captcha}}">
+      <text class="field-label">安全验证</text>
+      <image class="captcha-image" mode="aspectFit" src="{{captcha.imageDataUrl}}" bindtap="refreshCaptcha" />
+      <input class="input" type="number" maxlength="4" value="{{captchaCode}}" data-field="captchaCode" bindinput="bindField" placeholder="输入图中的 4 位数字" />
+      <text class="muted">看不清可点击图片刷新</text>
+    </view>
+
+    <text class="error" wx:if="{{error}}">{{error}}</text>
+    <button class="primary" loading="{{loading}}" disabled="{{loading}}" bindtap="submit">{{loading ? '处理中…' : (mode === 'login' ? '登录' : '注册并登录')}}</button>
+  </view>
+</view>

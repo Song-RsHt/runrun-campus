@@ -1,0 +1,11 @@
+services:
+  api:
+    environment:
+      SPRING_CONFIG_IMPORT: configtree:/run/secrets/
+    secrets:
+      - source: admin_mfa_key
+        target: ADMIN_MFA_KEY
+
+secrets:
+  admin_mfa_key:
+    file: ${ADMIN_MFA_KEY_FILE:-./secrets/admin-mfa/ADMIN_MFA_KEY}

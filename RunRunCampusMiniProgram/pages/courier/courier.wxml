@@ -1,0 +1,64 @@
+<view class="page" wx:if="{{session}}">
+  <view class="hero">
+    <text class="eyebrow">COURIER DESK</text>
+    <text class="hero-title">骑手工作台</text>
+    <text class="hero-subtitle">认证、接单与履约状态集中管理</text>
+  </view>
+
+  <view class="card customer-note" wx:if="{{session.user.role !== 'COURIER'}}">
+    <text class="section-title">当前是用户账号</text>
+    <text class="muted">骑手工作台仅对注册身份为“骑手”的账号开放。现有账号身份不会在小程序中被擅自修改。</text>
+  </view>
+
+  <block wx:if="{{session.user.role === 'COURIER'}}">
+    <view class="loading" wx:if="{{loading}}">正在加载骑手状态…</view>
+    <text class="error" wx:if="{{error}}">{{error}}</text>
+
+    <view class="card" wx:if="{{certification}}">
+      <view class="row">
+        <text class="section-title certification-title">骑手认证</text>
+        <text class="tag {{certification.status === 'REJECTED' ? 'tag-warn' : ''}}">{{certification.statusText}}</text>
+      </view>
+      <text class="muted certification-note" wx:if="{{certification.status === 'NOT_APPLIED'}}">提交申请并上传本人有效校园身份材料，审核通过后才能接单。</text>
+      <text class="muted certification-note" wx:if="{{certification.status === 'PENDING'}}">材料正在等待管理员审核，请勿重复提交。</text>
+      <text class="error" wx:if="{{certification.status === 'REJECTED'}}">审核说明：{{certification.rejectionReason || '请重新核对材料'}}</text>
+      <button class="primary" loading="{{acting}}" bindtap="applyCertification" wx:if="{{certification.status === 'NOT_APPLIED' || certification.status === 'REJECTED'}}">提交认证申请</button>
+      <button class="secondary photo-button" loading="{{acting}}" bindtap="chooseCertificationPhoto" wx:if="{{certification.id && certification.status !== 'APPROVED'}}">{{certification.photoUploaded ? '重新上传认证材料' : '上传认证材料'}}</button>
+    </view>
+
+    <view class="card" wx:if="{{operations}}">
+      <view class="row">
+        <view>
+          <text class="section-title operation-title">接单状态</text>
+          <text class="muted">{{operations.acceptingOrders ? '正在接收新订单' : '当前暂停接单'}}</text>
+        </view>
+        <switch color="#0f766e" checked="{{operations.acceptingOrders}}" disabled="{{acting}}" bindchange="toggleAvailability" />
+      </view>
+      <view class="stats-grid">
+        <view class="stat"><text class="stat-value">{{operations.activeOrders}} / {{operations.maxActiveOrders}}</text><text class="stat-label">进行中</text></view>
+        <view class="stat"><text class="stat-value">{{operations.todayCompletedOrders}}</text><text class="stat-label">今日完成</text></view>
+        <view class="stat"><text class="stat-value">{{operations.todayGrossText}}</text><text class="stat-label">今日服务费</text></view>
+        <view class="stat"><text class="stat-value">{{operations.averageRating}}</text><text class="stat-label">平均评分</text></view>
+      </view>
+    </view>
+
+    <view wx:if="{{operations}}">
+      <view class="row orders-heading">
+        <text class="section-title">可接订单</text>
+        <text class="muted">{{availableOrders.length}} 单</text>
+      </view>
+      <view class="empty card" wx:if="{{availableOrders.length === 0}}">当前没有可接订单</view>
+      <view class="order-card" wx:for="{{availableOrders}}" wx:key="id">
+        <view class="row">
+          <text class="order-title">{{item.merchant}}</text>
+          <text class="money">{{item.feeText}}</text>
+        </view>
+        <text class="order-meta">{{item.pickupLocation}} → {{item.destination}}</text>
+        <view class="row order-actions">
+          <text class="tag">{{item.statusText}}</text>
+          <button class="compact-button primary" data-id="{{item.id}}" catchtap="acceptOrder">接单</button>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

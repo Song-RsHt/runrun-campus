@@ -1,0 +1,8 @@
+target/
+.idea/
+.env
+.env.production
+secrets/production/
+secrets/admin-mfa/
+uploads/
+backups/

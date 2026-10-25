@@ -1,0 +1,98 @@
+.login-page {
+  padding-top: 72rpx;
+}
+
+.login-hero {
+  padding-top: 54rpx;
+  padding-bottom: 54rpx;
+}
+
+.mode-switch {
+  display: flex;
+  margin-bottom: 32rpx;
+  padding: 6rpx;
+  border-radius: 16rpx;
+  background: #edf4f2;
+}
+
+.mode-button {
+  width: 50%;
+  color: #64748b;
+  background: transparent;
+  font-size: 28rpx;
+}
+
+.mode-active {
+  color: #0f766e;
+  background: #ffffff;
+  box-shadow: 0 4rpx 14rpx rgba(15, 62, 56, 0.08);
+}
+
+.role-row {
+  display: flex;
+  gap: 18rpx;
+}
+
+.role-button {
+  flex: 1;
+  color: #64748b;
+  background: #f1f5f4;
+}
+
+.role-active {
+  color: #0f766e;
+  background: #dff4ef;
+}
+
+.privacy {
+  margin: 16rpx 0 28rpx;
+  padding: 22rpx;
+  border-radius: 16rpx;
+  background: #f7faf9;
+}
+
+.privacy-check {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.checkbox {
+  width: 34rpx;
+  height: 34rpx;
+  border: 2rpx solid #9bb0ac;
+  border-radius: 8rpx;
+  color: #ffffff;
+  text-align: center;
+  line-height: 34rpx;
+}
+
+.checkbox-active {
+  border-color: #0f766e;
+  background: #0f766e;
+}
+
+.privacy-link {
+  display: block;
+  margin-top: 14rpx;
+  color: #0f766e;
+}
+
+.privacy-content {
+  display: block;
+  max-height: 320rpx;
+  margin-top: 16rpx;
+  overflow: auto;
+  color: #64748b;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.captcha-image {
+  width: 100%;
+  height: 112rpx;
+  margin-bottom: 14rpx;
+  border: 1rpx solid #d7e4e1;
+  border-radius: 14rpx;
+  background: #ffffff;
+}

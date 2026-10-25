@@ -1,0 +1,61 @@
+.compact-hero {
+  padding-top: 34rpx;
+  padding-bottom: 34rpx;
+}
+
+.kind-tabs {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.kind-button {
+  flex: 1;
+  color: #64748b;
+  background: #e9efed;
+}
+
+.kind-active {
+  color: #ffffff;
+  background: #0f766e;
+}
+
+.service-item {
+  display: flex;
+  margin-bottom: 16rpx;
+  padding: 22rpx;
+  align-items: center;
+  justify-content: space-between;
+  border: 2rpx solid #e1e9e7;
+  border-radius: 16rpx;
+}
+
+.service-active {
+  border-color: #0f766e;
+  background: #eef9f6;
+}
+
+.service-name,
+.service-hint {
+  display: block;
+}
+
+.service-name {
+  font-weight: 700;
+}
+
+.service-hint {
+  margin-top: 6rpx;
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.radio {
+  color: #0f766e;
+  font-size: 32rpx;
+}
+
+.notice {
+  display: block;
+  margin-top: 22rpx;
+}

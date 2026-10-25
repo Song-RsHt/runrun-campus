@@ -1,0 +1,35 @@
+<view class="page" wx:if="{{session}}">
+  <view class="row header-row">
+    <view>
+      <text class="eyebrow dark-eyebrow">ORDERS</text>
+      <text class="page-title">我的订单</text>
+    </view>
+    <button class="compact-button primary" bindtap="createOrder" wx:if="{{session.user.role === 'CUSTOMER'}}">发布代取</button>
+  </view>
+
+  <view class="filter-tabs">
+    <button class="filter-button {{filter === 'ACTIVE' ? 'filter-active' : ''}}" data-filter="ACTIVE" bindtap="selectFilter">进行中</button>
+    <button class="filter-button {{filter === 'HISTORY' ? 'filter-active' : ''}}" data-filter="HISTORY" bindtap="selectFilter">历史订单</button>
+  </view>
+
+  <view class="loading" wx:if="{{loading}}">正在加载订单…</view>
+  <text class="error" wx:if="{{error}}">{{error}}</text>
+  <view class="empty card" wx:if="{{!loading && !error && orders.length === 0}}">{{filter === 'ACTIVE' ? '没有进行中的订单' : '暂无历史订单'}}</view>
+
+  <view class="order-card" wx:for="{{orders}}" wx:key="id" data-id="{{item.id}}" bindtap="openOrder">
+    <view class="row">
+      <view>
+        <text class="order-title">{{item.merchant}}</text>
+        <text class="order-number">{{item.orderNo}}</text>
+      </view>
+      <text class="tag {{item.status === 'CANCELLED' ? 'tag-neutral' : ''}}">{{item.statusText}}</text>
+    </view>
+    <text class="order-meta">{{item.pickupLocation}}</text>
+    <text class="route-line">↓</text>
+    <text class="order-meta destination">{{item.destination}}</text>
+    <view class="row order-footer">
+      <text class="muted">{{item.createdAtText}}</text>
+      <text class="money">{{item.feeText}}</text>
+    </view>
+  </view>
+</view>

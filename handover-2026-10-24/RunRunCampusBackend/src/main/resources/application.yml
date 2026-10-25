@@ -1,0 +1,71 @@
+server:
+  address: 0.0.0.0
+  port: 8080
+  shutdown: graceful
+
+spring:
+  application:
+    name: runrun-campus-backend
+  profiles:
+    default: dev
+  lifecycle:
+    timeout-per-shutdown-phase: 20s
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    clean-disabled: true
+
+app:
+  session-hours: 24
+  android-update:
+    version-code: ${ANDROID_UPDATE_VERSION_CODE:0}
+    version-name: ${ANDROID_UPDATE_VERSION_NAME:}
+    download-url: ${ANDROID_UPDATE_DOWNLOAD_URL:}
+  admin-mfa:
+    key: ${ADMIN_MFA_KEY:}
+  push:
+    enabled: false
+    retry-poll-millis: 30000
+    retry-initial-delay-millis: 30000
+  login-security:
+    maximum-attempts: 5
+    lock-minutes: 15
+    captcha-after-attempts: 3
+  manual-qr-payment:
+    enabled: ${MANUAL_QR_PAYMENT_ENABLED:false}
+
+wechat:
+  pay:
+    enabled: ${WECHAT_PAY_ENABLED:false}
+    app-id: ${WECHAT_PAY_APP_ID:}
+    merchant-id: ${WECHAT_PAY_MERCHANT_ID:}
+    merchant-serial-number: ${WECHAT_PAY_MERCHANT_SERIAL_NUMBER:}
+    private-key-path: ${WECHAT_PAY_PRIVATE_KEY_PATH:}
+    api-v3-key: ${WECHAT_PAY_API_V3_KEY:}
+    api-v3-key-path: ${WECHAT_PAY_API_V3_KEY_PATH:}
+    notify-url: ${WECHAT_PAY_NOTIFY_URL:}
+    refund-notify-url: ${WECHAT_PAY_REFUND_NOTIFY_URL:}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true

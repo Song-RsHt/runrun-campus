@@ -1,0 +1,132 @@
+<view class="page">
+  <view class="loading" wx:if="{{loading && !order}}">正在加载订单详情…</view>
+  <text class="error" wx:if="{{error}}">{{error}}</text>
+
+  <block wx:if="{{order}}">
+    <view class="hero detail-hero">
+      <view class="row">
+        <text class="eyebrow">{{order.orderNo}}</text>
+        <text class="hero-status">{{order.statusText}}</text>
+      </view>
+      <text class="hero-title">{{order.merchant}}</text>
+      <text class="hero-subtitle">{{order.pickupLocation}} → {{order.destination}}</text>
+      <text class="detail-money">{{order.feeText}}</text>
+    </view>
+
+    <view class="card detail-list">
+      <view class="detail-row"><text>取件凭据</text><text>{{order.pickupCode || '仅下单用户与履约骑手可见'}}</text></view>
+      <view class="detail-row"><text>服务规格</text><text>{{order.serviceText}}</text></view>
+      <view class="detail-row"><text>配送骑手</text><text>{{order.courierName || '等待接单'}}</text></view>
+      <view class="detail-row"><text>支付状态</text><text>{{order.paymentText}}</text></view>
+      <view class="detail-row"><text>创建时间</text><text>{{order.createdAtText}}</text></view>
+    </view>
+
+    <view class="card" wx:if="{{session.user.role === 'CUSTOMER' && (order.status === 'PENDING_ASSIGNMENT' || order.status === 'PENDING_REASSIGNMENT')}}">
+      <text class="section-title">用户操作</text>
+      <button class="danger" loading="{{acting}}" bindtap="cancelOrder">取消订单</button>
+    </view>
+
+    <view class="card" wx:if="{{session.user.role === 'CUSTOMER' && order.proposedPackageServiceType}}">
+      <text class="section-title">确认包裹规格调整</text>
+      <text class="muted action-note">骑手建议将“{{order.serviceText}}”调整为“{{order.proposedPackageServiceText}}”。请核对现场包裹后选择。</text>
+      <button class="primary" loading="{{acting}}" bindtap="approvePackageSize">同意调整</button>
+      <button class="danger action-button" loading="{{acting}}" bindtap="rejectPackageSize">拒绝并取消订单</button>
+    </view>
+
+    <view class="card payment-card" wx:if="{{session.user.role === 'CUSTOMER' && order.status === 'PICKED_UP' && order.paymentMethod === 'PERSONAL_QR_MANUAL' && order.paymentStatus === 'UNPAID'}}">
+      <text class="section-title">扫码付款</text>
+      <block wx:if="{{order.manualPaymentStatus === 'AWAITING_PAYMENT' || order.manualPaymentStatus === 'REJECTED'}}">
+        <text class="error" wx:if="{{order.manualPaymentStatus === 'REJECTED'}}">上次核款未通过：{{order.paymentReviewNote || '请核对后重新提交'}}</text>
+        <text class="muted">本单应付 {{order.feeText}}，请核对收款人 Sisyphus(*轩)。</text>
+        <image class="payment-qr" mode="widthFix" src="/images/wechat-personal-qr.jpg" show-menu-by-longpress="{{true}}" />
+        <text class="muted payment-tip">可长按保存或识别。付款备注请填写订单号后四位。</text>
+        <view class="field payment-reference">
+          <text class="field-label">付款微信昵称或手机号后四位</text>
+          <input class="input" maxlength="64" value="{{payerReference}}" data-field="payerReference" bindinput="bindField" placeholder="仅用于管理员核对到账" />
+        </view>
+        <button class="primary" loading="{{acting}}" bindtap="submitManualPayment">我已付款，提交核对</button>
+      </block>
+      <text class="muted" wx:if="{{order.manualPaymentStatus === 'NOT_REQUESTED'}}">请等待骑手到达后发起付款通知。</text>
+      <text class="muted" wx:if="{{order.manualPaymentStatus === 'SUBMITTED'}}">付款信息已提交，正在等待管理员核对到账。</text>
+    </view>
+
+    <view class="card" wx:if="{{session.user.role === 'CUSTOMER' && order.status === 'PICKED_UP'}}">
+      <text class="section-title">收货确认</text>
+      <text class="muted" wx:if="{{order.paymentMethod !== 'PERSONAL_QR_MANUAL' || order.paymentStatus === 'PAID'}}">骑手送达时，请当面核对后提供 6 位收货码。</text>
+      <text class="muted" wx:else>管理员确认到账后才能查看收货码。</text>
+      <button class="secondary code-button" bindtap="showDeliveryCode" wx:if="{{order.paymentMethod !== 'PERSONAL_QR_MANUAL' || order.paymentStatus === 'PAID'}}">{{deliveryCode ? ('收货码：' + deliveryCode) : '查看收货码'}}</button>
+    </view>
+
+    <view class="card" wx:if="{{session.user.role === 'COURIER' && (order.status === 'PENDING_ASSIGNMENT' || order.status === 'PENDING_REASSIGNMENT')}}">
+      <text class="section-title">接单</text>
+      <text class="muted action-note">接单前请确认取件点、送达位置和服务规格。</text>
+      <button class="primary" loading="{{acting}}" bindtap="acceptOrder">确认接单</button>
+    </view>
+
+    <view class="card" wx:if="{{session.user.role === 'COURIER' && (order.status === 'ACCEPTED' || order.status === 'PICKED_UP')}}">
+      <text class="section-title">配送操作</text>
+      <button class="secondary action-button" loading="{{acting}}" bindtap="updateLocation">更新当前位置</button>
+
+      <block wx:if="{{order.status === 'ACCEPTED'}}">
+        <view class="package-review" wx:if="{{order.isPackageOrder && !order.packageSizeConfirmed && !order.proposedPackageServiceType}}">
+          <text class="field-label">现场确认包裹规格</text>
+          <picker mode="selector" range="{{packageServices}}" range-key="label" value="{{packageIndex}}" bindchange="selectPackageSize">
+            <view class="picker">{{packageServices[packageIndex].label}}</view>
+          </picker>
+          <view class="proof-row" wx:if="{{packageServices[packageIndex].code !== order.serviceType}}">
+            <view>
+              <text class="proof-title">规格核验照片</text>
+              <text class="proof-state">{{order.packageSizeReviewProofUploaded ? '已上传' : '待上传'}}</text>
+            </view>
+            <button class="compact-button secondary" data-type="SIZE_REVIEW" bindtap="uploadProof">拍照 / 相册</button>
+          </view>
+          <button class="secondary action-button" loading="{{acting}}" bindtap="confirmPackageSize">提交规格确认</button>
+        </view>
+        <text class="muted payment-wait" wx:if="{{order.proposedPackageServiceType}}">正在等待用户确认规格调整。</text>
+        <view class="proof-row">
+          <view>
+            <text class="proof-title">取件凭证</text>
+            <text class="proof-state">{{order.pickupProofUploaded ? '已上传' : '待上传'}}</text>
+          </view>
+          <button class="compact-button secondary" data-type="PICKUP" bindtap="uploadProof">拍照 / 相册</button>
+        </view>
+        <button class="primary action-button" loading="{{acting}}" disabled="{{order.isPackageOrder && !order.packageSizeConfirmed}}" bindtap="markPickedUp">确认已取件</button>
+      </block>
+
+      <block wx:if="{{order.status === 'PICKED_UP'}}">
+        <view class="proof-row">
+          <view>
+            <text class="proof-title">送达凭证</text>
+            <text class="proof-state">{{order.deliveryProofUploaded ? '已上传' : '待上传'}}</text>
+          </view>
+          <button class="compact-button secondary" data-type="DELIVERY" bindtap="uploadProof">拍照 / 相册</button>
+        </view>
+        <button class="secondary action-button" loading="{{acting}}" bindtap="requestManualPayment" wx:if="{{order.paymentMethod === 'PERSONAL_QR_MANUAL' && order.paymentStatus === 'UNPAID' && order.manualPaymentStatus === 'NOT_REQUESTED'}}">已到达，通知用户付款</button>
+        <text class="muted payment-wait" wx:if="{{order.paymentMethod === 'PERSONAL_QR_MANUAL' && order.paymentStatus === 'UNPAID' && order.manualPaymentStatus !== 'NOT_REQUESTED'}}">{{order.manualPaymentStatus === 'SUBMITTED' ? '用户已提交付款，等待管理员核款。' : '等待用户完成付款并提交核对。'}}</text>
+        <view class="field completion-field">
+          <text class="field-label">用户收货码</text>
+          <input class="input" type="number" maxlength="6" value="{{completionCode}}" data-field="completionCode" bindinput="bindField" placeholder="请输入 6 位数字" />
+        </view>
+        <button class="primary action-button" loading="{{acting}}" disabled="{{order.paymentMethod === 'PERSONAL_QR_MANUAL' && order.paymentStatus !== 'PAID'}}" bindtap="completeOrder">完成配送</button>
+      </block>
+
+      <view class="divider"></view>
+      <view class="field">
+        <text class="field-label">无法继续履约</text>
+        <textarea class="textarea" maxlength="300" value="{{unableReason}}" data-field="unableReason" bindinput="bindField" placeholder="说明原因后申请重新派单" />
+      </view>
+      <button class="danger" loading="{{acting}}" bindtap="reportUnable">申请重新派单</button>
+    </view>
+
+    <view class="card">
+      <text class="section-title">订单进度</text>
+      <view class="timeline-item" wx:for="{{events}}" wx:key="id">
+        <view class="timeline-dot"></view>
+        <view class="timeline-content">
+          <text class="timeline-status">{{item.statusText}}</text>
+          <text class="muted">{{item.actorName}} · {{item.createdAtText}}</text>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>

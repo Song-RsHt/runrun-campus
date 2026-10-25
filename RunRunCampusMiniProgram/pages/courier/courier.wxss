@@ -1,0 +1,55 @@
+.customer-note {
+  margin-top: 40rpx;
+}
+
+.certification-title,
+.operation-title {
+  margin-bottom: 0;
+}
+
+.certification-note {
+  display: block;
+  margin: 22rpx 0;
+}
+
+.photo-button {
+  margin-top: 18rpx;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+  margin-top: 28rpx;
+}
+
+.stat {
+  padding: 22rpx;
+  border-radius: 16rpx;
+  background: #f3f8f6;
+}
+
+.stat-value,
+.stat-label {
+  display: block;
+}
+
+.stat-value {
+  color: #0f766e;
+  font-size: 32rpx;
+  font-weight: 750;
+}
+
+.stat-label {
+  margin-top: 6rpx;
+  color: #64748b;
+  font-size: 24rpx;
+}
+
+.orders-heading {
+  align-items: baseline;
+}
+
+.order-actions {
+  margin-top: 22rpx;
+}
