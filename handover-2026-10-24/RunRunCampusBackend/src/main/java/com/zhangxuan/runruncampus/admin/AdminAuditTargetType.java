@@ -9,6 +9,5 @@ public enum AdminAuditTargetType {
     ORDER,
     PLATFORM_SETTINGS,
     CREDIT_EVENT,
-    RISK_SIGNAL,
-    APP_USER
+    RISK_SIGNAL
 }

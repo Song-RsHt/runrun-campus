@@ -13,10 +13,6 @@ public class CourierCertification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // C M44-15: legacy edits must invalidate a concurrently previewed v2 decision.
-    @Version
-    private long version;
-
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private AppUser courier;
@@ -135,7 +131,6 @@ public class CourierCertification {
     }
 
     public Long getId() { return id; }
-    public long getVersion() { return version; }
     public AppUser getCourier() { return courier; }
     public String getRealName() { return realName; }
     public String getStudentId() { return studentId; }
