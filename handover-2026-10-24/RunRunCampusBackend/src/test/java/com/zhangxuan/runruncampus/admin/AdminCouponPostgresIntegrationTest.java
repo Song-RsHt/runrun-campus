@@ -42,7 +42,7 @@ class AdminCouponPostgresIntegrationTest {
 
     @Test
     void emptyDatabaseMigratesToLatestAndPersistsCouponWithAuditLog() {
-        assertEquals("43", jdbc.queryForObject("""
+        assertEquals("47", jdbc.queryForObject("""
                 select version from flyway_schema_history
                 where success = true order by installed_rank desc limit 1
                 """, String.class));
@@ -86,7 +86,7 @@ class AdminCouponPostgresIntegrationTest {
         Flyway.configure().dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
                 .schemas(schema).defaultSchema(schema).load().migrate();
 
-        assertEquals("43", jdbc.queryForObject("""
+        assertEquals("47", jdbc.queryForObject("""
                 select version from coupon_issue_upgrade.flyway_schema_history
                 where success = true order by installed_rank desc limit 1
                 """, String.class));
