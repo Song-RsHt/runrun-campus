@@ -146,6 +146,13 @@ class IdentityIntegrationTest {
         db.update("UPDATE runrun_v2.user_sessions SET expires_at=now()-interval '1 second'");
         failure("AUTHENTICATION_FAILED", () -> identity.authenticate(second.token()));
     }
+    @Test void singleSessionLogoutIdempotencyBindsTheCurrentSession() {
+        var user = register("user", "13800000001", "USER");
+        var second = identity.login("user");
+        identity.revoke(user.token(), false, "same-logout-key");
+        failure("IDEMPOTENCY_KEY_CONFLICT", () -> identity.revoke(second.token(), false, "same-logout-key"));
+        identity.authenticate(second.token());
+    }
     @Test void revokeAllAndPasswordChangeInvalidateAllSessions() {
         var user = register("user", "13800000001", "USER");
         var second = identity.login("user");

@@ -95,7 +95,13 @@ public class IdentityService {
         Account account = authenticate(token);
         user(Long.parseLong(account.id), true);
         authenticate(token);
-        if (!beginWrite(account.id, "identity:logout", key, Boolean.toString(all))) return;
+        // Bind single-session logout idempotency to the exact session being revoked.
+        // Reusing a key from another active session must conflict instead of silently
+        // reporting the first request as a replay.
+        String logoutContent = all
+                ? "all:true"
+                : "all:false:session:" + secrets.hash("session", token);
+        if (!beginWrite(account.id, "identity:logout", key, logoutContent)) return;
         if (all) db.update("UPDATE runrun_v2.user_sessions SET invalidated_at=now() WHERE user_id=? AND invalidated_at IS NULL", Long.valueOf(account.id));
         else db.update("UPDATE runrun_v2.user_sessions SET invalidated_at=now() WHERE token_hash=? AND invalidated_at IS NULL", secrets.hash("session", token));
         db.update("INSERT INTO runrun_v2.identity_audit_events(actor_id,event_type,subject_id) VALUES(?,'SESSION_REVOKED',?)", Long.valueOf(account.id), Long.valueOf(account.id));
