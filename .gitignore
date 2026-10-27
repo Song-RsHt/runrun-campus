@@ -32,3 +32,6 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# pnpm content-addressable cache stays local
+**/.pnpm-store/
