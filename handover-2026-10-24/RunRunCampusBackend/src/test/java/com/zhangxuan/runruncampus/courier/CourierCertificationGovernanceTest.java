@@ -1,0 +1,35 @@
+package com.zhangxuan.runruncampus.courier;
+
+import com.zhangxuan.runruncampus.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.order.OrderProofStorage;
+import com.zhangxuan.runruncampus.user.*;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
+import java.util.Optional;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+class CourierCertificationGovernanceTest {
+ @Test void staleReviewVersionIsRejected() {
+  var repo=Mockito.mock(CourierCertificationRepository.class); var storage=Mockito.mock(OrderProofStorage.class);
+  var service=new CourierCertificationService(repo, Mockito.mock(AdminAuditService.class), storage);
+  var courier=new AppUser("13800000001","hash","rider",UserRole.COURIER); ReflectionTestUtils.setField(courier,"id",1L);
+  var admin=new AppUser("13800000002","hash","admin",UserRole.ADMIN); ReflectionTestUtils.setField(admin,"id",2L);
+  var c=new CourierCertification(courier,"","",""); ReflectionTestUtils.setField(c,"id",3L); c.attachSubmittedPhoto("k","image/jpeg");
+  when(repo.findLockedById(3L)).thenReturn(Optional.of(c));
+  var ex=org.junit.jupiter.api.Assertions.assertThrows(ResponseStatusException.class,()->service.approve(admin,3L,99L,c.getSubmittedPhotoResourceId()));
+  assertEquals(409,ex.getStatusCode().value());
+ }
+ @Test void oversizedFileIsRejected() {
+  var repo=Mockito.mock(CourierCertificationRepository.class); var storage=Mockito.mock(OrderProofStorage.class);
+  var service=new CourierCertificationService(repo, Mockito.mock(AdminAuditService.class), storage);
+  var courier=new AppUser("13800000001","hash","rider",UserRole.COURIER); ReflectionTestUtils.setField(courier,"id",1L);
+  var c=new CourierCertification(courier,"","",""); ReflectionTestUtils.setField(c,"id",3L); when(repo.findLockedById(3L)).thenReturn(Optional.of(c));
+  var file=new MockMultipartFile("file","x.jpg","image/jpeg",new byte[8*1024*1024+1]);
+  var ex=org.junit.jupiter.api.Assertions.assertThrows(ResponseStatusException.class,()->service.uploadStudentCard(courier,3L,file));
+  assertEquals(400,ex.getStatusCode().value());
+ }
+}
