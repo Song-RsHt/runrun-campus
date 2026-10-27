@@ -66,11 +66,24 @@ try {
   SqlConstraint rrc_m01 "INSERT INTO runrun_v2.courier_certification_events(certification_id,actor_id,actor_kind,event_type,request_id,certification_version) VALUES(1,1,'SYSTEM','COURIER_CERTIFICATION_SUBMITTED','request-system',0);" 'certification_events_system_actor_ck'
   SqlConstraint rrc_m01 "INSERT INTO runrun_v2.idempotency_requests(actor_id,scope,key,request_hash,status) VALUES(1,'test-scope','test-key','hash-2','SUCCEEDED');" 'idempotency_requests_uq'
   Write-Output 'PASS: audit, actor and idempotency negative constraints rejected'
-  $null = Sql rrc_m01 "CREATE SEQUENCE runrun_v2.m02_synthetic_sequence; CREATE TABLE runrun_v2.m02_synthetic(id bigint PRIMARY KEY);"
+  $null = Sql rrc_m01 "CREATE TABLE runrun_v2.m02_synthetic(id bigint PRIMARY KEY);"
   $null = Sql rrc_m01 $m01down -MustFail
   Assert ((Sql rrc_m01 "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='runrun_v2' AND c.relname='app_users'") -eq '1') 'failed rollback preserves M01 tables'
-  Write-Output 'PASS: rollback rejects later objects without CASCADE'
-  $null = Sql rrc_m01 'DROP TABLE runrun_v2.m02_synthetic; DROP SEQUENCE runrun_v2.m02_synthetic_sequence;'
+  Write-Output 'PASS: rollback rejects later table without CASCADE'
+  $null = Sql rrc_m01 'DROP TABLE runrun_v2.m02_synthetic;'
+  # Test each ownership boundary alone so another later object cannot mask a missing guard.
+  $null = Sql rrc_m01 'CREATE SEQUENCE runrun_v2.m02_synthetic_sequence;'
+  $sequenceRejection = Sql rrc_m01 $m01down -MustFail
+  Assert ($sequenceRejection -match 'Refusing M01 rollback') 'rollback rejects independent later sequence'
+  Assert ((Sql rrc_m01 "SELECT (SELECT count(*) FROM runrun_v2.app_users) || ':' || (SELECT count(*) FROM pg_class WHERE oid='runrun_v2.m02_synthetic_sequence'::regclass)") -eq '3:1') 'sequence rejection preserves M01 rows and later sequence'
+  $null = Sql rrc_m01 'DROP SEQUENCE runrun_v2.m02_synthetic_sequence;'
+  Assert ((Sql rrc_m01 "SELECT count(*) FROM pg_index i JOIN pg_class t ON t.oid=i.indrelid JOIN pg_namespace n ON n.oid=t.relnamespace WHERE n.nspname='runrun_v2'") -eq '29') 'M01 has exactly its 29 registered indexes'
+  $null = Sql rrc_m01 'CREATE INDEX m02_later_index ON runrun_v2.app_users(created_at);'
+  $indexRejection = Sql rrc_m01 $m01down -MustFail
+  Assert ($indexRejection -match 'Refusing M01 rollback') 'rollback rejects later index on M01 table'
+  Assert ((Sql rrc_m01 "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='runrun_v2' AND c.relkind='r'") -eq '8') 'index rejection preserves all eight M01 tables'
+  Assert ((Sql rrc_m01 "SELECT (SELECT count(*) FROM runrun_v2.app_users) || ':' || (SELECT count(*) FROM runrun_v2.wechat_identities) || ':' || (SELECT count(*) FROM runrun_v2.courier_certifications) || ':' || (SELECT count(*) FROM pg_class WHERE oid='runrun_v2.m02_later_index'::regclass)") -eq '3:1:2:1') 'index rejection preserves synthetic rows and later index'
+  $null = Sql rrc_m01 'DROP INDEX runrun_v2.m02_later_index;'
   $null = Invoke-Docker @('exec',$name,'pg_dump','-U','postgres','-d','rrc_m01','-Fc','-f','/tmp/m01.dump')
   $null = Invoke-Docker @('exec',$name,'pg_restore','-U','postgres','-d','rrc_restore','--exit-on-error','/tmp/m01.dump')
   Assert ((Sql rrc_restore "SELECT (SELECT count(*) FROM runrun_v2.app_users) || ':' || (SELECT count(*) FROM runrun_v2.wechat_identities) || ':' || (SELECT count(*) FROM runrun_v2.courier_certifications)") -eq '3:1:2') 'M01 backup restore preserves synthetic data'

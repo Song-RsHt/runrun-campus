@@ -24,10 +24,44 @@ BEGIN
       )
   ) OR EXISTS (
     SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE n.nspname = 'runrun_v2' AND c.relkind = 'i'
+    WHERE n.nspname = 'runrun_v2' AND c.relkind IN ('i','I')
       AND NOT EXISTS (
         SELECT 1 FROM pg_index i JOIN pg_class owner_table ON owner_table.oid = i.indrelid
-        WHERE i.indexrelid = c.oid AND owner_table.relname IN ('app_users','wechat_identities','user_sessions','courier_certifications','courier_certification_events','admin_audit_logs','idempotency_requests','notification_outbox')
+        -- A later module can index an M01 table. Table ownership alone therefore
+        -- cannot authorize dropping that index with the table (M01 R3 review).
+        JOIN (VALUES
+          ('app_users', 'app_users_pkey'),
+          ('app_users', 'app_users_phone_uq'),
+          ('wechat_identities', 'wechat_identities_pkey'),
+          ('wechat_identities', 'wechat_identities_app_openid_uq'),
+          ('wechat_identities', 'wechat_identities_app_user_uq'),
+          ('wechat_identities', 'wechat_identities_user_idx'),
+          ('user_sessions', 'user_sessions_pkey'),
+          ('user_sessions', 'user_sessions_token_hash_key'),
+          ('user_sessions', 'user_sessions_user_active_idx'),
+          ('courier_certifications', 'courier_certifications_pkey'),
+          ('courier_certifications', 'courier_certifications_courier_uq'),
+          ('courier_certifications', 'courier_certifications_submitted_resource_uq'),
+          ('courier_certifications', 'courier_certifications_approved_resource_uq'),
+          ('courier_certifications', 'courier_certifications_status_idx'),
+          ('courier_certification_events', 'courier_certification_events_pkey'),
+          ('courier_certification_events', 'certification_events_request_uq'),
+          ('courier_certification_events', 'certification_events_cert_created_idx'),
+          ('courier_certification_events', 'certification_events_actor_idx'),
+          ('admin_audit_logs', 'admin_audit_logs_pkey'),
+          ('admin_audit_logs', 'admin_audit_request_uq'),
+          ('admin_audit_logs', 'admin_audit_administrator_idx'),
+          ('admin_audit_logs', 'admin_audit_target_idx'),
+          ('idempotency_requests', 'idempotency_requests_pkey'),
+          ('idempotency_requests', 'idempotency_requests_uq'),
+          ('idempotency_requests', 'idempotency_requests_resource_idx'),
+          ('notification_outbox', 'notification_outbox_pkey'),
+          ('notification_outbox', 'notification_outbox_event_uq'),
+          ('notification_outbox', 'notification_outbox_recipient_idx'),
+          ('notification_outbox', 'notification_outbox_pending_idx')
+        ) AS m01_index(table_name, index_name)
+          ON owner_table.relname = m01_index.table_name AND c.relname = m01_index.index_name
+        WHERE i.indexrelid = c.oid AND owner_table.relnamespace = n.oid
       )
   ) OR EXISTS (
     SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'runrun_v2'
