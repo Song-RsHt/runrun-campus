@@ -12,7 +12,29 @@ BEGIN
   WHERE n.nspname = 'runrun_v2'
     AND c.relkind IN ('r','p','v','m','f')
     AND c.relname NOT IN ('app_users','wechat_identities','user_sessions','courier_certifications','courier_certification_events','admin_audit_logs','idempotency_requests','notification_outbox');
-  IF object_count <> 0 THEN
+  IF object_count <> 0 OR EXISTS (
+    SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'runrun_v2' AND c.relkind = 'S'
+      AND NOT EXISTS (
+        SELECT 1 FROM pg_depend d JOIN pg_class owner_table ON owner_table.oid = d.refobjid
+        WHERE d.objid = c.oid AND d.classid = 'pg_class'::regclass
+          AND d.refclassid = 'pg_class'::regclass AND d.deptype IN ('a','i')
+          AND owner_table.relnamespace = n.oid
+          AND owner_table.relname IN ('app_users','wechat_identities','user_sessions','courier_certifications','courier_certification_events','admin_audit_logs','idempotency_requests','notification_outbox')
+      )
+  ) OR EXISTS (
+    SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'runrun_v2' AND c.relkind = 'i'
+      AND NOT EXISTS (
+        SELECT 1 FROM pg_index i JOIN pg_class owner_table ON owner_table.oid = i.indrelid
+        WHERE i.indexrelid = c.oid AND owner_table.relname IN ('app_users','wechat_identities','user_sessions','courier_certifications','courier_certification_events','admin_audit_logs','idempotency_requests','notification_outbox')
+      )
+  ) OR EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'runrun_v2'
+  ) OR EXISTS (
+    SELECT 1 FROM pg_type t JOIN pg_namespace n ON n.oid = t.typnamespace
+    WHERE n.nspname = 'runrun_v2' AND (t.typtype IN ('d','e') OR (t.typtype = 'c' AND t.typrelid <> 0 AND NOT EXISTS (SELECT 1 FROM pg_class owner_table WHERE owner_table.oid = t.typrelid AND owner_table.relname IN ('app_users','wechat_identities','user_sessions','courier_certifications','courier_certification_events','admin_audit_logs','idempotency_requests','notification_outbox'))))
+  ) THEN
     RAISE EXCEPTION 'Refusing M01 rollback: later runrun_v2 objects exist (%)', object_count;
   END IF;
 END
