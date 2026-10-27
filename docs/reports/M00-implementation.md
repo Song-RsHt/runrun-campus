@@ -27,7 +27,7 @@
 ## 已实现
 
 - 独立迁移根目录和命名规则
-- 空库 schema 初始化
+- 空库 schema 初始化；发现 public 关系（含旧 flyway_schema_history）、public 函数或非系统 schema 时主动拒绝
 - 非空 schema 拒绝回滚
 - 后续模块迁移号/对象归属预登记
 - 明确旧 V1–V43 与新迁移链隔离
@@ -40,9 +40,10 @@
 
 ## 测试命令与结果
 
-- `git diff --check`：待提交前运行。
-- PowerShell 静态检查（文件存在、旧迁移目录未修改）：待提交前运行。
-- `psql` 空库执行：未运行，当前未提供隔离数据库连接。
+- `git diff --check`：通过。
+- Git 文件清单检查：仅 5 个 M00 新文件，旧迁移目录未修改。
+- `psql --version`：命令不存在，数据库执行未运行。
+- `docker version --format '{{.Server.Version}}'`：失败，Docker Linux daemon 未运行；数据库容器验证未运行。
 - Flyway/应用集成测试：未运行，M00 未接入新应用工程。
 
 ## 已知风险与安全边界

@@ -1,9 +1,29 @@
--- RunRunCampus v2 independent database initialization
--- Migration: rrc_0001__create_v2_schema.sql
--- Scope: create only the namespace for the new system. No business tables are created in M00.
--- This migration must run against an isolated empty database. It must never be applied to the legacy V1-V43 database.
+-- RunRunCampus v2 independent database initialization.
+-- M00 creates only the namespace; business tables belong to later modules.
+-- Refuse any existing user schema/object so a legacy database cannot be mistaken for an empty v2 database.
+BEGIN;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM pg_namespace n
+    WHERE n.nspname NOT IN ('public', 'information_schema')
+      AND n.nspname NOT LIKE 'pg_%'
+  ) OR EXISTS (
+    SELECT 1 FROM pg_class c
+    JOIN pg_namespace n ON n.oid = c.relnamespace
+    WHERE n.nspname = 'public'
+      AND c.relkind IN ('r', 'p', 'v', 'm', 'S', 'f')
+  ) OR EXISTS (
+    SELECT 1 FROM pg_proc p
+    JOIN pg_namespace n ON n.oid = p.pronamespace
+    WHERE n.nspname = 'public'
+  ) THEN
+    RAISE EXCEPTION 'M00 requires an empty isolated database; existing user objects or schemas found';
+  END IF;
+END
+$$;
 
-CREATE SCHEMA IF NOT EXISTS runrun_v2;
-
+CREATE SCHEMA runrun_v2;
 COMMENT ON SCHEMA runrun_v2 IS
-  'RunRunCampus stage-one v2 namespace; created from an empty isolated database. Legacy V1-V43 objects are out of scope.';
+  'RunRunCampus stage-one v2 namespace; initialized from an empty isolated database; legacy V1-V43 excluded.';
+COMMIT;
