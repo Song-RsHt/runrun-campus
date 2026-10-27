@@ -108,7 +108,10 @@ CREATE OR REPLACE FUNCTION runrun_v2.approve_rider_allocation(p_order BIGINT,p_l
 RETURNS BIGINT LANGUAGE plpgsql AS $$ DECLARE aid BIGINT; next_version INTEGER; pool BIGINT; assigned BIGINT; line JSONB; BEGIN
   IF NOT p_confirmed OR p_reason IS NULL OR btrim(p_reason)='' OR jsonb_typeof(p_lines)<>'array' OR jsonb_array_length(p_lines)=0 THEN RAISE EXCEPTION 'VALIDATION_ERROR'; END IF;
   PERFORM 1 FROM runrun_v2.v2_orders o WHERE o.id=p_order FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'RESOURCE_NOT_FOUND'; END IF;
-  SELECT COALESCE(SUM(delta_cents),0) INTO pool FROM runrun_v2.settlement_entries WHERE order_id=p_order AND beneficiary_type='COURIER' AND kind='EARNED';
+  -- Allocation is based on the current effective rider pool.  Reversals and
+  -- adjustments are part of that pool; using only EARNED would re-create
+  -- rights that a refund or liability entry already removed.
+  SELECT COALESCE(SUM(delta_cents),0) INTO pool FROM runrun_v2.settlement_entries WHERE order_id=p_order AND beneficiary_type='COURIER';
   SELECT COALESCE(MAX(allocation_version),0)+1 INTO next_version FROM runrun_v2.rider_allocations WHERE order_id=p_order;
   INSERT INTO runrun_v2.rider_allocations(order_id,allocation_version,status,automatic,approved_by,reason) VALUES(p_order,next_version,'DRAFT',FALSE,p_admin,p_reason) RETURNING id INTO aid;
   FOR line IN SELECT * FROM jsonb_array_elements(p_lines) LOOP

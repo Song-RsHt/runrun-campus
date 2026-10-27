@@ -1,6 +1,36 @@
 BEGIN;
 DO $$ BEGIN
- IF EXISTS (SELECT 1 FROM runrun_v2.payout_registrations) OR EXISTS (SELECT 1 FROM runrun_v2.settlement_entries) THEN RAISE EXCEPTION 'M06 rollback refused: financial evidence exists'; END IF;
+ IF EXISTS (SELECT 1 FROM runrun_v2.payout_registrations)
+    OR EXISTS (SELECT 1 FROM runrun_v2.settlement_entries)
+    OR EXISTS (SELECT 1 FROM runrun_v2.settlement_freezes)
+    OR EXISTS (SELECT 1 FROM runrun_v2.freeze_events)
+    OR EXISTS (SELECT 1 FROM runrun_v2.rider_allocations)
+    OR EXISTS (SELECT 1 FROM runrun_v2.rider_allocation_lines)
+ THEN RAISE EXCEPTION 'M06 rollback refused: financial evidence exists'; END IF;
+ IF EXISTS (
+   SELECT 1 FROM pg_trigger t JOIN pg_class c ON c.oid=t.tgrelid JOIN pg_namespace n ON n.oid=c.relnamespace
+   WHERE n.nspname='runrun_v2' AND c.relname='after_sales_cases' AND NOT t.tgisinternal
+     AND t.tgname <> 'after_sales_default_settlement_freeze'
+ ) THEN RAISE EXCEPTION 'M06 rollback refused: later trigger exists'; END IF;
+ IF EXISTS (
+   SELECT 1 FROM pg_class i JOIN pg_index x ON x.indexrelid=i.oid JOIN pg_class t ON t.oid=x.indrelid JOIN pg_namespace n ON n.oid=t.relnamespace
+   WHERE n.nspname='runrun_v2' AND t.relname IN ('settlement_entries','rider_allocations','rider_allocation_lines','settlement_freezes','freeze_events','payout_registrations')
+     AND NOT EXISTS (SELECT 1 FROM pg_constraint k WHERE k.conindid=i.oid)
+     AND i.relname NOT IN ('settlement_entries_order_beneficiary','rider_allocations_current','settlement_freezes_active_source','settlement_freezes_order_active','freeze_events_lookup','payout_registrations_order_beneficiary')
+ ) THEN RAISE EXCEPTION 'M06 rollback refused: later index exists'; END IF;
+ IF EXISTS (
+   SELECT 1 FROM pg_constraint k JOIN pg_class t ON t.oid=k.conrelid JOIN pg_namespace n ON n.oid=t.relnamespace
+   WHERE n.nspname='runrun_v2' AND t.relname IN ('settlement_entries','rider_allocations','rider_allocation_lines','settlement_freezes','freeze_events','payout_registrations')
+     AND k.conname NOT LIKE '%_pkey' AND k.conname NOT LIKE '%_key' AND k.conname NOT LIKE '%_check'
+     AND k.conname <> 'settlement_beneficiary_shape'
+ ) THEN RAISE EXCEPTION 'M06 rollback refused: later constraint exists'; END IF;
+ IF EXISTS (
+   SELECT 1 FROM pg_depend d JOIN pg_proc p ON p.oid=d.objid JOIN pg_namespace pn ON pn.oid=p.pronamespace
+   JOIN pg_class r ON r.oid=d.refobjid JOIN pg_namespace rn ON rn.oid=r.relnamespace
+   WHERE pn.nspname='runrun_v2' AND rn.nspname='runrun_v2'
+     AND r.relname IN ('settlement_entries','rider_allocations','rider_allocation_lines','settlement_freezes','freeze_events','payout_registrations')
+     AND p.proname NOT IN ('record_split','record_arrival_subsidy','record_settlement_adjustment','approve_rider_allocation','freeze_after_sales','m06_after_sales_freeze_trigger','register_payout','freeze_settlement','release_settlement_freeze')
+ ) THEN RAISE EXCEPTION 'M06 rollback refused: later function exists'; END IF;
 END $$;
 DROP FUNCTION runrun_v2.release_settlement_freeze(BIGINT,TEXT,BIGINT,BOOLEAN);
 DROP TRIGGER after_sales_default_settlement_freeze ON runrun_v2.after_sales_cases;
