@@ -2,6 +2,7 @@ package com.zhangxuan.runrunv2;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,7 +18,9 @@ public class IdentityController {
     @PostMapping("/auth/wechat/login") @IdentityPermission(anonymous = true)
     public IdentityService.LoginResult login(@RequestBody WechatLogin body) { return identity.login(body.code); }
     @PostMapping("/auth/wechat/bind-phone") @IdentityPermission(anonymous = true)
-    public IdentityService.LoginResult bind(@RequestBody BindPhone body) { return identity.bindPhone(body.loginTicket, body.phoneCode, body.requestedRole); }
+    public ResponseEntity<IdentityService.LoginResult> bind(@RequestBody BindPhone body) {
+        return ResponseEntity.status(201).body(identity.bindPhone(body.loginTicket, body.phoneCode, body.requestedRole));
+    }
     @PostMapping("/auth/password/login") @IdentityPermission(anonymous = true)
     public IdentityService.LoginResult passwordLogin(@RequestBody PasswordLogin body) { return identity.passwordLogin(body.phone, body.password); }
     @GetMapping("/auth/session") @IdentityPermission

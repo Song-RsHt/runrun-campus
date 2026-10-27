@@ -9,7 +9,7 @@
 |方法/路径|请求|成功结果与权限|
 |---|---|---|
 |POST `/auth/wechat/login`|`code`|未绑定返回5分钟一次性loginTicket；已绑定返回token/account。后端兑换code2session|
-|POST `/auth/wechat/bind-phone`|`loginTicket,phoneCode,requestedRole`|requestedRole只允许USER/COURIER，微信手机号验证后新建并绑定；200返回token/account。冲突409，不按手机号恢复或登录已有账号|
+|POST `/auth/wechat/bind-phone`|`loginTicket,phoneCode,requestedRole`|requestedRole只允许USER/COURIER，微信手机号验证后新建并绑定；201返回token/account。冲突409，不按手机号恢复或登录已有账号|
 |POST `/auth/password/login`|`phone,password`|仅本系统已经微信绑定并设置密码的ACTIVE非部署账号；成功token/account，认证失败401|
 |GET `/auth/session`|Bearer|当前account，读取实时状态、安全版本及接单资格|
 |PUT `/auth/password`|Bearer、Idempotency-Key；`password`|设置/修改BCrypt密码，12字符起、UTF-8不超过72字节；撤销包括当前会话在内的全部会话|
