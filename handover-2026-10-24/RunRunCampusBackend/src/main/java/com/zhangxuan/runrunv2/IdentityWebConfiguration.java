@@ -23,7 +23,13 @@ public class IdentityWebConfiguration implements WebMvcConfigurer {
                 // All identity responses, especially bearer credentials, must stay out of caches.
                 response.setHeader("Cache-Control", "no-store");
                 response.setHeader("Pragma", "no-cache");
-                if (!(handler instanceof HandlerMethod method)) throw new IdentityFailure(403, "FORBIDDEN");
+                if (!(handler instanceof HandlerMethod method)) {
+                    // Disabled simulator routes must look absent, including before login.
+                    // Other undeclared v2 handlers retain the default-deny identity policy.
+                    if(request.getRequestURI().matches("/api/v2/test/(payment-attempts|refunds)/[^/]+/result"))
+                        throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
+                    throw new IdentityFailure(403, "FORBIDDEN");
+                }
                 IdentityPermission permission = AnnotatedElementUtils.findMergedAnnotation(method.getMethod(), IdentityPermission.class);
                 if (permission == null) permission = AnnotatedElementUtils.findMergedAnnotation(method.getBeanType(), IdentityPermission.class);
                 // New v2 handlers must declare their policy explicitly before becoming reachable.

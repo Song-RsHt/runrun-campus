@@ -291,6 +291,11 @@ class IdentityIntegrationTest {
         http.perform(post("/api/v2/auth/logout").header("Authorization", "Bearer " + user.token()).contentType("application/json").content("{}"))
                 .andExpect(status().isBadRequest()).andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
     }
+    @Test void disabledPaymentSimulatorRoutesAreAbsent() throws Exception {
+        for(String path:List.of("/api/v2/test/payment-attempts/1/result","/api/v2/test/refunds/1/result"))
+            http.perform(post(path).contentType("application/json").content("{}"))
+                    .andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"));
+    }
     @Test void productionAndMissingRuntimeMigrationFailClosed() {
         assertThrows(IllegalStateException.class, () -> new IdentityStartupGuard(db, "production").run(null));
         assertThrows(IllegalStateException.class, () -> new IdentitySecrets(Base64.getEncoder().encodeToString(new byte[32]), Base64.getEncoder().encodeToString(new byte[32])));

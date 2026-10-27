@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class OrderConfiguration {
     @Bean @ConditionalOnMissingBean(Clock.class)
     Clock orderClock() { return Clock.systemUTC(); }
-    @Bean @ConditionalOnMissingBean(OriginalPaymentWriter.class)
+    @Bean @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name="rrc.payment.mock-enabled",havingValue="false",matchIfMissing=true)
     OriginalPaymentWriter unavailablePaymentWriter() {
         // M00 assigns payment tables to M03. Until its atomic writer is integrated,
         // A08 must fail closed instead of producing an unpaid orphan order.

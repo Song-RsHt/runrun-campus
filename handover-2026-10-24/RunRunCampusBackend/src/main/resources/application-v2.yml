@@ -21,6 +21,8 @@ logging:
     org.springframework.web.client: OFF
     org.springframework.jdbc: OFF
 rrc:
+  payment:
+    mock-enabled: ${RRC_V2_MOCK_PAYMENT_ENABLED:false}
   identity:
     environment: ${RRC_V2_ENVIRONMENT}
     app-id: ${RRC_WECHAT_APP_ID}
