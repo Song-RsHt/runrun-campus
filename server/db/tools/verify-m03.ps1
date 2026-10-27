@@ -34,6 +34,8 @@ try {
   $up=Get-Content -Raw -Encoding UTF8 (Join-Path $root 'server/db/migrations/up/rrc_0200__mock_payments.sql')
   $down=Get-Content -Raw -Encoding UTF8 (Join-Path $root 'server/db/migrations/down/rrc_0200__mock_payments.rollback.sql')
   Assert ((Sql payments "SELECT count(*) FROM runrun_v2.payment_schema_manifest") -eq '10') 'migration creates payment schema'
+  Assert ((Sql payments "SELECT count(*) FROM information_schema.columns WHERE table_schema='runrun_v2' AND table_name IN ('payment_attempts','refund_orders') AND column_name='channel_reference' AND is_nullable='YES'") -eq '2') 'channel references permit pending unknown results'
+  Assert ((Sql payments "SELECT count(*) FROM pg_indexes WHERE schemaname='runrun_v2' AND indexname IN ('payment_attempt_channel_reference_uq','refund_channel_reference_uq')") -eq '2') 'non-null channel references remain unique'
   $null=Sql payments $up -MustFail
   Write-Output 'PASS: repeated migration refuses overwrite'
   $null=Sql payments 'CREATE INDEX synthetic_later_idx ON runrun_v2.payment_orders(status);'

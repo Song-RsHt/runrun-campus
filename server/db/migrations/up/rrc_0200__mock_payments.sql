@@ -36,11 +36,12 @@ CREATE TRIGGER v2_orders_payment_admission BEFORE INSERT OR UPDATE ON runrun_v2.
 CREATE TABLE runrun_v2.payment_attempts (
  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY, payment_order_id BIGINT NOT NULL REFERENCES runrun_v2.payment_orders(id),
  attempt_no INTEGER NOT NULL CHECK(attempt_no>0), status TEXT NOT NULL CHECK(status IN ('PROCESSING','UNKNOWN','FAILED','SUCCESS')),
- channel_reference TEXT NOT NULL UNIQUE, result_received_at TIMESTAMPTZ,
+ channel_reference TEXT, result_received_at TIMESTAMPTZ,
  version BIGINT NOT NULL DEFAULT 0, created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
  UNIQUE(payment_order_id,attempt_no), UNIQUE(id,payment_order_id)
 );
 CREATE UNIQUE INDEX payment_attempt_active_uq ON runrun_v2.payment_attempts(payment_order_id) WHERE status IN ('PROCESSING','UNKNOWN');
+CREATE UNIQUE INDEX payment_attempt_channel_reference_uq ON runrun_v2.payment_attempts(channel_reference) WHERE channel_reference IS NOT NULL;
 ALTER TABLE runrun_v2.payment_orders ADD CONSTRAINT payment_credited_attempt_fk FOREIGN KEY(credited_attempt_id,id) REFERENCES runrun_v2.payment_attempts(id,payment_order_id);
 CREATE TABLE runrun_v2.refund_orders (
  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -49,13 +50,14 @@ CREATE TABLE runrun_v2.refund_orders (
  purpose TEXT NOT NULL CHECK(purpose IN ('CANCELLATION','DOWNGRADE','LATE_PAYMENT','EXTRA_RECEIPT')),
  status TEXT NOT NULL DEFAULT 'REQUESTED' CHECK(status IN ('REQUESTED','PROCESSING','UNKNOWN','FAILED','SUCCEEDED')),
  reason TEXT NOT NULL CHECK(length(trim(reason))>0), business_key TEXT NOT NULL UNIQUE,
- channel_reference TEXT NOT NULL UNIQUE, succeeded_at TIMESTAMPTZ,
+ channel_reference TEXT, succeeded_at TIMESTAMPTZ,
  version BIGINT NOT NULL DEFAULT 0, created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
  FOREIGN KEY(payment_order_id,order_id) REFERENCES runrun_v2.payment_orders(id,order_id),
  FOREIGN KEY(source_attempt_id,payment_order_id) REFERENCES runrun_v2.payment_attempts(id,payment_order_id),
  FOREIGN KEY(adjustment_id,order_id) REFERENCES runrun_v2.payment_adjustments(id,order_id)
 );
 CREATE INDEX refund_balance_idx ON runrun_v2.refund_orders(source_attempt_id,status);
+CREATE UNIQUE INDEX refund_channel_reference_uq ON runrun_v2.refund_orders(channel_reference) WHERE channel_reference IS NOT NULL;
 -- Persistent simulator channel state survives process restarts and lost callbacks.
 CREATE TABLE runrun_v2.mock_channel_results (
  resource_type TEXT NOT NULL CHECK(resource_type IN ('PAYMENT','REFUND')), resource_id BIGINT NOT NULL,
