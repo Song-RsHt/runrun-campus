@@ -1,3 +1,4 @@
+BEGIN;
 -- Manual rollback for rrc_0001__create_v2_schema.sql.
 -- Run only in the isolated database after verifying that no later rrc migrations ran.
 -- This script intentionally refuses to remove a non-empty schema.
@@ -22,3 +23,4 @@ END
 $$;
 
 DROP SCHEMA IF EXISTS runrun_v2;
+COMMIT;

@@ -1,58 +1,34 @@
 # M00 实施交接单
 
-- 模块：M00 契约与独立空库初始化
-- 分支：`feature/m00-contract`
-- worktree：`D:/biancheng/RunRunCampus-worktrees/rrc-m00`
-- 依赖：无
-- 状态：实现完成，等待只读验收
+日期：2026-10-27。分支 `feature/m00-contract`，worktree `D:/biancheng/RunRunCampus-worktrees/rrc-m00`。待只读QA，不合并main。
 
-## 修改文件
+## 文件清单
 
-- `server/db/migrations/rrc_0001__create_v2_schema.sql`
-- `server/db/migrations/rrc_0001__create_v2_schema.rollback.sql`
-- `server/db/migrations/README.md`
-- `docs/reports/M00-migration-registry.md`
-- `docs/reports/M00-implementation.md`
+- server/db/migrations/up/rrc_0001__create_v2_schema.sql
+- server/db/migrations/down/rrc_0001__create_v2_schema.rollback.sql
+- server/db/migrations/README.md
+- server/db/tools/verify-m00.ps1
+- docs/reports/M00-migration-registry.md
+- docs/reports/M00-implementation.md
 
-## 数据库对象
+## DB与API
 
-- 创建：`runrun_v2` schema
-- 未创建：业务表、序列、视图、函数、触发器、索引、账号、管理员、业务数据
-- 回滚：仅当 schema 无关系时删除 `runrun_v2`；非空时主动失败
+实际创建对象仅 runrun_v2 schema。无业务表、索引、触发器、API、账号或业务数据。验证脚本临时合成表不是应用迁移对象，随唯一隔离容器清理。正向/回滚分目录且都有事务；拒绝旧库/重复初始化，回滚拒绝非空schema。
 
-## API
+## 已实现与未实现
 
-无。M00 不创建接口或路由。
+已实现：独立迁移链、空库前置断言、受限回滚、对象唯一归属/FK顺序登记、A01/E01/S01/C01公共契约引用、可复现隔离容器验证和备份恢复。
 
-## 已实现
+未实现：M01及后续业务、API、迁移runner、共享环境部署、真实微信/支付/真机。新runner接入须另验收，不声称已配置Flyway。
 
-- 独立迁移根目录和命名规则
-- 空库 schema 初始化；发现 public 关系（含旧 flyway_schema_history）、public 函数或非系统 schema 时主动拒绝
-- 非空 schema 拒绝回滚
-- 后续模块迁移号/对象归属预登记
-- 明确旧 V1–V43 与新迁移链隔离
+## 验证
 
-## 未实现
+实际运行 `./server/db/tools/verify-m00.ps1`，退出0：12项PASS（PG ready、空库初始化、重复拒绝、旧flyway/campus_orders哨兵拒绝、哨兵保留、public enum拒绝、其他schema拒绝、非空回滚拒绝、恢复主键、恢复合成行、空回滚、回滚后重初始化）。PostgreSQL 16-alpine，Docker 29.8.0。备份在隔离容器/tmp内经pg_dump/pg_restore，校验恢复结构与合成行；无宿主端口、网络或挂载，无凭据日志，finally清理唯一容器。
 
-- M01 及后续业务表、API、认证、支付、履约和客户端
-- 迁移 runner 配置和真实数据库执行
-- 备份恢复演练
+初次脚本路径与PowerShell函数大小写递归问题已修正，最终重跑上述12项全部通过；本机psql不可用通过容器psql完成。未运行：应用集成测试（新应用尚不存在）、共享环境/生产迁移、真实微信、真实支付、客户端与真机。
 
-## 测试命令与结果
+## 风险与交付
 
-- `git diff --check`：通过。
-- Git 文件清单检查：仅 5 个 M00 新文件，旧迁移目录未修改。
-- `psql --version`：命令不存在，数据库执行未运行。
-- `docker version --format '{{.Server.Version}}'`：失败，Docker Linux daemon 未运行；数据库容器验证未运行。
-- Flyway/应用集成测试：未运行，M00 未接入新应用工程。
+新runner尚未接入；公共基础设施/延迟FK仅登记，须在相应模块实际实现和验收。M00并不表示任何业务功能已实现。
 
-## 已知风险与安全边界
-
-- 未执行数据库连接验证，不能声称迁移已在空库成功。
-- 回滚脚本包含 `DROP SCHEMA`，仅允许隔离且为空的 M00 数据库；非空时会拒绝。
-- 没有生产连接、真实支付、密钥或用户数据。
-
-## 提交
-
-提交 hash：见本分支最新 commit。
-建议合并：需只读 QA 通过后，由总控 cherry-pick；本 agent 不合并 main。
+提交hash由最终分支HEAD及总控交接记录给出。建议：独立只读QA通过后才合并；总控另行维护状态表/删除旧报告，这些不属于本agent提交范围。

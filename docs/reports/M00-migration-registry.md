@@ -1,30 +1,33 @@
-# M00 迁移与契约登记
+# M00 迁移与公共契约冻结登记
 
-日期：2026-10-27。状态：实现候选，待总控只读验收。
+日期：2026-10-27。状态：待独立只读验收。本登记仅分配实现所有权，不改权威规则。
 
-## 唯一初始化迁移
+## 公共契约
 
-|编号|文件|创建对象|负责人|依赖|状态|
-|---|---|---|---|---|---|
-|rrc_0001|`server/db/migrations/rrc_0001__create_v2_schema.sql`|PostgreSQL schema `runrun_v2`|M00|空数据库|已实现，待验收|
+唯一技术来源为 `docs/数据模型与接口契约.md`：
 
-回滚文件同名 `.rollback.sql`，只在 schema 为空时删除 `runrun_v2`。M00 不创建表、序列、函数、触发器、索引、管理员、账号或业务数据。
+- 通用数据约定：snake_case DB/camelCase API，整数 cents，BIGINT ID 对外字符串，带时区时间，GCJ02。
+- A01：`/api/v2`；业务写 Idempotency-Key；更新聚合 expectedVersion；幂等记录与业务、副作用审计、事件及适用 outbox 同事务；认证入口与报价等例外以原文为准。
+- E01：HTTP/稳定 code/message 使用唯一错误码表，模块不得另创重复错误体/错误码。
+- S01：订单状态和一致性、订单聚合锁、确认窗口及完成竞态唯一来源；不实现被现行范围覆盖的混合历史。
+- C01：USER/COURIER/ADMIN、管理员默认未启用、即时资格/安全版本检查、资格管理身份和适用 MFA；新系统不继承旧账号或旧 SUPER_ADMIN。
+- 固定 order_flow_version=2 与递增 version 分离；其数据库定义按 M44，冲突处理按 A01/E01。
 
-## 后续对象归属（预登记）
+## M00 对象
 
-|模块|迁移编号范围|允许创建的对象|禁止事项|
-|---|---|---|---|
-|M01 身份基础|rrc_0002–0099|用户、微信身份、骑手、管理员启用、会话、审计扩展|不得修改 M00 文件；不得导入旧账号/旧资质|
-|M02 订单基础|rrc_0100–0199|区域、服务点、营业配置、报价快照、`v2_orders`|不得复用旧订单表；不得重复创建 M01 对象|
-|M03 支付|rrc_0200–0299|支付单/尝试、退款、幂等和欠款对象|不得注册真实支付；不得改写旧支付表|
-|M04 履约|rrc_0300–0399|任务、凭证、定位事件、履约事件|不得绕过订单锁或证据权限|
-|M05 调整售后|rrc_0400–0499|规格调整、补款、售后和重新履约对象|不得覆盖原款流水或绕过冻结|
-|M06 结算|rrc_0500–0599|分账、冻结、补贴、交接和模拟付款登记|不得写生产付款；不得重复建支付对象|
-|M07 证据通知|rrc_0600–0699|资质证据保全/删除、通知 outbox|不得公开对象键或删除未解除保全证据|
-|M08 客户端/E2E|无迁移|只消费已冻结 API|不得创建数据库对象或调用 v1 写接口|
+正向：`server/db/migrations/up/rrc_0001__create_v2_schema.sql`；回滚：`down/rrc_0001__create_v2_schema.rollback.sql`。仅创建 `runrun_v2` schema，无业务表/API/账号/数据。后续对象均显式使用此 schema，不使用旧 public 表。
 
-编号范围是总控协调用的预登记，不授权模块跳过依赖或修改其他模块目录；任何范围调整必须先更新本登记和决策记录。
+## 唯一归属与迁移顺序
 
-## API 边界
+|模块/范围|唯一创建对象|依赖/延迟外键策略|
+|---|---|---|
+|M01 / 0002–0099|app_users、wechat_identities、会话、管理员启用字段、courier_certifications/certification_events；admin_audit_logs、idempotency_requests、notification_outbox 基础设施|先账号，再资质/审计/幂等/outbox。M01 自身业务写入前基础设施必须到位；outbox主体使用契约的类型标识/JSON，不提前引用未建订单。M07消费而不重建这些表|
+|M02 / 0100–0199|delivery_zones、service_points、platform_settings、v2_orders、v2_order_events|依赖M01账号；先配置/地点后订单；订单引用配置/账号；本模块不重建幂等/审计/outbox|
+|M03 / 0200–0299|payment_orders、payment_attempts、refund_orders、debts、debt_events|依赖订单/账号；对尚未创建的调整/售后FK在M05后置迁移补齐，不引用不存在表；完整关联验收前不得合并依赖该FK的端点|
+|M04 / 0300–0399|fulfillment_tasks、handover_records、v2_order_proofs、location_events|先tasks再handover/proof/location，避免交接循环FK；task→handover回指同模块末尾ALTER ADD FK；同单关联复合FK/事务断言须逐条登记|
+|M05 / 0400–0499|order_adjustments、after_sales_cases|引用已存在订单/任务/凭证/支付；再补M03延迟FK。重新履约复用M04任务/交接，不重复建表|
+|M06 / 0500–0599|settlement_entries、rider_allocations/lines、settlement_freezes、freeze_events、payout_registrations|依赖M03–M05；补贴使用结算条目和位置事件，交接只消费handover_records|
+|M07 / 0600–0699|evidence_holds、evidence_deletion_audits、user_notifications；资质/凭证生命周期所需增量列|资质表由M01创建；凭证表M04创建；outbox由M01创建；本模块仅ALTER/消费。订单或资质资源用带类型标识，不伪造order_id|
+|M08|无|只消费已验收v2 API|
 
-M00 不实现 API、认证、管理员、支付或测试控制路由。所有新 API 必须使用 `/api/v2`，由后续模块按《数据模型与接口契约》登记。旧 `/api/v1` 和旧客户端不属于 M00 输入。
+编号范围是预留，不允许跳过前序迁移或改变业务字段。每条迁移提交前逐项登记实际列/约束/索引及跨模块FK；前向引用采用目标表存在后的ALTER迁移，绝不先写不存在的FK或创建占位重复表。延迟FK尚未补齐时，只可隔离分支开发，不可标记完整验收或合并依赖关联约束的API。具体字段仍以技术契约为准；发现契约无法适用于全新系统的冲突，暂停相关模块交总控裁决，不自行改权威规则。

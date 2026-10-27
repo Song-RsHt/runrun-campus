@@ -1,27 +1,27 @@
 # 独立 v2 数据库迁移入口（M00）
 
-本目录是 RunRunCampus 全新阶段一系统的迁移根目录，和 `handover-2026-10-24/RunRunCampusBackend/src/main/resources/db/migration` 完全分离。后者的 V1–V43 只作历史参考，禁止复制、改写、导入或在同一数据库运行。
+本目录是全新阶段一系统的独立迁移链；旧交接 V1–V43 保留原样，禁止复制或导入。
 
-## M00 已冻结的约定
+- PostgreSQL 16；对象命名空间 `runrun_v2`。
+- 正向迁移目录 `up/`，手工回滚目录 `down/`，迁移号 `rrc_NNNN` 只增不重用。
+- M00 只建 schema。发现 public 关系（含旧 Flyway history）、public 函数/类型（含 enum/domain）或非系统 schema 时拒绝初始化；重复执行拒绝。
+- 当前采用显式 psql 执行，不声称已接入 Flyway。后续 runner 的历史表、扫描规则、事务行为须单独验收，禁止同时扫描 down/ 或旧迁移目录，禁止自动 baseline/clean。
 
-- 数据库目标：全新、隔离的 PostgreSQL 数据库；不得连接生产库或旧数据库。
-- 迁移根目录：`server/db/migrations`。
-- 迁移命名：`rrc_NNNN__description.sql`；四位递增编号由总控登记，不能复用或重排。
-- v2 对象命名空间：`runrun_v2`。后续表、序列、视图、函数和索引必须显式归属该 schema，并在登记表中声明负责人。
-- M00 只创建 schema，不创建业务表、索引、触发器、账号、管理员、订单、支付或旧数据。
-- Flyway（或等价 runner）必须关闭 `baselineOnMigrate` 和危险的 `clean` 行为；应用启动必须指向本目录且不得同时加载旧 V1–V43 目录。
-- 模拟支付、模拟管理员付款登记和测试控制路由不属于 M00，必须由后续模块在隔离环境实现并在生产配置中拒绝。
+## 执行与回滚
 
-## 空库执行
-
-在隔离数据库中执行迁移工具的 dry-run/validate 后再 migrate。若暂时没有应用迁移 runner，可使用 PostgreSQL 客户端进行语法验证：
+先由操作人核实目标是全新隔离数据库，连接配置仅从受控环境注入，不打印或提交：
 
 ```powershell
-psql --set ON_ERROR_STOP=1 --dbname "$env:RRC_V2_DATABASE_URL" --file server/db/migrations/rrc_0001__create_v2_schema.sql
+psql -X --set ON_ERROR_STOP=1 --dbname "$env:RRC_V2_DATABASE_URL" --file server/db/migrations/up/rrc_0001__create_v2_schema.sql
+psql -X --set ON_ERROR_STOP=1 --dbname "$env:RRC_V2_DATABASE_URL" --file server/db/migrations/down/rrc_0001__create_v2_schema.rollback.sql
 ```
 
-`RRC_V2_DATABASE_URL` 必须由本地受控环境注入，不得写入仓库。执行后应确认 `pg_namespace.nspname = 'runrun_v2'`，且没有业务关系。不要把旧库的 `flyway_schema_history` 或任何旧行复制到新库。
+两脚本均显式事务。回滚不使用 CASCADE，关系非空主动拒绝；其他依赖也由 PostgreSQL RESTRICT 拒绝，避免误删后续对象。生产执行不在授权范围。
 
-## 回滚与备份
+## 可复现验证
 
-`rrc_0001__create_v2_schema.rollback.sql` 仅允许在 M00 之后、后续迁移尚未运行的隔离数据库执行。脚本在 schema 非空时主动失败，避免误删后续对象。生产迁移、生产回滚和真实支付均不在阶段一范围内。
+```powershell
+./server/db/tools/verify-m00.ps1
+```
+
+只需现有 Docker Desktop/PowerShell，不新增依赖。脚本创建随机 `rrc-m00-` 容器，`--network none`，不发布端口、不挂载宿主目录。trust 认证仅用于该不可联网的临时容器。通过 docker exec/psql 验证空库、重复拒绝、旧库哨兵拒绝、回滚安全、pg_dump/pg_restore、恢复主键与合成行。备份仅在容器 `/tmp/m00.dump`；不生成或提交凭据。finally 仅清理本轮唯一容器及其匿名卷，不触碰共享容器或卷。失败时控制台保留失败步骤，原始敏感输出被抑制。
