@@ -128,10 +128,10 @@ class FulfillmentIntegrationTest {
         catch(IdentityFailure ex) { assertEquals("ORDER_STATE_CONFLICT",ex.code); return null; }
     }
     @Test void sameRiderCapacitySerializesAcrossDifferentOrders() throws Exception {
-        String a=paid().order().id(),b=paid().order().id(),c=paid().order().id(); accept(a);
+        String a=paid().order().id(),b=paid().order().id(),c=paid().order().id(),d=paid().order().id(); accept(a); accept(b);
         var wins=new java.util.concurrent.atomic.AtomicInteger();
-        race(()->capacityAccept(b,"cap-b",wins),()->capacityAccept(c,"cap-c",wins));
-        assertEquals(1,wins.get()); assertEquals(2L,db.queryForObject("SELECT count(*) FROM runrun_v2.fulfillment_tasks WHERE status='ACTIVE'",Long.class));
+        race(()->capacityAccept(c,"cap-c",wins),()->capacityAccept(d,"cap-d",wins));
+        assertEquals(1,wins.get()); assertEquals(3L,db.queryForObject("SELECT count(*) FROM runrun_v2.fulfillment_tasks WHERE status='ACTIVE'",Long.class));
     }
     Object capacityAccept(String order,String key,java.util.concurrent.atomic.AtomicInteger wins) {
         try { var result=fulfillment.accept(courier,order,key,new FulfillmentModels.Version(v(order))); wins.incrementAndGet(); return result; }
@@ -213,7 +213,7 @@ class FulfillmentIntegrationTest {
         accept(paid().order().id()); accept(paid().order().id());
     }
     @Test void deliveredReleasesCapacityImmediatelyAndCompletesAtTenMinutes() {
-        String a=paid().order().id(),ta=picked(a),b=paid().order().id(); accept(b);
+        String a=paid().order().id(),ta=picked(a),b=paid().order().id(),c=paid().order().id(); accept(b); accept(c);
         failure("COURIER_CAPACITY_EXCEEDED",()->accept(paid().order().id()));
         var done=delivered(a,ta); assertEquals("DELIVERED",done.task().status()); assertEquals(done.order().deliveredAt().plusMinutes(10),done.confirmDeadline());
         accept(paid().order().id()); now("2026-10-27T01:09:59Z"); assertEquals(0,fulfillment.autoComplete());
