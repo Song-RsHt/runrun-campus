@@ -7,6 +7,8 @@
 - M00 只建 schema。发现 public 关系（含旧 Flyway history）、public 函数/类型（含 enum/domain）或非系统 schema 时拒绝初始化；重复执行拒绝。
 - 当前采用显式 psql 执行，不声称已接入 Flyway。后续 runner 的历史表、扫描规则、事务行为须单独验收，禁止同时扫描 down/ 或旧迁移目录，禁止自动 baseline/clean。
 
+M01 身份基础迁移为 `up/rrc_0002__create_identity_foundation.sql`，回滚为同号 `down/rrc_0002__create_identity_foundation.rollback.sql`。它只创建 `runrun_v2` 内的 `app_users`、微信身份、会话、资质/资质事件、管理员审计、幂等请求和通知 outbox；订单、支付、履约、结算及证据生命周期由登记表中的后续模块唯一创建。M01 不使用旧 public 表，也不采集资质姓名、学校、学号或有效期。
+
 ## 执行与回滚
 
 先由操作人核实目标是全新隔离数据库，连接配置仅从受控环境注入，不打印或提交：
