@@ -53,3 +53,18 @@ M01运行增量登记（2026-10-27）：`rrc_0003__identity_runtime.sql`，依�
 - v2_order_events：order/task/actor/type/request/payload/created_at；FK→v2_orders/app_users，订单/类型/请求唯一，order/actor/task 索引。task_id 的 FK 仍由 M04 建成 fulfillment_tasks 后追加；M02 事件只写 NULL task_id，不开放任务事件写入接口。
 - 不重建 M01 基础设施；仅扩展 admin_audit_logs 的 action/target CHECK，加入 SERVICE_CONFIG_CHANGED/SERVICE_CONFIG。A32 审计、M02 幂等记录与业务数据同事务。无 M02 外发通知需求，不写伪 outbox。
 - 回滚只允许空订单/事件、无业务幂等/配置审计、服务点为空且种子配置未修改的状态。所有 DROP 均 RESTRICT，无 CASCADE；存在后续对象依赖时拒绝回滚。备份恢复和数据库约束验证入口为 `server/db/tools/verify-m02.ps1`。
+
+## M04 实际迁移登记（2026-10-27）
+
+隔离开发分支 `feature/m04-fulfillment`，根目录 `D:/biancheng/RunRunCampus-worktrees/rrc-m04-fulfillment`，基于已集成 M01–M03 的 `8fb3a86`。`rrc_0300__fulfillment.sql` 依赖 0001、0002、0003、0100、0200；不改写已执行脚本。
+
+- fulfillment_tasks：订单、骑手、状态、同单 source_task_id、自增并发 version、服务器接受/取件/送达/结束/创建时间及 superseded_at。每单 ACTIVE 部分唯一索引，骑手状态和创建顺序、来源索引；复合唯一键供同单/同骑手关联使用。OFFERED 不占容量，ACTIVE 计数由账号行锁串行化，DELIVERED 同事务释放。
+- v2_order_proofs：订单/任务/上传者/种类、私有对象键及状态、保留/删除/创建时间。task/order/uploader 复合 FK；对象键唯一，PICKUP/DELIVERY 每任务唯一，SPECIFICATION 可追加；订单任务种类和清理索引。
+- location_events：订单/任务/骑手复合 FK，ARRIVAL/DELIVERY，成对有效 GCJ02 坐标、服务器收到时间、request_id、accepted/decision_reason、清理字段。任务/事件种类/请求唯一；每任务至多一个 accepted DELIVERY 部分唯一索引；同单位置复合唯一键与时间索引。
+- fulfillment_completion_blocks：M04 完成阻塞投影，不是调整单/售后单。order/source_type/source_id 复合主键，source_type 只支持 ADJUSTMENT/AFTER_SALES。M05 在自己的订单事务中调用 blockCompletion/unblockCompletion，M03 财务状态另直接参与阻塞判定。
+- 补齐 v2_order_events(task_id,order_id)→fulfillment_tasks(id,order_id) 复合后置 FK；M02 不再存在未校验的非空任务事件。
+- fulfillment_order_guard 函数/触发器：实际 delivered_at 一旦写入不可覆盖；M03 取消同事务将 ACTIVE/OFFERED 任务结束为 CANCELLED，立即释放容量。
+- fulfillment_schema_manifest：复用 M03 schema signature，记录本模块五表及 v2_orders/v2_order_events 的列、约束、索引、触发器指纹。回滚拒绝业务记录、幂等/事件及后续模块附加对象；只允许无数据的原始模块回滚，无 CASCADE。
+- handover_records 仍保留 M04 预留所有权，本提交没有创建占位交接表；完整管理员交接双确认由 M06 集成实现。HANDED_OVER 状态与旧任务拒写已由本模块校验。
+- M07 未验收：FulfillmentEvidence 是私有凭证签发/验证端口，默认实现拒绝；不连旧上传/公开存储。真实凭证生命周期联调前不开放取件/送达闭环。M05 邀请入口先用 MANDATORY 事务服务端口，不暴露缺少异常处置前置条件的管理员 HTTP。
+- 验证入口：`server/db/tools/verify-m04.ps1` 和后端 `mvn -Dtest=FulfillmentIntegrationTest test`。本登记不代表独立 QA 或生产验收，证据见 M04 交付报告。

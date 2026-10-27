@@ -30,6 +30,11 @@ public class IdentityErrorHandler {
             case "AUTHENTICATION_FAILED" -> "认证失败，请重新登录";
             case "ADMIN_ACCESS_MANAGEMENT_FORBIDDEN" -> "请通过受控部署流程管理管理员资格";
             case "V2_ADMIN_NOT_ENABLED" -> "管理员尚未启用或已停用";
+            case "COURIER_CAPACITY_EXCEEDED" -> "当前接单名额已满或尚未配置";
+            case "PROOF_NOT_READY" -> "凭证尚未就绪或不属于当前任务";
+            case "ADJUSTMENT_UNRESOLVED" -> "规格调整尚未结清";
+            case "AFTER_SALES_UNRESOLVED" -> "存在未处理异议";
+            case "UPLOAD_INVALID" -> "上传文件或票据无效";
             case "COURIER_NOT_APPROVED" -> "骑手尚未审核通过";
             case "VALIDATION_ERROR" -> "请求参数无效";
             case "NEW_ORDER_DISABLED" -> "当前暂停新建订单";

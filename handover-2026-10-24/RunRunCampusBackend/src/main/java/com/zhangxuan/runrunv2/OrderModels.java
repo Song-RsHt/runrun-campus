@@ -34,7 +34,7 @@ public final class OrderModels {
     public record Order(String id, String orderNo, int orderFlowVersion, String userId, String status, ServiceType serviceType,
                         String zoneId, String servicePointId, Address addressSnapshot, Pricing pricingSnapshot, Map<String,Object> policySnapshot,
                         long originalFeeCents, long effectiveFeeCents, OffsetDateTime pendingPaymentDeadline,
-                        long version, OffsetDateTime createdAt, OffsetDateTime updatedAt) {}
+                        long version, OffsetDateTime createdAt, OffsetDateTime updatedAt, OffsetDateTime deliveredAt, OffsetDateTime confirmStartedAt, OffsetDateTime confirmDeadline) {}
     public record OriginalPayment(String id, String orderId, String purpose, long amountCents, String status, OffsetDateTime deadline, long version) {}
     public record Created(Order order, OriginalPayment originalPayment) {}
     public record ZoneChange(String code, String name, Long packageSurchargeCents, Boolean enabled) {}

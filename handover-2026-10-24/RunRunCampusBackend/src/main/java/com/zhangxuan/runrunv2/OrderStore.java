@@ -25,7 +25,7 @@ public class OrderStore {
                 r.getString("id"),r.getString("order_no"),r.getInt("order_flow_version"),r.getString("user_id"),r.getString("status"),ServiceType.valueOf(r.getString("service_type")),
                 r.getString("zone_id"),r.getString("service_point_id"),json.read(r.getString("address_snapshot"),Address.class),json.read(r.getString("pricing_snapshot"),Pricing.class),
                 policy(r.getString("policy_snapshot")),r.getLong("original_fee_cents"),r.getLong("effective_fee_cents"),r.getObject("pending_payment_deadline",OffsetDateTime.class),
-                r.getLong("version"),r.getObject("created_at",OffsetDateTime.class),r.getObject("updated_at",OffsetDateTime.class)),ServiceConfigService.id(orderId));
+                r.getLong("version"),r.getObject("created_at",OffsetDateTime.class),r.getObject("updated_at",OffsetDateTime.class),r.getObject("delivered_at",OffsetDateTime.class),r.getObject("confirm_started_at",OffsetDateTime.class),r.getObject("confirm_deadline",OffsetDateTime.class)),ServiceConfigService.id(orderId));
         if(rows.isEmpty()) throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
         return rows.get(0);
     }
