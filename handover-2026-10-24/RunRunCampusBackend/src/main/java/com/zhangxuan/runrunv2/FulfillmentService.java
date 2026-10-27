@@ -19,7 +19,7 @@ public class FulfillmentService {
     private final Clock clock;
     private final int capacity;
     public FulfillmentService(JdbcTemplate db,IdentityService identity,OrderStore orders,OrderIdempotency requests,OrderJson json,
-                              FulfillmentEvidence evidence,Clock clock,@Value("${rrc.fulfillment.capacity:0}") int capacity) {
+                              FulfillmentEvidence evidence,Clock clock,@Value("${rrc.fulfillment.capacity:3}") int capacity) {
         if(capacity<0 || capacity>100) throw new IllegalArgumentException("Invalid courier capacity");
         this.db=db; this.identity=identity; this.orders=orders; this.requests=requests; this.json=json; this.evidence=evidence; this.clock=clock; this.capacity=capacity;
     }
