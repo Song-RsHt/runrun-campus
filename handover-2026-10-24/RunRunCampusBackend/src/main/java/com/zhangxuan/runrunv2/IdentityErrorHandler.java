@@ -1,0 +1,39 @@
+package com.zhangxuan.runrunv2;
+
+import java.util.Map;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class IdentityErrorHandler {
+    @ExceptionHandler({org.springframework.web.servlet.resource.NoResourceFoundException.class, org.springframework.web.servlet.NoHandlerFoundException.class})
+    ResponseEntity<Map<String,String>> notFound(Exception e) { return reply(404, "RESOURCE_NOT_FOUND"); }
+    @ExceptionHandler(IdentityFailure.class)
+    ResponseEntity<Map<String,String>> identity(IdentityFailure e) { return reply(e.status, e.code); }
+    @ExceptionHandler({HttpMessageNotReadableException.class, MissingRequestHeaderException.class, IllegalArgumentException.class})
+    ResponseEntity<Map<String,String>> invalid(Exception e) { return reply(400, "VALIDATION_ERROR"); }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    ResponseEntity<Map<String,String>> conflict(Exception e) { return reply(409, "IDENTITY_BINDING_CONFLICT"); }
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<Map<String,String>> unavailable(Exception e) {
+        // Database diagnostics can embed bindings and credentials. Never serialize or log raw causes.
+        return ResponseEntity.status(503).body(Map.of("code", "IDENTITY_SERVICE_UNAVAILABLE", "message", "身份服务暂不可用"));
+    }
+    private ResponseEntity<Map<String,String>> reply(int status, String code) {
+        String message = switch (code) {
+            case "WECHAT_AUTH_FAILED" -> "微信授权失败，请重新授权";
+            case "IDENTITY_BINDING_CONFLICT" -> "身份绑定冲突，请联系管理员";
+            case "AUTHENTICATION_FAILED" -> "认证失败，请重新登录";
+            case "ADMIN_ACCESS_MANAGEMENT_FORBIDDEN" -> "请通过受控部署流程管理管理员资格";
+            case "V2_ADMIN_NOT_ENABLED" -> "管理员尚未启用或已停用";
+            case "COURIER_NOT_APPROVED" -> "骑手尚未审核通过";
+            case "VALIDATION_ERROR" -> "请求参数无效";
+            default -> "当前请求不允许执行";
+        };
+        return ResponseEntity.status(status).body(Map.of("code", code, "message", message));
+    }
+}

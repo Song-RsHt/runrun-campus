@@ -1,0 +1,36 @@
+server:
+  address: 127.0.0.1
+  port: ${RRC_V2_PORT:8082}
+spring:
+  application:
+    name: runrun-v2-identity
+  datasource:
+    url: ${RRC_V2_JDBC_URL}
+    username: ${RRC_V2_DB_USERNAME}
+    password: ${RRC_V2_DB_PASSWORD}
+  flyway:
+    enabled: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  mvc:
+    log-request-details: false
+logging:
+  level:
+    org.springframework.web.client: OFF
+    org.springframework.jdbc: OFF
+rrc:
+  identity:
+    environment: ${RRC_V2_ENVIRONMENT}
+    app-id: ${RRC_WECHAT_APP_ID}
+    app-secret: ${RRC_WECHAT_APP_SECRET}
+    encryption-key: ${RRC_IDENTITY_ENCRYPTION_KEY}
+    hash-key: ${RRC_IDENTITY_HASH_KEY}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never

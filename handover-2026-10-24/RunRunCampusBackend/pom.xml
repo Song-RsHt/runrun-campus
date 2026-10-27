@@ -18,6 +18,7 @@
         <admin.frontend.directory>../RunRunCampusAdmin/dist</admin.frontend.directory>
         <httpcore5.version>5.4.3</httpcore5.version>
         <postgresql.version>42.7.12</postgresql.version>
+        <start-class>com.zhangxuan.runruncampus.RunRunCampusBackendApplication</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -106,4 +107,12 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>v2-identity</id>
+            <properties>
+                <start-class>com.zhangxuan.runrunv2.IdentityApplication</start-class>
+            </properties>
+        </profile>
+    </profiles>
 </project>
