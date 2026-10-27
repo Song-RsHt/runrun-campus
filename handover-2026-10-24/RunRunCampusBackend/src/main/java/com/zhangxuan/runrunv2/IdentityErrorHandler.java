@@ -32,6 +32,12 @@ public class IdentityErrorHandler {
             case "V2_ADMIN_NOT_ENABLED" -> "管理员尚未启用或已停用";
             case "COURIER_NOT_APPROVED" -> "骑手尚未审核通过";
             case "VALIDATION_ERROR" -> "请求参数无效";
+            case "NEW_ORDER_DISABLED" -> "当前暂停新建订单";
+            case "OUTSIDE_BUSINESS_HOURS" -> "请在北京时间09:00至23:00前下单，已有订单仍可操作";
+            case "CONFIG_VERSION_CONFLICT" -> "服务配置已更新，请刷新报价";
+            case "ORDER_STATE_CONFLICT" -> "订单已更新，请刷新后重试";
+            case "IDEMPOTENCY_KEY_CONFLICT" -> "请求标识已用于不同内容";
+            case "REVIEW_OWNER_REQUIRED" -> "请先配置有效的值班管理员";
             default -> "当前请求不允许执行";
         };
         return ResponseEntity.status(status).body(Map.of("code", code, "message", message));

@@ -41,3 +41,15 @@ M01运行增量登记（2026-10-27）：`rrc_0003__identity_runtime.sql`，依�
 - M01 只验收账号及未审核资质基础；照片上传、读取、审核在 M07 共享生命周期联调通过前不验收开放。
 - M04 在证据模块未齐时仅做隔离 schema/状态分支开发。上传、证据读取、保全、删除及依赖这些能力的取件/送达闭环，须在 M07 共享生命周期联调通过后才验收开放。
 - M03 原款支付可独立验收；调整/售后相关支付在 M05 建表并补齐延迟外键、同单关联和集成验证后才开启。
+
+## M02 实际迁移登记（2026-10-27）
+
+新增 `rrc_0100__orders_and_service_config.sql` 及同号受限回滚，依赖 0001–0003。本次用户明确选择“本次只实现 M02，建单等待 M03 集成”，不调整 payment_orders 的 M03 唯一归属，不新增 0200 迁移或支付占位表。
+
+- delivery_zones：代码/名称/包裹加价/启用标记/config_version 及公共列，唯一 code；种子 STANDARD 0、MEIYUAN 200。
+- service_points：代码/名称/可空成对经纬度/GCJ02/启用标记/config_version 及公共列，唯一 code、范围与成对坐标约束；无地点种子。
+- platform_settings：单例、结构化时段/时区、建单开关、负责人及全部基线时限/补贴/比例/config_version/version；负责人 FK→app_users 并建索引。
+- v2_orders：契约 M44-04 全部列，状态/九服务/金额/流程版本 CHECK；FK→app_users/delivery_zones/service_points；order_no 唯一，用户时间、区域、服务点、关单和确认窗口索引。guard_order_update 函数及触发器保护版本和原始快照。
+- v2_order_events：order/task/actor/type/request/payload/created_at；FK→v2_orders/app_users，订单/类型/请求唯一，order/actor/task 索引。task_id 的 FK 仍由 M04 建成 fulfillment_tasks 后追加；M02 事件只写 NULL task_id，不开放任务事件写入接口。
+- 不重建 M01 基础设施；仅扩展 admin_audit_logs 的 action/target CHECK，加入 SERVICE_CONFIG_CHANGED/SERVICE_CONFIG。A32 审计、M02 幂等记录与业务数据同事务。无 M02 外发通知需求，不写伪 outbox。
+- 回滚只允许空订单/事件、无业务幂等/配置审计、服务点为空且种子配置未修改的状态。所有 DROP 均 RESTRICT，无 CASCADE；存在后续对象依赖时拒绝回滚。备份恢复和数据库约束验证入口为 `server/db/tools/verify-m02.ps1`。

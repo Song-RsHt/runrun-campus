@@ -47,6 +47,9 @@ public class DeploymentIdentityService {
     }
     @Transactional
     public AccessResult changeAccess(long actorId, long userId, boolean enabled, long expectedVersion, String reason, String confirmation, String requestId) {
+        // M47 requires replacement before disabling the configured review owner.
+        // Lock before account rows, matching M02 configuration writes across instances.
+        identity.lock("review-owner-policy");
         authorize(actorId); reason(reason, requestId);
         if (!((enabled ? "ENABLE " : "DISABLE ") + userId).equals(confirmation)) throw IdentityFailure.invalid();
         identity.lock("deployment-request:" + actorId + ":" + requestId);
@@ -55,6 +58,10 @@ public class DeploymentIdentityService {
         IdentityService.User target = identity.user(userId, true);
         if (!"ADMIN".equals(target.role()) || target.controlled() || !"ACTIVE".equals(target.status())) throw new IdentityFailure(403, "FORBIDDEN");
         checkVersion(target.securityVersion(), expectedVersion);
+        if (!enabled && Boolean.TRUE.equals(db.queryForObject("SELECT to_regclass('runrun_v2.platform_settings') IS NOT NULL", Boolean.class))
+                && Boolean.TRUE.equals(db.queryForObject("SELECT EXISTS(SELECT 1 FROM runrun_v2.platform_settings WHERE review_owner_id=?)", Boolean.class, userId))) {
+            throw new IdentityFailure(409, "REVIEW_OWNER_REQUIRED");
+        }
         long next = expectedVersion + 1;
         // Locking the account serializes grants with session issue; audit/version/revocation commit together.
         db.update("UPDATE runrun_v2.app_users SET v2_admin_enabled=?,v2_admin_security_version=?,version=version+1,updated_at=now() WHERE id=?", enabled, next, userId);
