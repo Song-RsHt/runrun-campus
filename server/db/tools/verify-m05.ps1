@@ -15,6 +15,6 @@ try{
  $rollback=Get-Content -Raw -Encoding UTF8 (Join-Path $down 'rrc_0004__adjustments_after_sales.rollback.sql'); Invoke-Db $rollback
  $after=(docker exec $name psql -At -U postgres -d postgres -c "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='runrun_v2' AND c.relname IN ('v2_orders','payment_orders','refund_orders','fulfillment_tasks','v2_order_proofs','location_events','v2_order_events');")
  if($before.Trim() -ne $after.Trim()){throw 'rollback removed M02-M04 objects'}
- $dump='/tmp/m05.dump'; docker exec $name pg_dump -Fc -U postgres -d postgres -f $dump;if($LASTEXITCODE-ne 0){throw 'backup failed'}; docker exec $name createdb restored;if($LASTEXITCODE-ne 0){throw 'restore db create failed'};docker exec $name pg_restore -U postgres -d restored $dump;if($LASTEXITCODE-ne 0){throw 'restore failed'}
+ $dump='/tmp/m05.dump'; docker exec $name pg_dump -Fc -U postgres -d postgres -f $dump;if($LASTEXITCODE-ne 0){throw 'backup failed'}; docker exec $name createdb -U postgres restored;if($LASTEXITCODE-ne 0){throw 'restore db create failed'};docker exec $name pg_restore -U postgres -d restored $dump;if($LASTEXITCODE-ne 0){throw 'restore failed'}
  Write-Output 'PASS: full M00-M05 migration, dependency-safe rollback, and backup restore'
 }finally{docker rm -f -v $name *> $null}
