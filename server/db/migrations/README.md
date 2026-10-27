@@ -9,6 +9,10 @@
 
 M01 身份基础迁移为 `up/rrc_0002__create_identity_foundation.sql`，回滚为同号 `down/rrc_0002__create_identity_foundation.rollback.sql`。它只创建 `runrun_v2` 内的 `app_users`、微信身份、会话、资质/资质事件、管理员审计、幂等请求和通知 outbox；订单、支付、履约、结算及证据生命周期由登记表中的后续模块唯一创建。M01 不使用旧 public 表，也不采集资质姓名、学校、学号或有效期。
 
+M05 调整与售后迁移为 `up/rrc_0004__adjustments_after_sales.sql`，回滚为同号 `down/rrc_0004__adjustments_after_sales.rollback.sql`。M05 只建立独立调整单、售后案件、欠款和 M05 事件表，并通过已有 M02–M04 表及完成阻断投影实现同订单锁下的申请、审批、完成、凭证访问和售后结案；原始支付记录保持不可覆盖。`server/db/tools/verify-m05.ps1` 使用临时 PostgreSQL 执行完整迁移链、依赖安全回滚和 pg_dump/pg_restore 验证。
+
+M06 结算迁移为 `up/rrc_0500__settlement_freeze.sql`，回滚为同号 `down/rrc_0500__settlement_freeze.rollback.sql`。它建立不可覆盖的分账流水、骑手交接分配、冻结事件及逐单 MOCK 付款登记；写函数按订单排他锁执行，理由/二次确认/金额守恒/冻结余额和幂等约束由数据库复核。阶段一不连接真实打款。
+
 ## 执行与回滚
 
 先由操作人核实目标是全新隔离数据库，连接配置仅从受控环境注入，不打印或提交：

@@ -1,0 +1,21 @@
+BEGIN;
+DO $$ BEGIN
+ IF EXISTS (SELECT 1 FROM runrun_v2.payout_registrations) OR EXISTS (SELECT 1 FROM runrun_v2.settlement_entries) THEN RAISE EXCEPTION 'M06 rollback refused: financial evidence exists'; END IF;
+END $$;
+DROP FUNCTION runrun_v2.release_settlement_freeze(BIGINT,TEXT,BIGINT,BOOLEAN);
+DROP TRIGGER after_sales_default_settlement_freeze ON runrun_v2.after_sales_cases;
+DROP FUNCTION runrun_v2.m06_after_sales_freeze_trigger();
+DROP FUNCTION runrun_v2.freeze_after_sales(BIGINT,BIGINT,BIGINT,TEXT,BOOLEAN);
+DROP FUNCTION runrun_v2.freeze_settlement(BIGINT,TEXT,BIGINT,TEXT,TEXT,BIGINT,TEXT,BIGINT,BOOLEAN);
+DROP FUNCTION runrun_v2.register_payout(BIGINT,TEXT,BIGINT,BIGINT,TEXT,TEXT,BIGINT,BOOLEAN);
+DROP FUNCTION runrun_v2.record_arrival_subsidy(BIGINT,BIGINT,BIGINT,TEXT,BOOLEAN);
+DROP FUNCTION runrun_v2.record_settlement_adjustment(BIGINT,TEXT,TEXT,BIGINT,BIGINT,BIGINT,BIGINT,TEXT,BOOLEAN);
+DROP FUNCTION runrun_v2.approve_rider_allocation(BIGINT,JSONB,BIGINT,TEXT,BOOLEAN);
+DROP FUNCTION runrun_v2.record_split(BIGINT,TEXT,TEXT,BIGINT,BIGINT,BIGINT,TEXT);
+DROP TABLE runrun_v2.payout_registrations;
+DROP TABLE runrun_v2.freeze_events;
+DROP TABLE runrun_v2.settlement_freezes;
+DROP TABLE runrun_v2.rider_allocation_lines;
+DROP TABLE runrun_v2.rider_allocations;
+DROP TABLE runrun_v2.settlement_entries;
+COMMIT;
