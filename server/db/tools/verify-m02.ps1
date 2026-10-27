@@ -40,6 +40,25 @@ try {
   Assert ((Sql orders "SELECT count(*) FROM pg_namespace WHERE nspname='runrun_v2'") -eq '0') 'empty reverse chain 0100-0003-0002-0001 succeeds'
   foreach ($migration in $migrations) { $null = Sql orders (Get-Content -Raw -Encoding UTF8 (Join-Path $root "server/db/migrations/up/$migration.sql")) }
   $null = Sql orders @'
+CREATE INDEX later_module_idx ON runrun_v2.v2_orders(order_no);
+ALTER TABLE runrun_v2.v2_orders ADD COLUMN later_module_col TEXT;
+ALTER TABLE runrun_v2.v2_orders ADD CONSTRAINT later_module_ck CHECK (later_module_col IS NULL OR length(later_module_col) < 100);
+CREATE FUNCTION runrun_v2.later_module_trigger_fn() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RETURN NEW; END $$;
+CREATE TRIGGER later_module_trigger BEFORE UPDATE ON runrun_v2.v2_orders FOR EACH ROW EXECUTE FUNCTION runrun_v2.later_module_trigger_fn();
+'@
+  $null = Sql orders (Get-Content -Raw -Encoding UTF8 (Join-Path $root 'server/db/migrations/down/rrc_0100__orders_and_service_config.rollback.sql')) -MustFail
+  Assert ((Sql orders "SELECT count(*) FROM pg_class WHERE relname='later_module_idx'") -eq '1') 'rollback rejects later-module index'
+  Assert ((Sql orders "SELECT count(*) FROM information_schema.columns WHERE table_schema='runrun_v2' AND table_name='v2_orders' AND column_name='later_module_col'") -eq '1') 'rollback preserves later-module column'
+  Assert ((Sql orders "SELECT count(*) FROM pg_trigger WHERE tgname='later_module_trigger'") -eq '1') 'rollback preserves later-module trigger'
+  Assert ((Sql orders "SELECT count(*) FROM pg_constraint WHERE conname='later_module_ck'") -eq '1') 'rollback preserves later-module constraint'
+  $null = Sql orders @'
+DROP TRIGGER later_module_trigger ON runrun_v2.v2_orders;
+DROP FUNCTION runrun_v2.later_module_trigger_fn();
+ALTER TABLE runrun_v2.v2_orders DROP CONSTRAINT later_module_ck;
+ALTER TABLE runrun_v2.v2_orders DROP COLUMN later_module_col;
+DROP INDEX runrun_v2.later_module_idx;
+'@
+  $null = Sql orders @'
 INSERT INTO runrun_v2.app_users(phone,role) VALUES('13800000001','USER');
 INSERT INTO runrun_v2.service_points(code,name) VALUES('TEST_POINT','synthetic pickup point');
 INSERT INTO runrun_v2.v2_orders(order_no,user_id,service_type,zone_id,service_point_id,address_snapshot,pricing_snapshot,policy_snapshot,original_fee_cents,effective_fee_cents,pending_payment_deadline)
@@ -54,6 +73,8 @@ INSERT INTO runrun_v2.v2_order_events(order_id,actor_id,event_type,request_id,pa
   Write-Output 'PASS: database rejects flow mutation, skipped version and snapshot overwrite'
   $null = Sql orders (Get-Content -Raw -Encoding UTF8 (Join-Path $root 'server/db/migrations/down/rrc_0100__orders_and_service_config.rollback.sql')) -MustFail
   Assert ((Sql orders 'SELECT count(*) FROM runrun_v2.v2_order_events') -eq '1') 'rollback refuses and preserves business evidence'
+  Assert ((Sql orders "SELECT order_flow_version||':'||version||':'||original_fee_cents FROM runrun_v2.v2_orders WHERE id=1") -eq '2:0:300') 'failed rollback preserves order structure and data'
+  Assert ((Sql orders "SELECT count(*) FROM pg_trigger WHERE tgname='v2_orders_guard'") -eq '1') 'failed rollback preserves M02 trigger'
   $null = Docker @('exec',$name,'pg_dump','-U','postgres','-d','orders','-Fc','-f','/tmp/m02.dump')
   $null = Docker @('exec',$name,'pg_restore','-U','postgres','-d','restored','--exit-on-error','/tmp/m02.dump')
   Assert ((Sql restored "SELECT order_flow_version||':'||version||':'||original_fee_cents||':'||(pricing_snapshot->>'totalCents') FROM runrun_v2.v2_orders") -eq '2:0:300:300') 'backup restores original order facts and snapshot'
