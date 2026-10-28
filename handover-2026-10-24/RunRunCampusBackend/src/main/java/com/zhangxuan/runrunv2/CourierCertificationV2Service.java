@@ -17,7 +17,8 @@ public class CourierCertificationV2Service {
     private final JdbcTemplate db;
     private final V2StudentCardStorage storage;
     private final OrderIdempotency idempotency;
-    public CourierCertificationV2Service(JdbcTemplate db, V2StudentCardStorage storage, OrderIdempotency idempotency) { this.db=db; this.storage=storage; this.idempotency=idempotency; }
+    private final CourierEvidenceGovernanceService governance;
+    public CourierCertificationV2Service(JdbcTemplate db, V2StudentCardStorage storage, OrderIdempotency idempotency, CourierEvidenceGovernanceService governance) { this.db=db; this.storage=storage; this.idempotency=idempotency; this.governance=governance; }
 
     public record Certification(long id,long courierId,String status,boolean eligible,long version,
                                 Instant submittedAt,Instant reviewedAt,boolean photoUploaded,String photoResourceId,String rejectionReason) {}
@@ -53,10 +54,12 @@ public class CourierCertificationV2Service {
         String type=file.getContentType(); boolean jpeg="image/jpeg".equals(type)&&bytes.length>=3&&(bytes[0]&255)==255&&(bytes[1]&255)==216&&(bytes[2]&255)==255;
         boolean png="image/png".equals(type)&&bytes.length>=8&&(bytes[0]&255)==137&&bytes[1]==80&&bytes[2]==78&&bytes[3]==71&&bytes[4]==13&&bytes[5]==10&&bytes[6]==26&&bytes[7]==10;
         if(!jpeg&&!png) throw new IdentityFailure(400,"UPLOAD_INVALID");
+        String oldResource=(String)row.get("submitted_photo_resource_id"), oldKey=(String)row.get("submitted_photo_storage_key");
         String resource="student-card-"+UUID.randomUUID(), key="courier/"+courier+"/"+resource+(jpeg?".jpg":".png");
         try { storage.store(key,type,bytes); } catch(IOException e){ throw new IdentityFailure(500,"UPLOAD_STORAGE_FAILED"); }
         db.update("UPDATE runrun_v2.courier_certifications SET submitted_photo_resource_id=?,submitted_photo_storage_key=?,version=version+1,updated_at=now() WHERE id=? AND version=?",resource,key,id,expectedVersion);
         if(db.update("UPDATE runrun_v2.courier_certifications SET updated_at=now() WHERE id=? AND version=?",id,expectedVersion+1)!=1) throw new IdentityFailure(409,"CERTIFICATION_STATE_CONFLICT");
+        if(oldResource!=null && !oldResource.equals(resource)) governance.requestCertificationDeletion(id,oldResource,oldKey,Instant.now().plus(java.time.Duration.ofDays(30)));
         event(id,courier,"COURIER","PHOTO_UPLOADED",requestId); Certification result=get(courier,id); idempotency.finish(Long.toString(courier),"courier-certification:upload",requestId,"COURIER_CERTIFICATION",Long.toString(id),result); return result;
     }
 
@@ -69,9 +72,11 @@ public class CourierCertificationV2Service {
         if(replay!=null) return replay;
         var row=locked(id);
         if(((Number)row.get("version")).longValue()!=expectedVersion || !"PENDING".equals(row.get("status"))) throw new IdentityFailure(409,"CERTIFICATION_STATE_CONFLICT");
+        String oldApprovedResource=(String)row.get("approved_photo_resource_id"), oldApprovedKey=(String)row.get("approved_photo_storage_key");
         if("APPROVE".equals(decision)) {
             if(resource==null || !resource.equals(row.get("submitted_photo_resource_id"))) throw new IdentityFailure(409,"PROOF_NOT_READY");
             db.update("UPDATE runrun_v2.courier_certifications SET status='APPROVED',eligible=TRUE,approved_photo_resource_id=submitted_photo_resource_id,approved_photo_storage_key=submitted_photo_storage_key,approved_photo_at=now(),submitted_photo_resource_id=NULL,submitted_photo_storage_key=NULL,reviewed_at=now(),version=version+1,updated_at=now() WHERE id=? AND version=?",id,expectedVersion);
+            if(oldApprovedResource!=null && !oldApprovedResource.equals(resource)) governance.requestCertificationDeletion(id,oldApprovedResource,oldApprovedKey,Instant.now().plus(java.time.Duration.ofDays(30)));
         } else { if(reason==null||reason.isBlank()) throw new IdentityFailure(400,"INVALID_REQUEST"); db.update("UPDATE runrun_v2.courier_certifications SET status='REJECTED',rejection_reason=?,reviewed_at=now(),version=version+1,updated_at=now() WHERE id=? AND version=?",reason,id,expectedVersion); }
         event(id,admin,"ADMIN","REVIEWED",requestId); Certification result=get(admin,id); idempotency.finish(Long.toString(admin),"courier-certification:decide",requestId,"COURIER_CERTIFICATION",Long.toString(id),result); return result;
     }
