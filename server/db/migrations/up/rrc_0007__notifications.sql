@@ -3,7 +3,10 @@
 BEGIN;
 DO $$
 BEGIN
-  IF to_regclass('runrun_v2.app_users') IS NULL OR to_regclass('runrun_v2.notification_outbox') IS NULL OR to_regclass('runrun_v2.v2_orders') IS NULL THEN
+  IF to_regclass('runrun_v2.app_users') IS NULL OR to_regclass('runrun_v2.notification_outbox') IS NULL
+     OR to_regclass('runrun_v2.v2_orders') IS NULL OR to_regclass('runrun_v2.payment_orders') IS NULL
+     OR to_regclass('runrun_v2.refund_orders') IS NULL OR to_regclass('runrun_v2.after_sales_cases') IS NULL
+     OR to_regclass('runrun_v2.order_adjustments') IS NULL OR to_regclass('runrun_v2.courier_certifications') IS NULL THEN
     RAISE EXCEPTION 'M08 requires M01 and M02-M07 foundations';
   END IF;
   IF to_regclass('runrun_v2.user_notifications') IS NOT NULL
@@ -116,6 +119,57 @@ BEGIN
       next_attempt_at=now()+least(interval '6 hours', interval '15 seconds' * power(2,greatest(0,tries-1))),updated_at=now() WHERE id=p_id;
   END IF;
 END $$;
+
+-- M08 business wiring: these AFTER triggers run in the same transaction as the
+-- payment, fulfillment, after-sales, review, and certification state change.
+CREATE OR REPLACE FUNCTION runrun_v2.m08_business_notification_trigger() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE j JSONB := to_jsonb(NEW); oldj JSONB := CASE WHEN TG_OP='INSERT' THEN '{}'::jsonb ELSE to_jsonb(OLD) END;
+        recipient BIGINT; event_type TEXT; event_key TEXT; payload JSONB;
+BEGIN
+  IF TG_TABLE_NAME='v2_orders' AND j->>'status'='DELIVERED_PENDING_CONFIRMATION' AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
+    recipient := (j->>'user_id')::bigint; event_type := 'DELIVERY_COMPLETED'; event_key := 'delivery:'||(j->>'id');
+  ELSIF TG_TABLE_NAME='payment_orders' AND j->>'status'='PAID' AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
+    SELECT user_id INTO recipient FROM runrun_v2.v2_orders WHERE id=(j->>'order_id')::bigint;
+    event_type := CASE WHEN j->>'purpose'='SUPPLEMENT' THEN 'SUPPLEMENT_REQUIRED' ELSE 'PAYMENT_SUCCEEDED' END;
+    event_key := 'payment:'||(j->>'id');
+  ELSIF TG_TABLE_NAME='refund_orders' AND j->>'status'='SUCCEEDED' AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
+    SELECT user_id INTO recipient FROM runrun_v2.v2_orders WHERE id=(j->>'order_id')::bigint;
+    event_type := 'REFUND_UPDATED'; event_key := 'refund:'||(j->>'id');
+  ELSIF TG_TABLE_NAME='after_sales_cases' AND (TG_OP='INSERT' OR (j->>'status'='RESOLVED' AND oldj->>'status' IS DISTINCT FROM j->>'status')) THEN
+    recipient := (j->>'opened_by')::bigint; event_type := 'AFTER_SALES_UPDATED'; event_key := 'after-sales:'||(j->>'id')||':'||(j->>'status');
+  ELSIF TG_TABLE_NAME='order_adjustments' AND j->>'remind_at' IS NOT NULL AND oldj->>'remind_at' IS DISTINCT FROM j->>'remind_at' THEN
+    recipient := COALESCE((j->>'assigned_admin_id')::bigint,(SELECT review_owner_id FROM runrun_v2.platform_settings WHERE id=1));
+    event_type := 'REVIEW_REMINDER'; event_key := 'review-reminder:'||(j->>'id');
+  ELSIF TG_TABLE_NAME='order_adjustments' AND j->>'escalate_at' IS NOT NULL AND oldj->>'escalate_at' IS DISTINCT FROM j->>'escalate_at' THEN
+    recipient := (SELECT review_owner_id FROM runrun_v2.platform_settings WHERE id=1);
+    event_type := 'REVIEW_ESCALATED'; event_key := 'review-escalated:'||(j->>'id');
+  ELSIF TG_TABLE_NAME='order_adjustments' AND j->>'status' IN ('PENDING_PAYMENT','COMPLETED','REJECTED','CLOSED_ORIGINAL_PRICE') AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
+    recipient := (j->>'requested_by')::bigint;
+    event_type := CASE WHEN j->>'status'='PENDING_PAYMENT' THEN 'SUPPLEMENT_REQUIRED' ELSE 'AFTER_SALES_UPDATED' END;
+    event_key := 'adjustment:'||(j->>'id')||':'||(j->>'status');
+  ELSIF TG_TABLE_NAME='courier_certifications' AND (TG_OP='INSERT' OR oldj->>'status' IS DISTINCT FROM j->>'status') THEN
+    recipient := (j->>'courier_id')::bigint; event_type := 'CERTIFICATION_UPDATED'; event_key := 'certification:'||(j->>'id')||':'||(j->>'version');
+  ELSE RETURN NEW;
+  END IF;
+  IF recipient IS NOT NULL THEN
+    payload := jsonb_build_object('eventKey',event_key,'entityId',j->>'id','status',j->>'status');
+    PERFORM runrun_v2.enqueue_notification(recipient, NULL, event_type, event_key, payload, payload);
+  END IF;
+  RETURN NEW;
+END $$;
+
+CREATE TRIGGER m08_v2_orders_notify AFTER INSERT OR UPDATE OF status ON runrun_v2.v2_orders
+  FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
+CREATE TRIGGER m08_payment_orders_notify AFTER INSERT OR UPDATE OF status ON runrun_v2.payment_orders
+  FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
+CREATE TRIGGER m08_refund_orders_notify AFTER INSERT OR UPDATE OF status ON runrun_v2.refund_orders
+  FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
+CREATE TRIGGER m08_after_sales_notify AFTER INSERT OR UPDATE OF status ON runrun_v2.after_sales_cases
+  FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
+CREATE TRIGGER m08_adjustments_notify AFTER INSERT OR UPDATE OF status ON runrun_v2.order_adjustments
+  FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
+CREATE TRIGGER m08_certifications_notify AFTER INSERT OR UPDATE OF status ON runrun_v2.courier_certifications
+  FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
 COMMIT;
 
 

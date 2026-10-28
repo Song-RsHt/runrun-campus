@@ -7,14 +7,19 @@ import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+<<<<<<< HEAD
 import org.springframework.context.annotation.Bean;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+=======
+import org.springframework.scheduling.annotation.EnableScheduling;
+>>>>>>> 27cfeec (feat(m08): wire business notifications and worker)
 
 /** Separate scan/config prevents legacy controllers, repositories and migrations from starting. */
 @SpringBootConfiguration
 @EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class})
 @ComponentScan(basePackageClasses = IdentityApplication.class)
+@EnableScheduling
 public class IdentityApplication {
     @Bean
     Jackson2ObjectMapperBuilderCustomizer rejectUnknownJsonFields() {
@@ -25,3 +30,4 @@ public class IdentityApplication {
         SpringApplication.run(IdentityApplication.class, args);
     }
 }
+
