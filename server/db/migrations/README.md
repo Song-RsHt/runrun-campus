@@ -30,6 +30,16 @@ psql -X --set ON_ERROR_STOP=1 --dbname "$env:RRC_V2_DATABASE_URL" --file server/
 ./server/db/tools/verify-m00.ps1
 ```
 
+完整链路验证使用 `verify-v2-chain.ps1`。脚本按固定登记顺序执行 M00 至 M07，拒绝重复执行，检查旧 `public` schema 未被读取，并在临时容器中完成 pg_dump/pg_restore。M08 尚未合并时不把通知迁移伪装成已存在；在 M08 独立 worktree 中可显式传入其迁移文件：
+
+```powershell
+./server/db/tools/verify-v2-chain.ps1 `
+  -MigrationRoot D:/biancheng/RunRunCampus-worktrees/rrc-main-integration `
+  -M08Migration D:/biancheng/RunRunCampus-worktrees/rrc-m08/server/db/migrations/up/rrc_0007__notifications.sql
+```
+
+脚本只连接无网络、无端口的临时 PostgreSQL 容器；不会执行生产迁移，也不会扫描旧 V1–V43。
+
 只需现有 Docker Desktop/PowerShell，不新增依赖。脚本创建随机 `rrc-m00-` 容器，`--network none`，不发布端口、不挂载宿主目录。trust 认证仅用于该不可联网的临时容器。通过 docker exec/psql 验证空库、重复拒绝、旧库哨兵拒绝、回滚安全、pg_dump/pg_restore、恢复主键与合成行。备份仅在容器 `/tmp/m00.dump`；不生成或提交凭据。finally 仅清理本轮唯一容器及其匿名卷，不触碰共享容器或卷。失败时控制台保留失败步骤，原始敏感输出被抑制。
 
 M08 通知迁移为 `up/rrc_0007__notifications.sql`，依赖 M00→M07 完整对象。它只扩展 M01 已有 `notification_outbox`，新增可靠站内消息、模板、入队和 claim/complete 函数；迁移前置检查拒绝重复执行，回滚记录基线对象并拒绝后续对象或未完成通知。
