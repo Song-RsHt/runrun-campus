@@ -34,8 +34,7 @@ import type {
   FeedbackType,
   UserRole,
   AuthUser,
-  PushDeliveryOverview,
-  PushDeliveryStatus,
+  V2Notification,
 } from './types'
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
@@ -83,11 +82,6 @@ export function getLoginSessions(token: string): Promise<LoginSession[]> {
 
 export function getCurrentUser(token: string): Promise<AuthUser> {
   return request('/api/v1/auth/me', token)
-}
-
-export function getPushDeliveries(token: string, status: PushDeliveryStatus,
-                                  page: number, size: number): Promise<PushDeliveryOverview> {
-  return request(`/api/v1/admin/push-deliveries?status=${status}&page=${page}&size=${size}`, token)
 }
 
 export function revokeLoginSession(token: string, id: number): Promise<{ revoked: number }> {
@@ -277,8 +271,17 @@ export function getCourierPerformance(
   return request(`/api/v1/admin/couriers/${courierId}/performance?${params}`, token)
 }
 
-export function approveCourierCertification(token: string, id: number): Promise<void> {
-  return request(`/api/v2/courier/certification/${id}/approve`, token, { method: 'POST' })
+export function decideCourierCertification(token: string, id: number, input: {
+  decision: 'APPROVE' | 'REJECT'
+  expectedVersion: number
+  photoResourceId?: string | null
+  reason: string
+}): Promise<unknown> {
+  return request(`/api/v2/courier/certification/${id}/decision`, token, {
+    method: 'POST',
+    headers: { 'Idempotency-Key': globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${id}` },
+    body: JSON.stringify(input),
+  })
 }
 
 export async function getStudentCardPhoto(token: string, id: number, signal: AbortSignal): Promise<Blob> {
@@ -289,11 +292,12 @@ export async function getStudentCardPhoto(token: string, id: number, signal: Abo
   return response.blob()
 }
 
-export function rejectCourierCertification(token: string, id: number, reason: string): Promise<void> {
-  return request(`/api/v2/courier/certification/${id}/reject`, token, {
-    method: 'POST',
-    body: JSON.stringify({ reason }),
-  })
+export function getNotifications(token: string): Promise<V2Notification[]> {
+  return request('/api/v2/notifications', token)
+}
+
+export function markNotificationRead(token: string, id: number): Promise<void> {
+  return request(`/api/v2/notifications/${id}/read`, token, { method: 'POST' })
 }
 
 export function getUsers(

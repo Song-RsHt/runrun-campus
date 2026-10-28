@@ -48,23 +48,14 @@ export interface PlatformSettings {
   issueProcessingMinutes: number
 }
 
-export type PushDeliveryStatus = 'PENDING' | 'PROCESSING' | 'SENT' | 'DEAD'
-export interface PushDeliveryOverview {
-  dead: number
-  pending: number
-  processing: number
-  deliveries: {
-    items: Array<{
-      id: number; recipientId: number; orderId: number | null; title: string
-      destination: 'COURIER_CERTIFICATION' | null
-      status: PushDeliveryStatus; attempts: number; nextAttemptAt: string
-      lastError: string | null; createdAt: string; updatedAt: string; sentAt: string | null
-    }>
-    page: number
-    size: number
-    totalElements: number
-    totalPages: number
-  }
+export type V2NotificationType = 'PAYMENT_SUCCEEDED' | 'DELIVERY_COMPLETED' | 'SUPPLEMENT_REQUIRED' | 'REFUND_UPDATED' | 'AFTER_SALES_UPDATED' | 'REVIEW_REMINDER' | 'REVIEW_ESCALATED' | 'CERTIFICATION_UPDATED'
+export interface V2Notification {
+  id: number
+  orderId: number | null
+  type: V2NotificationType
+  content: Record<string, unknown>
+  createdAt: string
+  readAt: string | null
 }
 
 export interface MfaChallenge {
@@ -267,6 +258,8 @@ export interface AdminCourierItem {
   validUntil: string | null
   approvedValidUntil: string | null
   photoUploaded: boolean
+  version?: number
+  photoResourceId?: string | null
 }
 
 export interface AdminCourierPage {

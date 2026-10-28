@@ -4,7 +4,7 @@ import { AdminMfaChallenge, AdminMfaSettings } from './AdminMfa'
 import { CommandCenter } from './CommandCenter'
 import {
   ApiError,
-  approveCourierCertification,
+  decideCourierCertification,
   changeAdminRole,
   changeOwnAdminPassword,
   claimIssue,
@@ -17,7 +17,6 @@ import {
   getStudentCardPhoto,
   getCouriers,
   getCurrentUser,
-  getPushDeliveries,
   getDashboard,
   getFeedback,
   getIssues,
@@ -41,7 +40,8 @@ import {
   login,
   issueOneYuanCoupon,
   logoutCurrentSession,
-  rejectCourierCertification,
+  getNotifications,
+  markNotificationRead,
   restoreUser,
   resolveIssue,
   resolveFeedback,
@@ -89,8 +89,7 @@ import type {
   UserRole,
   FeedbackHandlingStatus,
   FeedbackType,
-  PushDeliveryOverview,
-  PushDeliveryStatus,
+  V2Notification,
 } from './types'
 
 const SESSION_KEY = 'runrun-campus-admin-session'
@@ -365,7 +364,7 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
   )
 }
 
-type AdminView = 'dashboard' | 'orders' | 'couriers' | 'users' | 'risk' | 'issues' | 'feedback' | 'accounts' | 'push' | 'audit'
+type AdminView = 'dashboard' | 'orders' | 'couriers' | 'users' | 'risk' | 'issues' | 'feedback' | 'accounts' | 'notifications' | 'audit'
 
 const viewPermissions: Record<AdminView, AdminPermission> = {
   dashboard: 'DASHBOARD_VIEW',
@@ -376,7 +375,7 @@ const viewPermissions: Record<AdminView, AdminPermission> = {
   issues: 'ISSUE_VIEW',
   feedback: 'FEEDBACK_VIEW',
   accounts: 'ADMIN_MANAGE',
-  push: 'PUSH_DELIVERY_VIEW',
+  notifications: 'AUDIT_VIEW',
   audit: 'AUDIT_VIEW',
 }
 
@@ -531,7 +530,7 @@ function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthRes
           {hasPermission(session, 'ISSUE_VIEW') && <button className={`nav-item ${activeView === 'issues' ? 'active' : ''}`} onClick={() => setActiveView('issues')}><span>异</span>异常工单</button>}
           {hasPermission(session, 'FEEDBACK_VIEW') && <button className={`nav-item ${activeView === 'feedback' ? 'active' : ''}`} onClick={() => setActiveView('feedback')}><span>馈</span>意见反馈</button>}
           {hasPermission(session, 'ADMIN_MANAGE') && <button className={`nav-item ${activeView === 'accounts' ? 'active' : ''}`} onClick={() => setActiveView('accounts')}><span>管</span>管理员账号</button>}
-          {hasPermission(session, 'PUSH_DELIVERY_VIEW') && <button className={`nav-item ${activeView === 'push' ? 'active' : ''}`} onClick={() => setActiveView('push')}><span>推</span>推送告警</button>}
+          {hasPermission(session, 'AUDIT_VIEW') && <button className={`nav-item ${activeView === 'notifications' ? 'active' : ''}`} onClick={() => setActiveView('notifications')}><span>信</span>站内消息</button>}
           {hasPermission(session, 'AUDIT_VIEW') && <button className={`nav-item ${activeView === 'audit' ? 'active' : ''}`} onClick={() => setActiveView('audit')}><span>审</span>操作日志</button>}
         </nav>
         <div className="sidebar-user">
@@ -676,8 +675,8 @@ function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthRes
               ? <FeedbackManagement key={dashboardFilter} initialStatus={dashboardFilter as FeedbackHandlingStatus | ''} session={session} onSessionExpired={onLogout} />
               : visibleView === 'accounts'
                 ? <AdminAccountManagement session={session} onSessionExpired={onLogout} />
-                : visibleView === 'push'
-                  ? <PushDeliveryManagement session={session} onSessionExpired={onLogout} />
+                : visibleView === 'notifications'
+                  ? <NotificationManagement session={session} onSessionExpired={onLogout} />
                   : <AuditManagement session={session} onSessionExpired={onLogout} />}
 
       {selectedId !== null && hasPermission(session, 'ORDER_VIEW') && (
@@ -882,11 +881,13 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
   }
 
   const approve = async () => {
-    if (!selected?.certificationId || !window.confirm(`确认通过 ${selected.displayName} 的骑手认证？`)) return
+    if (!selected?.certificationId || selected.version === undefined || !selected.photoResourceId || !window.confirm(`确认通过 ${selected.displayName} 的骑手认证？`)) return
     setActionLoading(true)
     setActionError('')
     try {
-      await approveCourierCertification(session.token, selected.certificationId)
+      await decideCourierCertification(session.token, selected.certificationId, {
+        decision: 'APPROVE', expectedVersion: selected.version, photoResourceId: selected.photoResourceId, reason: '管理员审核通过',
+      })
       setSelected(null)
       setReloadKey((value) => value + 1)
     } catch (reason) {
@@ -902,7 +903,10 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     setActionLoading(true)
     setActionError('')
     try {
-      await rejectCourierCertification(session.token, selected.certificationId, rejectionReason.trim())
+      if (selected.version === undefined) throw new Error('当前资质缺少版本号，不能安全审核')
+      await decideCourierCertification(session.token, selected.certificationId, {
+        decision: 'REJECT', expectedVersion: selected.version, photoResourceId: null, reason: rejectionReason.trim(),
+      })
       setSelected(null)
       setRejecting(false)
       setRejectionReason('')
@@ -1088,9 +1092,10 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
               {selected.status === 'PENDING' && selected.certificationId && hasPermission(session, 'COURIER_REVIEW') && (
                 <DetailSection title="审核操作">
                   {actionError && <p className="form-error">{actionError}</p>}
+                  {selected.version === undefined && <p className="readonly-note">当前列表未返回资质版本号，已禁用审核操作，请刷新后重试。</p>}
                   {!rejecting ? (
                     <div className="review-actions">
-                      <button className="primary-button" disabled={actionLoading || !selected.photoUploaded}
+                      <button className="primary-button" disabled={actionLoading || !selected.photoUploaded || selected.version === undefined || !selected.photoResourceId}
                         onClick={approve}>通过认证</button>
                       <button className="danger-button" disabled={actionLoading} onClick={() => setRejecting(true)}>驳回申请</button>
                     </div>
@@ -2309,68 +2314,39 @@ function SessionSecurityDialog({ session, onClose, onSessionExpired }: {
   </div>
 }
 
-function PushDeliveryManagement({ session, onSessionExpired }: {
+function NotificationManagement({ session, onSessionExpired }: {
   session: AuthResponse
   onSessionExpired: () => void
 }) {
-  const [status, setStatus] = useState<PushDeliveryStatus>('DEAD')
-  const [page, setPage] = useState(0)
-  const [data, setData] = useState<PushDeliveryOverview | null>(null)
+  const [items, setItems] = useState<V2Notification[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [revision, setRevision] = useState(0)
-
   useEffect(() => {
     let active = true
-    setLoading(true)
-    setError('')
-    getPushDeliveries(session.token, status, page, PAGE_SIZE)
-      .then(result => { if (active) setData(result) })
-      .catch((reason: unknown) => {
-        if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) { onSessionExpired(); return }
-        setError(reason instanceof Error ? reason.message : '推送任务加载失败')
-      })
-      .finally(() => { if (active) setLoading(false) })
+    setLoading(true); setError('')
+    getNotifications(session.token).then(value => active && setItems(value)).catch(reason => {
+      if (!active) return
+      if (reason instanceof ApiError && reason.status === 401) { onSessionExpired(); return }
+      setError(reason instanceof Error ? reason.message : '站内消息加载失败')
+    }).finally(() => active && setLoading(false))
     return () => { active = false }
-  }, [page, revision, session.token, status])
-
-  const deliveries = data?.deliveries
+  }, [onSessionExpired, revision, session.token])
+  const markRead = async (item: V2Notification) => {
+    try { await markNotificationRead(session.token, item.id); setItems(current => current.map(value => value.id === item.id ? { ...value, readAt: value.readAt ?? new Date().toISOString() } : value)) }
+    catch (reason) { if (reason instanceof ApiError && reason.status === 401) onSessionExpired(); else setError(reason instanceof Error ? reason.message : '消息已读失败') }
+  }
   return <main className="content">
-    <header className="page-header">
-      <div><p className="eyebrow accent">PUSH DELIVERY</p><h1>推送告警</h1>
-        <p className="muted">查看订单与骑手认证通知的自动重试状态；失败不会回滚业务。</p></div>
-      <button className="secondary-button" disabled={loading} onClick={() => setRevision(value => value + 1)}>刷新</button>
-    </header>
-    <section className="metric-grid compact-metrics">
-      <article><span>需人工关注</span><strong>{data?.dead ?? 0}</strong><small>5 次失败</small></article>
-      <article><span>等待重试</span><strong>{data?.pending ?? 0}</strong><small>按退避时间执行</small></article>
-      <article><span>发送处理中</span><strong>{data?.processing ?? 0}</strong><small>超时后自动恢复</small></article>
-    </section>
-    <section className="data-section">
-      <div className="table-toolbar">
-        <label>任务状态<select value={status} onChange={event => { setStatus(event.target.value as PushDeliveryStatus); setPage(0) }}>
-          <option value="DEAD">需人工关注</option><option value="PENDING">等待重试</option>
-          <option value="PROCESSING">发送处理中</option><option value="SENT">发送成功</option>
-        </select></label>
-      </div>
-      {error && <ErrorState message={error} onRetry={() => setRevision(value => value + 1)} />}
-      {loading && !deliveries && <p className="muted">正在读取推送任务…</p>}
-      {!loading && !error && deliveries?.items.length === 0 && <p className="muted">当前状态没有推送任务。</p>}
-      {deliveries && deliveries.items.length > 0 && <div className="table-scroll"><table><thead><tr>
-        <th>任务</th><th>业务目标</th><th>接收账号</th><th>尝试次数</th><th>最近状态</th><th>失败原因</th>
-      </tr></thead><tbody>{deliveries.items.map(item => <tr key={item.id}>
-        <td>#{item.id}<small>{item.title}</small></td><td>{item.orderId ? `订单 #${item.orderId}` : '骑手认证'}</td><td>#{item.recipientId}</td>
-        <td>{item.attempts}/5</td><td>{formatDate(item.updatedAt)}<small>{item.status === 'PENDING' ? `下次 ${formatDate(item.nextAttemptAt)}` : item.status}</small></td>
-        <td>{item.lastError ?? '—'}</td>
-      </tr>)}</tbody></table></div>}
-      <footer className="pagination"><span>共 {deliveries?.totalElements ?? 0} 条</span><div>
-        <button disabled={!deliveries || deliveries.page === 0 || loading} onClick={() => setPage(value => value - 1)}>上一页</button>
-        <span>{deliveries && deliveries.totalPages > 0 ? `${deliveries.page + 1} / ${deliveries.totalPages}` : '0 / 0'}</span>
-        <button disabled={!deliveries || deliveries.page + 1 >= deliveries.totalPages || loading} onClick={() => setPage(value => value + 1)}>下一页</button>
-      </div></footer>
-    </section>
+    <header className="page-header"><div><p className="eyebrow accent">V2 IN-APP NOTIFICATIONS</p><h1>站内消息</h1><p className="muted">读取 v2 可靠落库消息；微信订阅发送失败不影响站内消息。</p></div><button className="secondary-button" onClick={() => setRevision(value => value + 1)}>刷新</button></header>
+    {error && <ErrorState message={error} onRetry={() => setRevision(value => value + 1)} />}
+    {loading && <p className="muted">正在读取站内消息…</p>}
+    {!loading && !error && items.length === 0 && <p className="muted">暂无站内消息。</p>}
+    {!loading && !error && items.length > 0 && <section className="data-section"><div className="table-scroll"><table><thead><tr><th>类型</th><th>内容</th><th>业务对象</th><th>时间</th><th>状态</th></tr></thead><tbody>{items.map(item => <tr key={item.id}><td>{notificationTypeLabel(item.type)}</td><td>{String(item.content.message ?? item.content.status ?? '有新的业务通知')}</td><td>{item.orderId ? `订单 #${item.orderId}` : '—'}</td><td>{formatDate(item.createdAt)}</td><td>{item.readAt ? '已读' : <button className="text-button" onClick={() => void markRead(item)}>标记已读</button>}</td></tr>)}</tbody></table></div></section>}
   </main>
+}
+
+function notificationTypeLabel(type: V2Notification['type']) {
+  return ({ PAYMENT_SUCCEEDED: '支付成功', DELIVERY_COMPLETED: '送达完成', SUPPLEMENT_REQUIRED: '需要补款', REFUND_UPDATED: '退款更新', AFTER_SALES_UPDATED: '售后更新', REVIEW_REMINDER: '审核提醒', REVIEW_ESCALATED: '审核升级', CERTIFICATION_UPDATED: '资质审核' } as Record<string, string>)[type] ?? type
 }
 
 function AuditManagement({ session, onSessionExpired }: {
