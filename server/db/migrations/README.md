@@ -11,7 +11,9 @@ M01 身份基础迁移为 `up/rrc_0002__create_identity_foundation.sql`，回滚
 
 M05 调整与售后迁移为 `up/rrc_0004__adjustments_after_sales.sql`，回滚为同号 `down/rrc_0004__adjustments_after_sales.rollback.sql`。M05 只建立独立调整单、售后案件、欠款和 M05 事件表，并通过已有 M02–M04 表及完成阻断投影实现同订单锁下的申请、审批、完成、凭证访问和售后结案；原始支付记录保持不可覆盖。`server/db/tools/verify-m05.ps1` 使用临时 PostgreSQL 执行完整迁移链、依赖安全回滚和 pg_dump/pg_restore 验证。
 
-M06 结算迁移为 `up/rrc_0500__settlement_freeze.sql`，回滚为同号 `down/rrc_0500__settlement_freeze.rollback.sql`。它建立不可覆盖的分账流水、骑手交接分配、冻结事件及逐单 MOCK 付款登记；写函数按订单排他锁执行，理由/二次确认/金额守恒/冻结余额和幂等约束由数据库复核。阶段一不连接真实打款。
+M02、M03、M04 的独立迁移分别为 `up/rrc_0100__orders_and_service_config.sql`、`up/rrc_0200__mock_payments.sql`、`up/rrc_0300__fulfillment.sql`，各自对应 `down/` 同号回滚脚本；它们按 M00 登记顺序执行，不创建跨模块占位表。M06 结算迁移为 `up/rrc_0500__settlement_freeze.sql`，回滚为同号 `down/rrc_0500__settlement_freeze.rollback.sql`。阶段一不连接真实打款。
+
+M07 通知读取表为 `up/rrc_0600__user_notifications.sql`，回滚为同号脚本；它消费 M01 已创建的 `notification_outbox`，不重建 outbox。M08 运行时迁移为 `up/rrc_0700__notification_outbox_runtime.sql`，只向 M01 outbox 增加领取/发送状态列、索引和 `claim_notification_outbox(text,integer)` 函数；回滚先拒绝仍有领取/发送运行数据的 outbox。M08 不创建第二个 outbox 或其他基础通知对象。
 
 ## 执行与回滚
 
@@ -30,12 +32,10 @@ psql -X --set ON_ERROR_STOP=1 --dbname "$env:RRC_V2_DATABASE_URL" --file server/
 ./server/db/tools/verify-m00.ps1
 ```
 
-完整链路验证使用 `verify-v2-chain.ps1`。脚本按固定登记顺序执行 M00 至 M07，拒绝重复执行，检查旧 `public` schema 未被读取，并在临时容器中完成 pg_dump/pg_restore。M08 尚未合并时不把通知迁移伪装成已存在；在 M08 独立 worktree 中可显式传入其迁移文件：
+完整链路验证使用 `verify-v2-chain.ps1`。脚本按固定登记顺序执行 M00 至 M08，逐个拒绝重复执行，检查旧 `public` schema 哨兵保持不变，验证业务/证据记录阻止危险回滚，并在临时容器中完成 pg_dump/pg_restore。M02、M03、M04 的迁移和回滚文件均在本目录链中实际执行。
 
 ```powershell
-./server/db/tools/verify-v2-chain.ps1 `
-  -MigrationRoot D:/biancheng/RunRunCampus-worktrees/rrc-main-integration `
-  -M08Migration D:/biancheng/RunRunCampus-worktrees/rrc-m08/server/db/migrations/up/rrc_0007__notifications.sql
+./server/db/tools/verify-v2-chain.ps1
 ```
 
 脚本只连接无网络、无端口的临时 PostgreSQL 容器；不会执行生产迁移，也不会扫描旧 V1–V43。
