@@ -14,21 +14,20 @@ public class CourierCertification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version
-    @Column(nullable = false)
+    @Transient
     private long version;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private AppUser courier;
 
-    @Transient
+    @Column(name="real_name", nullable = false, length = 48)
     private String realName;
 
-    @Transient
+    @Column(name="student_id", nullable = false, length = 40)
     private String studentId;
 
-    @Transient
+    @Column(name="campus", nullable = false, length = 80)
     private String campus;
 
     @Enumerated(EnumType.STRING)
@@ -48,19 +47,19 @@ public class CourierCertification {
     @Transient private LocalDate requestedValidUntil;
     @Transient private LocalDate approvedValidUntil;
 
-    @Column(name="submitted_photo_storage_key", length = 256)
+    @Column(name="submitted_photo_key", length = 160)
     private String submittedPhotoKey;
     @Transient
     private String submittedPhotoContentType;
     @Transient private Instant submittedPhotoAt;
 
-    @Column(name="approved_photo_storage_key", length = 256)
+    @Column(name="approved_photo_key", length = 160)
     private String approvedPhotoKey;
     @Transient
     private String approvedPhotoContentType;
-    @Column(length = 64, unique = true)
+    @Transient
     private String submittedPhotoResourceId;
-    @Column(length = 64, unique = true)
+    @Transient
     private String approvedPhotoResourceId;
     @Transient private Instant approvedPhotoAt;
 

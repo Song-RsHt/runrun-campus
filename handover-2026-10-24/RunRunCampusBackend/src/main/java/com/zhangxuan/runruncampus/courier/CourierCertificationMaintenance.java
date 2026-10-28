@@ -19,27 +19,11 @@ public class CourierCertificationMaintenance {
 
     private final CourierCertificationRepository certifications;
     private final OrderProofStorage storage;
-    private final EvidenceDeletionAuditRepository deletionAudits;
-    private final EvidenceHoldRepository holds;
 
     public CourierCertificationMaintenance(CourierCertificationRepository certifications,
                                             OrderProofStorage storage) {
         this.certifications = certifications;
         this.storage = storage;
-        this.deletionAudits = null;
-        this.holds = null;
-    }
-
-    public CourierCertificationMaintenance(CourierCertificationRepository certifications,
-                                            OrderProofStorage storage,
-                                            EvidenceDeletionAuditRepository deletionAudits) {
-        this.certifications = certifications; this.storage = storage; this.deletionAudits = deletionAudits;
-        this.holds = null;
-    }
-
-    public CourierCertificationMaintenance(CourierCertificationRepository certifications, OrderProofStorage storage,
-                                            EvidenceDeletionAuditRepository deletionAudits, EvidenceHoldRepository holds) {
-        this.certifications=certifications; this.storage=storage; this.deletionAudits=deletionAudits; this.holds=holds;
     }
 
     @Scheduled(cron = "${app.courier-certification.maintenance-cron:0 0 9 * * *}", zone = "Asia/Shanghai")
@@ -50,20 +34,8 @@ public class CourierCertificationMaintenance {
 
     void run(LocalDate today) {
         cleanPhotos(today);
-        retryFailedDeletes();
     }
 
-    private void retryFailedDeletes() {
-        if (deletionAudits == null) return;
-        for (EvidenceDeletionAudit audit : deletionAudits.findDue(java.time.Instant.now())) {
-            String key = audit.getResourceStorageKey();
-            if (key == null) continue;
-            audit.deleting();
-            try { storage.delete(key); audit.succeeded(); }
-            catch (IOException e) { audit.failed("STORAGE_DELETE_FAILED"); }
-            deletionAudits.save(audit);
-        }
-    }
 
     private void cleanPhotos(LocalDate today) {
         LocalDate cutoff = today.minusDays(PHOTO_RETENTION_DAYS);
@@ -81,23 +53,10 @@ public class CourierCertificationMaintenance {
     }
 
     private boolean delete(String key, Long certificationId) {
-        if (holds != null && holds.existsActive(certificationId)) return false;
-        EvidenceDeletionAudit audit = null;
-        if (deletionAudits != null) {
-            var certification = certifications.findById(certificationId).orElse(null);
-            if (certification != null) {
-                audit = deletionAudits.save(new EvidenceDeletionAudit(certification, "STUDENT_CARD",
-                        certification.getApprovedPhotoResourceId() != null ? certification.getApprovedPhotoResourceId() :
-                                certification.getSubmittedPhotoResourceId(), key, java.time.Instant.now()));
-                audit.deleting();
-            }
-        }
         try {
             storage.delete(key);
-            if (audit != null) { audit.succeeded(); deletionAudits.save(audit); }
             return true;
         } catch (IOException exception) {
-            if (audit != null) { audit.failed("STORAGE_DELETE_FAILED"); deletionAudits.save(audit); }
             LOG.warn("学生证材料清理失败，certificationId={}", certificationId, exception);
             return false;
         }

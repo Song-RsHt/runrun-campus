@@ -31,20 +31,12 @@ public class CourierCertificationService {
     private final CourierCertificationRepository certificationRepository;
     private final AdminAuditService auditService;
     private final OrderProofStorage storage;
-    private final CourierCertificationEventRepository eventRepository;
 
     public CourierCertificationService(CourierCertificationRepository certificationRepository,
                                        AdminAuditService auditService, OrderProofStorage storage) {
-        this(certificationRepository, auditService, storage, null);
-    }
-
-    public CourierCertificationService(CourierCertificationRepository certificationRepository,
-                                       AdminAuditService auditService, OrderProofStorage storage,
-                                       CourierCertificationEventRepository eventRepository) {
         this.certificationRepository = certificationRepository;
         this.auditService = auditService;
         this.storage = storage;
-        this.eventRepository = eventRepository;
     }
 
     @Transactional(readOnly = true)
@@ -192,10 +184,6 @@ public class CourierCertificationService {
         String previous = application.attachSubmittedPhoto(key, contentType);
         // Replaced evidence is retained for the policy window and handled by the
         // evidence deletion worker, never by an immediate post-commit delete.
-        if (eventRepository != null) {
-            eventRepository.save(new CourierCertificationEvent(application, courier, "COURIER",
-                    "PHOTO_UPLOADED", UUID.randomUUID().toString()));
-        }
         return response(application);
     }
 
@@ -221,8 +209,6 @@ public class CourierCertificationService {
                 ? application.getApprovedPhotoContentType() : application.getSubmittedPhotoContentType();
         try {
             PhotoResponse result = new PhotoResponse(storage.read(key), contentType);
-            auditService.record(admin, AdminAuditAction.COURIER_CERTIFICATION_PHOTO_READ,
-                    AdminAuditTargetType.COURIER_CERTIFICATION, application.getId(), "学生证照片受控读取");
             return result;
         }
         catch (IOException exception) {
