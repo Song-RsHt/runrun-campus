@@ -4,6 +4,7 @@
     <text class="hero-title">你好，{{session.user.displayName}}</text>
     <text class="hero-subtitle" wx:if="{{config}}">{{config.campusName}} · {{config.businessHours}}</text>
     <text class="hero-subtitle" wx:else>校园代取，进度透明</text>
+    <text class="hero-subtitle">隔离环境：{{environmentLabel}}</text>
   </view>
 
   <view class="quick-grid">

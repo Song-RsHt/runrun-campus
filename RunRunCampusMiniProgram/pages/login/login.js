@@ -106,7 +106,7 @@ Page({
 
     this.setData({ loading: true, error: '' })
     try {
-      const response = await request(`/api/v2/auth/${registering ? 'register' : 'login'}`, {
+      const response = await request(registering ? '/api/v2/auth/wechat/bind-phone' : '/api/v2/auth/password/login', {
         method: 'POST',
         data,
         keepSessionOnUnauthorized: true

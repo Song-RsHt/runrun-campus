@@ -1,5 +1,6 @@
 const { request } = require('../../utils/api')
 const { requireSession } = require('../../utils/session')
+const { environmentLabel } = require('../../utils/environment')
 const { orderView } = require('../../utils/format')
 
 Page({
@@ -8,7 +9,8 @@ Page({
     config: null,
     activeOrders: [],
     loading: true,
-    error: ''
+    error: '',
+    environmentLabel: environmentLabel()
   },
 
   onShow() {
@@ -27,7 +29,7 @@ Page({
     try {
       const [config, orders] = await Promise.all([
         request('/api/v2/service-config'),
-        request('/api/v2/orders/mine/active')
+        request('/api/v2/orders')
       ])
       this.setData({ config, activeOrders: orders.slice(0, 3).map(orderView) })
     } catch (error) {

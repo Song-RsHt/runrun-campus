@@ -1,4 +1,4 @@
-const SESSION_KEY = 'runrun_session_v1'
+const SESSION_KEY = 'runrun_session_v2'
 
 function getSession() {
   return wx.getStorageSync(SESSION_KEY) || null

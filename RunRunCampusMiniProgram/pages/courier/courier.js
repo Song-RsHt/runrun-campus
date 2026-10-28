@@ -37,8 +37,8 @@ Page({
       this.setData({ certification })
       if (certification.status === 'APPROVED') {
         const [operations, orders] = await Promise.all([
-          request('/api/v2/courier/operations/me'),
-          request('/api/v2/orders/available')
+          request('/api/v2/courier/tasks'),
+          request('/api/v2/courier/order-pool')
         ])
         operations.todayGrossText = money(operations.todayGrossServiceFeeCents)
         operations.totalGrossText = money(operations.totalGrossServiceFeeCents)
@@ -100,22 +100,9 @@ Page({
   },
 
   async toggleAvailability(event) {
-    if (this.data.acting) return
-    this.setData({ acting: true, error: '' })
-    try {
-      const operations = await request('/api/v2/courier/operations/me/availability', {
-        method: 'PUT',
-        data: { acceptingOrders: event.detail.value }
-      })
-      operations.todayGrossText = money(operations.todayGrossServiceFeeCents)
-      operations.totalGrossText = money(operations.totalGrossServiceFeeCents)
-      this.setData({ operations })
-    } catch (error) {
-      this.setData({ error: error.message })
-      await this.load()
-    } finally {
-      this.setData({ acting: false })
-    }
+    // Availability writes are intentionally absent from the current v2 contract.
+    // Do not fall back to the removed v1 operations endpoint from this page.
+    this.setData({ error: '当前 v2 契约未开放接单状态写入，请由后台任务分配控制。' })
   },
 
   async acceptOrder(event) {

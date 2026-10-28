@@ -30,8 +30,8 @@ Page({
   async load() {
     this.setData({ loading: true, error: '' })
     const path = this.data.filter === 'ACTIVE'
-      ? '/api/v2/orders/mine/active'
-      : '/api/v2/orders/mine/history?page=0&size=50'
+      ? '/api/v2/orders'
+      : '/api/v2/order-history?limit=50'
     try {
       const response = await request(path)
       const orders = Array.isArray(response) ? response : response.items || []
