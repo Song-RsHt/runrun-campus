@@ -25,6 +25,8 @@ DROP TRIGGER m08_after_sales_notify ON runrun_v2.after_sales_cases;
 DROP TRIGGER m08_adjustments_notify ON runrun_v2.order_adjustments;
 DROP TRIGGER m08_certifications_notify ON runrun_v2.courier_certifications;
 DROP FUNCTION runrun_v2.m08_business_notification_trigger();
+DROP FUNCTION runrun_v2.run_notification_review_timers();
+ALTER TABLE runrun_v2.order_adjustments DROP COLUMN reminder_notified_at, DROP COLUMN escalation_notified_at;
 DROP TABLE runrun_v2.notification_templates;
 DROP INDEX runrun_v2.notification_outbox_due_idx;
 DROP INDEX runrun_v2.user_notifications_event_uq;

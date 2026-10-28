@@ -47,6 +47,7 @@ ALTER TABLE runrun_v2.notification_outbox
   ADD COLUMN sent_at TIMESTAMPTZ,
   ADD COLUMN failed_at TIMESTAMPTZ;
 CREATE INDEX notification_outbox_due_idx ON runrun_v2.notification_outbox(status, next_attempt_at, locked_until, id);
+ALTER TABLE runrun_v2.order_adjustments ADD COLUMN reminder_notified_at TIMESTAMPTZ, ADD COLUMN escalation_notified_at TIMESTAMPTZ;
 
 CREATE TABLE runrun_v2.notification_templates (
   type TEXT PRIMARY KEY,
@@ -124,19 +125,21 @@ END $$;
 -- payment, fulfillment, after-sales, review, and certification state change.
 CREATE OR REPLACE FUNCTION runrun_v2.m08_business_notification_trigger() RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE j JSONB := to_jsonb(NEW); oldj JSONB := CASE WHEN TG_OP='INSERT' THEN '{}'::jsonb ELSE to_jsonb(OLD) END;
-        recipient BIGINT; event_type TEXT; event_key TEXT; payload JSONB;
+        recipient BIGINT; order_ref BIGINT; event_type TEXT; event_key TEXT; payload JSONB;
 BEGIN
   IF TG_TABLE_NAME='v2_orders' AND j->>'status'='DELIVERED_PENDING_CONFIRMATION' AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
-    recipient := (j->>'user_id')::bigint; event_type := 'DELIVERY_COMPLETED'; event_key := 'delivery:'||(j->>'id');
+    recipient := (j->>'user_id')::bigint; order_ref := (j->>'id')::bigint; event_type := 'DELIVERY_COMPLETED'; event_key := 'delivery:'||(j->>'id');
   ELSIF TG_TABLE_NAME='payment_orders' AND j->>'status'='PAID' AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
     SELECT user_id INTO recipient FROM runrun_v2.v2_orders WHERE id=(j->>'order_id')::bigint;
+    order_ref := (j->>'order_id')::bigint;
     event_type := CASE WHEN j->>'purpose'='SUPPLEMENT' THEN 'SUPPLEMENT_REQUIRED' ELSE 'PAYMENT_SUCCEEDED' END;
     event_key := 'payment:'||(j->>'id');
   ELSIF TG_TABLE_NAME='refund_orders' AND j->>'status'='SUCCEEDED' AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
     SELECT user_id INTO recipient FROM runrun_v2.v2_orders WHERE id=(j->>'order_id')::bigint;
+    order_ref := (j->>'order_id')::bigint;
     event_type := 'REFUND_UPDATED'; event_key := 'refund:'||(j->>'id');
   ELSIF TG_TABLE_NAME='after_sales_cases' AND (TG_OP='INSERT' OR (j->>'status'='RESOLVED' AND oldj->>'status' IS DISTINCT FROM j->>'status')) THEN
-    recipient := (j->>'opened_by')::bigint; event_type := 'AFTER_SALES_UPDATED'; event_key := 'after-sales:'||(j->>'id')||':'||(j->>'status');
+    recipient := (j->>'opened_by')::bigint; order_ref := (j->>'order_id')::bigint; event_type := 'AFTER_SALES_UPDATED'; event_key := 'after-sales:'||(j->>'id')||':'||(j->>'status');
   ELSIF TG_TABLE_NAME='order_adjustments' AND j->>'remind_at' IS NOT NULL AND oldj->>'remind_at' IS DISTINCT FROM j->>'remind_at' THEN
     recipient := COALESCE((j->>'assigned_admin_id')::bigint,(SELECT review_owner_id FROM runrun_v2.platform_settings WHERE id=1));
     event_type := 'REVIEW_REMINDER'; event_key := 'review-reminder:'||(j->>'id');
@@ -144,7 +147,7 @@ BEGIN
     recipient := (SELECT review_owner_id FROM runrun_v2.platform_settings WHERE id=1);
     event_type := 'REVIEW_ESCALATED'; event_key := 'review-escalated:'||(j->>'id');
   ELSIF TG_TABLE_NAME='order_adjustments' AND j->>'status' IN ('PENDING_PAYMENT','COMPLETED','REJECTED','CLOSED_ORIGINAL_PRICE') AND oldj->>'status' IS DISTINCT FROM j->>'status' THEN
-    recipient := (j->>'requested_by')::bigint;
+    recipient := (j->>'requested_by')::bigint; order_ref := (j->>'order_id')::bigint;
     event_type := CASE WHEN j->>'status'='PENDING_PAYMENT' THEN 'SUPPLEMENT_REQUIRED' ELSE 'AFTER_SALES_UPDATED' END;
     event_key := 'adjustment:'||(j->>'id')||':'||(j->>'status');
   ELSIF TG_TABLE_NAME='courier_certifications' AND (TG_OP='INSERT' OR oldj->>'status' IS DISTINCT FROM j->>'status') THEN
@@ -153,7 +156,7 @@ BEGIN
   END IF;
   IF recipient IS NOT NULL THEN
     payload := jsonb_build_object('eventKey',event_key,'entityId',j->>'id','status',j->>'status');
-    PERFORM runrun_v2.enqueue_notification(recipient, NULL, event_type, event_key, payload, payload);
+    PERFORM runrun_v2.enqueue_notification(recipient, order_ref, event_type, event_key, payload, payload);
   END IF;
   RETURN NEW;
 END $$;
@@ -170,6 +173,34 @@ CREATE TRIGGER m08_adjustments_notify AFTER INSERT OR UPDATE OF status ON runrun
   FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
 CREATE TRIGGER m08_certifications_notify AFTER INSERT OR UPDATE OF status ON runrun_v2.courier_certifications
   FOR EACH ROW EXECUTE FUNCTION runrun_v2.m08_business_notification_trigger();
+
+CREATE OR REPLACE FUNCTION runrun_v2.run_notification_review_timers() RETURNS INTEGER LANGUAGE plpgsql AS $$
+DECLARE a RECORD; owner_id BIGINT; emitted INTEGER := 0; key TEXT;
+BEGIN
+  FOR a IN SELECT id,order_id,assigned_admin_id,requested_at FROM runrun_v2.order_adjustments
+    WHERE status='PENDING_REVIEW' AND reminder_notified_at IS NULL AND requested_at + interval '2 hours' <= now()
+    FOR UPDATE SKIP LOCKED LOOP
+    owner_id := COALESCE(a.assigned_admin_id,(SELECT review_owner_id FROM runrun_v2.platform_settings WHERE id=1));
+    IF owner_id IS NOT NULL THEN
+      key := 'review-reminder:'||a.id;
+      PERFORM runrun_v2.enqueue_notification(owner_id,a.order_id,'REVIEW_REMINDER',key,jsonb_build_object('eventKey',key,'adjustmentId',a.id),jsonb_build_object('eventKey',key,'adjustmentId',a.id));
+    END IF;
+    UPDATE runrun_v2.order_adjustments SET reminder_notified_at=now() WHERE id=a.id;
+    emitted := emitted + 1;
+  END LOOP;
+  FOR a IN SELECT id,order_id FROM runrun_v2.order_adjustments
+    WHERE status='PENDING_REVIEW' AND escalation_notified_at IS NULL AND requested_at + interval '24 hours' <= now()
+    FOR UPDATE SKIP LOCKED LOOP
+    owner_id := (SELECT review_owner_id FROM runrun_v2.platform_settings WHERE id=1);
+    IF owner_id IS NOT NULL THEN
+      key := 'review-escalated:'||a.id;
+      PERFORM runrun_v2.enqueue_notification(owner_id,a.order_id,'REVIEW_ESCALATED',key,jsonb_build_object('eventKey',key,'adjustmentId',a.id),jsonb_build_object('eventKey',key,'adjustmentId',a.id));
+    END IF;
+    UPDATE runrun_v2.order_adjustments SET escalation_notified_at=now() WHERE id=a.id;
+    emitted := emitted + 1;
+  END LOOP;
+  RETURN emitted;
+END $$;
 COMMIT;
 
 

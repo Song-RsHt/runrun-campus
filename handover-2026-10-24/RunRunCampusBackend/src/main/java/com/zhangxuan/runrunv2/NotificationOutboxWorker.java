@@ -42,6 +42,7 @@ public class NotificationOutboxWorker {
 
     @Scheduled(fixedDelayString = "${rrc.notifications.worker-delay-ms:15000}")
     public void runOnce() {
+        transactions.executeWithoutResult(status -> db.queryForObject("SELECT runrun_v2.run_notification_review_timers()", Integer.class));
         for (Delivery delivery : claim(50)) {
             if ("IN_APP".equals(delivery.channel())) {
                 complete(delivery.id(), true, null);
