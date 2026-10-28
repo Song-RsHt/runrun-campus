@@ -15,7 +15,7 @@ class OrderIdempotency {
         IdentityService.text(key, 128);
         String hash = secrets.hash("write:"+scope, json.write(content));
         // The caller holds its actor row lock, serializing even requests from other instances.
-        List<Map<String,Object>> rows = db.queryForList("SELECT request_hash,response_snapshot,status FROM runrun_v2.idempotency_requests WHERE actor_id=? AND scope=? AND key=?", Long.valueOf(actor), scope, key);
+        List<Map<String,Object>> rows = db.queryForList("SELECT request_hash,response_snapshot,status FROM runrun_v2.idempotency_requests WHERE actor_id=? AND scope=? AND key=? FOR UPDATE", Long.valueOf(actor), scope, key);
         if (!rows.isEmpty()) {
             Map<String,Object> row = rows.get(0);
             if (!hash.equals(row.get("request_hash"))) throw new IdentityFailure(409,"IDEMPOTENCY_KEY_CONFLICT");

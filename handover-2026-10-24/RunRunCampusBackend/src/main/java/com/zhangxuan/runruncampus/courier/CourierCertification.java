@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 @Table(name = "courier_certifications")
@@ -13,17 +14,20 @@ public class CourierCertification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Transient
+    private long version;
+
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private AppUser courier;
 
-    @Column(nullable = false, length = 48)
+    @Column(name="real_name", nullable = false, length = 48)
     private String realName;
 
-    @Column(nullable = false, length = 40)
+    @Column(name="student_id", nullable = false, length = 40)
     private String studentId;
 
-    @Column(nullable = false, length = 80)
+    @Column(name="campus", nullable = false, length = 80)
     private String campus;
 
     @Enumerated(EnumType.STRING)
@@ -33,29 +37,33 @@ public class CourierCertification {
     @Column(length = 300)
     private String rejectionReason;
 
-    @Column(nullable = false)
     private Instant submittedAt;
 
-    private Instant reviewedAt;
+    @Column(name="reviewed_at") private Instant reviewedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Transient
     private AppUser reviewer;
 
-    private LocalDate requestedValidUntil;
-    private LocalDate approvedValidUntil;
+    @Transient private LocalDate requestedValidUntil;
+    @Transient private LocalDate approvedValidUntil;
 
-    @Column(length = 160)
+    @Column(name="submitted_photo_key", length = 160)
     private String submittedPhotoKey;
-    @Column(length = 32)
+    @Transient
     private String submittedPhotoContentType;
-    private Instant submittedPhotoAt;
+    @Transient private Instant submittedPhotoAt;
 
-    @Column(length = 160)
+    @Column(name="approved_photo_key", length = 160)
     private String approvedPhotoKey;
-    @Column(length = 32)
+    @Transient
     private String approvedPhotoContentType;
+    @Transient
+    private String submittedPhotoResourceId;
+    @Transient
+    private String approvedPhotoResourceId;
+    @Transient private Instant approvedPhotoAt;
 
-    @Column(nullable = false)
+    @Transient
     private boolean approvalRetained;
 
     protected CourierCertification() {
@@ -98,6 +106,7 @@ public class CourierCertification {
         this.submittedPhotoKey = key;
         this.submittedPhotoContentType = contentType;
         this.submittedPhotoAt = Instant.now();
+        this.submittedPhotoResourceId = "student-card-" + UUID.randomUUID();
         return previous;
     }
 
@@ -115,6 +124,8 @@ public class CourierCertification {
         this.approvedValidUntil = null;
         this.approvedPhotoKey = submittedPhotoKey;
         this.approvedPhotoContentType = submittedPhotoContentType;
+        this.approvedPhotoResourceId = submittedPhotoResourceId;
+        this.approvedPhotoAt = Instant.now();
         this.submittedPhotoKey = null;
         this.submittedPhotoContentType = null;
         this.submittedPhotoAt = null;
@@ -146,15 +157,22 @@ public class CourierCertification {
     public String getSubmittedPhotoContentType() { return submittedPhotoContentType; }
     public String getApprovedPhotoKey() { return approvedPhotoKey; }
     public String getApprovedPhotoContentType() { return approvedPhotoContentType; }
+    public long getVersion() { return version; }
+    public String getSubmittedPhotoResourceId() { return submittedPhotoResourceId; }
+    public String getApprovedPhotoResourceId() { return approvedPhotoResourceId; }
+    public Instant getApprovedPhotoAt() { return approvedPhotoAt; }
 
     void clearSubmittedPhoto() {
         submittedPhotoKey = null;
         submittedPhotoContentType = null;
         submittedPhotoAt = null;
+        submittedPhotoResourceId = null;
     }
 
     void clearApprovedPhoto() {
         approvedPhotoKey = null;
         approvedPhotoContentType = null;
+        approvedPhotoResourceId = null;
+        approvedPhotoAt = null;
     }
 }

@@ -278,11 +278,11 @@ export function getCourierPerformance(
 }
 
 export function approveCourierCertification(token: string, id: number): Promise<void> {
-  return request(`/api/v1/courier-certification/${id}/approve`, token, { method: 'POST' })
+  return request(`/api/v2/courier/certification/${id}/approve`, token, { method: 'POST' })
 }
 
 export async function getStudentCardPhoto(token: string, id: number, signal: AbortSignal): Promise<Blob> {
-  const response = await fetch(`${API_BASE}/api/v1/courier-certification/${id}/student-card`, {
+  const response = await fetch(`${API_BASE}/api/v2/courier/certification/${id}/student-card`, {
     headers: { Authorization: `Bearer ${token}`, Accept: 'image/jpeg, image/png' }, signal,
   })
   if (!response.ok) throw new ApiError('学生证照片读取失败', response.status)
@@ -290,7 +290,7 @@ export async function getStudentCardPhoto(token: string, id: number, signal: Abo
 }
 
 export function rejectCourierCertification(token: string, id: number, reason: string): Promise<void> {
-  return request(`/api/v1/courier-certification/${id}/reject`, token, {
+  return request(`/api/v2/courier/certification/${id}/reject`, token, {
     method: 'POST',
     body: JSON.stringify({ reason }),
   })
@@ -431,3 +431,4 @@ export function getAuditLogs(
   if (filters.action) params.set('action', filters.action)
   return request(`/api/v1/admin/audit-logs?${params}`, token)
 }
+

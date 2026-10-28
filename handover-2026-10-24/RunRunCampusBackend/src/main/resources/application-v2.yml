@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: runrun-v2-identity
+  servlet:
+    multipart:
+      max-file-size: 8MB
+      max-request-size: 8MB
   datasource:
     url: ${RRC_V2_JDBC_URL}
     username: ${RRC_V2_DB_USERNAME}
@@ -13,7 +17,6 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
-      accept-float-as-int: false
   mvc:
     log-request-details: false
 logging:
@@ -21,8 +24,6 @@ logging:
     org.springframework.web.client: OFF
     org.springframework.jdbc: OFF
 rrc:
-  payment:
-    mock-enabled: ${RRC_V2_MOCK_PAYMENT_ENABLED:false}
   identity:
     environment: ${RRC_V2_ENVIRONMENT}
     app-id: ${RRC_WECHAT_APP_ID}

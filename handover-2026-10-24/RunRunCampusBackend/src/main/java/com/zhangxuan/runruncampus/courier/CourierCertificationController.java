@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/courier-certification")
+@RequestMapping("/api/v2/courier/certification")
 public class CourierCertificationController {
     private final AuthService authService;
     private final CourierCertificationService certificationService;
@@ -35,15 +35,16 @@ public class CourierCertificationController {
     @PostMapping("/apply")
     CourierCertificationService.CertificationResponse submit(
             @RequestHeader("Authorization") String authorization,
-            @Valid @RequestBody CertificationRequest request) {
+            @RequestBody(required = false) CertificationRequest request) {
         return certificationService.submit(authService.requireUser(authorization));
     }
 
     @PostMapping(value = "/{id}/student-card", consumes = "multipart/form-data")
     CourierCertificationService.CertificationResponse uploadStudentCard(
             @RequestHeader("Authorization") String authorization, @PathVariable Long id,
-            @RequestPart("file") MultipartFile file) {
-        return certificationService.uploadStudentCard(authService.requireUser(authorization), id, file);
+            @RequestPart("file") MultipartFile file,
+            @RequestPart(value = "expectedVersion", required = false) Long expectedVersion) {
+        return certificationService.uploadStudentCard(authService.requireUser(authorization), id, file, expectedVersion);
     }
 
     @GetMapping("/{id}/student-card")
@@ -70,6 +71,17 @@ public class CourierCertificationController {
                 authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW), id);
     }
 
+    @PostMapping("/{id}/decision")
+    CourierCertificationService.CertificationResponse decision(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id,
+            @Valid @RequestBody DecisionRequest request) {
+        var admin = authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW);
+        if ("APPROVE".equals(request.decision())) {
+            return certificationService.approve(admin, id, request.expectedVersion(), request.photoResourceId());
+        }
+        return certificationService.reject(admin, id, request.reason());
+    }
+
     @PostMapping("/{id}/reject")
     CourierCertificationService.CertificationResponse reject(
             @RequestHeader("Authorization") String authorization, @PathVariable Long id,
@@ -88,4 +100,8 @@ public class CourierCertificationController {
     public record RejectionRequest(
             @NotBlank(message = "请输入驳回原因") @Size(max = 300, message = "驳回原因不能超过300字") String reason
     ) { }
+
+    public record DecisionRequest(
+            @NotBlank String decision, long expectedVersion, String photoResourceId,
+            @Size(max = 300) String reason) { }
 }

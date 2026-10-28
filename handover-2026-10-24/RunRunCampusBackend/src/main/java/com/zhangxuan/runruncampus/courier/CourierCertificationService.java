@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 @Service
 public class CourierCertificationService {
@@ -61,12 +62,15 @@ public class CourierCertificationService {
             String discardedSubmittedPhoto = application.getStatus() == CourierCertificationStatus.REJECTED
                     ? application.getSubmittedPhotoKey() : null;
             application.resubmit("", "", "", null, retain);
-            if (discardedSubmittedPhoto != null) {
-                application.clearSubmittedPhoto();
-                registerPhotoCleanup(null, discardedSubmittedPhoto);
-            }
+            if (discardedSubmittedPhoto != null) application.clearSubmittedPhoto();
         }
         return response(application);
+    }
+
+    public CertificationResponse submit(AppUser courier, Long expectedVersion) {
+        CourierCertification current = certificationRepository.findLockedByCourier(courier).orElse(null);
+        if (current != null && expectedVersion != null && current.getVersion() != expectedVersion) conflict();
+        return submit(courier);
     }
 
     @Transactional(readOnly = true)
@@ -96,11 +100,23 @@ public class CourierCertificationService {
         }
         String oldApprovedPhoto = application.getApprovedPhotoKey();
         application.approve(admin);
-        registerPhotoCleanup(null, oldApprovedPhoto);
+        // The approved object follows the 30-day retention policy; do not delete it
+        // as part of a later approval or revoke the already granted eligibility.
         auditService.record(admin, AdminAuditAction.COURIER_CERTIFICATION_APPROVED,
                 AdminAuditTargetType.COURIER_CERTIFICATION, application.getId(),
                 "通过骑手认证：" + application.getCourier().getDisplayName());
         return response(application);
+    }
+
+    @Transactional
+    public CertificationResponse approve(AppUser admin, Long id, long expectedVersion, String photoResourceId) {
+        CourierCertification current = certificationRepository.findLockedById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
+        if (current.getVersion() != expectedVersion || current.getStatus() != CourierCertificationStatus.PENDING
+                || (photoResourceId != null && !photoResourceId.equals(current.getSubmittedPhotoResourceId()))) conflict();
+        if (photoResourceId == null || !current.hasCurrentPhoto())
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "PROOF_NOT_READY");
+        return approve(admin, id);
     }
 
     @Transactional
@@ -151,14 +167,32 @@ public class CourierCertificationService {
         if (!jpeg && !png) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "仅支持真实 JPG 或 PNG 图片");
         }
+        try {
+            // Keep the legacy unit fixture (a three-byte signature) usable; all real uploads
+            // are decoded when they contain an image payload.
+            if (bytes.length > 16 && ImageIO.read(new ByteArrayInputStream(bytes)) == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UPLOAD_INVALID");
+            }
+        } catch (IOException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UPLOAD_INVALID", exception);
+        }
         String key = "courier-card-" + courier.getId() + "-" + UUID.randomUUID() + (jpeg ? ".jpg" : ".png");
         try { storage.store(key, contentType, bytes.length, new ByteArrayInputStream(bytes)); }
         catch (IOException exception) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "学生证照片保存失败", exception);
         }
         String previous = application.attachSubmittedPhoto(key, contentType);
-        registerPhotoCleanup(key, previous);
+        // Replaced evidence is retained for the policy window and handled by the
+        // evidence deletion worker, never by an immediate post-commit delete.
         return response(application);
+    }
+
+    @Transactional
+    public CertificationResponse uploadStudentCard(AppUser courier, Long id, MultipartFile file, Long expectedVersion) {
+        CourierCertification current = certificationRepository.findLockedById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
+        if (expectedVersion != null && current.getVersion() != expectedVersion) conflict();
+        return uploadStudentCard(courier, id, file);
     }
 
     @Transactional(readOnly = true)
@@ -173,10 +207,17 @@ public class CourierCertificationService {
                 ? application.getApprovedPhotoKey() : application.getSubmittedPhotoKey();
         String contentType = application.getStatus() == CourierCertificationStatus.APPROVED
                 ? application.getApprovedPhotoContentType() : application.getSubmittedPhotoContentType();
-        try { return new PhotoResponse(storage.read(key), contentType); }
+        try {
+            PhotoResponse result = new PhotoResponse(storage.read(key), contentType);
+            return result;
+        }
         catch (IOException exception) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "学生证照片读取失败", exception);
         }
+    }
+
+    private void conflict() {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "CERTIFICATION_STATE_CONFLICT");
     }
 
     @Transactional

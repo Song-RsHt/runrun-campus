@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 public final class OrderModels {
     private OrderModels() {}
@@ -24,6 +25,7 @@ public final class OrderModels {
     public record Config(List<Service> services, List<Zone> zones, List<ServicePoint> servicePoints,
                          Schedule businessSchedule, boolean newOrderEnabled, String reviewOwnerId, long configVersion, String id, long version) {}
     public record QuoteRequest(ServiceType serviceType, String zoneCode, String servicePointCode, String destination) {}
+    @JsonIgnoreProperties(ignoreUnknown = false)
     public record CreateRequest(ServiceType serviceType, String zoneCode, String servicePointCode, String destination, Long configVersion) {
         QuoteRequest quote() { return new QuoteRequest(serviceType, zoneCode, servicePointCode, destination); }
     }

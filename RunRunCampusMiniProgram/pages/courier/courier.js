@@ -32,7 +32,7 @@ Page({
   async load() {
     this.setData({ loading: true, error: '' })
     try {
-      const certification = await request('/api/v1/courier-certification/me')
+      const certification = await request('/api/v2/courier/certification/me')
       certification.statusText = CERTIFICATION_TEXT[certification.status] || certification.status
       this.setData({ certification })
       if (certification.status === 'APPROVED') {
@@ -57,7 +57,7 @@ Page({
     if (this.data.acting) return
     this.setData({ acting: true, error: '' })
     try {
-      const certification = await request('/api/v1/courier-certification/apply', {
+      const certification = await request('/api/v2/courier/certification/apply', {
         method: 'POST',
         data: {}
       })
@@ -87,7 +87,7 @@ Page({
       const file = result.tempFiles && result.tempFiles[0]
       if (!file) return
       this.setData({ acting: true, error: '' })
-      await upload(`/api/v1/courier-certification/${certification.id}/student-card`, file.tempFilePath)
+      await upload(`/api/v2/courier/certification/${certification.id}/student-card`, file.tempFilePath)
       wx.showToast({ title: '认证材料已上传', icon: 'success' })
       await this.load()
     } catch (error) {
@@ -144,3 +144,4 @@ Page({
     wx.navigateTo({ url: `/pages/order-detail/order-detail?id=${event.currentTarget.dataset.id}` })
   }
 })
+

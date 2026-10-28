@@ -36,6 +36,7 @@ public class CourierCertificationMaintenance {
         cleanPhotos(today);
     }
 
+
     private void cleanPhotos(LocalDate today) {
         LocalDate cutoff = today.minusDays(PHOTO_RETENTION_DAYS);
         var reviewedBefore = cutoff.plusDays(1).atStartOfDay(CAMPUS_ZONE).toInstant();
