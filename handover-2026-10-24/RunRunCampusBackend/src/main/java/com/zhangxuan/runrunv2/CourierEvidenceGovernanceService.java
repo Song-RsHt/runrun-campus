@@ -13,24 +13,39 @@ public class CourierEvidenceGovernanceService {
     private final JdbcTemplate db;
     private final V2StudentCardStorage storage;
     private final IdentityService identity;
-    public CourierEvidenceGovernanceService(JdbcTemplate db, V2StudentCardStorage storage, IdentityService identity) {
-        this.db=db; this.storage=storage; this.identity=identity;
+    private final OrderIdempotency idempotency;
+    public CourierEvidenceGovernanceService(JdbcTemplate db, V2StudentCardStorage storage, IdentityService identity, OrderIdempotency idempotency) {
+        this.db=db; this.storage=storage; this.identity=identity; this.idempotency=idempotency;
     }
 
     @Transactional
-    public long hold(String token, Long orderId, Long certificationId, String reason, Instant due) {
+    public HoldResult hold(String token, Long orderId, Long certificationId, String reason, Instant due, String requestId) {
         long owner=Long.parseLong(identity.authorizeForWrite(token,"ADMIN",false).id());
         if ((orderId==null)==(certificationId==null) || reason==null || reason.isBlank() || due==null)
             throw new IdentityFailure(400,"INVALID_REQUEST");
-        return db.queryForObject("INSERT INTO runrun_v2.evidence_holds(order_id,certification_id,reason,owner_id,review_due_at) VALUES(?,?,?,?,?) RETURNING id",Long.class,orderId,certificationId,reason,owner,due);
+        lockAggregate(orderId, certificationId);
+        String content=String.valueOf(orderId)+":"+certificationId+":"+reason+":"+due;
+        HoldResult replay=idempotency.replay(Long.toString(owner),"evidence-hold:create",requestId,content,HoldResult.class);
+        if(replay!=null) return replay;
+        if(orderId!=null && db.queryForObject("SELECT count(*) FROM runrun_v2.v2_orders WHERE id=?",Long.class,orderId)==0) throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
+        if(certificationId!=null && db.queryForObject("SELECT count(*) FROM runrun_v2.courier_certifications WHERE id=?",Long.class,certificationId)==0) throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
+        long id=db.queryForObject("INSERT INTO runrun_v2.evidence_holds(order_id,certification_id,reason,owner_id,review_due_at) VALUES(?,?,?,?,?) RETURNING id",Long.class,orderId,certificationId,reason,owner,due);
+        db.update("INSERT INTO runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata) VALUES(?,'EVIDENCE_HOLD_CREATED','EVIDENCE_HOLD',?,?,?,jsonb_build_object('orderId',?,'certificationId',?))",owner,id,requestId,"evidence hold created",orderId,certificationId);
+        HoldResult result=new HoldResult(id); idempotency.finish(Long.toString(owner),"evidence-hold:create",requestId,"EVIDENCE_HOLD",Long.toString(id),result); return result;
     }
 
     @Transactional
-    public void release(String token, long holdId) {
+    public HoldResult release(String token, long holdId, String requestId) {
         long owner=Long.parseLong(identity.authorizeForWrite(token,"ADMIN",false).id());
-        if(db.update("UPDATE runrun_v2.evidence_holds SET released_at=now() WHERE id=? AND released_at IS NULL",holdId)!=1)
-            throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
-        db.update("INSERT INTO runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata) VALUES(?,'V2_ADMIN_ACCESS_CHANGED','APP_USER',?,?,?, '{}'::jsonb)",owner,owner,"evidence-hold-release-"+holdId,"evidence hold released");
+        var rows=db.queryForList("SELECT order_id,certification_id,released_at FROM runrun_v2.evidence_holds WHERE id=? FOR UPDATE",holdId);
+        if(rows.isEmpty()) throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
+        var hold=rows.get(0); lockAggregate((Number)hold.get("order_id"), (Number)hold.get("certification_id"));
+        HoldResult replay=idempotency.replay(Long.toString(owner),"evidence-hold:release",requestId,Long.toString(holdId),HoldResult.class);
+        if(replay!=null) return replay;
+        if(hold.get("released_at")!=null) throw new IdentityFailure(409,"EVIDENCE_HOLD_ALREADY_RELEASED");
+        db.update("UPDATE runrun_v2.evidence_holds SET released_at=now() WHERE id=?",holdId);
+        db.update("INSERT INTO runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata) VALUES(?,'EVIDENCE_HOLD_RELEASED','EVIDENCE_HOLD',?,?,?,'{}'::jsonb)",owner,holdId,requestId,"evidence hold released");
+        HoldResult result=new HoldResult(holdId); idempotency.finish(Long.toString(owner),"evidence-hold:release",requestId,"EVIDENCE_HOLD",Long.toString(holdId),result); return result;
     }
 
     @Transactional
@@ -48,6 +63,7 @@ public class CourierEvidenceGovernanceService {
 
     private void deleteOne(Map<String,Object> r) {
         long id=((Number)r.get("id")).longValue(); long cert=((Number)r.get("certification_id")).longValue(); String resource=(String)r.get("resource_id"); String key=(String)r.get("resource_storage_key");
+        lockAggregate(null, cert);
         if(db.queryForObject("SELECT count(*) FROM runrun_v2.evidence_holds WHERE certification_id=? AND released_at IS NULL",Long.class,cert)>0) return;
         db.update("UPDATE runrun_v2.evidence_deletion_audits SET status='DELETING',attempt_no=attempt_no+1 WHERE id=?",id);
         try {
@@ -59,4 +75,10 @@ public class CourierEvidenceGovernanceService {
             db.update("UPDATE runrun_v2.evidence_deletion_audits SET status='FAILED',error_code=?,finished_at=now() WHERE id=?",e.getClass().getSimpleName(),id);
         }
     }
+    public record HoldResult(long id) {}
+    private void lockAggregate(Long orderId, Long certificationId){
+        if(orderId!=null) db.queryForObject("SELECT id FROM runrun_v2.v2_orders WHERE id=? FOR UPDATE",Long.class,orderId);
+        if(certificationId!=null) db.queryForObject("SELECT id FROM runrun_v2.courier_certifications WHERE id=? FOR UPDATE",Long.class,certificationId);
+    }
+    private void lockAggregate(Number orderId, Number certificationId){ lockAggregate(orderId==null?null:orderId.longValue(), certificationId==null?null:certificationId.longValue()); }
 }

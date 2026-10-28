@@ -14,5 +14,6 @@ try {
  Sql "INSERT INTO runrun_v2.app_users(phone,role) VALUES('13800000001','COURIER'); INSERT INTO runrun_v2.courier_certifications(courier_id,status,eligible) VALUES(1,'PENDING',false);"|Out-Null
  if((Sql "SELECT to_regclass('runrun_v2.evidence_holds')||':'||to_regclass('runrun_v2.evidence_deletion_audits')||':'||(SELECT count(*) FROM runrun_v2.courier_certifications);") -ne 'runrun_v2.evidence_holds:runrun_v2.evidence_deletion_audits:1'){throw 'v2 evidence schema assertion failed'}
  if((Sql "SELECT count(*) FROM pg_constraint WHERE conname IN ('evidence_holds_order_fk','evidence_deletion_order_fk');") -ne '2'){throw 'evidence order foreign keys missing'}
+ if((Sql "SELECT count(*) FROM pg_constraint WHERE conname IN ('admin_audit_action_ck','admin_audit_target_ck');") -ne '2'){throw 'evidence audit constraints missing'}
  Write-Output 'PASS: isolated v2 certification/evidence schema'
 } finally {& docker.exe rm -f -v $name *> $null}
