@@ -28,7 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.*;
 
-@SpringBootTest(classes=IdentityApplication.class,properties={"spring.config.name=application-v2","rrc.identity.environment=test",
+@SpringBootTest(classes=IdentityApplication.class,properties={"spring.config.name=application-v2-test","rrc.identity.environment=test",
         "rrc.identity.app-id=synthetic-app","rrc.identity.app-secret=synthetic-secret","spring.flyway.enabled=false"})
 @AutoConfigureMockMvc(print=org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
 @Testcontainers

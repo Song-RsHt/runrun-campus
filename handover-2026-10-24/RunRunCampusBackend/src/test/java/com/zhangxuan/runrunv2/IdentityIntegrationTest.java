@@ -32,7 +32,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(classes = IdentityApplication.class, properties = {"spring.config.name=application-v2", "rrc.identity.environment=test",
+@SpringBootTest(classes = IdentityApplication.class, properties = {"spring.config.name=application-v2-test", "rrc.identity.environment=test",
         "rrc.identity.app-id=synthetic-app", "rrc.identity.app-secret=synthetic-secret", "spring.flyway.enabled=false"})
 @AutoConfigureMockMvc(print = org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
 @Import(IdentityIntegrationTest.Probes.class)
