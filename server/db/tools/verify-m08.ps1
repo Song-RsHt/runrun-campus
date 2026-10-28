@@ -4,16 +4,22 @@ if(Get-Variable PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyCon
 $name='rrc-m08-'+[guid]::NewGuid().ToString('N').Substring(0,10)
 function Run([string[]]$a){$o=& docker.exe @a 2>&1;if($LASTEXITCODE-ne 0){throw ($o -join "`n")};return $o}
 function Sql([string]$q,[switch]$MustFail){
-  $outFile=[IO.Path]::GetTempFileName(); $errFile=[IO.Path]::GetTempFileName()
-  $previous=$ErrorActionPreference; $ErrorActionPreference='Continue'
-  try {
-    $q | & docker.exe exec -i $name psql -X -qAt -v ON_ERROR_STOP=1 -U postgres -d verify 1> $outFile 2> $errFile
-    $code=$LASTEXITCODE
-    $o=@(Get-Content -ErrorAction SilentlyContinue $outFile) + @(Get-Content -ErrorAction SilentlyContinue $errFile)
-  } finally { $ErrorActionPreference=$previous; Remove-Item -Force -ErrorAction SilentlyContinue $outFile,$errFile }
+  # Use ProcessStartInfo so expected PostgreSQL stderr is captured as text and
+  # never becomes a PowerShell NativeCommandError under ErrorActionPreference=Stop.
+  $psi=[Diagnostics.ProcessStartInfo]::new()
+  $psi.FileName='docker.exe'; $psi.UseShellExecute=$false
+  $psi.RedirectStandardInput=$true; $psi.RedirectStandardOutput=$true; $psi.RedirectStandardError=$true
+  $psi.Arguments='exec -i "'+$name+'" psql -X -qAt -v ON_ERROR_STOP=1 -U postgres -d verify'
+  $process=[Diagnostics.Process]::new(); $process.StartInfo=$psi
+  if(-not $process.Start()){throw 'failed to start docker for SQL verification'}
+  $bytes=[Text.Encoding]::UTF8.GetBytes($q)
+  $process.StandardInput.BaseStream.Write($bytes,0,$bytes.Length); $process.StandardInput.Close()
+  $stdout=$process.StandardOutput.ReadToEnd(); $stderr=$process.StandardError.ReadToEnd(); $process.WaitForExit()
+  $code=$process.ExitCode; $process.Dispose()
+  $o=@($stdout -split "`r?`n" | Where-Object { $_ -ne '' }) + @($stderr -split "`r?`n" | Where-Object { $_ -ne '' })
   if($MustFail){
     if($code -eq 0){throw 'expected SQL failure did not occur'}
-    return $o
+    return @()
   }
   if($code -ne 0){throw ($o -join "`n")}
   return $o
