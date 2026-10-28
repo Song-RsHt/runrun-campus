@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 import java.security.MessageDigest;
-import java.nio.charset.StandardCharsets;
 
 /** JDBC implementation used by the isolated v2 application; it never touches legacy tables. */
 @Service
