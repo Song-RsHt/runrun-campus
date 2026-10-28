@@ -258,7 +258,7 @@ export function getCouriers(
   const params = new URLSearchParams({ page: String(filters.page), size: String(filters.size) })
   if (filters.query) params.set('query', filters.query)
   if (filters.status) params.set('status', filters.status)
-  return request(`/api/v1/admin/couriers?${params}`, token)
+  return request(`/api/v2/courier/certification/admin?${params}`, token)
 }
 
 export function getCourierPerformance(
@@ -268,7 +268,7 @@ export function getCourierPerformance(
   size: number,
 ): Promise<AdminCourierPerformance> {
   const params = new URLSearchParams({ page: String(page), size: String(size) })
-  return request(`/api/v1/admin/couriers/${courierId}/performance?${params}`, token)
+  return request(`/api/v2/courier/certification/admin/${courierId}/performance?${params}`, token)
 }
 
 export function decideCourierCertification(token: string, id: number, input: {
@@ -284,8 +284,9 @@ export function decideCourierCertification(token: string, id: number, input: {
   })
 }
 
-export async function getStudentCardPhoto(token: string, id: number, signal: AbortSignal): Promise<Blob> {
-  const response = await fetch(`${API_BASE}/api/v2/courier/certification/${id}/student-card`, {
+export async function getStudentCardPhoto(token: string, id: number, photoResourceId: string | null | undefined, signal: AbortSignal): Promise<Blob> {
+  const resource = encodeURIComponent(photoResourceId ?? '')
+  const response = await fetch(`${API_BASE}/api/v2/courier/certification/${id}/student-card?photoResourceId=${resource}`, {
     headers: { Authorization: `Bearer ${token}`, Accept: 'image/jpeg, image/png' }, signal,
   })
   if (!response.ok) throw new ApiError('学生证照片读取失败', response.status)

@@ -1,19 +1,16 @@
 package com.zhangxuan.runrunv2;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-<<<<<<< HEAD
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-=======
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
->>>>>>> 27cfeec (feat(m08): wire business notifications and worker)
 
 /** Separate scan/config prevents legacy controllers, repositories and migrations from starting. */
 @SpringBootConfiguration
@@ -30,4 +27,3 @@ public class IdentityApplication {
         SpringApplication.run(IdentityApplication.class, args);
     }
 }
-

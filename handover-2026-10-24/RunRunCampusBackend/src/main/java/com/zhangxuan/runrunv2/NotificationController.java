@@ -1,27 +1,28 @@
 package com.zhangxuan.runrunv2;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v2/notifications")
-@IdentityPermission
 public class NotificationController {
-    private final IdentityService identity;
-    private final NotificationService notifications;
-    public NotificationController(IdentityService identity, NotificationService notifications) {
-        this.identity = identity; this.notifications = notifications;
-    }
+    private final NotificationService service;
+    public NotificationController(NotificationService service) { this.service = service; }
+
     @GetMapping
-    public List<NotificationService.Notification> list(HttpServletRequest request,
-            @RequestParam(defaultValue="20") int limit) {
-        IdentityService.Account a = identity.authenticate(IdentityWebConfiguration.bearer(request));
-        return notifications.list(Long.parseLong(a.id()), limit);
+    public List<Map<String,Object>> list(@RequestHeader("Authorization") String auth) {
+        return service.list(token(auth));
     }
+
     @PostMapping("/{id}/read")
-    public void read(HttpServletRequest request, @PathVariable long id) {
-        IdentityService.Account a = identity.authenticate(IdentityWebConfiguration.bearer(request));
-        notifications.markRead(Long.parseLong(a.id()), id);
+    public Map<String,Object> read(@RequestHeader("Authorization") String auth, @PathVariable long id) {
+        service.markRead(token(auth), id);
+        return Map.of("id", id, "read", true);
+    }
+
+    private static String token(String value) {
+        if (value == null || !value.startsWith("Bearer ")) throw IdentityFailure.auth();
+        return value.substring(7);
     }
 }

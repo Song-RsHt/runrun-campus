@@ -1027,7 +1027,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
                 ]} />
                 {selected.photoUploaded && selected.certificationId && hasPermission(session, 'COURIER_REVIEW') &&
                   <StudentCardPreview key={selected.certificationId} token={session.token}
-                    certificationId={selected.certificationId} />}
+                    certificationId={selected.certificationId} photoResourceId={selected.photoResourceId} />}
               </DetailSection>
               <DetailSection title="快递配送统计">
                 {performanceError && <ErrorState message={performanceError} onRetry={() => setPerformanceReloadKey((value) => value + 1)} />}
@@ -2679,20 +2679,20 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
   )
 }
 
-function StudentCardPreview({ token, certificationId }: { token: string; certificationId: number }) {
+function StudentCardPreview({ token, certificationId, photoResourceId }: { token: string; certificationId: number; photoResourceId?: string | null }) {
   const [url, setUrl] = useState<string | null>(null)
   const [error, setError] = useState('')
   useEffect(() => {
     const controller = new AbortController()
     let objectUrl: string | undefined
-    void getStudentCardPhoto(token, certificationId, controller.signal).then((blob) => {
+    void getStudentCardPhoto(token, certificationId, photoResourceId, controller.signal).then((blob) => {
       if (controller.signal.aborted) return
       objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setError('')
     }).catch((reason) => {
       if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : '照片加载失败')
     })
     return () => { controller.abort(); if (objectUrl) URL.revokeObjectURL(objectUrl) }
-  }, [token, certificationId])
+  }, [token, certificationId, photoResourceId])
   if (error) return <p className="form-error">{error}</p>
   return url ? <img src={url} alt="骑手提交的学生证照片" style={{ maxWidth: '100%', maxHeight: 320 }} />
     : <p className="muted">正在加载学生证照片…</p>

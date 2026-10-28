@@ -14,10 +14,11 @@ import java.security.MessageDigest;
 public class CourierCertificationV2Service {
     private static final long MAX_BYTES = 8L * 1024 * 1024;
     private final JdbcTemplate db;
+    private final IdentityService identity;
     private final V2StudentCardStorage storage;
     private final OrderIdempotency idempotency;
     private final CourierEvidenceGovernanceService governance;
-    public CourierCertificationV2Service(JdbcTemplate db, V2StudentCardStorage storage, OrderIdempotency idempotency, CourierEvidenceGovernanceService governance) { this.db=db; this.storage=storage; this.idempotency=idempotency; this.governance=governance; }
+    public CourierCertificationV2Service(JdbcTemplate db, IdentityService identity, V2StudentCardStorage storage, OrderIdempotency idempotency, CourierEvidenceGovernanceService governance) { this.db=db; this.identity=identity; this.storage=storage; this.idempotency=idempotency; this.governance=governance; }
 
     public record Certification(long id,long courierId,String status,boolean eligible,long version,
                                 Instant submittedAt,Instant reviewedAt,boolean photoUploaded,String photoResourceId,String rejectionReason) {}
@@ -92,6 +93,18 @@ public class CourierCertificationV2Service {
         } catch(IOException e){ throw new IdentityFailure(404,"PROOF_EXPIRED"); }
     }
 
+    @Transactional(readOnly=true)
+    public java.util.Map<String,Object> adminList(String token, String status, String query, int page, int size) {
+        IdentityService.Account a=identity.requireRole(token,"ADMIN",false);
+        int safePage=Math.max(0,page), safeSize=Math.max(1,Math.min(size,100));
+        String filter=(status==null||status.isBlank())?null:status;
+        String q=(query==null||query.isBlank())?null:"%"+query.trim()+"%";
+        String where=" WHERE u.role='COURIER' AND (? IS NULL OR c.status=?) AND (? IS NULL OR u.phone ILIKE ? OR u.display_name ILIKE ?)";
+        long total=db.queryForObject("SELECT count(*) FROM runrun_v2.app_users u JOIN runrun_v2.courier_certifications c ON c.courier_id=u.id"+where,Long.class,filter,filter,q,q,q);
+        var items=db.queryForList("SELECT u.id courier_id,u.phone,u.display_name,c.id certification_id,c.status,c.version,c.submitted_at,c.reviewed_at,c.rejection_reason,c.submitted_photo_resource_id,c.approved_photo_resource_id FROM runrun_v2.app_users u JOIN runrun_v2.courier_certifications c ON c.courier_id=u.id"+where+" ORDER BY u.id LIMIT ? OFFSET ?",filter,filter,q,q,q,safeSize,safePage*safeSize);
+        items.forEach(row -> { row.put("photoUploaded", row.get("submitted_photo_resource_id")!=null || row.get("approved_photo_resource_id")!=null); row.put("photoResourceId", row.get("status").toString().equals("APPROVED") ? row.get("approved_photo_resource_id") : row.get("submitted_photo_resource_id")); row.put("approved", "APPROVED".equals(row.get("status"))); row.put("completedOrderCount", 0); row.put("completedPackageOrderCount", 0); row.put("registeredAt", row.get("submitted_at")); });
+        return java.util.Map.of("items",items,"page",safePage,"size",safeSize,"totalElements",total,"totalPages",(total+safeSize-1)/safeSize);
+    }
     public Certification get(long subject,long id){ var r=locked(id); return map(r); }
     public Certification getMine(long courier){ var rows=db.queryForList("SELECT * FROM runrun_v2.courier_certifications WHERE courier_id=?",courier); if(rows.isEmpty()) return null; return map(rows.get(0)); }
     private java.util.Map<String,Object> locked(long id){ var rows=db.queryForList("SELECT * FROM runrun_v2.courier_certifications WHERE id=? FOR UPDATE",id); if(rows.isEmpty()) throw new IdentityFailure(404,"RESOURCE_NOT_FOUND"); return rows.get(0); }
