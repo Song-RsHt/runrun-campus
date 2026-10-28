@@ -34,6 +34,13 @@ $files=$ordered | ForEach-Object { Get-Item (Join-Path $up $_) }
  if(((Sql "SELECT count(*) FROM runrun_v2.user_notifications; SELECT count(*) FROM runrun_v2.notification_outbox;") -join "`n") -ne "1`n2"){throw 'atomic enqueue assertion failed'}
  Sql "INSERT INTO runrun_v2.app_users(phone,role) VALUES('13800000002','COURIER'); INSERT INTO runrun_v2.courier_certifications(courier_id,status) VALUES(2,'PENDING');"|Out-Null
  if(((Sql "SELECT count(*) FROM runrun_v2.user_notifications; SELECT count(*) FROM runrun_v2.notification_outbox;") -join "`n") -ne "2`n4"){throw 'certification business trigger assertion failed'}
+ if(((Sql "SELECT count(*) FROM runrun_v2.claim_notification_outbox(50);") -join '') -ne '2'){throw 'outbox claim assertion failed'}
+ if(((Sql "SELECT count(*) FROM runrun_v2.claim_notification_outbox(50);") -join '') -ne '0'){throw 'claim lease isolation assertion failed'}
+ Sql "UPDATE runrun_v2.notification_outbox SET locked_until=now()-interval '1 second' WHERE status='SENDING';"|Out-Null
+ if(((Sql "SELECT count(*) FROM runrun_v2.claim_notification_outbox(50);") -join '') -ne '2'){throw 'expired lease recovery assertion failed'}
+ $claimed=(Sql "SELECT id FROM runrun_v2.notification_outbox WHERE status='SENDING' ORDER BY id LIMIT 1") -join ''
+ Sql "SELECT runrun_v2.complete_notification_outbox($claimed,false,'wechat timeout');"|Out-Null
+ if(((Sql "SELECT status FROM runrun_v2.notification_outbox WHERE id=$claimed;") -join '') -ne 'FAILED'){throw 'failure backoff assertion failed'}
  Sql "CREATE TABLE runrun_v2.m08_later_sentinel(id BIGINT);"|Out-Null
  $down=Get-Content -Raw -Encoding UTF8 (Join-Path (Get-Location) 'server/db/migrations/down/rrc_0007__notifications.rollback.sql'); Sql $down -MustFail
  Write-Output 'PASS: M00→M07→M08 strict migration, duplicate rejection, ownership and rollback guard'
