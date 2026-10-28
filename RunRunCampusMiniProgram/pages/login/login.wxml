@@ -53,6 +53,7 @@
     </view>
 
     <text class="error" wx:if="{{error}}">{{error}}</text>
-    <button class="primary" loading="{{loading}}" disabled="{{loading}}" bindtap="submit">{{loading ? '处理中…' : (mode === 'login' ? '登录' : '注册并登录')}}</button>
+    <button class="primary" loading="{{loading}}" disabled="{{loading}}" bindtap="submit">{{loading ? '处理中…' : (mode === 'login' ? '登录' : '获取微信手机号')}}</button>
+    <button class="secondary" wx:if="{{mode === 'register' && loginTicket}}" open-type="getPhoneNumber" bindgetphonenumber="bindWechatPhone">授权微信手机号并注册</button>
   </view>
 </view>

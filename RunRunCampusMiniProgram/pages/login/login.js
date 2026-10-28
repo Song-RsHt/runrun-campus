@@ -14,6 +14,7 @@ Page({
     captcha: null,
     captchaCode: '',
     failedAttempts: 0,
+    loginTicket: null,
     loading: false,
     error: ''
   },
@@ -91,13 +92,16 @@ Page({
       deviceName: `${device.brand || 'WeChat'} ${device.model || 'Mini Program'}`.slice(0, 80)
     }
     const registering = this.data.mode === 'register'
-    const data = registering ? Object.assign({}, common, {
-      phone: this.data.phone,
-      password: this.data.password,
-      displayName: this.data.displayName.trim(),
-      role: this.data.role,
-      privacyPolicyVersion: this.data.privacyPolicy.version
-    }) : Object.assign({}, common, {
+    if (registering) {
+      try {
+        const login = await new Promise((resolve, reject) => wx.login({ success: resolve, fail: reject }))
+        const ticket = await request('/api/v2/auth/wechat/login', { method: 'POST', data: { code: login.code }, keepSessionOnUnauthorized: true })
+        if (ticket.token) return this.finishLogin(ticket)
+        this.setData({ loginTicket: ticket.loginTicket, error: '请点击微信手机号授权按钮完成注册' })
+      } catch (error) { this.setData({ error: error.message }) }
+      return
+    }
+    const data = Object.assign({}, common, {
       phone: this.data.phone,
       password: this.data.password,
       captchaToken: this.data.captcha ? this.data.captcha.challengeToken : null,
@@ -106,26 +110,12 @@ Page({
 
     this.setData({ loading: true, error: '' })
     try {
-      const response = await request(registering ? '/api/v2/auth/wechat/bind-phone' : '/api/v2/auth/password/login', {
+      const response = await request('/api/v2/auth/password/login', {
         method: 'POST',
         data,
         keepSessionOnUnauthorized: true
       })
-      saveSession({ token: response.token, user: response.user })
-      if (response.user.privacyPolicyVersion !== this.data.privacyPolicy.version) {
-        try {
-          await request('/api/v2/privacy/consent', {
-            method: 'POST',
-            data: { version: this.data.privacyPolicy.version }
-          })
-          response.user.privacyPolicyVersion = this.data.privacyPolicy.version
-          saveSession({ token: response.token, user: response.user })
-        } catch (error) {
-          clearSession()
-          throw new Error(`隐私政策确认失败：${error.message}`)
-        }
-      }
-      wx.reLaunch({ url: '/pages/home/home' })
+      await this.finishLogin(response)
     } catch (error) {
       const failedAttempts = registering ? 0 : this.data.failedAttempts + (error.statusCode === 401 ? 1 : 0)
       this.setData({ error: error.message, failedAttempts })
@@ -135,5 +125,27 @@ Page({
     } finally {
       this.setData({ loading: false })
     }
+  },
+
+  async bindWechatPhone(event) {
+    if (!this.data.loginTicket || !event.detail || event.detail.errMsg !== 'getPhoneNumber:ok') {
+      this.setData({ error: '需要微信手机号授权才能注册' }); return
+    }
+    this.setData({ loading: true, error: '' })
+    try {
+      const response = await request('/api/v2/auth/wechat/bind-phone', { method: 'POST', data: {
+        loginTicket: this.data.loginTicket, phoneCode: event.detail.code, requestedRole: this.data.role
+      }, keepSessionOnUnauthorized: true })
+      await this.finishLogin(response)
+    } catch (error) { this.setData({ error: error.message }) } finally { this.setData({ loading: false }) }
+  },
+
+  async finishLogin(response) {
+    const user = response.account || response.user
+    saveSession({ token: response.token, user })
+    if (user && user.privacyPolicyVersion !== this.data.privacyPolicy.version) {
+      await request('/api/v2/privacy/consent', { method: 'POST', data: { version: this.data.privacyPolicy.version } })
+    }
+    wx.reLaunch({ url: '/pages/home/home' })
   }
 })

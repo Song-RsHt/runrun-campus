@@ -115,15 +115,11 @@ Page({
     if (!confirmed || this.data.submitting) return
 
     const data = {
-      merchant: merchant.trim(),
-      pickupCode: pickupCode.trim(),
-      pickupLocation: stations[stationIndex].displayName,
       destination: destination.trim(),
       serviceType: services[serviceIndex].code,
-      couponId: null,
-      useMembership: false,
-      pickupStation: stations[stationIndex].code,
-      deliveryZone: zones[zoneIndex].code
+      servicePointCode: stations[stationIndex].code,
+      zoneCode: zones[zoneIndex].code,
+      configVersion: this.config.configVersion
     }
 
     this.setData({ submitting: true, error: '' })

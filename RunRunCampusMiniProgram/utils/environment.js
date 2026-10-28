@@ -4,7 +4,8 @@ const ALLOWED = ['local', 'test', 'staging']
 
 function getEnvironment() {
   const value = wx.getStorageSync(ENV_KEY) || 'test'
-  return ALLOWED.includes(value) ? value : 'test'
+  if (!ALLOWED.includes(value)) throw new Error('环境必须是 local、test 或 staging；生产环境未开放')
+  return value
 }
 
 function isMockPaymentEnabled() {

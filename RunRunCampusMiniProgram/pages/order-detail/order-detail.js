@@ -111,13 +111,13 @@ Page({
 
   acceptOrder() {
     this.confirmAction('确认接单', '接单后请按订单信息完成取件与配送。', () =>
-      request(`/api/v2/orders/${this.data.id}/accept`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/accept`, { method: 'POST', data: { expectedVersion: this.data.order.version } })
     )
   },
 
   cancelOrder() {
     this.confirmAction('取消订单', '确认取消这笔尚未完成的订单？', () =>
-      request(`/api/v2/orders/${this.data.id}/cancel`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/cancel`, { method: 'POST', data: { expectedVersion: this.data.order.version, reason: '用户取消订单' } })
     )
   },
 
@@ -127,7 +127,7 @@ Page({
       return
     }
     this.confirmAction('确认已取件', '状态更新后，用户将看到订单进入配送中。', () =>
-      request(`/api/v2/orders/${this.data.id}/pickup`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/pickup`, { method: 'POST', data: { expectedVersion: this.data.order.version, taskId: this.data.order.taskId, pickupProofId: this.data.order.pickupProofId } })
     )
   },
 
@@ -141,20 +141,20 @@ Page({
     this.confirmAction('确认包裹规格', `现场规格：${selected.label}`, () =>
       request(`/api/v2/orders/${this.data.id}/adjustments`, {
         method: 'POST',
-        data: { toServiceType: selected.code, reason: '现场规格与原下单规格不一致', specProofId: this.data.order.packageSizeReviewProofId }
+        data: { expectedVersion: this.data.order.version, toServiceType: selected.code, reason: '现场规格与原下单规格不一致', specProofId: this.data.order.packageSizeReviewProofId }
       })
     )
   },
 
   approvePackageSize() {
     this.confirmAction('同意规格调整', '同意后将按调整后的规格继续履约。', () =>
-      request(`/api/v2/orders/${this.data.id}/confirm`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/confirm`, { method: 'POST', data: { expectedVersion: this.data.order.version } })
     )
   },
 
   rejectPackageSize() {
     this.confirmAction('拒绝规格调整', '拒绝后订单将取消，确认继续？', () =>
-      request(`/api/v2/orders/${this.data.id}/cancel`, { method: 'POST', data: { reason: '拒绝规格调整' } })
+      request(`/api/v2/orders/${this.data.id}/cancel`, { method: 'POST', data: { expectedVersion: this.data.order.version, reason: '拒绝规格调整' } })
     )
   },
 
@@ -172,6 +172,7 @@ Page({
         method: 'POST',
         data: {
           deliveryCode: this.data.completionCode,
+          expectedVersion: this.data.order.version,
           taskId: this.data.order.taskId,
           deliveryProofId: this.data.order.deliveryProofId,
           locationEventId: this.data.order.deliveryLocationEventId
@@ -207,7 +208,7 @@ Page({
     }
     this.confirmAction('申请重新派单', '提交后订单会释放给其他骑手。', () =>
       request(`/api/v2/orders/${this.data.id}/release`, {
-        method: 'POST', data: { reason: this.data.unableReason.trim() }
+        method: 'POST', data: { expectedVersion: this.data.order.version, taskId: this.data.order.taskId, reason: this.data.unableReason.trim() }
       })
     )
   },
@@ -246,7 +247,7 @@ Page({
       const location = await wx.getLocation({ type: 'gcj02' })
       await request(`/api/v2/orders/${this.data.id}/locations`, {
         method: 'POST',
-        data: { taskId: this.data.order.taskId, eventType: 'DELIVERY', latitude: location.latitude, longitude: location.longitude, coordinateSystem: 'GCJ02', requestId: `${Date.now()}` }
+        data: { expectedVersion: this.data.order.version, taskId: this.data.order.taskId, eventType: 'DELIVERY', latitude: location.latitude, longitude: location.longitude, coordinateSystem: 'GCJ02', requestId: `${Date.now()}` }
       })
       wx.showToast({ title: '位置已更新', icon: 'success' })
     } catch (error) {
