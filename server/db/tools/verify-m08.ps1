@@ -2,7 +2,21 @@ param([Parameter(Mandatory=$true)][string]$PrerequisiteRoot)
 $ErrorActionPreference='Stop'
 $name='rrc-m08-'+[guid]::NewGuid().ToString('N').Substring(0,10)
 function Run([string[]]$a){$o=& docker.exe @a 2>&1;if($LASTEXITCODE-ne 0){throw ($o -join "`n")};return $o}
-function Sql([string]$q,[switch]$MustFail){$o=$q|& docker.exe exec -i $name psql -X -qAt -v ON_ERROR_STOP=1 -U postgres -d verify 2>&1;$code=$LASTEXITCODE;if($MustFail){if($code-eq 0){throw 'expected SQL failure did not occur'}}elseif($code-ne 0){throw ($o -join "`n")};return $o}
+function Sql([string]$q,[switch]$MustFail){
+  $outFile=[IO.Path]::GetTempFileName(); $errFile=[IO.Path]::GetTempFileName()
+  $previous=$ErrorActionPreference; $ErrorActionPreference='Continue'
+  try {
+    $q | & docker.exe exec -i $name psql -X -qAt -v ON_ERROR_STOP=1 -U postgres -d verify 1> $outFile 2> $errFile
+    $code=$LASTEXITCODE
+    $o=@(Get-Content -ErrorAction SilentlyContinue $outFile) + @(Get-Content -ErrorAction SilentlyContinue $errFile)
+  } finally { $ErrorActionPreference=$previous; Remove-Item -Force -ErrorAction SilentlyContinue $outFile,$errFile }
+  if($MustFail){
+    if($code -eq 0){throw 'expected SQL failure did not occur'}
+    return $o
+  }
+  if($code -ne 0){throw ($o -join "`n")}
+  return $o
+}
 try {
  Run @('run','--detach','--name',$name,'--network','none','--env','POSTGRES_HOST_AUTH_METHOD=trust','postgres:16-alpine')|Out-Null
  for($i=0;$i-lt 40;$i++){& docker.exe exec $name pg_isready -U postgres *> $null;if($LASTEXITCODE-eq 0){break};Start-Sleep -Milliseconds 500}
