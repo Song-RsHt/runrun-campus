@@ -1,9 +1,6 @@
 BEGIN;
-ALTER TABLE runrun_v2.courier_certifications ADD COLUMN IF NOT EXISTS version BIGINT NOT NULL DEFAULT 0;
-ALTER TABLE runrun_v2.courier_certifications ADD COLUMN IF NOT EXISTS submitted_photo_resource_id TEXT UNIQUE;
-ALTER TABLE runrun_v2.courier_certifications ADD COLUMN IF NOT EXISTS approved_photo_resource_id TEXT UNIQUE;
-ALTER TABLE runrun_v2.courier_certifications ADD COLUMN IF NOT EXISTS approved_photo_at TIMESTAMPTZ;
-CREATE TABLE IF NOT EXISTS runrun_v2.evidence_holds (
+ALTER TABLE runrun_v2.courier_certifications ADD COLUMN approved_photo_at TIMESTAMPTZ;
+CREATE TABLE runrun_v2.evidence_holds (
  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
  certification_id BIGINT REFERENCES runrun_v2.courier_certifications(id),
  order_id BIGINT,
@@ -14,8 +11,8 @@ CREATE TABLE IF NOT EXISTS runrun_v2.evidence_holds (
  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
  CHECK ((certification_id IS NULL) <> (order_id IS NULL))
 );
-CREATE INDEX IF NOT EXISTS evidence_holds_cert_idx ON runrun_v2.evidence_holds(certification_id,released_at);
-CREATE TABLE IF NOT EXISTS runrun_v2.evidence_deletion_audits (
+CREATE INDEX evidence_holds_cert_idx ON runrun_v2.evidence_holds(certification_id,released_at);
+CREATE TABLE runrun_v2.evidence_deletion_audits (
  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
  certification_id BIGINT REFERENCES runrun_v2.courier_certifications(id),
  resource_type TEXT NOT NULL,
@@ -29,5 +26,5 @@ CREATE TABLE IF NOT EXISTS runrun_v2.evidence_deletion_audits (
  error_code TEXT,
  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-CREATE INDEX IF NOT EXISTS evidence_deletion_due_idx ON runrun_v2.evidence_deletion_audits(status,delete_after);
+CREATE INDEX evidence_deletion_due_idx ON runrun_v2.evidence_deletion_audits(status,delete_after);
 COMMIT;
