@@ -28,9 +28,9 @@
 2. 选择“导入项目”，目录选择本文件夹。
 3. `project.config.json` 已配置正式小程序 AppID；开发者需要先被管理员加入该小程序的项目成员。
 4. 开发工具中若使用游客模式，可在本地调试阶段关闭合法域名校验。
-5. 正式小程序后台需要把 `https://api.runruncampus.cn` 配置为 request 与 uploadFile 合法域名。
+5. 正式小程序后台需要把 `<ISOLATED_TEST_API_BASE_URL>` 配置为 request 与 uploadFile 合法域名。
 
-API 地址集中在 `utils/api.js` 的 `BASE_URL`。不要把 AppSecret、登录密码或其他密钥写进小程序源码。
+API 地址通过微信开发者工具存储键 `rrc_api_base_url` 配置。不要把 AppSecret、登录密码或其他密钥写进小程序源码。
 
 ## 上线前必须完成
 

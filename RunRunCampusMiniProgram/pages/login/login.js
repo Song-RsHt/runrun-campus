@@ -24,7 +24,7 @@ Page({
 
   async loadPrivacyPolicy() {
     try {
-      const privacyPolicy = await request('/api/v1/privacy/policy', {
+      const privacyPolicy = await request('/api/v2/privacy/policy', {
         keepSessionOnUnauthorized: true
       })
       this.setData({ privacyPolicy })
@@ -62,7 +62,7 @@ Page({
 
   async refreshCaptcha() {
     try {
-      const captcha = await request('/api/v1/auth/captcha', {
+      const captcha = await request('/api/v2/auth/captcha', {
         method: 'POST',
         keepSessionOnUnauthorized: true
       })
@@ -106,7 +106,7 @@ Page({
 
     this.setData({ loading: true, error: '' })
     try {
-      const response = await request(`/api/v1/auth/${registering ? 'register' : 'login'}`, {
+      const response = await request(`/api/v2/auth/${registering ? 'register' : 'login'}`, {
         method: 'POST',
         data,
         keepSessionOnUnauthorized: true
@@ -114,7 +114,7 @@ Page({
       saveSession({ token: response.token, user: response.user })
       if (response.user.privacyPolicyVersion !== this.data.privacyPolicy.version) {
         try {
-          await request('/api/v1/privacy/consent', {
+          await request('/api/v2/privacy/consent', {
             method: 'POST',
             data: { version: this.data.privacyPolicy.version }
           })

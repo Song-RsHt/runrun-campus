@@ -37,8 +37,8 @@ Page({
       this.setData({ certification })
       if (certification.status === 'APPROVED') {
         const [operations, orders] = await Promise.all([
-          request('/api/v1/courier/operations/me'),
-          request('/api/v1/orders/available')
+          request('/api/v2/courier/operations/me'),
+          request('/api/v2/orders/available')
         ])
         operations.todayGrossText = money(operations.todayGrossServiceFeeCents)
         operations.totalGrossText = money(operations.totalGrossServiceFeeCents)
@@ -103,7 +103,7 @@ Page({
     if (this.data.acting) return
     this.setData({ acting: true, error: '' })
     try {
-      const operations = await request('/api/v1/courier/operations/me/availability', {
+      const operations = await request('/api/v2/courier/operations/me/availability', {
         method: 'PUT',
         data: { acceptingOrders: event.detail.value }
       })
@@ -130,7 +130,7 @@ Page({
     if (!confirmed || this.data.acting) return
     this.setData({ acting: true, error: '' })
     try {
-      await request(`/api/v1/orders/${id}/accept`, { method: 'POST' })
+      await request(`/api/v2/orders/${id}/accept`, { method: 'POST' })
       wx.navigateTo({ url: `/pages/order-detail/order-detail?id=${id}` })
     } catch (error) {
       this.setData({ error: error.message })

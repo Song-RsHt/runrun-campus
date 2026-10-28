@@ -26,8 +26,8 @@ Page({
     this.setData({ loading: true, error: '' })
     try {
       const [config, orders] = await Promise.all([
-        request('/api/v1/service-config'),
-        request('/api/v1/orders/mine/active')
+        request('/api/v2/service-config'),
+        request('/api/v2/orders/mine/active')
       ])
       this.setData({ config, activeOrders: orders.slice(0, 3).map(orderView) })
     } catch (error) {

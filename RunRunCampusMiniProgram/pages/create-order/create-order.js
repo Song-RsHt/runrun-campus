@@ -52,7 +52,7 @@ Page({
 
   async loadConfig() {
     try {
-      const config = await request('/api/v1/service-config')
+      const config = await request('/api/v2/service-config')
       this.config = config
       this.applyKind('TAKEOUT', config)
     } catch (error) {
@@ -128,7 +128,7 @@ Page({
 
     this.setData({ submitting: true, error: '' })
     try {
-      const order = await request('/api/v1/orders', {
+      const order = await request('/api/v2/orders', {
         method: 'POST',
         data,
         header: { 'Idempotency-Key': uuid() }

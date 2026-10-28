@@ -60,8 +60,8 @@ Page({
     this.setData({ loading: true, error: '' })
     try {
       const [order, events] = await Promise.all([
-        request(`/api/v1/orders/${this.data.id}`),
-        request(`/api/v1/orders/${this.data.id}/events`)
+        request(`/api/v2/orders/${this.data.id}`),
+        request(`/api/v2/orders/${this.data.id}/events`)
       ])
       const view = orderView(order)
       view.updatedAtText = dateTime(order.updatedAt)
@@ -113,13 +113,13 @@ Page({
 
   acceptOrder() {
     this.confirmAction('确认接单', '接单后请按订单信息完成取件与配送。', () =>
-      request(`/api/v1/orders/${this.data.id}/accept`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/accept`, { method: 'POST' })
     )
   },
 
   cancelOrder() {
     this.confirmAction('取消订单', '确认取消这笔尚未完成的订单？', () =>
-      request(`/api/v1/orders/${this.data.id}/cancel`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/cancel`, { method: 'POST' })
     )
   },
 
@@ -129,7 +129,7 @@ Page({
       return
     }
     this.confirmAction('确认已取件', '状态更新后，用户将看到订单进入配送中。', () =>
-      request(`/api/v1/orders/${this.data.id}/pickup`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/pickup`, { method: 'POST' })
     )
   },
 
@@ -141,7 +141,7 @@ Page({
       return
     }
     this.confirmAction('确认包裹规格', `现场规格：${selected.label}`, () =>
-      request(`/api/v1/orders/${this.data.id}/package-size`, {
+      request(`/api/v2/orders/${this.data.id}/package-size`, {
         method: 'POST',
         data: { serviceType: selected.code }
       })
@@ -150,13 +150,13 @@ Page({
 
   approvePackageSize() {
     this.confirmAction('同意规格调整', '同意后将按调整后的规格继续履约。', () =>
-      request(`/api/v1/orders/${this.data.id}/package-size/approve`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/package-size/approve`, { method: 'POST' })
     )
   },
 
   rejectPackageSize() {
     this.confirmAction('拒绝规格调整', '拒绝后订单将取消，确认继续？', () =>
-      request(`/api/v1/orders/${this.data.id}/package-size/reject`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/package-size/reject`, { method: 'POST' })
     )
   },
 
@@ -170,7 +170,7 @@ Page({
       return
     }
     this.confirmAction('确认完成配送', '请确保包裹已交付给用户。', () =>
-      request(`/api/v1/orders/${this.data.id}/complete`, {
+      request(`/api/v2/orders/${this.data.id}/complete`, {
         method: 'POST',
         data: { deliveryCode: this.data.completionCode }
       })
@@ -179,7 +179,7 @@ Page({
 
   requestManualPayment() {
     this.confirmAction('通知用户付款', '请确认已经到达交付地点，再通知用户扫码付款。', () =>
-      request(`/api/v1/orders/${this.data.id}/manual-payment/request`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/manual-payment/request`, { method: 'POST' })
     )
   },
 
@@ -189,7 +189,7 @@ Page({
       return
     }
     await this.confirmAction('提交核款', '提交后需等待管理员确认到账，请勿提前向骑手提供收货码。', () =>
-      request(`/api/v1/orders/${this.data.id}/manual-payment/submit`, {
+      request(`/api/v2/orders/${this.data.id}/manual-payment/submit`, {
         method: 'POST',
         data: { payerReference: this.data.payerReference.trim() }
       })
@@ -202,7 +202,7 @@ Page({
       return
     }
     this.confirmAction('申请重新派单', '提交后订单会释放给其他骑手。', () =>
-      request(`/api/v1/orders/${this.data.id}/unable`, {
+      request(`/api/v2/orders/${this.data.id}/unable`, {
         method: 'POST',
         data: { reason: this.data.unableReason.trim() }
       })
@@ -222,7 +222,7 @@ Page({
       const file = result.tempFiles && result.tempFiles[0]
       if (!file) return
       this.setData({ acting: true, error: '' })
-      await upload(`/api/v1/orders/${this.data.id}/proofs/${type}`, file.tempFilePath)
+      await upload(`/api/v2/orders/${this.data.id}/proofs/${type}`, file.tempFilePath)
       await this.load()
     } catch (error) {
       if (!String(error.errMsg || error.message).includes('cancel')) {
@@ -238,7 +238,7 @@ Page({
     this.setData({ acting: true, error: '' })
     try {
       const location = await wx.getLocation({ type: 'gcj02' })
-      await request(`/api/v1/orders/${this.data.id}/location`, {
+      await request(`/api/v2/orders/${this.data.id}/location`, {
         method: 'POST',
         data: { latitude: location.latitude, longitude: location.longitude }
       })
@@ -254,7 +254,7 @@ Page({
 
   async showDeliveryCode() {
     try {
-      const result = await request(`/api/v1/orders/${this.data.id}/delivery-code`)
+      const result = await request(`/api/v2/orders/${this.data.id}/delivery-code`)
       this.setData({ deliveryCode: result.deliveryCode })
     } catch (error) {
       this.setData({ error: error.message })
