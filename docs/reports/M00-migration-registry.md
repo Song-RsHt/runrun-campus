@@ -30,6 +30,12 @@
 |M07 / 0600–0699|evidence_holds、evidence_deletion_audits、user_notifications；资质/凭证生命周期所需增量列|资质表由M01创建；凭证表M04创建；outbox由M01创建；本模块仅ALTER/消费。订单或资质资源用带类型标识，不伪造order_id|
 |M08|无|只消费已验收v2 API|
 
+## M07/M08 迁移链登记（2026-10-28，fix/m08-migration-chain）
+
+`rrc_0600__user_notifications.sql`（M07）唯一创建 `runrun_v2.user_notifications` 及其索引，消费 M01 已创建的 `notification_outbox`；其回滚拒绝已有通知数据。`rrc_0700__notification_outbox_runtime.sql`（M08）不创建表，只向 M01 `notification_outbox` 增加领取/发送状态列、领取索引和 `claim_notification_outbox(text,integer)`；默认撤销 PUBLIC EXECUTE，若部署时已存在 `rrc_notification_worker` 则仅授予该角色 schema、outbox 读取/领取列更新及函数执行权限。M08 回滚拒绝仍有领取/发送运行数据。
+
+完整链 runner 为 `server/db/tools/verify-v2-chain.ps1`，固定执行 M00–M08 并逐迁移拒绝重复执行。当前集成 `main` 尚未包含 0600/0700；本登记随 `fix/m08-migration-chain` 提交，需总控将其登记/集成后再做独立 QA，不在本分支自动合并 main。
+
 编号范围是预留，不允许跳过前序迁移或改变业务字段。每条迁移提交前逐项登记实际列/约束/索引及跨模块FK；前向引用采用目标表存在后的ALTER迁移，绝不先写不存在的FK或创建占位重复表。延迟FK尚未补齐时，只可隔离分支开发，不可标记完整验收或合并依赖关联约束的API。具体字段仍以技术契约为准；发现契约无法适用于全新系统的冲突，暂停相关模块交总控裁决，不自行改权威规则。
 ## 分段集成门禁
 

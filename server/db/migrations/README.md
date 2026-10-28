@@ -13,7 +13,7 @@ M05 调整与售后迁移为 `up/rrc_0004__adjustments_after_sales.sql`，回滚
 
 M02、M03、M04 的独立迁移分别为 `up/rrc_0100__orders_and_service_config.sql`、`up/rrc_0200__mock_payments.sql`、`up/rrc_0300__fulfillment.sql`，各自对应 `down/` 同号回滚脚本；它们按 M00 登记顺序执行，不创建跨模块占位表。M06 结算迁移为 `up/rrc_0500__settlement_freeze.sql`，回滚为同号 `down/rrc_0500__settlement_freeze.rollback.sql`。阶段一不连接真实打款。
 
-M07 通知读取表为 `up/rrc_0600__user_notifications.sql`，回滚为同号脚本；它消费 M01 已创建的 `notification_outbox`，不重建 outbox。M08 运行时迁移为 `up/rrc_0700__notification_outbox_runtime.sql`，只向 M01 outbox 增加领取/发送状态列、索引和 `claim_notification_outbox(text,integer)` 函数；回滚先拒绝仍有领取/发送运行数据的 outbox。M08 不创建第二个 outbox 或其他基础通知对象。
+M07 通知读取表为 `up/rrc_0600__user_notifications.sql`，回滚为同号脚本；它消费 M01 已创建的 `notification_outbox`，不重建 outbox。M08 运行时迁移为 `up/rrc_0700__notification_outbox_runtime.sql`，只向 M01 outbox 增加领取/发送状态列、索引和 `claim_notification_outbox(text,integer)` 函数；迁移撤销该函数的 PUBLIC EXECUTE，并在预先存在 `rrc_notification_worker` 角色时只授予该角色 schema 使用、outbox SELECT/UPDATE 和函数 EXECUTE。角色由部署管理，不由迁移创建；回滚先拒绝仍有领取/发送运行数据的 outbox。M08 不创建第二个 outbox 或其他基础通知对象。
 
 ## 执行与回滚
 

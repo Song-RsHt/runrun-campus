@@ -44,4 +44,18 @@ BEGIN
   RETURNING o.*;
 END;
 $$;
+
+-- Roles are provisioned by deployment, not created by a schema migration.
+-- PUBLIC must never be able to claim work; grant only to the configured worker.
+REVOKE ALL ON FUNCTION runrun_v2.claim_notification_outbox(TEXT, INTEGER) FROM PUBLIC;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'rrc_notification_worker') THEN
+    EXECUTE 'GRANT USAGE ON SCHEMA runrun_v2 TO rrc_notification_worker';
+    EXECUTE 'GRANT SELECT ON TABLE runrun_v2.notification_outbox TO rrc_notification_worker';
+    EXECUTE 'GRANT UPDATE (status, claimed_at, claimed_by, attempt_count, updated_at) ON TABLE runrun_v2.notification_outbox TO rrc_notification_worker';
+    EXECUTE 'GRANT EXECUTE ON FUNCTION runrun_v2.claim_notification_outbox(TEXT, INTEGER) TO rrc_notification_worker';
+  END IF;
+END;
+$$;
 COMMIT;

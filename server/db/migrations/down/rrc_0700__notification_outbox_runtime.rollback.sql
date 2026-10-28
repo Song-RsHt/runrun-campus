@@ -9,6 +9,13 @@ BEGIN
    WHERE claimed_at IS NOT NULL OR claimed_by IS NOT NULL OR sent_at IS NOT NULL OR last_error_code IS NOT NULL;
   IF n <> 0 THEN RAISE EXCEPTION 'Refusing M08 rollback: outbox runtime data exists'; END IF;
 END $$;
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'rrc_notification_worker') THEN
+    EXECUTE 'REVOKE ALL ON TABLE runrun_v2.notification_outbox FROM rrc_notification_worker';
+  END IF;
+END;
+$$;
 DROP FUNCTION runrun_v2.claim_notification_outbox(TEXT, INTEGER);
 DROP INDEX runrun_v2.notification_outbox_claim_idx;
 ALTER TABLE runrun_v2.notification_outbox
