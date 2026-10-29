@@ -20,7 +20,7 @@ function baseUrl() {
     throw new Error('test/staging 环境必须使用 HTTPS')
   }
   const host = configured.replace(/^https?:\/\//, '').split('/')[0].toLowerCase()
-  if (/\b(prod|production)([-.]|$)/.test(host) || host.endsWith('.invalid')) {
+  if (host === 'api.runruncampus.cn' || host === 'runruncampus.cn' || /\b(prod|production)([-.]|$)/.test(host) || host.endsWith('.invalid')) {
     throw new Error('生产或无效域名不能作为隔离 API 地址')
   }
   return configured.replace(/\/$/, '')
