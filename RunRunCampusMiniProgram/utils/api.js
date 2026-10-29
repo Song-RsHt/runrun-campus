@@ -20,6 +20,10 @@ function baseUrl() {
     throw new Error('test/staging 环境必须使用 HTTPS')
   }
   const host = configured.replace(/^https?:\/\//, '').split('/')[0].toLowerCase()
+  const allowedHosts = wx.getStorageSync('rrc_api_allowed_hosts')
+  if (environment !== 'local' && (!Array.isArray(allowedHosts) || !allowedHosts.includes(host))) {
+    throw new Error('当前 API 域名不在隔离测试白名单，请设置 rrc_api_allowed_hosts')
+  }
   if (host === 'api.runruncampus.cn' || host === 'runruncampus.cn' || /\b(prod|production)([-.]|$)/.test(host) || host.endsWith('.invalid')) {
     throw new Error('生产或无效域名不能作为隔离 API 地址')
   }

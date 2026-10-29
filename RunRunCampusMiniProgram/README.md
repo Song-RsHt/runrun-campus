@@ -30,7 +30,7 @@
 4. 开发工具中若使用游客模式，可在本地调试阶段关闭合法域名校验。
 5. 正式小程序后台需要把 `<ISOLATED_TEST_API_BASE_URL>` 配置为 request 与 uploadFile 合法域名。
 
-API 地址通过微信开发者工具存储键 `rrc_api_base_url` 配置，环境键为 `rrc_api_environment`（`local`、`test` 或 `staging`）。模拟支付必须显式设置布尔键 `rrc_mock_payment_enabled`，生产环境会被客户端拒绝。也可以在 PowerShell 中运行 `./scripts/build-miniapp.ps1 -Environment test -ApiBaseUrl https://<ISOLATED_TEST_API_BASE_URL> -MockPayment` 生成构建元数据；该脚本禁止生产主机名。不要把 AppSecret、登录密码或其他密钥写进小程序源码。
+API 地址通过微信开发者工具存储键 `rrc_api_base_url` 配置，环境键为 `rrc_api_environment`（`local`、`test` 或 `staging`），测试/预发布还必须设置数组键 `rrc_api_allowed_hosts`，其值为实际隔离域名主机名。模拟支付必须显式设置布尔键 `rrc_mock_payment_enabled`，生产环境会被客户端拒绝。也可以在 PowerShell 中运行 `./scripts/build-miniapp.ps1 -Environment test -ApiBaseUrl https://<ISOLATED_TEST_API_BASE_URL> -AllowedHost <ISOLATED_TEST_API_BASE_URL> -MockPayment` 生成构建元数据；该脚本禁止生产主机名。不要把 AppSecret、登录密码或其他密钥写进小程序源码。
 
 ## 上线前必须完成
 
