@@ -30,7 +30,7 @@
       <view class="field">
         <text class="field-label">注册身份</text>
         <view class="role-row">
-          <button class="role-button {{role === 'CUSTOMER' ? 'role-active' : ''}}" data-role="CUSTOMER" bindtap="selectRole">用户</button>
+          <button class="role-button {{role === 'USER' ? 'role-active' : ''}}" data-role="USER" bindtap="selectRole">用户</button>
           <button class="role-button {{role === 'COURIER' ? 'role-active' : ''}}" data-role="COURIER" bindtap="selectRole">骑手</button>
         </view>
       </view>

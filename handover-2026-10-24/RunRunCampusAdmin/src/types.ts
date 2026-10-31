@@ -1,4 +1,4 @@
-export type UserRole = 'CUSTOMER' | 'COURIER' | 'ADMIN'
+export type UserRole = 'USER' | 'COURIER' | 'ADMIN'
 export type OrderStatus = 'PENDING_ASSIGNMENT' | 'PENDING_REASSIGNMENT' | 'ACCEPTED' | 'PICKED_UP' | 'COMPLETED' | 'CANCELLED'
 export type ServiceType = 'LOBBY' | 'DOOR' | 'EXPRESS' | 'PACKAGE_SMALL' | 'PACKAGE_MEDIUM' | 'PACKAGE_MEDIUM_LARGE' | 'PACKAGE_LARGE' | 'PACKAGE_EXTRA_LARGE' | 'PACKAGE_XL'
 export type CourierCertificationStatus = 'NOT_APPLIED' | 'PENDING' | 'APPROVED' | 'REJECTED'
@@ -193,7 +193,6 @@ export interface AdminOrderPage {
 
 export interface AdminOrderDetail {
   order: AdminOrderListItem
-  pickupCode: string
   pickupLocation: string
   originalFeeCents: number
   discountCents: number

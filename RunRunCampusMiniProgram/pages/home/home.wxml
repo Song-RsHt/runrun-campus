@@ -8,7 +8,7 @@
   </view>
 
   <view class="quick-grid">
-    <view class="quick-card" bindtap="createOrder" wx:if="{{session.user.role === 'CUSTOMER'}}">
+    <view class="quick-card" bindtap="createOrder" wx:if="{{session.user.role === 'USER'}}">
       <text class="quick-icon">＋</text>
       <text class="quick-title">发布代取</text>
       <text class="quick-note">外卖或快递</text>

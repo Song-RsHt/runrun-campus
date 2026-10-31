@@ -4,7 +4,7 @@
       <text class="eyebrow dark-eyebrow">ORDERS</text>
       <text class="page-title">我的订单</text>
     </view>
-    <button class="compact-button primary" bindtap="createOrder" wx:if="{{session.user.role === 'CUSTOMER'}}">发布代取</button>
+    <button class="compact-button primary" bindtap="createOrder" wx:if="{{session.user.role === 'USER'}}">发布代取</button>
   </view>
 
   <view class="filter-tabs">

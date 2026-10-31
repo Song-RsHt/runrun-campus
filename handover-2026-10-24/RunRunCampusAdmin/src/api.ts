@@ -63,7 +63,7 @@ async function request<T>(path: string, token?: string, init?: RequestInit): Pro
 }
 
 export function login(phone: string, password: string): Promise<MfaChallenge> {
-  return request('/api/v1/auth/admin/login', undefined, {
+  return request('/api/v2/auth/admin/login', undefined, {
     method: 'POST',
     body: JSON.stringify({ phone, password }),
   })
@@ -83,105 +83,105 @@ export function logoutV2Admin(token: string, allSessions = false): Promise<{ rev
 }
 
 export function verifyAdminMfa(challengeToken: string, code: string): Promise<MfaVerification> {
-  return request('/api/v1/auth/admin/verify', undefined, {
+  return request('/api/v2/auth/admin/verify', undefined, {
     method: 'POST',
     body: JSON.stringify({ challengeToken, code, clientType: 'ADMIN_WEB', deviceName: '运营后台浏览器' }),
   })
 }
 
 export function getLoginSessions(token: string): Promise<LoginSession[]> {
-  return request('/api/v1/auth/sessions', token)
+  return request('/api/v2/auth/sessions', token)
 }
 
 export function getCurrentUser(token: string): Promise<AuthUser> {
-  return request('/api/v1/auth/me', token)
+  return request('/api/v2/auth/me', token)
 }
 
 export function revokeLoginSession(token: string, id: number): Promise<{ revoked: number }> {
-  return request(`/api/v1/auth/sessions/${id}`, token, { method: 'DELETE' })
+  return request(`/api/v2/auth/sessions/${id}`, token, { method: 'DELETE' })
 }
 
 export function revokeOtherLoginSessions(token: string): Promise<{ revoked: number }> {
-  return request('/api/v1/auth/sessions/others', token, { method: 'DELETE' })
+  return request('/api/v2/auth/sessions/others', token, { method: 'DELETE' })
 }
 
 export function logoutCurrentSession(token: string): Promise<{ revoked: number }> {
-  return request('/api/v1/auth/logout', token, { method: 'POST' })
+  return request('/api/v2/auth/logout', token, { method: 'POST' })
 }
 
 export function replaceAdminMfa(token: string, password: string, code: string): Promise<MfaChallenge> {
-  return request('/api/v1/admin/accounts/me/mfa/replace', token, { method: 'POST', body: JSON.stringify({ password, code }) })
+  return request('/api/v2/admin/accounts/me/mfa/replace', token, { method: 'POST', body: JSON.stringify({ password, code }) })
 }
 
 export function resetAdminMfa(token: string, id: number, reason: string): Promise<{ resetGrant: string }> {
-  return request(`/api/v1/admin/accounts/${id}/mfa/reset`, token, { method: 'POST', body: JSON.stringify({ reason }) })
+  return request(`/api/v2/admin/accounts/${id}/mfa/reset`, token, { method: 'POST', body: JSON.stringify({ reason }) })
 }
 
 export function getDashboard(token: string): Promise<AdminDashboard> {
-  return request('/api/v1/admin/dashboard', token)
+  return request('/api/v2/admin/dashboard', token)
 }
 
 export function getCommandCenter(token: string, queue: CommandQueue, orderPage: number,
   courierPage: number, signal: AbortSignal): Promise<CommandSnapshot> {
   const params = new URLSearchParams({ queue, orderPage: String(orderPage), courierPage: String(courierPage) })
-  return request(`/api/v1/admin/command-center?${params}`, token, { signal })
+  return request(`/api/v2/admin/command-center?${params}`, token, { signal })
 }
 
 export function getPlatformSettings(token: string): Promise<PlatformSettings> {
-  return request('/api/v1/admin/platform-settings', token)
+  return request('/api/v2/admin/platform-settings', token)
 }
 
 export function updatePlatformSettings(token: string, settings: PlatformSettings): Promise<PlatformSettings> {
-  return request('/api/v1/admin/platform-settings', token, {
+  return request('/api/v2/admin/platform-settings', token, {
     method: 'PUT', body: JSON.stringify(settings),
   })
 }
 
 export function getDispatchCandidates(token: string, orderId: number, page: number): Promise<DispatchCandidates> {
-  return request(`/api/v1/admin/orders/${orderId}/dispatch-candidates?page=${page}`, token)
+  return request(`/api/v2/admin/orders/${orderId}/dispatch-candidates?page=${page}`, token)
 }
 
 export function dispatchOrder(token: string, orderId: number, courierId: number): Promise<DispatchResult> {
-  return request(`/api/v1/admin/orders/${orderId}/dispatch`, token, {
+  return request(`/api/v2/admin/orders/${orderId}/dispatch`, token, {
     method: 'POST', body: JSON.stringify({ courierId }),
   })
 }
 
 export function getAdminAccounts(token: string): Promise<AdminAccountItem[]> {
-  return request('/api/v1/admin/accounts', token)
+  return request('/api/v2/admin/accounts', token)
 }
 
 export function createAdminAccount(
   token: string,
   input: { phone: string; password: string; displayName: string; adminRole: AdminRole },
 ): Promise<AdminAccountItem> {
-  return request('/api/v1/admin/accounts', token, { method: 'POST', body: JSON.stringify(input) })
+  return request('/api/v2/admin/accounts', token, { method: 'POST', body: JSON.stringify(input) })
 }
 
 export function changeAdminRole(token: string, id: number, adminRole: AdminRole): Promise<AdminAccountItem> {
-  return request(`/api/v1/admin/accounts/${id}/role`, token, {
+  return request(`/api/v2/admin/accounts/${id}/role`, token, {
     method: 'PUT',
     body: JSON.stringify({ adminRole }),
   })
 }
 
 export function suspendAdminAccount(token: string, id: number): Promise<AdminAccountItem> {
-  return request(`/api/v1/admin/accounts/${id}/suspend`, token, { method: 'POST' })
+  return request(`/api/v2/admin/accounts/${id}/suspend`, token, { method: 'POST' })
 }
 
 export function restoreAdminAccount(token: string, id: number): Promise<AdminAccountItem> {
-  return request(`/api/v1/admin/accounts/${id}/restore`, token, { method: 'POST' })
+  return request(`/api/v2/admin/accounts/${id}/restore`, token, { method: 'POST' })
 }
 
 export function resetAdminPassword(token: string, id: number, password: string): Promise<AdminAccountItem> {
-  return request(`/api/v1/admin/accounts/${id}/password`, token, {
+  return request(`/api/v2/admin/accounts/${id}/password`, token, {
     method: 'PUT',
     body: JSON.stringify({ password }),
   })
 }
 
 export function unlockAdminLogin(token: string, id: number): Promise<AdminAccountItem> {
-  return request(`/api/v1/admin/accounts/${id}/unlock-login`, token, { method: 'POST' })
+  return request(`/api/v2/admin/accounts/${id}/unlock-login`, token, { method: 'POST' })
 }
 
 export function changeOwnAdminPassword(
@@ -189,7 +189,7 @@ export function changeOwnAdminPassword(
   currentPassword: string,
   newPassword: string,
 ): Promise<{ changed: boolean }> {
-  return request('/api/v1/admin/accounts/me/password', token, {
+  return request('/api/v2/admin/accounts/me/password', token, {
     method: 'PUT',
     body: JSON.stringify({ currentPassword, newPassword }),
   })
@@ -202,15 +202,15 @@ export function getOrders(
   const params = new URLSearchParams({ page: String(filters.page), size: String(filters.size), archived: String(filters.archived) })
   if (filters.query) params.set('query', filters.query)
   if (filters.status) params.set('status', filters.status)
-  return request(`/api/v1/admin/orders?${params}`, token)
+  return request(`/api/v2/admin/orders?${params}`, token)
 }
 
 export function getOrderDetail(token: string, id: number): Promise<AdminOrderDetail> {
-  return request(`/api/v1/admin/orders/${id}`, token)
+  return request(`/api/v2/admin/orders/${id}`, token)
 }
 
 export async function getDeliveryProofPhoto(token: string, id: number, signal: AbortSignal): Promise<Blob> {
-  const response = await fetch(`${API_BASE}/api/v1/admin/orders/${id}/delivery-proof`, {
+  const response = await fetch(`${API_BASE}/api/v2/admin/orders/${id}/delivery-proof`, {
     headers: { Authorization: `Bearer ${token}`, Accept: 'image/jpeg, image/png, image/webp' }, signal,
   })
   if (!response.ok) throw new ApiError('送达凭证读取失败', response.status)
@@ -218,33 +218,33 @@ export async function getDeliveryProofPhoto(token: string, id: number, signal: A
 }
 
 export function confirmManualPayment(token: string, id: number): Promise<void> {
-  return request(`/api/v1/admin/orders/${id}/manual-payment/confirm`, token, { method: 'POST' })
+  return request(`/api/v2/admin/orders/${id}/payout-registrations`, token, { method: 'POST' })
 }
 
 export function rejectManualPayment(token: string, id: number, reason: string): Promise<void> {
-  return request(`/api/v1/admin/orders/${id}/manual-payment/reject`, token, {
+  return request(`/api/v2/admin/orders/${id}/refunds`, token, {
     method: 'POST', body: JSON.stringify({ reason }),
   })
 }
 
 export function confirmCourierSettlement(token: string, id: number): Promise<void> {
-  return request(`/api/v1/admin/orders/${id}/courier-settlement/confirm`, token, { method: 'POST' })
+  return request(`/api/v2/admin/orders/${id}/courier-settlement/confirm`, token, { method: 'POST' })
 }
 
 export function forceCompleteOrder(token: string, id: number, reason: string): Promise<{ orderId: number; action: string }> {
-  return request(`/api/v1/admin/orders/${id}/force-complete`, token, {
+  return request(`/api/v2/admin/orders/${id}/force-complete`, token, {
     method: 'POST', body: JSON.stringify({ reason }),
   })
 }
 
 export function archiveOrder(token: string, id: number, reason: string): Promise<{ orderId: number; action: string }> {
-  return request(`/api/v1/admin/orders/${id}/archive`, token, {
+  return request(`/api/v2/admin/orders/${id}/archive`, token, {
     method: 'POST', body: JSON.stringify({ reason }),
   })
 }
 
 export function unarchiveOrder(token: string, id: number): Promise<{ orderId: number; action: string }> {
-  return request(`/api/v1/admin/orders/${id}/unarchive`, token, { method: 'POST' })
+  return request(`/api/v2/admin/orders/${id}/unarchive`, token, { method: 'POST' })
 }
 
 export async function exportOrders(
@@ -254,7 +254,7 @@ export async function exportOrders(
   const params = new URLSearchParams({ archived: String(filters.archived) })
   if (filters.query) params.set('query', filters.query)
   if (filters.status) params.set('status', filters.status)
-  const response = await fetch(`${API_BASE}/api/v1/admin/orders/export?${params}`, {
+  const response = await fetch(`${API_BASE}/api/v2/admin/orders/export?${params}`, {
     headers: { Accept: 'text/csv', Authorization: `Bearer ${token}` },
   })
   if (!response.ok) {
@@ -321,45 +321,45 @@ export function getUsers(
   const params = new URLSearchParams({ page: String(filters.page), size: String(filters.size) })
   if (filters.query) params.set('query', filters.query)
   if (filters.role) params.set('role', filters.role)
-  return request(`/api/v1/admin/users?${params}`, token)
+  return request(`/api/v2/admin/users?${params}`, token)
 }
 
 export function suspendUser(token: string, id: number): Promise<AdminUserItem> {
-  return request(`/api/v1/admin/users/${id}/suspend`, token, { method: 'POST' })
+  return request(`/api/v2/admin/users/${id}/suspend`, token, { method: 'POST' })
 }
 
 export function restoreUser(token: string, id: number): Promise<AdminUserItem> {
-  return request(`/api/v1/admin/users/${id}/restore`, token, { method: 'POST' })
+  return request(`/api/v2/admin/users/${id}/restore`, token, { method: 'POST' })
 }
 
 export function unlockUserLogin(token: string, id: number): Promise<AdminUserItem> {
-  return request(`/api/v1/admin/users/${id}/unlock-login`, token, { method: 'POST' })
+  return request(`/api/v2/admin/users/${id}/unlock-login`, token, { method: 'POST' })
 }
 
 export function resetUserPassword(token: string, id: number, password: string): Promise<AdminUserItem> {
-  return request(`/api/v1/admin/users/${id}/password`, token, {
+  return request(`/api/v2/admin/users/${id}/password`, token, {
     method: 'PUT',
     body: JSON.stringify({ password }),
   })
 }
 
 export function issueOneYuanCoupon(token: string, id: number): Promise<AdminCouponGrant> {
-  return request(`/api/v1/admin/users/${id}/coupons/one-yuan`, token, { method: 'POST' })
+  return request(`/api/v2/admin/users/${id}/coupons/one-yuan`, token, { method: 'POST' })
 }
 
 export function getUserCredit(token: string, id: number): Promise<CreditProfile> {
-  return request(`/api/v1/admin/users/${id}/credit?page=0&size=50`, token)
+  return request(`/api/v2/admin/users/${id}/credit?page=0&size=50`, token)
 }
 
 export function adjustUserCredit(token: string, id: number, delta: number, reason: string): Promise<unknown> {
-  return request(`/api/v1/admin/users/${id}/credit/adjustments`, token, {
+  return request(`/api/v2/admin/users/${id}/credit/adjustments`, token, {
     method: 'POST',
     body: JSON.stringify({ delta, reason }),
   })
 }
 
 export function reverseCreditEvent(token: string, userId: number, eventId: number, reason: string): Promise<unknown> {
-  return request(`/api/v1/admin/users/${userId}/credit/events/${eventId}/reversal`, token, {
+  return request(`/api/v2/admin/users/${userId}/credit/events/${eventId}/reversal`, token, {
     method: 'POST',
     body: JSON.stringify({ reason }),
   })
@@ -371,18 +371,18 @@ export function getRiskSignals(
 ): Promise<RiskSignalPage> {
   const params = new URLSearchParams({ page: String(filters.page), size: String(filters.size) })
   if (filters.status) params.set('status', filters.status)
-  return request(`/api/v1/admin/risk-signals?${params}`, token)
+  return request(`/api/v2/admin/risk-signals?${params}`, token)
 }
 
 export function confirmRiskSignal(token: string, id: number, delta: number, reason: string): Promise<unknown> {
-  return request(`/api/v1/admin/risk-signals/${id}/confirm`, token, {
+  return request(`/api/v2/admin/risk-signals/${id}/confirm`, token, {
     method: 'POST',
     body: JSON.stringify({ delta, reason }),
   })
 }
 
 export function dismissRiskSignal(token: string, id: number, reason: string): Promise<unknown> {
-  return request(`/api/v1/admin/risk-signals/${id}/dismiss`, token, {
+  return request(`/api/v2/admin/risk-signals/${id}/dismiss`, token, {
     method: 'POST',
     body: JSON.stringify({ reason }),
   })
@@ -404,15 +404,15 @@ export function getIssues(
   if (filters.type) params.set('type', filters.type)
   if (filters.handlingStatus) params.set('handlingStatus', filters.handlingStatus)
   if (filters.overdueOnly) params.set('overdueOnly', 'true')
-  return request(`/api/v1/admin/issues?${params}`, token)
+  return request(`/api/v2/admin/issues?${params}`, token)
 }
 
 export function claimIssue(token: string, id: number): Promise<AdminIssueItem> {
-  return request(`/api/v1/admin/issues/${id}/claim`, token, { method: 'POST' })
+  return request(`/api/v2/admin/issues/${id}/claim`, token, { method: 'POST' })
 }
 
 export function resolveIssue(token: string, id: number, resolution: string): Promise<AdminIssueItem> {
-  return request(`/api/v1/admin/issues/${id}/resolve`, token, {
+  return request(`/api/v2/admin/issues/${id}/resolve`, token, {
     method: 'POST',
     body: JSON.stringify({ resolution }),
   })
@@ -426,15 +426,15 @@ export function getFeedback(
   if (filters.query) params.set('query', filters.query)
   if (filters.type) params.set('type', filters.type)
   if (filters.handlingStatus) params.set('handlingStatus', filters.handlingStatus)
-  return request(`/api/v1/admin/feedback?${params}`, token)
+  return request(`/api/v2/admin/feedback?${params}`, token)
 }
 
 export function claimFeedback(token: string, id: number): Promise<AdminFeedbackItem> {
-  return request(`/api/v1/admin/feedback/${id}/claim`, token, { method: 'POST' })
+  return request(`/api/v2/admin/feedback/${id}/claim`, token, { method: 'POST' })
 }
 
 export function resolveFeedback(token: string, id: number, resolution: string): Promise<AdminFeedbackItem> {
-  return request(`/api/v1/admin/feedback/${id}/resolve`, token, {
+  return request(`/api/v2/admin/feedback/${id}/resolve`, token, {
     method: 'POST',
     body: JSON.stringify({ resolution }),
   })
@@ -447,6 +447,6 @@ export function getAuditLogs(
   const params = new URLSearchParams({ page: String(filters.page), size: String(filters.size) })
   if (filters.query) params.set('query', filters.query)
   if (filters.action) params.set('action', filters.action)
-  return request(`/api/v1/admin/audit-logs?${params}`, token)
+  return request(`/api/v2/admin/audit-logs?${params}`, token)
 }
 

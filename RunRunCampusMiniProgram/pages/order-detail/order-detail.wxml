@@ -14,19 +14,18 @@
     </view>
 
     <view class="card detail-list">
-      <view class="detail-row"><text>取件凭据</text><text>{{order.pickupCode || '仅下单用户与履约骑手可见'}}</text></view>
       <view class="detail-row"><text>服务规格</text><text>{{order.serviceText}}</text></view>
       <view class="detail-row"><text>配送骑手</text><text>{{order.courierName || '等待接单'}}</text></view>
       <view class="detail-row"><text>支付状态</text><text>{{order.paymentText}}</text></view>
       <view class="detail-row"><text>创建时间</text><text>{{order.createdAtText}}</text></view>
     </view>
 
-    <view class="card" wx:if="{{session.user.role === 'CUSTOMER' && (order.status === 'PENDING_ASSIGNMENT' || order.status === 'PENDING_REASSIGNMENT')}}">
+    <view class="card" wx:if="{{session.user.role === 'USER' && (order.status === 'PENDING_ASSIGNMENT' || order.status === 'PENDING_REASSIGNMENT')}}">
       <text class="section-title">用户操作</text>
       <button class="danger" loading="{{acting}}" bindtap="cancelOrder">取消订单</button>
     </view>
 
-    <view class="card" wx:if="{{session.user.role === 'CUSTOMER' && order.proposedPackageServiceType}}">
+    <view class="card" wx:if="{{session.user.role === 'USER' && order.proposedPackageServiceType}}">
       <text class="section-title">确认包裹规格调整</text>
       <text class="muted action-note">骑手建议将“{{order.serviceText}}”调整为“{{order.proposedPackageServiceText}}”。请核对现场包裹后选择。</text>
       <button class="primary" loading="{{acting}}" bindtap="approvePackageSize">同意调整</button>

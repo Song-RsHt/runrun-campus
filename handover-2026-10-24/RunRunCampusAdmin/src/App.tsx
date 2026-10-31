@@ -103,7 +103,7 @@ const statusLabels: Record<OrderStatus, string> = {
 const serviceLabels: Record<ServiceType, string> = {
   LOBBY: '楼下取餐',
   DOOR: '送到门口',
-  EXPRESS: '夜间急送',
+  EXPRESS: '加急配送',
   PACKAGE_SMALL: '快递代取·小件',
   PACKAGE_MEDIUM: '快递代取·中件',
   PACKAGE_MEDIUM_LARGE: '快递代取·中大件',
@@ -120,7 +120,7 @@ const certificationStatusLabels: Record<CourierCertificationStatus, string> = {
 }
 
 const roleLabels: Record<UserRole, string> = {
-  CUSTOMER: '普通用户',
+  USER: '普通用户',
   COURIER: '配送骑手',
   ADMIN: '平台管理员',
 }
@@ -1398,7 +1398,7 @@ function UserManagement({ session, onSessionExpired }: {
   }
 
   const grantCoupon = async () => {
-    if (!selected || selected.role !== 'CUSTOMER') return
+    if (!selected || selected.role !== 'USER') return
     if (!window.confirm(`确认向 ${selected.displayName} 发放一张1元优惠券？`)) return
     setActionLoading(true)
     setActionError('')
@@ -1620,7 +1620,7 @@ function UserManagement({ session, onSessionExpired }: {
                   <button className="secondary-button account-action-button" disabled={actionLoading} onClick={() => openPasswordReset(selected)}>重置登录密码</button>
                 </div>
               )}
-              {selected.role === 'CUSTOMER' && hasPermission(session, 'COUPON_ISSUE') && (
+              {selected.role === 'USER' && hasPermission(session, 'COUPON_ISSUE') && (
                 <DetailSection title="优惠券发放">
                   <p className="readonly-note">固定发放一张1元优惠券，满2元可用，30天内有效。每次操作都会写入审计日志。</p>
                   {couponMessage && <p className="form-success" role="status">{couponMessage}</p>}
@@ -2546,7 +2546,6 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
             <DetailSection title="配送信息">
               <DetailGrid items={[
                 ['取件点', detail.pickupLocation],
-                ['取件码', detail.pickupCode],
                 ['送达位置', detail.order.destination],
                 ['创建时间', formatDate(detail.order.createdAt)],
               ]} />
@@ -2586,7 +2585,7 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
               ]} />
               {hasPermission(session, 'PAYMENT_REVIEW') && detail.order.manualPaymentStatus === 'SUBMITTED' && <>
                 <button className="primary-button open-order-button" disabled={actionLoading} onClick={() => {
-                  if (window.confirm(`确认已收到 ${formatMoney(detail.order.feeCents)} 吗？确认后用户才能查看收货码。`)) {
+                  if (window.confirm(`确认已收到 ${formatMoney(detail.order.feeCents)} 吗？确认后由服务端更新支付状态。`)) {
                     void runOrderAction(() => confirmManualPayment(session.token, detail.order.id))
                   }
                 }}>{actionLoading ? '处理中…' : '确认到账'}</button>
@@ -2638,7 +2637,7 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
 
             {hasPermission(session, 'ORDER_FORCE_COMPLETE') && detail.order.status === 'PICKED_UP' && !detail.order.archivedAt &&
               <DetailSection title="管理员人工完成">
-                <p className="readonly-note">仅在已核对送达凭证和确认收款后使用；此操作跳过收货码，不会自动收款或退款，完成后计入已完成订单。</p>
+                <p className="readonly-note">仅在已核对送达凭证和确认收款后使用；此操作跳过服务端确认，不会自动收款或退款，完成后计入已完成订单。</p>
                 {detail.proofs.some((proof) => proof.type === 'DELIVERY')
                   && detail.order.paymentStatus === 'PAID'
                   && detail.order.paidCents >= detail.order.feeCents
@@ -2652,7 +2651,7 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
                       }
                     }}>
                       <label>操作原因<textarea required minLength={5} maxLength={200} value={completionReason}
-                        onChange={(event) => setCompletionReason(event.target.value)} placeholder="填写核实情况及无法使用收货码的原因" /></label>
+                        onChange={(event) => setCompletionReason(event.target.value)} placeholder="填写核实情况及无法使用服务端确认的原因" /></label>
                       <button className="primary-button open-order-button" type="submit"
                         disabled={actionLoading || completionReason.trim().length < 5}>
                         {actionLoading ? '处理中…' : '确认人工完成'}

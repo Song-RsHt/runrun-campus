@@ -14,7 +14,7 @@ const PACKAGE_SERVICES = [
 const SERVICE_TEXT = {
   LOBBY: '楼下取餐',
   DOOR: '送到门口',
-  EXPRESS: '夜间急送',
+  EXPRESS: '加急配送',
   PACKAGE_SMALL: '小件',
   PACKAGE_MEDIUM: '中件',
   PACKAGE_MEDIUM_LARGE: '中大件',

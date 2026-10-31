@@ -7,7 +7,7 @@ Page({
     phone: '',
     password: '',
     displayName: '',
-    role: 'CUSTOMER',
+    role: 'USER',
     privacyPolicy: null,
     privacyAccepted: false,
     privacyExpanded: false,

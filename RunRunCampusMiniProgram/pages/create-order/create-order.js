@@ -6,7 +6,7 @@ const SERVICES = {
   TAKEOUT: [
     { code: 'LOBBY', label: '楼下取餐', hint: '宿舍楼下交付' },
     { code: 'DOOR', label: '送到门口', hint: '送至宿舍门口' },
-    { code: 'EXPRESS', label: '夜间急送', hint: '22:00 后优先派送' }
+    { code: 'EXPRESS', label: '加急配送', hint: '按服务端营业时段校验' }
   ],
   PACKAGE: [
     { code: 'PACKAGE_SMALL', label: '小件', hint: '文件袋、小配件、小盒药品等' },
@@ -28,7 +28,7 @@ Page({
     zones: [],
     zoneIndex: 0,
     merchant: '',
-    pickupCode: '',
+
     destination: '',
     loading: true,
     submitting: false,
@@ -38,7 +38,7 @@ Page({
   onLoad() {
     const session = requireSession()
     if (!session) return
-    if (session.user.role !== 'CUSTOMER') {
+    if (session.user.role !== 'USER') {
       wx.showModal({
         title: '当前账号是骑手',
         content: '发布代取订单请使用用户账号。',
@@ -73,7 +73,7 @@ Page({
       zones: config.deliveryZones || [],
       zoneIndex: 0,
       merchant: '',
-      pickupCode: ''
+
     })
   },
 
@@ -98,8 +98,8 @@ Page({
   },
 
   async submit() {
-    const { merchant, pickupCode, destination, services, serviceIndex, stations, stationIndex, zones, zoneIndex } = this.data
-    if (!merchant.trim() || !pickupCode.trim() || !destination.trim() || !stations[stationIndex] || !zones[zoneIndex]) {
+    const { merchant, destination, services, serviceIndex, stations, stationIndex, zones, zoneIndex } = this.data
+    if (!merchant.trim() || !destination.trim() || !stations[stationIndex] || !zones[zoneIndex]) {
       this.setData({ error: '请完整填写代取信息' })
       return
     }

@@ -2,7 +2,7 @@
   <view class="hero compact-hero">
     <text class="eyebrow">NEW ORDER</text>
     <text class="hero-title">发布代取</text>
-    <text class="hero-subtitle">提交前请核对取件码、取件点与送达位置</text>
+    <text class="hero-subtitle">提交前请核对取件点与送达位置</text>
   </view>
 
   <view class="loading" wx:if="{{loading}}">正在读取服务配置…</view>
@@ -16,10 +16,6 @@
       <view class="field">
         <text class="field-label">{{kind === 'PACKAGE' ? '快递驿站 / 快递公司' : '餐品商家'}}</text>
         <input class="input" maxlength="80" value="{{merchant}}" data-field="merchant" bindinput="bindField" placeholder="请输入名称" />
-      </view>
-      <view class="field">
-        <text class="field-label">{{kind === 'PACKAGE' ? '取件码' : '订单尾号 / 取餐码'}}</text>
-        <input class="input" maxlength="32" value="{{pickupCode}}" data-field="pickupCode" bindinput="bindField" placeholder="请输入取件凭据" />
       </view>
       <view class="field">
         <text class="field-label">取件点</text>
