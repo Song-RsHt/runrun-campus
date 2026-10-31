@@ -1,6 +1,7 @@
 #requires -Version 7.2
 param([Parameter(Mandatory)][string]$ReportDirectory,
       [string]$BackendImage = 'runrun-campus-backend:admin-mfa-20260903')
+# This script is legacy five-role QA only; it is not evidence for v2 single-ADMIN acceptance.
 $ErrorActionPreference = 'Stop'
 $admin = Split-Path -Parent $PSScriptRoot
 $runtime = Join-Path $env:USERPROFILE '.cache/codex-runtimes/codex-primary-runtime/dependencies/node'

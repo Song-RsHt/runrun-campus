@@ -52,3 +52,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\server\db\tools\verify-m08
 ## 回滚方式
 
 仅回滚本提交即可恢复原管理端页面和 API 封装：`git revert <commit-hash>`。不涉及数据库迁移和生产配置。建议提交后进入独立 QA，重点复核管理员权限、版本冲突、照片资源归属、通知归属隔离和重复点击幂等。
+
+## v2 管理端 QA 边界
+
+`tools/run-admin-role-qa.ps1` 与 `tools/admin-role-qa.cjs` 是 legacy 五角色 QA，不能作为 v2 放行依据。v2 单一 `ADMIN` API 验证使用 `tools/v2-admin-qa.cjs`，要求注入受控测试令牌 `V2_ADMIN_TOKEN`，验证会话角色/启用状态、通知读取、资质列表和会话失效。当前页面仍包含 legacy 登录壳；在 v2 ADMIN 登录页面完成独立浏览器联调前，管理端总验收保持未完成。

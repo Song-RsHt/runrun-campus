@@ -69,6 +69,18 @@ export function login(phone: string, password: string): Promise<MfaChallenge> {
   })
 }
 
+export function loginV2Admin(phone: string, password: string): Promise<{ token: string | null; account: AuthUser | null }> {
+  return request('/api/v2/auth/password/login', undefined, { method: 'POST', body: JSON.stringify({ phone, password }) })
+}
+
+export function getV2AdminSession(token: string): Promise<{ id: string; role: 'ADMIN'; adminEnabled: boolean }> {
+  return request('/api/v2/auth/session', token)
+}
+
+export function logoutV2Admin(token: string, allSessions = false): Promise<{ revoked: boolean }> {
+  return request('/api/v2/auth/logout', token, { method: 'POST', headers: { 'Idempotency-Key': `admin-web-${Date.now()}` }, body: JSON.stringify({ allSessions }) })
+}
+
 export function verifyAdminMfa(challengeToken: string, code: string): Promise<MfaVerification> {
   return request('/api/v1/auth/admin/verify', undefined, {
     method: 'POST',
