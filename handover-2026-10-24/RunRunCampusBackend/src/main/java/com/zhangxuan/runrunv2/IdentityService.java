@@ -18,7 +18,12 @@ public class IdentityService {
     private final BCryptPasswordEncoder passwords = new BCryptPasswordEncoder(12);
     private final String dummyPassword = passwords.encode("synthetic-unmatchable-password");
 
-    public record Account(String id, String role, String status, boolean adminEnabled, long securityVersion, boolean courierEligible) {}
+    public record Account(String id, String role, String status, boolean adminEnabled, long securityVersion, boolean courierEligible) {
+        public List<String> permissions() {
+            if (!"ADMIN".equals(role) || !adminEnabled) return List.of();
+            return List.of("DASHBOARD_VIEW","ORDER_VIEW","ORDER_DISPATCH","ORDER_FORCE_COMPLETE","ORDER_ARCHIVE","PAYMENT_REVIEW","PLATFORM_SETTINGS_MANAGE","ORDER_EXPORT","USER_VIEW","USER_MANAGE","COURIER_VIEW","COURIER_REVIEW","ISSUE_VIEW","ISSUE_MANAGE","FEEDBACK_VIEW","FEEDBACK_MANAGE","AUDIT_VIEW","ADMIN_MANAGE");
+        }
+    }
     public record LoginResult(String loginTicket, String token, Account account) {}
     record User(long id, String role, String status, boolean enabled, long securityVersion, boolean controlled, String passwordHash) {}
     private static final RowMapper<User> USER = (r, n) -> new User(r.getLong("id"), r.getString("role"), r.getString("status"),
