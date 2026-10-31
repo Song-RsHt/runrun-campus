@@ -29,9 +29,6 @@ Page({
     session: null,
     order: null,
     events: [],
-    deliveryCode: '',
-    completionCode: '',
-    payerReference: '',
     packageServices: PACKAGE_SERVICES,
     packageIndex: 0,
     unableReason: '',
@@ -66,9 +63,7 @@ Page({
       view.isPackageOrder = String(order.serviceType || '').startsWith('PACKAGE_')
       view.serviceText = SERVICE_TEXT[order.serviceType] || order.serviceType
       view.proposedPackageServiceText = SERVICE_TEXT[order.proposedPackageServiceType] || order.proposedPackageServiceType
-      view.paymentText = order.paymentMethod === 'PERSONAL_QR_MANUAL'
-        ? (order.paymentStatus === 'PAID' ? '平台已确认到账' : '人工扫码待确认')
-        : (order.paymentStatus === 'PAID' ? '已支付' : '待支付')
+      view.paymentText = order.paymentStatus === 'PAID' ? '已支付' : '待支付'
       const packageIndex = Math.max(0, PACKAGE_SERVICES.findIndex(item => item.code === order.serviceType))
       this.setData({
         order: view,
@@ -163,40 +158,15 @@ Page({
       this.setData({ error: '请先上传送达凭证' })
       return
     }
-    if (!/^\d{6}$/.test(this.data.completionCode)) {
-      this.setData({ error: '请输入用户提供的 6 位收货码' })
-      return
-    }
     this.confirmAction('确认完成配送', '请确保包裹已交付给用户。', () =>
       request(`/api/v2/orders/${this.data.id}/deliver`, {
         method: 'POST',
         data: {
-          deliveryCode: this.data.completionCode,
           expectedVersion: this.data.order.version,
           taskId: this.data.order.taskId,
           deliveryProofId: this.data.order.deliveryProofId,
           locationEventId: this.data.order.deliveryLocationEventId
         }
-      })
-    )
-  },
-
-  requestManualPayment() {
-    this.confirmAction('通知用户付款', '请确认已经到达交付地点，再通知用户扫码付款。', () =>
-      request(`/api/v2/payments/${this.data.order.paymentId}/attempts`, {
-        method: 'POST', data: { expectedVersion: this.data.order.paymentVersion }
-      })
-    )
-  },
-
-  async submitManualPayment() {
-    if (!this.data.payerReference.trim()) {
-      this.setData({ error: '请输入付款微信昵称或手机号后四位' })
-      return
-    }
-    await this.confirmAction('提交核款', '提交后需等待管理员确认到账，请勿提前向骑手提供收货码。', () =>
-      request(`/api/v2/payments/${this.data.order.paymentId}/query`, {
-        method: 'POST', data: { expectedVersion: this.data.order.paymentVersion }
       })
     )
   },
@@ -259,12 +229,4 @@ Page({
     }
   },
 
-  async showDeliveryCode() {
-    try {
-      const order = await request(`/api/v2/orders/${this.data.id}`)
-      this.setData({ deliveryCode: order.deliveryCode || '' })
-    } catch (error) {
-      this.setData({ error: error.message })
-    }
-  }
 })

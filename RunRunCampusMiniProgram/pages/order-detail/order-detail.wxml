@@ -33,18 +33,6 @@
       <button class="danger action-button" loading="{{acting}}" bindtap="rejectPackageSize">拒绝并取消订单</button>
     </view>
 
-    <view class="card payment-card" wx:if="{{session.user.role === 'CUSTOMER' && order.paymentStatus !== 'PAID'}}">
-      <text class="section-title">测试环境支付</text>
-      <text class="muted">当前仅允许隔离环境的模拟支付；真实收款码和生产支付入口已关闭。</text>
-    </view>
-
-    <view class="card" wx:if="{{session.user.role === 'CUSTOMER' && order.status === 'PICKED_UP'}}">
-      <text class="section-title">收货确认</text>
-      <text class="muted" wx:if="{{order.paymentMethod !== 'PERSONAL_QR_MANUAL' || order.paymentStatus === 'PAID'}}">骑手送达时，请当面核对后提供 6 位收货码。</text>
-      <text class="muted" wx:else>管理员确认到账后才能查看收货码。</text>
-      <button class="secondary code-button" bindtap="showDeliveryCode" wx:if="{{order.paymentMethod !== 'PERSONAL_QR_MANUAL' || order.paymentStatus === 'PAID'}}">{{deliveryCode ? ('收货码：' + deliveryCode) : '查看收货码'}}</button>
-    </view>
-
     <view class="card" wx:if="{{session.user.role === 'COURIER' && (order.status === 'PENDING_ASSIGNMENT' || order.status === 'PENDING_REASSIGNMENT')}}">
       <text class="section-title">接单</text>
       <text class="muted action-note">接单前请确认取件点、送达位置和服务规格。</text>
@@ -89,13 +77,7 @@
           </view>
           <button class="compact-button secondary" data-type="DELIVERY" bindtap="uploadProof">拍照 / 相册</button>
         </view>
-        <button class="secondary action-button" loading="{{acting}}" bindtap="requestManualPayment" wx:if="{{order.paymentMethod === 'PERSONAL_QR_MANUAL' && order.paymentStatus === 'UNPAID' && order.manualPaymentStatus === 'NOT_REQUESTED'}}">已到达，通知用户付款</button>
-        <text class="muted payment-wait" wx:if="{{order.paymentMethod === 'PERSONAL_QR_MANUAL' && order.paymentStatus === 'UNPAID' && order.manualPaymentStatus !== 'NOT_REQUESTED'}}">{{order.manualPaymentStatus === 'SUBMITTED' ? '用户已提交付款，等待管理员核款。' : '等待用户完成付款并提交核对。'}}</text>
-        <view class="field completion-field">
-          <text class="field-label">用户收货码</text>
-          <input class="input" type="number" maxlength="6" value="{{completionCode}}" data-field="completionCode" bindinput="bindField" placeholder="请输入 6 位数字" />
-        </view>
-        <button class="primary action-button" loading="{{acting}}" disabled="{{order.paymentMethod === 'PERSONAL_QR_MANUAL' && order.paymentStatus !== 'PAID'}}" bindtap="completeOrder">完成配送</button>
+        <button class="primary action-button" loading="{{acting}}" bindtap="completeOrder">提交送达</button>
       </block>
 
       <view class="divider"></view>
