@@ -7,7 +7,7 @@
 - `handover-2026-10-24/RunRunCampusAdmin/src/App.tsx`：v2 独立首页、导航、ADMIN 门禁、会话恢复/失效回登录、legacy 控制台隔离；通知与骑手资质审核接入 v2 client。
 - `handover-2026-10-24/RunRunCampusAdmin/src/v2Api.ts`：统一 v2 请求、Bearer、错误码、401/403、幂等键、照片受控读取。
 - `handover-2026-10-24/RunRunCampusAdmin/src/styles.css`：v2/legacy 标识样式。
-- `handover-2026-10-24/RunRunCampusAdmin/tools/v2-shell-scan.cjs`：legacy `/api/v1` 静态扫描。
+- `handover-2026-10-24/RunRunCampusAdmin/tools/v2-shell-scan.cjs`：legacy `/api/v1` 静态扫描。`tools/v2-admin-qa.cjs`：单一 ADMIN v2 API QA。
 - `handover-2026-10-24/RunRunCampusAdmin/package.json`：`check:v2-shell` 脚本。`tools/v2-admin-qa.cjs` 改用隔离测试 token 环境变量名。
 
 ## v2 页面和路由
@@ -24,13 +24,14 @@ v2 壳使用客户端视图：首页、通知列表/已读、骑手资质列表/
 
 ## 验证
 
-已运行：`pnpm install --frozen-lockfile`、`pnpm build`、`pnpm run check:v2-shell`。扫描输出列出 `src/api.ts` 中允许保留的 legacy 调用；v2 client 无 `/api/v1`。
+已运行：`pnpm install --frozen-lockfile`、`pnpm build`、`pnpm run check:v2-shell`、`node --check tools/v2-admin-qa.cjs`。`node tools/v2-admin-qa.cjs` 在缺少隔离测试凭证时按预期返回 BLOCKED（退出码 2）。扫描输出列出 `src/api.ts` 中允许保留的 legacy 调用；v2 client 无 `/api/v1`。
 
 未运行：当前 v2 管理员模型下的浏览器/Playwright 隔离环境联调、真实后端 session/通知/审核请求、Network 截图（当前未启动后端，且禁止生产连接）。现有 `admin-role-qa.cjs` 仍验证旧五角色 `/auth/admin/login` 流程，本次在登录响应等待处超时；该脚本与单一 `ADMIN` v2 模型不适用，不能解释为 v2 业务失败，也不能作为浏览器联调通过证据。
 
 已知风险：需要独立 QA 使用隔离测试后端验证登录返回结构、通知用户隔离、已读幂等、版本冲突及浏览器 Network；legacy 组件仍保留旧实现，不能作为 v2 验收证据。旧五角色 QA 脚本不适用于本 v2 管理员模型。
 
 回滚：`git revert <commit>`。建议先进入独立 QA，不合并 main。
+
 
 
 
