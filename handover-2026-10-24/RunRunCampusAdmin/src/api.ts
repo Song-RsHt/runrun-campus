@@ -69,11 +69,12 @@ export function login(phone: string, password: string): Promise<MfaChallenge> {
   })
 }
 
-export function loginV2Admin(phone: string, password: string): Promise<{ token: string | null; account: AuthUser | null }> {
+export type V2AdminAccount = { id: string; role: 'ADMIN'; status: string; adminEnabled: boolean; securityVersion: number; courierEligible: boolean; permissions: string[] }
+export function loginV2Admin(phone: string, password: string): Promise<{ token: string | null; account: V2AdminAccount | null }> {
   return request('/api/v2/auth/password/login', undefined, { method: 'POST', body: JSON.stringify({ phone, password }) })
 }
 
-export function getV2AdminSession(token: string): Promise<{ id: string; role: 'ADMIN'; adminEnabled: boolean }> {
+export function getV2AdminSession(token: string): Promise<V2AdminAccount> {
   return request('/api/v2/auth/session', token)
 }
 

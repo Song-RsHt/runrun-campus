@@ -38,6 +38,9 @@ import {
   unarchiveOrder,
   dismissRiskSignal,
   login,
+  loginV2Admin,
+  getV2AdminSession,
+  logoutV2Admin,
   issueOneYuanCoupon,
   logoutCurrentSession,
   getNotifications,
@@ -79,6 +82,7 @@ import type {
   RiskSignalPage,
   RiskSignalStatus,
   AuthResponse,
+  AuthUser,
   MfaChallenge,
   LoginSession,
   CourierCertificationStatus,
@@ -92,7 +96,7 @@ import type {
   V2Notification,
 } from './types'
 
-const SESSION_KEY = 'runrun-campus-admin-session'
+const SESSION_KEY = 'runrun-campus-v2-admin-session'
 const PAGE_SIZE = 20
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -240,6 +244,8 @@ export default function App() {
   }
 
   const handleLogout = () => {
+    const token = readSession()?.token
+    if (token) void logoutV2Admin(token).catch(() => undefined)
     sessionStorage.removeItem(SESSION_KEY)
     setSession(null)
   }
@@ -253,9 +259,10 @@ export default function App() {
       if (checking) return
       checking = true
       try {
-        const user = await getCurrentUser(token)
+        const account = await getV2AdminSession(token)
         if (!active || readSession()?.token !== token) return
-        if (user.role !== 'ADMIN') { handleLogout(); return }
+        if (account.role !== 'ADMIN' || !account.adminEnabled) { handleLogout(); return }
+        const user: AuthUser = { id: Number(account.id), phone: '', displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: 'SUPER_ADMIN', permissions: account.permissions as AuthUser['permissions'] }
         if (JSON.stringify(readSession()?.user) !== JSON.stringify(user)) {
           const updated = { token, user }
           sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated))
@@ -287,7 +294,6 @@ export default function App() {
 }
 
 function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
-  const [challenge, setChallenge] = useState<MfaChallenge | null>(null)
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -298,8 +304,9 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
     setError('')
     setSubmitting(true)
     try {
-      setChallenge(await login(phone.trim(), password))
-      setPassword('')
+      const result = await loginV2Admin(phone.trim(), password)
+      if (!result.token || !result.account || result.account.role !== 'ADMIN' || !result.account.adminEnabled) throw new Error('v2 管理员未启用或凭证无效')
+      onLogin({ token: result.token, user: { id: Number(result.account.id), phone: phone.trim(), displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: 'SUPER_ADMIN', permissions: result.account.permissions as AuthUser['permissions'] } })
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : '登录失败')
     } finally {
@@ -322,7 +329,7 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
       </section>
 
       <section className="login-panel">
-        {challenge ? <AdminMfaChallenge challenge={challenge} onComplete={onLogin} onCancel={() => setChallenge(null)} /> : <form className="login-card" onSubmit={submit}>
+        <form className="login-card" onSubmit={submit}>
           <div>
             <p className="eyebrow accent">运营工作台</p>
             <h2>管理员登录</h2>
@@ -358,7 +365,7 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
             {submitting ? '正在验证…' : '登录运营后台'}
           </button>
           <p className="security-note">仅管理员可访问。请勿在公共设备保存或共享账号。</p>
-        </form>}
+        </form>
       </section>
     </main>
   )
