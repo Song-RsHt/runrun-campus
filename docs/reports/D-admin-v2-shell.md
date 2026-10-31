@@ -1,6 +1,6 @@
 # 管理端 v2 壳独立交付报告
 
-分支：`fix/admin-v2-shell`；worktree：`D:/biancheng/RunRunCampus-worktrees/rrc-fix-admin-v2-shell`；提交：`a6a34a64c7e28bed093085b8a1e0ee4701901eab`
+分支：`fix/admin-v2-shell`；worktree：`D:/biancheng/RunRunCampus-worktrees/rrc-fix-admin-v2-shell`；提交：`d31f358df6709e49771f8b6c327ad9a5458875bf`
 
 ## 修改文件
 
@@ -31,4 +31,5 @@ v2 壳使用客户端视图：首页、通知列表/已读、骑手资质列表/
 已知风险：需要独立 QA 使用隔离测试后端验证登录返回结构、通知用户隔离、已读幂等、版本冲突及浏览器 Network；legacy 组件仍保留旧实现，不能作为 v2 验收证据。
 
 回滚：`git revert <commit>`。建议先进入独立 QA，不合并 main。
+
 
