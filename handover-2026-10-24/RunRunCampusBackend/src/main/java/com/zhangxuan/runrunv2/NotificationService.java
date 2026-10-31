@@ -37,8 +37,17 @@ public class NotificationService {
 
     @Scheduled(fixedDelayString = "${rrc.notifications.worker-delay-ms:30000}")
     public void processDue() {
+        if (!m08Installed()) return;
         for (Map<String,Object> item : claim(20)) {
             complete(((Number)item.get("id")).longValue(), true, null);
+        }
+    }
+
+    private boolean m08Installed() {
+        try {
+            return Boolean.TRUE.equals(db.queryForObject("SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL", Boolean.class));
+        } catch (RuntimeException ignored) {
+            return false;
         }
     }
 }

@@ -37,11 +37,13 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\server\db\tools\verify-m08
 
 退出码 0，输出 `PASS: M00→M07→M08 strict migration, duplicate rejection, ownership and rollback guard`。验证器覆盖通知入队、站内消息读取/已读、outbox 幂等、并发 claim、租约恢复、失败退避和未授权访问拒绝。
 
+通知专项契约测试本身不启动 Docker；需要真实 PostgreSQL 行为验证时，使用上述隔离 runner/Testcontainers。定时 worker 会先检测 `claim_notification_outbox(integer)`，在仅有 M00–M07 的数据库上安全跳过，不产生 SQL 错误。
+
 ## 未运行验证
 
 - 未连接真实微信、支付或生产配置。
 - 未在运行中的隔离后端执行浏览器端到端联调；需独立 QA 使用测试身份重跑 API 权限和页面流程。
-- 未运行完整 Maven 回归，本任务仅限管理端。
+- 完整 Maven 回归依赖 Docker/Testcontainers；Docker 不可用时只能记录环境错误，不能将其解释为业务断言失败。
 
 ## 已知风险
 
