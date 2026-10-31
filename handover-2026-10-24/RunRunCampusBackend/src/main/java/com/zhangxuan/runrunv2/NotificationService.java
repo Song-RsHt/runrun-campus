@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
 public class NotificationService {
+    public record DeliveryResult(boolean sent, String error) {}
     private final JdbcTemplate db;
     private final IdentityService identity;
     public NotificationService(JdbcTemplate db, IdentityService identity) { this.db = db; this.identity = identity; }
