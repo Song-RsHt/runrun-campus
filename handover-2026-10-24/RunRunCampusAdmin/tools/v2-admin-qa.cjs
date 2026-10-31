@@ -1,8 +1,8 @@
-// v2 ADMIN API smoke test. Requires V2_ADMIN_TOKEN from a controlled test login.
+// v2 ADMIN API smoke test. Requires RR_V2_TEST_TOKEN from a controlled test login.
 const assert = require('node:assert/strict');
 const base = process.env.V2_ADMIN_BASE_URL || 'http://127.0.0.1:8080';
-const token = process.env.V2_ADMIN_TOKEN;
-if (!token) { console.error('BLOCKED: set V2_ADMIN_TOKEN; legacy five-role QA is not a v2 pass.'); process.exit(2); }
+const token = process.env.RR_V2_TEST_TOKEN;
+if (!token) { console.error('BLOCKED: set RR_V2_TEST_TOKEN; legacy five-role QA is not a v2 pass.'); process.exit(2); }
 async function call(path, method='GET', body, expected=200) {
   const r = await fetch(base + path, {method, headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'}, ...(body ? {body:JSON.stringify(body)} : {})});
   assert.equal(r.status, expected, `${method} ${path}`); return r;

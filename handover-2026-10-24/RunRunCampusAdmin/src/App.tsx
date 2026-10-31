@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { V2ApiError, loginV2Admin, getV2AdminSession, logoutV2Admin, getV2Couriers, getV2CourierPerformance, decideV2CourierCertification, getV2StudentCardPhoto, getV2Notifications, markV2NotificationRead } from './v2Api'
 import type { FormEvent, ReactNode } from 'react'
 import { AdminMfaChallenge, AdminMfaSettings } from './AdminMfa'
 import { CommandCenter } from './CommandCenter'
 import {
   ApiError,
-  decideCourierCertification,
   changeAdminRole,
   changeOwnAdminPassword,
   claimIssue,
@@ -13,9 +13,6 @@ import {
   exportOrders,
   getAuditLogs,
   getAdminAccounts,
-  getCourierPerformance,
-  getStudentCardPhoto,
-  getCouriers,
   getCurrentUser,
   getDashboard,
   getFeedback,
@@ -38,13 +35,8 @@ import {
   unarchiveOrder,
   dismissRiskSignal,
   login,
-  loginV2Admin,
-  getV2AdminSession,
-  logoutV2Admin,
   issueOneYuanCoupon,
   logoutCurrentSession,
-  getNotifications,
-  markNotificationRead,
   restoreUser,
   resolveIssue,
   resolveFeedback,
@@ -96,7 +88,7 @@ import type {
   V2Notification,
 } from './types'
 
-const SESSION_KEY = 'runrun-campus-v2-admin-session'
+const SESSION_KEY = 'runrun_admin_session_v2'
 const PAGE_SIZE = 20
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -269,8 +261,7 @@ export default function App() {
           setSession(current => current?.token === token ? updated : current)
         }
       } catch (reason) {
-        if (active && readSession()?.token === token && reason instanceof ApiError &&
-          (reason.status === 401 || reason.status === 403)) handleLogout()
+        if (active && readSession()?.token === token && isSessionFailure(reason)) handleLogout()
       } finally {
         checking = false
       }
@@ -289,7 +280,7 @@ export default function App() {
   }, [session?.token])
 
   return session
-    ? <AdminConsole session={session} onLogout={handleLogout} onSessionChange={handleLogin} />
+    ? <V2AdminConsole session={session} onLogout={handleLogout} />
     : <LoginPage onLogin={handleLogin} />
 }
 
@@ -371,6 +362,30 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
   )
 }
 
+function V2AdminConsole({ session, onLogout }: { session: AuthResponse; onLogout: () => void }) {
+  const [view, setView] = useState<'home' | 'notifications' | 'couriers'>('home')
+  const [unread, setUnread] = useState(0)
+  useEffect(() => {
+    let active = true
+    getV2Notifications(session.token).then(items => { if (active) setUnread(items.filter(item => !item.readAt).length) }).catch(reason => { if (reason instanceof V2ApiError && (reason.status === 401 || reason.status === 403)) onLogout() })
+    return () => { active = false }
+  }, [session.token, onLogout, view])
+  return <div className="admin-layout">
+    <aside className="sidebar">
+      <div className="sidebar-brand"><span className="brand-mark small">跑</span><span><strong>跑跑代取</strong><small>管理端 v2</small></span></div>
+      <p className="legacy-banner">V2 ADMIN · 独立会话</p>
+      <nav aria-label="v2 管理功能">
+        <button className={`nav-item ${view === 'home' ? 'active' : ''}`} onClick={() => setView('home')}><span>总</span>首页</button>
+        <button className={`nav-item ${view === 'notifications' ? 'active' : ''}`} onClick={() => setView('notifications')}><span>信</span>通知{unread > 0 ? ` (${unread})` : ''}</button>
+        {hasPermission(session, 'COURIER_VIEW') && <button className={`nav-item ${view === 'couriers' ? 'active' : ''}`} onClick={() => setView('couriers')}><span>骑</span>骑手资质</button>}
+      </nav>
+      <div className="sidebar-user"><span className="avatar">管</span><span><strong>v2 管理员</strong><small>ADMIN · 独立会话</small></span><button onClick={() => { onLogout() }} title="退出登录">退出</button></div>
+    </aside>
+    {view === 'home' && <main className="content"><header className="page-header"><div><p className="eyebrow accent">ADMIN V2 HOME</p><h1>管理端 v2 首页</h1><p className="muted">独立 v2 管理员工作台。当前仅开放通知和骑手资质审核。</p></div></header><section className="summary-row"><article><span>身份</span><strong className="text-value">ADMIN</strong><small>唯一 v2 管理员角色</small></article><article><span>会话</span><strong className="text-value">已恢复</strong><small>runrun_admin_session_v2</small></article><article><span>未读通知</span><strong>{unread}</strong><small>按当前管理员隔离</small></article></section><section className="orders-card"><p className="readonly-note">订单、用户、工单、反馈和审计仍保留在 legacy 页面，未加入 v2 导航，也不参与 v2 验收。</p></section></main>}
+    {view === 'notifications' && <NotificationManagement session={session} onSessionExpired={onLogout} />}
+    {view === 'couriers' && <CourierManagement session={session} onSessionExpired={onLogout} />}
+  </div>
+}
 type AdminView = 'dashboard' | 'orders' | 'couriers' | 'users' | 'risk' | 'issues' | 'feedback' | 'accounts' | 'notifications' | 'audit'
 
 const viewPermissions: Record<AdminView, AdminPermission> = {
@@ -386,11 +401,15 @@ const viewPermissions: Record<AdminView, AdminPermission> = {
   audit: 'AUDIT_VIEW',
 }
 
+function isSessionFailure(reason: unknown): boolean {
+  return reason instanceof ApiError || reason instanceof V2ApiError ? (reason.status === 401 || reason.status === 403) : false
+}
+
 function hasPermission(session: AuthResponse, permission: AdminPermission) {
   return session.user.permissions.includes(permission)
 }
 
-function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthResponse; onLogout: () => void; onSessionChange: (session: AuthResponse) => void }) {
+function LegacyAdminConsole({ session, onLogout, onSessionChange }: { session: AuthResponse; onLogout: () => void; onSessionChange: (session: AuthResponse) => void }) {
   const [mfaSettingsOpen, setMfaSettingsOpen] = useState(false)
   const [sessionsOpen, setSessionsOpen] = useState(false)
   const [activeView, setActiveView] = useState<AdminView>('dashboard')
@@ -428,7 +447,7 @@ function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthRes
   const visibleView = hasPermission(session, viewPermissions[activeView]) ? activeView : 'dashboard'
 
   const expireSession = (reason: unknown) => {
-    if (reason instanceof ApiError && reason.status === 401) {
+    if (isSessionFailure(reason)) {
       onLogout()
       return true
     }
@@ -742,7 +761,7 @@ function DashboardManagement({ session, onNavigate, onOpenOrder, onSessionExpire
       .then((result) => active && setDashboard(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -831,7 +850,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
   const [actionError, setActionError] = useState('')
 
   const handleError = (reason: unknown, fallback: string) => {
-    if (reason instanceof ApiError && reason.status === 401) {
+    if (isSessionFailure(reason)) {
       onSessionExpired()
       return ''
     }
@@ -842,7 +861,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     let active = true
     setLoading(true)
     setError('')
-    getCouriers(session.token, { query, status, page, size: PAGE_SIZE })
+    getV2Couriers(session.token, { query, status, page, size: PAGE_SIZE })
       .then((result) => active && setCouriers(result))
       .catch((reason: unknown) => {
         if (!active) return
@@ -862,7 +881,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     let active = true
     setPerformanceLoading(true)
     setPerformanceError('')
-    getCourierPerformance(session.token, selectedCourierId, performancePage, 10)
+    getV2CourierPerformance(session.token, selectedCourierId, performancePage, 10)
       .then((result) => active && setPerformance(result))
       .catch((reason: unknown) => {
         if (!active) return
@@ -892,7 +911,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     setActionLoading(true)
     setActionError('')
     try {
-      await decideCourierCertification(session.token, selected.certificationId, {
+      await decideV2CourierCertification(session.token, selected.certificationId, {
         decision: 'APPROVE', expectedVersion: selected.version, photoResourceId: selected.photoResourceId, reason: '管理员审核通过',
       })
       setSelected(null)
@@ -911,7 +930,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     setActionError('')
     try {
       if (selected.version === undefined) throw new Error('当前资质缺少版本号，不能安全审核')
-      await decideCourierCertification(session.token, selected.certificationId, {
+      await decideV2CourierCertification(session.token, selected.certificationId, {
         decision: 'REJECT', expectedVersion: selected.version, photoResourceId: null, reason: rejectionReason.trim(),
       })
       setSelected(null)
@@ -1145,7 +1164,7 @@ function RiskManagement({ session, onSessionExpired }: {
       .then((result) => active && setSignals(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+        if (isSessionFailure(reason)) onSessionExpired()
         else setError(reason instanceof Error ? reason.message : '风险信号加载失败')
       })
       .finally(() => active && setLoading(false))
@@ -1175,7 +1194,7 @@ function RiskManagement({ session, onSessionExpired }: {
       else await dismissRiskSignal(session.token, signal.id, reason)
       setReloadKey((value) => value + 1)
     } catch (reasonValue) {
-      if (reasonValue instanceof ApiError && reasonValue.status === 401) onSessionExpired()
+      if (isSessionFailure(reasonValue)) onSessionExpired()
       else setError(reasonValue instanceof Error ? reasonValue.message : '风险信号处理失败')
     } finally {
       setActionId(null)
@@ -1266,7 +1285,7 @@ function UserManagement({ session, onSessionExpired }: {
       .then((result) => active && setUsers(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -1288,7 +1307,7 @@ function UserManagement({ session, onSessionExpired }: {
       .then((result) => active && setCredit(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+        if (isSessionFailure(reason)) onSessionExpired()
         else setCreditError(reason instanceof Error ? reason.message : '信用档案加载失败')
       })
       .finally(() => active && setCreditLoading(false))
@@ -1321,7 +1340,7 @@ function UserManagement({ session, onSessionExpired }: {
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) {
+      if (isSessionFailure(reason)) {
         onSessionExpired()
       } else {
         setActionError(reason instanceof Error ? reason.message : '账号状态修改失败')
@@ -1341,7 +1360,7 @@ function UserManagement({ session, onSessionExpired }: {
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '登录解锁失败')
     } finally {
       setActionLoading(false)
@@ -1371,7 +1390,7 @@ function UserManagement({ session, onSessionExpired }: {
       setPasswordTarget(null)
       window.alert(`${passwordTarget.displayName} 的密码已重置，原有登录会话已失效。`)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setPasswordError(reason instanceof Error ? reason.message : '密码重置失败')
     } finally {
       setPasswordSubmitting(false)
@@ -1388,7 +1407,7 @@ function UserManagement({ session, onSessionExpired }: {
       const granted = await issueOneYuanCoupon(session.token, selected.id)
       setCouponMessage(`已发放“${granted.title}”，有效期至 ${formatDate(granted.expiresAt)}`)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '优惠券发放失败')
     } finally {
       setActionLoading(false)
@@ -1402,7 +1421,7 @@ function UserManagement({ session, onSessionExpired }: {
     try {
       setCredit(await getUserCredit(session.token, selected.id))
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setCreditError(reason instanceof Error ? reason.message : '信用档案加载失败')
     } finally {
       setCreditLoading(false)
@@ -1430,7 +1449,7 @@ function UserManagement({ session, onSessionExpired }: {
       setCreditReason('')
       await reloadCredit()
     } catch (reasonValue) {
-      if (reasonValue instanceof ApiError && reasonValue.status === 401) onSessionExpired()
+      if (isSessionFailure(reasonValue)) onSessionExpired()
       else setCreditError(reasonValue instanceof Error ? reasonValue.message : '信用分调整失败')
     } finally {
       setActionLoading(false)
@@ -1448,7 +1467,7 @@ function UserManagement({ session, onSessionExpired }: {
       await reverseCreditEvent(session.token, selected.id, eventId, reason)
       await reloadCredit()
     } catch (reasonValue) {
-      if (reasonValue instanceof ApiError && reasonValue.status === 401) onSessionExpired()
+      if (isSessionFailure(reasonValue)) onSessionExpired()
       else setCreditError(reasonValue instanceof Error ? reasonValue.message : '信用记录撤销失败')
     } finally {
       setActionLoading(false)
@@ -1663,7 +1682,7 @@ function IssueManagement({ session, onSessionExpired, onOpenOrder, initialStatus
       .then((result) => active && setIssues(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -1695,7 +1714,7 @@ function IssueManagement({ session, onSessionExpired, onOpenOrder, initialStatus
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '领取工单失败')
     } finally {
       setActionLoading(false)
@@ -1713,7 +1732,7 @@ function IssueManagement({ session, onSessionExpired, onOpenOrder, initialStatus
       setResolution('')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '解决工单失败')
     } finally {
       setActionLoading(false)
@@ -1901,7 +1920,7 @@ function FeedbackManagement({ session, onSessionExpired, initialStatus = '' }: {
       .then((result) => active && setFeedback(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -1927,7 +1946,7 @@ function FeedbackManagement({ session, onSessionExpired, initialStatus = '' }: {
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '领取反馈失败')
     } finally {
       setActionLoading(false)
@@ -1945,7 +1964,7 @@ function FeedbackManagement({ session, onSessionExpired, initialStatus = '' }: {
       setResolution('')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '反馈处理失败')
     } finally {
       setActionLoading(false)
@@ -2068,7 +2087,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       .then((result) => active && setAccounts(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+        if (isSessionFailure(reason)) onSessionExpired()
         else setError(reason instanceof Error ? reason.message : '管理员账号加载失败')
       })
       .finally(() => active && setLoading(false))
@@ -2087,7 +2106,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       setAdminRole('OPERATIONS')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setFormError(reason instanceof Error ? reason.message : '管理员创建失败')
     } finally {
       setSubmitting(false)
@@ -2103,7 +2122,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       await changeAdminRole(session.token, account.id, role)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setError(reason instanceof Error ? reason.message : '岗位调整失败')
     } finally {
       setChangingId(null)
@@ -2121,7 +2140,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       else await restoreAdminAccount(session.token, account.id)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setError(reason instanceof Error ? reason.message : '管理员状态修改失败')
     } finally {
       setChangingId(null)
@@ -2137,7 +2156,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       await unlockAdminLogin(session.token, account.id)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setError(reason instanceof Error ? reason.message : '管理员登录解锁失败')
     } finally {
       setChangingId(null)
@@ -2155,7 +2174,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       setNewPassword('')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setPasswordError(reason instanceof Error ? reason.message : '密码重置失败')
     } finally {
       setSubmitting(false)
@@ -2171,7 +2190,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       setMfaGrant(result.resetGrant)
       setReloadKey(value => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setMfaError(reason instanceof Error ? reason.message : '认证器重置失败')
     } finally { setSubmitting(false) }
   }
@@ -2262,7 +2281,7 @@ function SessionSecurityDialog({ session, onClose, onSessionExpired }: {
     try {
       setItems(await getLoginSessions(session.token))
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) {
+      if (isSessionFailure(reason)) {
         onSessionExpired()
         return
       }
@@ -2332,16 +2351,16 @@ function NotificationManagement({ session, onSessionExpired }: {
   useEffect(() => {
     let active = true
     setLoading(true); setError('')
-    getNotifications(session.token).then(value => active && setItems(value)).catch(reason => {
+    getV2Notifications(session.token).then(value => active && setItems(value)).catch(reason => {
       if (!active) return
-      if (reason instanceof ApiError && reason.status === 401) { onSessionExpired(); return }
+      if (isSessionFailure(reason)) { onSessionExpired(); return }
       setError(reason instanceof Error ? reason.message : '站内消息加载失败')
     }).finally(() => active && setLoading(false))
     return () => { active = false }
   }, [onSessionExpired, revision, session.token])
   const markRead = async (item: V2Notification) => {
-    try { await markNotificationRead(session.token, item.id); setItems(current => current.map(value => value.id === item.id ? { ...value, readAt: value.readAt ?? new Date().toISOString() } : value)) }
-    catch (reason) { if (reason instanceof ApiError && reason.status === 401) onSessionExpired(); else setError(reason instanceof Error ? reason.message : '消息已读失败') }
+    try { await markV2NotificationRead(session.token, item.id); setItems(current => current.map(value => value.id === item.id ? { ...value, readAt: value.readAt ?? new Date().toISOString() } : value)) }
+    catch (reason) { if (isSessionFailure(reason)) onSessionExpired(); else setError(reason instanceof Error ? reason.message : '消息已读失败') }
   }
   return <main className="content">
     <header className="page-header"><div><p className="eyebrow accent">V2 IN-APP NOTIFICATIONS</p><h1>站内消息</h1><p className="muted">读取 v2 可靠落库消息；微信订阅发送失败不影响站内消息。</p></div><button className="secondary-button" onClick={() => setRevision(value => value + 1)}>刷新</button></header>
@@ -2377,7 +2396,7 @@ function AuditManagement({ session, onSessionExpired }: {
       .then((result) => active && setLogs(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -2692,7 +2711,7 @@ function StudentCardPreview({ token, certificationId, photoResourceId }: { token
   useEffect(() => {
     const controller = new AbortController()
     let objectUrl: string | undefined
-    void getStudentCardPhoto(token, certificationId, photoResourceId, controller.signal).then((blob) => {
+    void getV2StudentCardPhoto(token, certificationId, photoResourceId, controller.signal).then((blob) => {
       if (controller.signal.aborted) return
       objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setError('')
     }).catch((reason) => {
