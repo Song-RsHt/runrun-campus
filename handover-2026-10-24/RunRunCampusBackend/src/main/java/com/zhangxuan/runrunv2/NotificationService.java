@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.scheduling.annotation.Scheduled;
 
 @Service
 public class NotificationService {
@@ -36,19 +35,4 @@ public class NotificationService {
         db.queryForObject("SELECT runrun_v2.complete_notification_outbox(?,?,?)", Object.class, id, success, error);
     }
 
-    @Scheduled(fixedDelayString = "${rrc.notifications.worker-delay-ms:30000}")
-    public void processDue() {
-        if (!m08Installed()) return;
-        for (Map<String,Object> item : claim(20)) {
-            complete(((Number)item.get("id")).longValue(), true, null);
-        }
-    }
-
-    private boolean m08Installed() {
-        try {
-            return Boolean.TRUE.equals(db.queryForObject("SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL", Boolean.class));
-        } catch (RuntimeException ignored) {
-            return false;
-        }
-    }
 }

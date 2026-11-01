@@ -42,6 +42,7 @@ public class NotificationOutboxWorker {
 
     @Scheduled(fixedDelayString = "${rrc.notifications.worker-delay-ms:15000}")
     public void runOnce() {
+        if (!m08Installed()) return;
         transactions.executeWithoutResult(status -> db.queryForObject("SELECT runrun_v2.run_notification_review_timers()", Integer.class));
         for (Delivery delivery : claim(50)) {
             if ("IN_APP".equals(delivery.channel())) {
@@ -54,6 +55,14 @@ public class NotificationOutboxWorker {
             } catch (Exception e) {
                 complete(delivery.id(), false, "WECHAT_SEND_FAILED");
             }
+        }
+    }
+
+    private boolean m08Installed() {
+        try {
+            return Boolean.TRUE.equals(db.queryForObject("SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL AND to_regprocedure('runrun_v2.run_notification_review_timers()') IS NOT NULL", Boolean.class));
+        } catch (RuntimeException ignored) {
+            return false;
         }
     }
 

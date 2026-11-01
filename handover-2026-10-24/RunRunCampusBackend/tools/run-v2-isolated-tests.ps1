@@ -32,12 +32,15 @@ try {
     'rrc_0001__create_v2_schema.sql','rrc_0002__create_identity_foundation.sql','rrc_0003__identity_runtime.sql',
     'rrc_0100__orders_and_service_config.sql','rrc_0200__mock_payments.sql','rrc_0300__fulfillment.sql',
     'rrc_0004__adjustments_after_sales.sql','rrc_0006__courier_evidence_governance.sql',
-    'rrc_0101__evidence_order_constraints.sql','rrc_0500__settlement_freeze.sql'
+    'rrc_0101__evidence_order_constraints.sql','rrc_0500__settlement_freeze.sql',
+    'rrc_0007__notifications.sql'
   )
   foreach ($file in $chain) { Invoke-Sql rrc_v2_test (Get-Content -Raw -Encoding UTF8 (Join-Path $migrationRoot $file)) | Out-Null }
   $null = Invoke-Sql rrc_v2_test 'CREATE TABLE public.v2_test_sentinel(id bigint);'
   $tables = Invoke-Sql rrc_v2_test "SELECT count(*) FROM pg_tables WHERE schemaname='runrun_v2'"
   if (($tables -join '').Trim() -eq '0') { throw 'runrun_v2 initialization produced no tables.' }
+  $m08 = Invoke-Sql rrc_v2_test "SELECT (to_regclass('runrun_v2.notification_outbox') IS NOT NULL AND to_regclass('runrun_v2.user_notifications') IS NOT NULL AND to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL AND to_regprocedure('runrun_v2.complete_notification_outbox(bigint,boolean,text)') IS NOT NULL AND to_regprocedure('runrun_v2.run_notification_review_timers()') IS NOT NULL AND EXISTS (SELECT 1 FROM pg_trigger WHERE tgname='m08_v2_orders_notify'))"
+  if (([string]$m08).Trim() -ne 't') { throw 'M08 notification migration is incomplete.' }
   $publicCount = Invoke-Sql rrc_v2_test "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relkind IN ('r','p','v','m','S','f')"
   if (([string]$publicCount).Trim() -ne '1') { throw 'Unexpected public schema state.' }
   Write-Output ('PASS: PostgreSQL 16 v2 chain initialized in runrun_v2; public sentinel isolated (' + ([string]$tables).Trim() + ' tables)')
