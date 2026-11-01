@@ -27,15 +27,11 @@ import {
   reverseCreditEvent,
   getRiskSignals,
   confirmRiskSignal,
-  confirmManualPayment,
-  rejectManualPayment,
-  confirmCourierSettlement,
   forceCompleteOrder,
   archiveOrder,
   unarchiveOrder,
   dismissRiskSignal,
   login,
-  issueOneYuanCoupon,
   logoutCurrentSession,
   restoreUser,
   resolveIssue,
@@ -186,7 +182,6 @@ const auditActionLabels: Record<AdminAuditAction, string> = {
   ORDER_ARCHIVED: '归档订单',
   ORDER_UNARCHIVED: '恢复归档订单',
   PLATFORM_SETTINGS_UPDATED: '调整运营设置',
-  COUPON_ISSUED: '账户调整',
   CREDIT_ADJUSTED: '人工调整信用分',
   CREDIT_EVENT_REVERSED: '撤销信用记录',
   RISK_SIGNAL_CONFIRMED: '确认风险信号',
@@ -2600,7 +2595,6 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
                     {actionLoading ? '处理中…' : '恢复到未归档列表'}
                   </button>
                 </> : detail.order.paymentStatus === 'REFUNDING'
-                  || detail.order.courierSettlementStatus === 'PENDING'
                   || detail.order.status === 'COMPLETED' && detail.order.paymentStatus !== 'PAID'
                   ? <p className="empty-inline">仍有待处理的收款、退款或骑手结算，暂不能归档。</p>
                   : <form className="rejection-form" onSubmit={(event) => {
@@ -2691,24 +2685,6 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
 
 function formatMoney(cents: number) {
   return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(cents / 100)
-}
-
-function manualPaymentStatusLabel(status: AdminOrderDetail['order']['manualPaymentStatus']) {
-  return {
-    NOT_REQUESTED: '待骑手到达',
-    AWAITING_PAYMENT: '待用户付款',
-    SUBMITTED: '待管理员核款',
-    CONFIRMED: '已确认到账',
-    REJECTED: '核款未通过',
-  }[status]
-}
-
-function courierSettlementStatusLabel(status: AdminOrderDetail['order']['courierSettlementStatus']) {
-  return {
-    NOT_APPLICABLE: '尚未生成结算',
-    PENDING: '待人工结算',
-    SETTLED: '已登记结算',
-  }[status]
 }
 
 function formatDate(value: string) {

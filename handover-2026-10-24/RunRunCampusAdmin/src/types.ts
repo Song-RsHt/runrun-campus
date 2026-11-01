@@ -15,7 +15,6 @@ export type AdminPermission =
   | 'ORDER_EXPORT'
   | 'USER_VIEW'
   | 'USER_MANAGE'
-  | 'COUPON_ISSUE'
   | 'COURIER_VIEW'
   | 'COURIER_REVIEW'
   | 'ISSUE_VIEW'
@@ -174,8 +173,6 @@ export interface AdminOrderListItem {
   paymentMethod: 'MOCK' | 'WECHAT_APP'
   paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDING' | 'REFUNDED'
   paidCents: number
-  manualPaymentStatus: 'NOT_REQUESTED' | 'AWAITING_PAYMENT' | 'SUBMITTED' | 'CONFIRMED' | 'REJECTED'
-  courierSettlementStatus: 'NOT_APPLICABLE' | 'PENDING' | 'SETTLED'
   customer: UserSummary
   courier: UserSummary | null
   createdAt: string
@@ -195,10 +192,6 @@ export interface AdminOrderDetail {
   order: AdminOrderListItem
   pickupLocation: string
   originalFeeCents: number
-  discountCents: number
-  couponTitle: string | null
-  membershipUsed: boolean
-  membershipPlanTitle: string | null
   ratingScore: number | null
   ratingComment: string | null
   ratedAt: string | null
@@ -375,16 +368,6 @@ export interface RiskSignalPage {
   totalPages: number
 }
 
-export interface AdminCouponGrant {
-  couponId: number
-  userId: number
-  displayName: string
-  title: string
-  discountCents: number
-  minimumOrderCents: number
-  expiresAt: string
-}
-
 export type OrderIssueType = 'MISSING_ITEM' | 'WRONG_ORDER' | 'CANNOT_CONTACT' | 'DELIVERY_DELAY' | 'OTHER'
 export type OrderIssueHandlingStatus = 'PENDING' | 'PROCESSING' | 'RESOLVED'
 
@@ -476,7 +459,7 @@ export type AdminAuditAction =
   | 'ORDER_ARCHIVED'
   | 'ORDER_UNARCHIVED'
   | 'PLATFORM_SETTINGS_UPDATED'
-  | 'COUPON_ISSUED'
+
   | 'CREDIT_ADJUSTED'
   | 'CREDIT_EVENT_REVERSED'
   | 'RISK_SIGNAL_CONFIRMED'

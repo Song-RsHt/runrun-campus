@@ -21,7 +21,7 @@ import type {
   CreditProfile,
   RiskSignalPage,
   RiskSignalStatus,
-  AdminCouponGrant,
+
   MfaChallenge,
   MfaVerification,
   LoginSession,
@@ -341,10 +341,6 @@ export function resetUserPassword(token: string, id: number, password: string): 
     method: 'PUT',
     body: JSON.stringify({ password }),
   })
-}
-
-export function issueOneYuanCoupon(token: string, id: number): Promise<AdminCouponGrant> {
-  return request(`/api/v2/admin/users/${id}/coupons/one-yuan`, token, { method: 'POST' })
 }
 
 export function getUserCredit(token: string, id: number): Promise<CreditProfile> {
