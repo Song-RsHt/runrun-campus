@@ -186,7 +186,7 @@ const auditActionLabels: Record<AdminAuditAction, string> = {
   ORDER_ARCHIVED: '归档订单',
   ORDER_UNARCHIVED: '恢复归档订单',
   PLATFORM_SETTINGS_UPDATED: '调整运营设置',
-  COUPON_ISSUED: '发放1元优惠券',
+  COUPON_ISSUED: '账户调整',
   CREDIT_ADJUSTED: '人工调整信用分',
   CREDIT_EVENT_REVERSED: '撤销信用记录',
   RISK_SIGNAL_CONFIRMED: '确认风险信号',
@@ -657,11 +657,7 @@ function LegacyAdminConsole({ session, onLogout, onSessionChange }: { session: A
                       <td><strong>{order.customer.displayName}</strong><small>{maskPhone(order.customer.phone)}</small></td>
                       <td>{order.courier ? <><strong>{order.courier.displayName}</strong><small>{maskPhone(order.courier.phone)}</small></> : <span className="muted">未分配</span>}</td>
                       <td>{order.destination}</td>
-                      <td className="money">{order.paymentMethod === 'CASH_ON_DELIVERY'
-                        ? `${order.paymentStatus === 'PAID' ? '到付已结清' : '到付'} ${formatMoney(order.feeCents)}`
-                        : order.paymentMethod === 'PERSONAL_QR_MANUAL'
-                          ? `${manualPaymentStatusLabel(order.manualPaymentStatus)} ${formatMoney(order.feeCents)}`
-                          : `${order.paymentStatus === 'PAID' ? '线上已支付' : '线上待支付'} ${formatMoney(order.feeCents)}`}</td>
+                      <td className="money">{order.paymentStatus === 'PAID' ? '已支付' : order.paymentStatus === 'REFUNDED' ? '已退款' : '待支付'} {formatMoney(order.feeCents)}</td>
                       <td>{formatDate(order.createdAt)}</td>
                       <td><button className="text-button" onClick={() => setSelectedId(order.id)}>查看详情</button></td>
                     </tr>
@@ -1397,23 +1393,6 @@ function UserManagement({ session, onSessionExpired }: {
     }
   }
 
-  const grantCoupon = async () => {
-    if (!selected || selected.role !== 'USER') return
-    if (!window.confirm(`确认向 ${selected.displayName} 发放一张1元优惠券？`)) return
-    setActionLoading(true)
-    setActionError('')
-    setCouponMessage('')
-    try {
-      const granted = await issueOneYuanCoupon(session.token, selected.id)
-      setCouponMessage(`已发放“${granted.title}”，有效期至 ${formatDate(granted.expiresAt)}`)
-    } catch (reason) {
-      if (isSessionFailure(reason)) onSessionExpired()
-      else setActionError(reason instanceof Error ? reason.message : '优惠券发放失败')
-    } finally {
-      setActionLoading(false)
-    }
-  }
-
   const reloadCredit = async () => {
     if (!selected || selected.role === 'ADMIN') return
     setCreditLoading(true)
@@ -1619,13 +1598,6 @@ function UserManagement({ session, onSessionExpired }: {
                   {isLoginLocked(selected.loginLockedUntil) && <button className="primary-button account-action-button" disabled={actionLoading} onClick={unlockLogin}>解除登录锁定</button>}
                   <button className="secondary-button account-action-button" disabled={actionLoading} onClick={() => openPasswordReset(selected)}>重置登录密码</button>
                 </div>
-              )}
-              {selected.role === 'USER' && hasPermission(session, 'COUPON_ISSUE') && (
-                <DetailSection title="优惠券发放">
-                  <p className="readonly-note">固定发放一张1元优惠券，满2元可用，30天内有效。每次操作都会写入审计日志。</p>
-                  {couponMessage && <p className="form-success" role="status">{couponMessage}</p>}
-                  <button className="primary-button account-action-button" disabled={actionLoading || !selected.enabled} onClick={grantCoupon}>{!selected.enabled ? '账号停用，无法发放' : actionLoading ? '正在发放…' : '发放1元优惠券'}</button>
-                </DetailSection>
               )}
             </div>
           </aside>
@@ -2559,51 +2531,10 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
             <DetailSection title="费用明细">
               <DetailGrid items={[
                 ['原始服务费', formatMoney(detail.originalFeeCents)],
-                ['优惠金额', `-${formatMoney(detail.discountCents)}`],
-                ['付款方式', detail.order.paymentMethod === 'CASH_ON_DELIVERY'
-                  ? '货到付款'
-                  : detail.order.paymentMethod === 'PERSONAL_QR_MANUAL' ? '个人收款码·人工核款' : '微信 APP 支付'],
-                ['结清状态', detail.order.paymentStatus === 'PAID'
-                  ? `已结清 ${formatMoney(detail.order.paidCents)}`
-                  : `待结清 ${formatMoney(detail.order.feeCents - detail.order.paidCents)}`],
-                ['优惠券', detail.couponTitle ?? '未使用'],
-                ['月卡抵扣', detail.membershipUsed ? (detail.membershipPlanTitle ?? '已使用') : '未使用'],
+                ['支付状态', detail.order.paymentStatus === 'PAID' ? '已支付' : detail.order.paymentStatus === 'REFUNDED' ? '已退款' : '待支付'],
+                ['服务端应付金额', formatMoney(detail.order.feeCents)],
               ]} />
             </DetailSection>
-
-            {detail.order.paymentMethod === 'PERSONAL_QR_MANUAL' && <DetailSection title="人工核款与骑手结算">
-              <DetailGrid items={[
-                ['核款状态', manualPaymentStatusLabel(detail.order.manualPaymentStatus)],
-                ['付款人备注', detail.payerReference ?? '—'],
-                ['通知付款', detail.paymentRequestedAt ? formatDate(detail.paymentRequestedAt) : '—'],
-                ['用户提交', detail.paymentSubmittedAt ? formatDate(detail.paymentSubmittedAt) : '—'],
-                ['核款人员', detail.paymentReviewerName ?? '—'],
-                ['核款时间', detail.paymentReviewedAt ? formatDate(detail.paymentReviewedAt) : '—'],
-                ['核款说明', detail.paymentReviewNote ?? '—'],
-                ['骑手结算', courierSettlementStatusLabel(detail.order.courierSettlementStatus)],
-                ['结算登记', detail.courierSettledAt ? `${formatDate(detail.courierSettledAt)} · ${detail.courierSettlementReviewerName ?? '管理员'}` : '—'],
-              ]} />
-              {hasPermission(session, 'PAYMENT_REVIEW') && detail.order.manualPaymentStatus === 'SUBMITTED' && <>
-                <button className="primary-button open-order-button" disabled={actionLoading} onClick={() => {
-                  if (window.confirm(`确认已收到 ${formatMoney(detail.order.feeCents)} 吗？确认后由服务端更新支付状态。`)) {
-                    void runOrderAction(() => confirmManualPayment(session.token, detail.order.id))
-                  }
-                }}>{actionLoading ? '处理中…' : '确认到账'}</button>
-                <form className="rejection-form" onSubmit={(event) => {
-                  event.preventDefault()
-                  void runOrderAction(() => rejectManualPayment(session.token, detail.order.id, rejectReason.trim()))
-                }}>
-                  <label>驳回原因<textarea required maxLength={200} value={rejectReason} onChange={(event) => setRejectReason(event.target.value)} /></label>
-                  <button className="danger-button" disabled={actionLoading || !rejectReason.trim()} type="submit">驳回付款申报</button>
-                </form>
-              </>}
-              {hasPermission(session, 'PAYMENT_REVIEW') && detail.order.courierSettlementStatus === 'PENDING' &&
-                <button className="secondary-button open-order-button" disabled={actionLoading} onClick={() => {
-                  if (window.confirm(`确认已向骑手结算 ${formatMoney(detail.order.feeCents)} 吗？此操作只登记结果，不会自动转账。`)) {
-                    void runOrderAction(() => confirmCourierSettlement(session.token, detail.order.id))
-                  }
-                }}>{actionLoading ? '处理中…' : '登记为已结算给骑手'}</button>}
-            </DetailSection>}
 
             <DetailSection title={`订单进度 · ${detail.events.length}`}>
               {detail.events.length === 0 ? <p className="empty-inline">暂无状态记录</p> : (
@@ -2642,8 +2573,6 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
                   && detail.order.paymentStatus === 'PAID'
                   && detail.order.paidCents >= detail.order.feeCents
                   && detail.order.courier
-                  && (detail.order.paymentMethod !== 'PERSONAL_QR_MANUAL' || detail.order.feeCents === 0
-                    || detail.order.manualPaymentStatus === 'CONFIRMED')
                   ? <form className="rejection-form" onSubmit={(event) => {
                       event.preventDefault()
                       if (window.confirm(`确认人工完成订单 ${detail.order.orderNo}？请确保送达和收款均已核实。`)) {
@@ -2657,7 +2586,7 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
                         {actionLoading ? '处理中…' : '确认人工完成'}
                       </button>
                     </form>
-                  : <p className="empty-inline">暂不可操作：需有送达凭证、已确认收款且订单已有骑手；货到付款未确认收款时不能人工完成。</p>}
+                  : <p className="empty-inline">暂不可操作：需有送达凭证、已确认收款且订单已有骑手；服务端支付状态未满足时不能人工完成。</p>}
               </DetailSection>}
 
             {hasPermission(session, 'ORDER_ARCHIVE') && (detail.order.status === 'COMPLETED'

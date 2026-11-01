@@ -171,7 +171,7 @@ export interface AdminOrderListItem {
   merchant: string
   destination: string
   feeCents: number
-  paymentMethod: 'WECHAT_APP' | 'CASH_ON_DELIVERY' | 'PERSONAL_QR_MANUAL'
+  paymentMethod: 'MOCK' | 'WECHAT_APP'
   paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDING' | 'REFUNDED'
   paidCents: number
   manualPaymentStatus: 'NOT_REQUESTED' | 'AWAITING_PAYMENT' | 'SUBMITTED' | 'CONFIRMED' | 'REJECTED'
