@@ -1,6 +1,13 @@
 // Isolated v2 ADMIN API QA. Only targets localhost by default; never use production.
 const assert = require('node:assert/strict')
-const base = process.env.V2_ADMIN_BASE_URL || 'http://127.0.0.1:8080'
+const cliArgs = process.argv.slice(2)
+const baseArgIndex = cliArgs.indexOf('--base-url')
+const cliBase = baseArgIndex >= 0 ? cliArgs[baseArgIndex + 1] : undefined
+if (baseArgIndex >= 0 && (!cliBase || cliBase.startsWith('--'))) {
+  console.error('FAIL: --base-url requires an absolute HTTP(S) URL')
+  process.exit(2)
+}
+const base = cliBase || process.env.V2_ADMIN_BASE_URL || 'http://127.0.0.1:8080'
 const url = new URL(base)
 if (!['127.0.0.1', 'localhost', '::1'].includes(url.hostname) && process.env.V2_QA_ALLOW_NONLOCAL !== '1') {
   console.error('BLOCKED: v2 QA refuses non-local API hosts; set V2_QA_ALLOW_NONLOCAL=1 only for an approved isolated test host.')
