@@ -280,6 +280,9 @@ export default function App() {
 }
 
 function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
+  // Synthetic IDs are accepted only in an explicitly local build against the isolated API.
+  const localFixture = import.meta.env.VITE_V2_LOCAL_TEST === 'true'
+    && /^http:\/\/(localhost|127\.0\.0\.1):8082$/.test(import.meta.env.VITE_API_BASE_URL ?? '')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -319,16 +322,16 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
           <div>
             <p className="eyebrow accent">运营工作台</p>
             <h2>管理员登录</h2>
-            <p className="muted">使用管理员密码登录，然后完成认证器验证。</p>
+            <p className="muted">{localFixture ? '使用本机初始化的测试账号和密码登录。' : '使用管理员密码登录，然后完成认证器验证。'}</p>
           </div>
           <label>
-            手机号
+            {localFixture ? '测试账号' : '手机号'}
             <input
               autoComplete="username"
-              inputMode="numeric"
-              maxLength={11}
-              pattern="1[0-9]{10}"
-              placeholder="请输入 11 位手机号"
+              inputMode={localFixture ? 'text' : 'numeric'}
+              maxLength={localFixture ? 32 : 11}
+              pattern={localFixture ? 'test-admin' : '1[0-9]{10}'}
+              placeholder={localFixture ? 'test-admin' : '请输入 11 位手机号'}
               required
               value={phone}
               onChange={(event) => setPhone(event.target.value)}

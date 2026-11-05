@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CourierCertificationV2Controller {
  private final IdentityService identity; private final CourierCertificationV2Service service;
  public CourierCertificationV2Controller(IdentityService identity,CourierCertificationV2Service service){this.identity=identity;this.service=service;}
- @IdentityPermission(role="COURIER") @GetMapping("/me")
+ @IdentityPermission(role="COURIER") @GetMapping({"", "/me"})
  public CourierCertificationV2Service.Certification me(@RequestHeader("Authorization") String auth){var a=identity.authenticate(token(auth));return service.getMine(Long.parseLong(a.id()));}
  @IdentityPermission(role="COURIER") @PostMapping("/applications")
  public CourierCertificationV2Service.Certification apply(@RequestHeader("Authorization") String auth,@RequestHeader(value="Idempotency-Key",defaultValue="missing") String key){return service.apply(token(auth),identity,key);}

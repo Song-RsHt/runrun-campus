@@ -1,5 +1,11 @@
 # 独立 v2 数据库迁移入口（M00）
 
+## 甲方本地 M09 运行入口（2026-11-05）
+
+本地 Compose 使用根目录 `deploy/v2-test/migrations.txt` 的固定清单：M00–M08 已测 `0001/0002/0003/0100/0200/0300/0004/0006/0101/0500/0007`，随后追加 `rrc_0701__restore_identity_audit_actions.sql`，共 12 份。不要与下面历史记录中的另一套 `0600/0700` 通知链混跑。启动、回执重试、管理员及隔离规则见 `docs/甲方本地v2测试环境.md`。
+
+0701 修复 0101 覆盖审计白名单时遗漏 M01/M02 的 V2_ADMIN_CREATED、V2_DEPLOYER_CREATED、SERVICE_CONFIG_CHANGED；不新增管理员权限语义，不修改历史 up 文件。迁移只接受精确已知前置约束，重复或后续约束变化拒绝。逆序回滚先执行 0701 对应 down；存在恢复动作的审计记录或后续白名单变化时拒绝，保留审计证据。可用根目录 `tools/verify-v2-local-migrations.ps1` 在无网络、无宿主挂载的临时 PostgreSQL 16 中复验全链与保护。
+
 本目录是全新阶段一系统的独立迁移链；旧交接 V1–V43 保留原样，禁止复制或导入。
 
 - PostgreSQL 16；对象命名空间 `runrun_v2`。

@@ -1,0 +1,33 @@
+# Example only: install on an isolated test host after local verification.
+# Host Nginx -> Compose loopback publication. Container Nginx must instead join
+# the test network and use backend:8082; 127.0.0.1 there means Nginx itself.
+upstream runrun_v2_test {
+    server 127.0.0.1:8082;
+}
+server {
+    listen 80;
+    server_name api-test.runruncampus.cn;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name api-test.runruncampus.cn;
+    # Replace paths with customer-managed test-domain certificates.
+    ssl_certificate /etc/nginx/test-certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/test-certs/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    client_max_body_size 8m;
+    location ^~ /api/v2/ {
+        # No trailing URI: preserve /api/v2/. Never use the legacy :8080 upstream.
+        proxy_pass http://runrun_v2_test;
+        proxy_set_header Host $host;
+        proxy_set_header Authorization $http_authorization;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 60s;
+        proxy_intercept_errors off;
+        add_header Cache-Control no-store always;
+    }
+    location / { return 404; }
+}

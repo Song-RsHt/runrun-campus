@@ -7,6 +7,10 @@ BEGIN
     WHERE n.nspname='runrun_v2' AND c.relkind IN ('r','p','v','m','S','f')
       AND NOT EXISTS (SELECT 1 FROM runrun_v2.m08_rollback_baseline b WHERE b.object_name=c.relname)
       AND c.relname NOT IN ('user_notifications','notification_templates','m08_rollback_baseline')
+      -- M08 itself creates this identity sequence. Accept only the sequence
+      -- actually owned by user_notifications.id; unrelated later objects still block rollback.
+      AND NOT (c.relkind='S' AND c.relname='user_notifications_id_seq'
+               AND pg_get_serial_sequence('runrun_v2.user_notifications','id') = format('%I.%I',n.nspname,c.relname))
   ) THEN
     RAISE EXCEPTION 'M08 rollback refused: later runrun_v2 objects exist';
   END IF;
