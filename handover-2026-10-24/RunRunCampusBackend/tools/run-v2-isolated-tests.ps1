@@ -1,10 +1,17 @@
 param(
-  [string]$Test='com.zhangxuan.runrunv2.*Test',
+  [string]$Test='',
   [switch]$KeepDatabase
 )
 $ErrorActionPreference='Stop'
 $root = Split-Path $PSScriptRoot -Parent
 Set-Location $root
+if ([string]::IsNullOrWhiteSpace($Test)) {
+  # Enumerate exact names so nested layer packages cannot silently drop tests.
+  $Test = (Get-ChildItem (Join-Path $root 'src/test/java/com/zhangxuan/runrunv2') -Recurse -Filter '*Test.java' | ForEach-Object {
+    $package = (Select-String -LiteralPath $_.FullName -Pattern '^package ([^;]+);').Matches[0].Groups[1].Value
+    $package + '.' + $_.BaseName
+  }) -join ','
+}
 $container = 'rrc-v2-test-' + [guid]::NewGuid().ToString('N').Substring(0,12)
 function Invoke-Docker([string[]]$Arguments) {
   $result = & docker.exe @Arguments 2>&1

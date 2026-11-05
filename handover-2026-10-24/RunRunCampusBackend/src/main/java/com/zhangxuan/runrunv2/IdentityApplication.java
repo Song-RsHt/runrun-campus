@@ -19,7 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class IdentityApplication {
     @Bean
-    Jackson2ObjectMapperBuilderCustomizer rejectUnknownJsonFields() {
+    public Jackson2ObjectMapperBuilderCustomizer rejectUnknownJsonFields() {
         return builder -> builder.featuresToEnable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
     public static void main(String[] args) {

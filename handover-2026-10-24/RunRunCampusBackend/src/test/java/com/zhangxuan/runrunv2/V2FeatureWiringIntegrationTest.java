@@ -1,4 +1,13 @@
 package com.zhangxuan.runrunv2;
+import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
+import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
+import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.notification.NotificationOutboxWorker;
+import com.zhangxuan.runrunv2.service.notification.NotificationService;
+import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
+import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
+import com.zhangxuan.runrunv2.integration.wechat.WechatSubscriptionGateway;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

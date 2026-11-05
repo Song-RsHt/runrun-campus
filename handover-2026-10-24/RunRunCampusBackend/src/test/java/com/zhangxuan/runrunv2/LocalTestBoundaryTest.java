@@ -1,4 +1,8 @@
 package com.zhangxuan.runrunv2;
+import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.security.IdentitySecrets;
+import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
+import com.zhangxuan.runrunv2.bootstrap.LocalTestBootstrap;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
