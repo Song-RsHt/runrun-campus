@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.payment;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 

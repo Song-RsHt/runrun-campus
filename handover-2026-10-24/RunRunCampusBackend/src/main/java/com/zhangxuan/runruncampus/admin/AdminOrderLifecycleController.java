@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

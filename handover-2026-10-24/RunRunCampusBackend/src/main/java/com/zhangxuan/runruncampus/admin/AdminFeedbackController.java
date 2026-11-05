@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.feedback.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.feedback.FeedbackType;
 import jakarta.validation.Valid;

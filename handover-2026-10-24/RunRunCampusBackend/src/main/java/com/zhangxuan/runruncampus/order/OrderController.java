@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.order;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.payment.PaymentService;
 import com.zhangxuan.runruncampus.payment.ManualQrPaymentService;

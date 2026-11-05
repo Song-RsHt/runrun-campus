@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.payment.ManualQrPaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

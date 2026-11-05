@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.courier;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.admin.AdminPermission;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;

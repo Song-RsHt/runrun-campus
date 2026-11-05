@@ -2,8 +2,8 @@ package com.zhangxuan.runruncampus.privacy;
 
 import com.zhangxuan.runruncampus.address.AddressRepository;
 import com.zhangxuan.runruncampus.address.UserAddress;
-import com.zhangxuan.runruncampus.auth.AuthService;
-import com.zhangxuan.runruncampus.auth.SessionClientType;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.enums.auth.SessionClientType;
 import com.zhangxuan.runruncampus.courier.CourierCertification;
 import com.zhangxuan.runruncampus.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.order.CampusOrder;

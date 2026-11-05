@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.order;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.zhangxuan.runruncampus.auth.Session;
-import com.zhangxuan.runruncampus.auth.SessionRepository;
+import com.zhangxuan.runruncampus.model.auth.Session;
+import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
 import com.zhangxuan.runruncampus.coupon.UserCoupon;
 import com.zhangxuan.runruncampus.coupon.UserCouponRepository;
 import com.zhangxuan.runruncampus.membership.MembershipPlanType;

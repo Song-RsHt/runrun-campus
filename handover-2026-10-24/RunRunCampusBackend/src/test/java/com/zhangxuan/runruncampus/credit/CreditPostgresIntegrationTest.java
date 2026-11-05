@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.credit;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
-import com.zhangxuan.runruncampus.auth.SessionClientType;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.enums.auth.SessionClientType;
 import com.zhangxuan.runruncampus.order.CampusOrder;
 import com.zhangxuan.runruncampus.order.OrderEvent;
 import com.zhangxuan.runruncampus.order.OrderEventRepository;

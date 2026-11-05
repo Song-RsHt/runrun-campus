@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.auth.AuthService;
+import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.order.OrderProofRepository;
 import com.zhangxuan.runruncampus.order.OrderProofStorage;
 import com.zhangxuan.runruncampus.order.OrderProofType;

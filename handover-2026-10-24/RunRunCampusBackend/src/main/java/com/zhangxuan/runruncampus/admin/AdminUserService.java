@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.auth.SessionRepository;
+import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRepository;
 import com.zhangxuan.runruncampus.user.UserRole;
