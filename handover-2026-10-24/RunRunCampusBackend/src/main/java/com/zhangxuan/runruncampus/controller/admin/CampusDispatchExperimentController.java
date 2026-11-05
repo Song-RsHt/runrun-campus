@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.controller.admin;
+
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.service.admin.CampusDispatchExperimentService;
-
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,18 +12,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/dispatch-experiments")
 public class CampusDispatchExperimentController {
-    private final AuthService auth;
-    private final CampusDispatchExperimentService service;
+  private final AuthService auth;
+  private final CampusDispatchExperimentService service;
 
-    public CampusDispatchExperimentController(AuthService auth, CampusDispatchExperimentService service) {
-        this.auth = auth;
-        this.service = service;
-    }
+  public CampusDispatchExperimentController(
+      AuthService auth, CampusDispatchExperimentService service) {
+    this.auth = auth;
+    this.service = service;
+  }
 
-    @PostMapping
-    public CampusDispatchExperimentService.Result compare(@RequestHeader("Authorization") String authorization,
-                                                    @RequestBody CampusDispatchExperimentService.Request request) {
-        auth.requirePermission(authorization, AdminPermission.ORDER_DISPATCH);
-        return service.compare(request);
-    }
+  @PostMapping
+  public CampusDispatchExperimentService.Result compare(
+      @RequestHeader("Authorization") String authorization,
+      @RequestBody CampusDispatchExperimentService.Request request) {
+    auth.requirePermission(authorization, AdminPermission.ORDER_DISPATCH);
+    return service.compare(request);
+  }
 }

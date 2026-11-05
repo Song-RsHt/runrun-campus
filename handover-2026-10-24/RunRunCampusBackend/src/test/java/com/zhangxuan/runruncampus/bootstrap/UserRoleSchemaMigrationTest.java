@@ -1,5 +1,9 @@
 package com.zhangxuan.runruncampus.bootstrap;
 
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,41 +11,61 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class UserRoleSchemaMigrationTest {
-    @Mock
-    private JdbcTemplate jdbcTemplate;
+  @Mock private JdbcTemplate jdbcTemplate;
 
-    private UserRoleSchemaMigration migration;
+  private UserRoleSchemaMigration migration;
 
-    @BeforeEach
-    void setUp() {
-        migration = new UserRoleSchemaMigration(jdbcTemplate);
-    }
+  @BeforeEach
+  void setUp() {
+    migration =
+        new UserRoleSchemaMigration(
+            new com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper(
+                jdbcTemplate));
+  }
 
-    @Test
-    void expandsOldRoleConstraintToIncludeAdmin() {
-        when(jdbcTemplate.queryForObject(UserRoleSchemaMigration.CONSTRAINT_QUERY, String.class))
-                .thenReturn("CHECK (((role)::text = ANY ((ARRAY['CUSTOMER'::character varying, 'COURIER'::character varying])::text[])))");
+  @Test
+  void expandsOldRoleConstraintToIncludeAdmin() {
+    when(jdbcTemplate.queryForObject(
+            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+                .CONSTRAINT_QUERY,
+            String.class))
+        .thenReturn(
+            "CHECK (((role)::text = ANY ((ARRAY['CUSTOMER'::character varying, 'COURIER'::character"
+                + " varying])::text[])))");
 
-        migration.run(null);
+    migration.run(null);
 
-        verify(jdbcTemplate).execute(UserRoleSchemaMigration.DROP_CONSTRAINT);
-        verify(jdbcTemplate).execute(UserRoleSchemaMigration.ADD_CONSTRAINT);
-    }
+    verify(jdbcTemplate)
+        .execute(
+            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+                .DROP_CONSTRAINT);
+    verify(jdbcTemplate)
+        .execute(
+            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+                .ADD_CONSTRAINT);
+  }
 
-    @Test
-    void leavesCurrentRoleConstraintUnchanged() {
-        when(jdbcTemplate.queryForObject(UserRoleSchemaMigration.CONSTRAINT_QUERY, String.class))
-                .thenReturn("CHECK (((role)::text = ANY ((ARRAY['CUSTOMER'::character varying, 'COURIER'::character varying, 'ADMIN'::character varying])::text[])))");
+  @Test
+  void leavesCurrentRoleConstraintUnchanged() {
+    when(jdbcTemplate.queryForObject(
+            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+                .CONSTRAINT_QUERY,
+            String.class))
+        .thenReturn(
+            "CHECK (((role)::text = ANY ((ARRAY['CUSTOMER'::character varying, 'COURIER'::character"
+                + " varying, 'ADMIN'::character varying])::text[])))");
 
-        migration.run(null);
+    migration.run(null);
 
-        verify(jdbcTemplate, never()).execute(UserRoleSchemaMigration.DROP_CONSTRAINT);
-        verify(jdbcTemplate, never()).execute(UserRoleSchemaMigration.ADD_CONSTRAINT);
-    }
+    verify(jdbcTemplate, never())
+        .execute(
+            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+                .DROP_CONSTRAINT);
+    verify(jdbcTemplate, never())
+        .execute(
+            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+                .ADD_CONSTRAINT);
+  }
 }
