@@ -1,0 +1,67 @@
+package com.zhangxuan.runrunv2.mapper.notification;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zhangxuan.runrunv2.model.notification.Delivery;
+import java.util.Map;
+import org.springframework.stereotype.Repository;
+
+/**
+ * SQL for NotificationOutboxWorker. Uses the caller's transaction-bound JDBC connection; never
+ * opens or commits a transaction.
+ */
+@Repository
+public class NotificationOutboxMapper {
+
+  private final org.springframework.jdbc.core.JdbcTemplate jdbc;
+  private final ObjectMapper json;
+
+  public NotificationOutboxMapper(
+      org.springframework.jdbc.core.JdbcTemplate jdbc, ObjectMapper json) {
+    this.jdbc = jdbc;
+    this.json = json;
+  }
+
+  public java.util.List<com.zhangxuan.runrunv2.model.notification.Delivery>
+      claimRowsClaimNotificationOutbox(int parameter2) {
+    return jdbc.query(
+        "SELECT id,recipient_id,event_key,channel,payload,attempt_count FROM"
+            + " runrun_v2.claim_notification_outbox(?)",
+        (r, n) -> {
+          try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> payload = json.readValue(r.getString("payload"), Map.class);
+            return new Delivery(
+                r.getLong("id"),
+                r.getLong("recipient_id"),
+                r.getString("event_key"),
+                r.getString("channel"),
+                payload,
+                r.getInt("attempt_count"));
+          } catch (Exception e) {
+            throw new IllegalStateException("outbox payload unavailable");
+          }
+        },
+        parameter2);
+  }
+
+  public java.lang.Object completeValueStatement(
+      long id, boolean success, java.lang.String parameter4) {
+    return jdbc.queryForObject(
+        "SELECT runrun_v2.complete_notification_outbox(?,?,?)",
+        Object.class,
+        id,
+        success,
+        parameter4);
+  }
+
+  public java.lang.Integer runOnceValueStatement() {
+    return jdbc.queryForObject("SELECT runrun_v2.run_notification_review_timers()", Integer.class);
+  }
+
+  public java.lang.Boolean m08InstalledValueStatement() {
+    return jdbc.queryForObject(
+        "SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL AND"
+            + " to_regprocedure('runrun_v2.run_notification_review_timers()') IS NOT NULL",
+        Boolean.class);
+  }
+}
