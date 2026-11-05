@@ -14,16 +14,22 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 /** Separate scan/config prevents legacy controllers, repositories and migrations from starting. */
 @SpringBootConfiguration
-@EnableAutoConfiguration(exclude = {FlywayAutoConfiguration.class, HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class})
+@EnableAutoConfiguration(
+    exclude = {
+      FlywayAutoConfiguration.class,
+      HibernateJpaAutoConfiguration.class,
+      JpaRepositoriesAutoConfiguration.class
+    })
 @ComponentScan(basePackageClasses = IdentityApplication.class)
 @EnableScheduling
 public class IdentityApplication {
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer rejectUnknownJsonFields() {
-        return builder -> builder.featuresToEnable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    }
-    public static void main(String[] args) {
-        System.setProperty("spring.config.name", "application-v2");
-        SpringApplication.run(IdentityApplication.class, args);
-    }
+  @Bean
+  public Jackson2ObjectMapperBuilderCustomizer rejectUnknownJsonFields() {
+    return builder -> builder.featuresToEnable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+  }
+
+  public static void main(String[] args) {
+    System.setProperty("spring.config.name", "application-v2");
+    SpringApplication.run(IdentityApplication.class, args);
+  }
 }

@@ -283,7 +283,7 @@ class IdentityIntegrationTest {
             var fresh = register("fresh", "13800000001", "USER");
             assertNotEquals("999", fresh.account().id());
             assertEquals("USER", fresh.account().role());
-            assertThrows(IllegalStateException.class, () -> new IdentityStartupGuard(db, "test").run(null));
+            assertThrows(IllegalStateException.class, () -> new IdentityStartupGuard(new com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper(db), "test").run(null));
         } finally { db.execute("DROP TABLE public.app_users"); }
         http.perform(post("/api/v2/admin/account-recoveries/1/resolve").contentType("application/json").content("{}"))
                 .andExpect(status().isForbidden());
@@ -307,7 +307,7 @@ class IdentityIntegrationTest {
                     .andExpect(status().isNotFound()).andExpect(jsonPath("$.code").value("RESOURCE_NOT_FOUND"));
     }
     @Test void productionAndMissingRuntimeMigrationFailClosed() {
-        assertThrows(IllegalStateException.class, () -> new IdentityStartupGuard(db, "production").run(null));
+        assertThrows(IllegalStateException.class, () -> new IdentityStartupGuard(new com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper(db), "production").run(null));
         assertThrows(IllegalStateException.class, () -> new IdentitySecrets(Base64.getEncoder().encodeToString(new byte[32]), Base64.getEncoder().encodeToString(new byte[32])));
         assertNotEquals(secrets.encrypt("app", "synthetic"), secrets.encrypt("app", "synthetic"));
         assertNotEquals(secrets.hash("openid:app1", "synthetic"), secrets.hash("openid:app2", "synthetic"));

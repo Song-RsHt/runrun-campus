@@ -40,7 +40,7 @@ class LocalTestBoundaryTest {
             .withProperty(key,value);
         var db=mock(JdbcTemplate.class);
         var deployment=mock(DeploymentIdentityService.class);
-        var bootstrap=new LocalTestBootstrap(db,env,mock(IdentitySecrets.class),deployment,
+        var bootstrap=new LocalTestBootstrap(new com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper(db),env,mock(IdentitySecrets.class),deployment,
                 mock(PlatformTransactionManager.class),mock(IdentityStartupGuard.class));
         assertThrows(IllegalStateException.class,()->bootstrap.run(null));
         verifyNoInteractions(db,deployment);
