@@ -1,0 +1,4941 @@
+[
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/address/AddressController.java",
+    "name": "AddressController",
+    "package": "com.zhangxuan.runruncampus.address",
+    "lines": 67,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.order.DeliveryZone"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/address/AddressRepository.java",
+    "name": "AddressRepository",
+    "package": "com.zhangxuan.runruncampus.address",
+    "lines": 12,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/address/AddressService.java",
+    "name": "AddressService",
+    "package": "com.zhangxuan.runruncampus.address",
+    "lines": 109,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.order.DeliveryZone"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/address/UserAddress.java",
+    "name": "UserAddress",
+    "package": "com.zhangxuan.runruncampus.address",
+    "lines": 85,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.order.DeliveryZone"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAccountController.java",
+    "name": "AdminAccountController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 103,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAccountService.java",
+    "name": "AdminAccountService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 134,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAuditAction.java",
+    "name": "AdminAuditAction",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 45,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAuditController.java",
+    "name": "AdminAuditController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 58,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAuditLog.java",
+    "name": "AdminAuditLog",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 65,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAuditLogRepository.java",
+    "name": "AdminAuditLogRepository",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 39,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAuditService.java",
+    "name": "AdminAuditService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 50,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminAuditTargetType.java",
+    "name": "AdminAuditTargetType",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 14,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminCommandCenterController.java",
+    "name": "AdminCommandCenterController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 27,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminCommandCenterService.java",
+    "name": "AdminCommandCenterService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 142,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminCouponService.java",
+    "name": "AdminCouponService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 54,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.coupon.UserCoupon",
+      "com.zhangxuan.runruncampus.coupon.UserCouponRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminCourierController.java",
+    "name": "AdminCourierController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 117,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminCourierService.java",
+    "name": "AdminCourierService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 145,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.courier.CourierCertification",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationRepository",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminDashboardController.java",
+    "name": "AdminDashboardController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 39,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminDashboardService.java",
+    "name": "AdminDashboardService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 50,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.courier.CourierCertificationRepository",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.feedback.FeedbackRepository",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminDispatchController.java",
+    "name": "AdminDispatchController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 44,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminDispatchService.java",
+    "name": "AdminDispatchService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 218,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderEvent",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminFeedbackController.java",
+    "name": "AdminFeedbackController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 66,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.feedback.FeedbackType"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminFeedbackService.java",
+    "name": "AdminFeedbackService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 94,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.feedback.*",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminIssueController.java",
+    "name": "AdminIssueController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 97,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.order.OrderStatus"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminIssueService.java",
+    "name": "AdminIssueService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 149,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderIssue",
+      "com.zhangxuan.runruncampus.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminOrderController.java",
+    "name": "AdminOrderController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 188,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderProofType",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.payment.ManualQrPaymentService",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminOrderDeliveryProofController.java",
+    "name": "AdminOrderDeliveryProofController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 60,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.order.OrderProofStorage",
+      "com.zhangxuan.runruncampus.order.OrderProofType",
+      "com.zhangxuan.runruncampus.order.OrderRepository"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminOrderLifecycleController.java",
+    "name": "AdminOrderLifecycleController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 49,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminOrderLifecycleService.java",
+    "name": "AdminOrderLifecycleService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 114,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderEvent",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.order.OrderProofType",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminOrderService.java",
+    "name": "AdminOrderService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 155,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminPermission.java",
+    "name": "AdminPermission",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 28,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminPushDeliveryController.java",
+    "name": "AdminPushDeliveryController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 41,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.message.PushDeliveryRepository",
+      "com.zhangxuan.runruncampus.message.PushDeliveryStatus"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminRole.java",
+    "name": "AdminRole",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 47,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminUserController.java",
+    "name": "AdminUserController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 104,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/AdminUserService.java",
+    "name": "AdminUserService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 106,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/CampusDispatchExperimentController.java",
+    "name": "CampusDispatchExperimentController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 28,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/CampusDispatchExperimentService.java",
+    "name": "CampusDispatchExperimentService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 105,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/FulfillmentProvenanceController.java",
+    "name": "FulfillmentProvenanceController",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 51,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/admin/FulfillmentProvenanceService.java",
+    "name": "FulfillmentProvenanceService",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 160,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/ApiExceptionHandler.java",
+    "name": "ApiExceptionHandler",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 41,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/ApiRateLimitFilter.java",
+    "name": "ApiRateLimitFilter",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 85,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/ApiRateLimitService.java",
+    "name": "ApiRateLimitService",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 73,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      36
+    ],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/AppVersionController.java",
+    "name": "AppVersionController",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 45,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/HealthController.java",
+    "name": "HealthController",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 17,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/PlatformSettingsController.java",
+    "name": "PlatformSettingsController",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 47,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/PlatformSettingsService.java",
+    "name": "PlatformSettingsService",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 61,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/api/ServiceConfigurationController.java",
+    "name": "ServiceConfigurationController",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 38,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.order.PickupStation"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AdminAccountInitializer.java",
+    "name": "AdminAccountInitializer",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 49,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [
+      10,
+      18
+    ],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AdminMfaController.java",
+    "name": "AdminMfaController",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 74,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.api.ApiRateLimitService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AdminMfaCredential.java",
+    "name": "AdminMfaCredential",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 37,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AdminMfaCrypto.java",
+    "name": "AdminMfaCrypto",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 128,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AdminMfaRepository.java",
+    "name": "AdminMfaRepository",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 12,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AdminMfaService.java",
+    "name": "AdminMfaService",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 225,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.admin.AdminRole",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AuthController.java",
+    "name": "AuthController",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 146,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.admin.AdminRole",
+      "com.zhangxuan.runruncampus.api.ApiRateLimitService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/AuthService.java",
+    "name": "AuthService",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 214,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.privacy.PrivacyService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/LoginAttemptService.java",
+    "name": "LoginAttemptService",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 70,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(propagation = Propagation.REQUIRES_NEW)",
+      "@Transactional(propagation = Propagation.REQUIRES_NEW)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/LoginCaptchaService.java",
+    "name": "LoginCaptchaService",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 126,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/PasswordConfig.java",
+    "name": "PasswordConfig",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 15,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/Session.java",
+    "name": "Session",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 75,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/SessionClientType.java",
+    "name": "SessionClientType",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 17,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/SessionRepository.java",
+    "name": "SessionRepository",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 19,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/auth/UserRoleSchemaMigration.java",
+    "name": "UserRoleSchemaMigration",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 46,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [
+      4,
+      12
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/config/ProductionConfigurationValidator.java",
+    "name": "ProductionConfigurationValidator",
+    "package": "com.zhangxuan.runruncampus.config",
+    "lines": 95,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [
+      8,
+      16
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/coupon/CouponController.java",
+    "name": "CouponController",
+    "package": "com.zhangxuan.runruncampus.coupon",
+    "lines": 27,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/coupon/CouponService.java",
+    "name": "CouponService",
+    "package": "com.zhangxuan.runruncampus.coupon",
+    "lines": 89,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/coupon/UserCoupon.java",
+    "name": "UserCoupon",
+    "package": "com.zhangxuan.runruncampus.coupon",
+    "lines": 70,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/coupon/UserCouponRepository.java",
+    "name": "UserCouponRepository",
+    "package": "com.zhangxuan.runruncampus.coupon",
+    "lines": 21,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      17
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierCertification.java",
+    "name": "CourierCertification",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 179,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierCertificationController.java",
+    "name": "CourierCertificationController",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 108,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.admin.AdminPermission"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierCertificationMaintenance.java",
+    "name": "CourierCertificationMaintenance",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 65,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [
+      29
+    ],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.OrderProofStorage"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierCertificationRepository.java",
+    "name": "CourierCertificationRepository",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 39,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      21,
+      26,
+      31,
+      35
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierCertificationService.java",
+    "name": "CourierCertificationService",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 299,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.order.OrderProofStorage",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierCertificationStatus.java",
+    "name": "CourierCertificationStatus",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 9,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierOperationsController.java",
+    "name": "CourierOperationsController",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 53,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/courier/CourierOperationsService.java",
+    "name": "CourierOperationsService",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 83,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/AdminCreditController.java",
+    "name": "AdminCreditController",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 83,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditController.java",
+    "name": "CreditController",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 32,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditEvent.java",
+    "name": "CreditEvent",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 78,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditEventRepository.java",
+    "name": "CreditEventRepository",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 14,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditEventType.java",
+    "name": "CreditEventType",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditProfile.java",
+    "name": "CreditProfile",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 48,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditProfileRepository.java",
+    "name": "CreditProfileRepository",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 18,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      14
+    ],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditRiskLevel.java",
+    "name": "CreditRiskLevel",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 14,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/CreditService.java",
+    "name": "CreditService",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 196,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/RiskSignal.java",
+    "name": "RiskSignal",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 93,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/RiskSignalMaintenance.java",
+    "name": "RiskSignalMaintenance",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 99,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [
+      19
+    ],
+    "imports": [
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/RiskSignalRepository.java",
+    "name": "RiskSignalRepository",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 22,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      18
+    ],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/RiskSignalStatus.java",
+    "name": "RiskSignalStatus",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/credit/RiskSignalType.java",
+    "name": "RiskSignalType",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/feedback/FeedbackController.java",
+    "name": "FeedbackController",
+    "package": "com.zhangxuan.runruncampus.feedback",
+    "lines": 39,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/feedback/FeedbackHandlingStatus.java",
+    "name": "FeedbackHandlingStatus",
+    "package": "com.zhangxuan.runruncampus.feedback",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/feedback/FeedbackRepository.java",
+    "name": "FeedbackRepository",
+    "package": "com.zhangxuan.runruncampus.feedback",
+    "lines": 62,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      58
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/feedback/FeedbackService.java",
+    "name": "FeedbackService",
+    "package": "com.zhangxuan.runruncampus.feedback",
+    "lines": 43,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/feedback/FeedbackType.java",
+    "name": "FeedbackType",
+    "package": "com.zhangxuan.runruncampus.feedback",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/feedback/UserFeedback.java",
+    "name": "UserFeedback",
+    "package": "com.zhangxuan.runruncampus.feedback",
+    "lines": 79,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/membership/MembershipController.java",
+    "name": "MembershipController",
+    "package": "com.zhangxuan.runruncampus.membership",
+    "lines": 36,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.payment.PaymentService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/membership/MembershipPlanType.java",
+    "name": "MembershipPlanType",
+    "package": "com.zhangxuan.runruncampus.membership",
+    "lines": 25,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/membership/MembershipService.java",
+    "name": "MembershipService",
+    "package": "com.zhangxuan.runruncampus.membership",
+    "lines": 121,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/membership/UserMembership.java",
+    "name": "UserMembership",
+    "package": "com.zhangxuan.runruncampus.membership",
+    "lines": 73,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/membership/UserMembershipRepository.java",
+    "name": "UserMembershipRepository",
+    "package": "com.zhangxuan.runruncampus.membership",
+    "lines": 24,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      16,
+      20
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/AliyunPushNotificationGateway.java",
+    "name": "AliyunPushNotificationGateway",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 39,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/AliyunPushRequestFactory.java",
+    "name": "AliyunPushRequestFactory",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 61,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/OrderMessage.java",
+    "name": "OrderMessage",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 63,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/OrderMessageController.java",
+    "name": "OrderMessageController",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 37,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/OrderMessageRepository.java",
+    "name": "OrderMessageRepository",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 13,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/OrderMessageService.java",
+    "name": "OrderMessageService",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 60,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/OrderMessageType.java",
+    "name": "OrderMessageType",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 18,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/OrderPushListener.java",
+    "name": "OrderPushListener",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 22,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/OrderPushRequested.java",
+    "name": "OrderPushRequested",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 28,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/PushDeliveryProcessor.java",
+    "name": "PushDeliveryProcessor",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 63,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [
+      27
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/PushDeliveryRepository.java",
+    "name": "PushDeliveryRepository",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 111,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/PushDeliveryStatus.java",
+    "name": "PushDeliveryStatus",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 6,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/PushDeliveryTask.java",
+    "name": "PushDeliveryTask",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 6,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/PushDestination.java",
+    "name": "PushDestination",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 6,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/message/PushNotificationGateway.java",
+    "name": "PushNotificationGateway",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 6,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/CampusOrder.java",
+    "name": "CampusOrder",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 442,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/CourierReassignmentService.java",
+    "name": "CourierReassignmentService",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 57,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/CourierSettlementStatus.java",
+    "name": "CourierSettlementStatus",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/DeliveryZone.java",
+    "name": "DeliveryZone",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 22,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/LocalOrderProofStorage.java",
+    "name": "LocalOrderProofStorage",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 46,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/ManualPaymentStatus.java",
+    "name": "ManualPaymentStatus",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 10,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderChatMessage.java",
+    "name": "OrderChatMessage",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 49,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderChatRepository.java",
+    "name": "OrderChatRepository",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 32,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderChatService.java",
+    "name": "OrderChatService",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 87,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderController.java",
+    "name": "OrderController",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 330,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.payment.PaymentService",
+      "com.zhangxuan.runruncampus.payment.ManualQrPaymentService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderEvent.java",
+    "name": "OrderEvent",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 43,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderEventRepository.java",
+    "name": "OrderEventRepository",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 10,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderIssue.java",
+    "name": "OrderIssue",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 84,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderIssueHandlingStatus.java",
+    "name": "OrderIssueHandlingStatus",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderIssueRepository.java",
+    "name": "OrderIssueRepository",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 97,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      93
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderIssueService.java",
+    "name": "OrderIssueService",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 85,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderIssueType.java",
+    "name": "OrderIssueType",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 10,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderPaymentMethod.java",
+    "name": "OrderPaymentMethod",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderPaymentStatus.java",
+    "name": "OrderPaymentStatus",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 9,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderProof.java",
+    "name": "OrderProof",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 69,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderProofRepository.java",
+    "name": "OrderProofRepository",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 13,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderProofService.java",
+    "name": "OrderProofService",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 167,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderProofStorage.java",
+    "name": "OrderProofStorage",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 13,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderProofType.java",
+    "name": "OrderProofType",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderRepository.java",
+    "name": "OrderRepository",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 260,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      256
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderService.java",
+    "name": "OrderService",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 573,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.coupon.CouponService",
+      "com.zhangxuan.runruncampus.membership.MembershipService",
+      "com.zhangxuan.runruncampus.payment.PaymentService",
+      "com.zhangxuan.runruncampus.payment.ManualQrPaymentProperties",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.user.UserRepository"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OrderStatus.java",
+    "name": "OrderStatus",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 11,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/OssOrderProofStorage.java",
+    "name": "OssOrderProofStorage",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 107,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/PickupStation.java",
+    "name": "PickupStation",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 25,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/order/ServiceType.java",
+    "name": "ServiceType",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 33,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/DisabledWechatPayGateway.java",
+    "name": "DisabledWechatPayGateway",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 19,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/ManualQrPaymentConfiguration.java",
+    "name": "ManualQrPaymentConfiguration",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 10,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/ManualQrPaymentProperties.java",
+    "name": "ManualQrPaymentProperties",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 7,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/ManualQrPaymentService.java",
+    "name": "ManualQrPaymentService",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 199,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/PaymentBusinessType.java",
+    "name": "PaymentBusinessType",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 7,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/PaymentController.java",
+    "name": "PaymentController",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 54,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/PaymentService.java",
+    "name": "PaymentService",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 248,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.membership.MembershipService",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/PaymentStatus.java",
+    "name": "PaymentStatus",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/RefundStatus.java",
+    "name": "RefundStatus",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatPayApiV3Gateway.java",
+    "name": "WechatPayApiV3Gateway",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 200,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatPayConfiguration.java",
+    "name": "WechatPayConfiguration",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 23,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatPayGateway.java",
+    "name": "WechatPayGateway",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 23,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatPayment.java",
+    "name": "WechatPayment",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 107,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatPaymentRepository.java",
+    "name": "WechatPaymentRepository",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 28,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      15
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatPayProperties.java",
+    "name": "WechatPayProperties",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 10,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatRefund.java",
+    "name": "WechatRefund",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 48,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatRefundProcessor.java",
+    "name": "WechatRefundProcessor",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 60,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [
+      31
+    ],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/payment/WechatRefundRepository.java",
+    "name": "WechatRefundRepository",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 32,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      17
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/privacy/PrivacyController.java",
+    "name": "PrivacyController",
+    "package": "com.zhangxuan.runruncampus.privacy",
+    "lines": 61,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/privacy/PrivacyService.java",
+    "name": "PrivacyService",
+    "package": "com.zhangxuan.runruncampus.privacy",
+    "lines": 141,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.address.AddressRepository",
+      "com.zhangxuan.runruncampus.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.message.OrderMessageRepository",
+      "com.zhangxuan.runruncampus.message.PushDeliveryRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.payment.WechatRefundRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/RunRunCampusBackendApplication.java",
+    "name": "RunRunCampusBackendApplication",
+    "package": "com.zhangxuan.runruncampus",
+    "lines": 14,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/user/AppUser.java",
+    "name": "AppUser",
+    "package": "com.zhangxuan.runruncampus.user",
+    "lines": 163,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/user/UserRepository.java",
+    "name": "UserRepository",
+    "package": "com.zhangxuan.runruncampus.user",
+    "lines": 116,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      18,
+      112
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.courier.CourierCertificationStatus"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/user/UserRole.java",
+    "name": "UserRole",
+    "package": "com.zhangxuan.runruncampus.user",
+    "lines": 8,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/CourierCertificationV2Controller.java",
+    "name": "CourierCertificationV2Controller",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 30,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/CourierCertificationV2Service.java",
+    "name": "CourierCertificationV2Service",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 128,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly=true)",
+      "@Transactional(readOnly=true)"
+    ],
+    "locks": [
+      33,
+      121,
+      125
+    ],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/CourierEvidenceGovernanceController.java",
+    "name": "CourierEvidenceGovernanceController",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 24,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/CourierEvidenceGovernanceService.java",
+    "name": "CourierEvidenceGovernanceService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 91,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [
+      45,
+      66,
+      86,
+      87
+    ],
+    "scheduled": [
+      63
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/DeploymentIdentityService.java",
+    "name": "DeploymentIdentityService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 104,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/DisabledWechatGateway.java",
+    "name": "DisabledWechatGateway",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 13,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/DisabledWechatSubscriptionGateway.java",
+    "name": "DisabledWechatSubscriptionGateway",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 13,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/FulfillmentCompletionJob.java",
+    "name": "FulfillmentCompletionJob",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 16,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [
+      13
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/FulfillmentController.java",
+    "name": "FulfillmentController",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 37,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.FulfillmentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/FulfillmentEvidence.java",
+    "name": "FulfillmentEvidence",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 24,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.FulfillmentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/FulfillmentModels.java",
+    "name": "FulfillmentModels",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 31,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/FulfillmentQueries.java",
+    "name": "FulfillmentQueries",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 70,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly=true)",
+      "@Transactional(readOnly=true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.FulfillmentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/FulfillmentService.java",
+    "name": "FulfillmentService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 298,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(propagation=Propagation.MANDATORY)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(propagation=Propagation.MANDATORY)",
+      "@Transactional(propagation=Propagation.MANDATORY)",
+      "@Transactional(propagation=Propagation.MANDATORY)",
+      "@Transactional(propagation=Propagation.MANDATORY)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.FulfillmentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityAdminCommand.java",
+    "name": "IdentityAdminCommand",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 35,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityApplication.java",
+    "name": "IdentityApplication",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 30,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityController.java",
+    "name": "IdentityController",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 44,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityErrorHandler.java",
+    "name": "IdentityErrorHandler",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 55,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityFailure.java",
+    "name": "IdentityFailure",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 15,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityPermission.java",
+    "name": "IdentityPermission",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 15,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentitySecrets.java",
+    "name": "IdentitySecrets",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 52,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityService.java",
+    "name": "IdentityService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 179,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [
+      42,
+      61,
+      77,
+      151,
+      168,
+      173
+    ],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityStartupGuard.java",
+    "name": "IdentityStartupGuard",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 25,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [
+      6,
+      11
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityWebConfiguration.java",
+    "name": "IdentityWebConfiguration",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 61,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/LocalTestBootstrap.java",
+    "name": "LocalTestBootstrap",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 65,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      42
+    ],
+    "scheduled": [
+      4,
+      16
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/LocalTestCors.java",
+    "name": "LocalTestCors",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 30,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/MockPaymentAdapter.java",
+    "name": "MockPaymentAdapter",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 41,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.PaymentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/NotificationController.java",
+    "name": "NotificationController",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 30,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/NotificationOutboxWorker.java",
+    "name": "NotificationOutboxWorker",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 75,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [
+      43
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/NotificationService.java",
+    "name": "NotificationService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 39,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OrderConfiguration.java",
+    "name": "OrderConfiguration",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 25,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OrderController.java",
+    "name": "OrderController",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 60,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.OrderModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OrderIdempotency.java",
+    "name": "OrderIdempotency",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 33,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      18
+    ],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OrderJson.java",
+    "name": "OrderJson",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 20,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OrderModels.java",
+    "name": "OrderModels",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 47,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OrderService.java",
+    "name": "OrderService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 67,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly=true)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.OrderModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OrderStore.java",
+    "name": "OrderStore",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 35,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      24
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.OrderModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/OriginalPaymentWriter.java",
+    "name": "OriginalPaymentWriter",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 10,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/PaymentController.java",
+    "name": "PaymentController",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 26,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.PaymentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/PaymentExpiryJob.java",
+    "name": "PaymentExpiryJob",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 17,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [
+      14
+    ],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/PaymentModels.java",
+    "name": "PaymentModels",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 22,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/PaymentService.java",
+    "name": "PaymentService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 388,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional(propagation=Propagation.MANDATORY)",
+      "@Transactional(readOnly=true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(propagation=Propagation.MANDATORY)",
+      "@Transactional(propagation=Propagation.MANDATORY)",
+      "@Transactional"
+    ],
+    "locks": [
+      328,
+      358
+    ],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.PaymentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/PaymentTestController.java",
+    "name": "PaymentTestController",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 21,
+    "kind": "main",
+    "database": false,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.PaymentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/ServiceConfigService.java",
+    "name": "ServiceConfigService",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 143,
+    "kind": "main",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.OrderModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/V2StudentCardStorage.java",
+    "name": "V2StudentCardStorage",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 13,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/WechatGateway.java",
+    "name": "WechatGateway",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 7,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/WechatHttpGateway.java",
+    "name": "WechatHttpGateway",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 77,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [
+      51
+    ],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/WechatSubscriptionGateway.java",
+    "name": "WechatSubscriptionGateway",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 9,
+    "kind": "main",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/address/AddressServiceTest.java",
+    "name": "AddressServiceTest",
+    "package": "com.zhangxuan.runruncampus.address",
+    "lines": 113,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.order.DeliveryZone"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminAccountServiceTest.java",
+    "name": "AdminAccountServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 175,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminAuthorizationControllerTest.java",
+    "name": "AdminAuthorizationControllerTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 195,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.payment.ManualQrPaymentService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminCommandCenterPostgresIntegrationTest.java",
+    "name": "AdminCommandCenterPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 291,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(propagation = Propagation.NOT_SUPPORTED)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.*",
+      "com.zhangxuan.runruncampus.user.*",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminCouponPostgresIntegrationTest.java",
+    "name": "AdminCouponPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 119,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminCouponServiceTest.java",
+    "name": "AdminCouponServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 85,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.coupon.UserCoupon",
+      "com.zhangxuan.runruncampus.coupon.UserCouponRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminCourierServiceTest.java",
+    "name": "AdminCourierServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 90,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.courier.CourierCertificationRepository",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminDispatchServiceTest.java",
+    "name": "AdminDispatchServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 211,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminFeedbackServiceTest.java",
+    "name": "AdminFeedbackServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 57,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.feedback.*",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminIssueResultNotificationTest.java",
+    "name": "AdminIssueResultNotificationTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 57,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderIssue",
+      "com.zhangxuan.runruncampus.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminIssueServiceTest.java",
+    "name": "AdminIssueServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 64,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderIssue",
+      "com.zhangxuan.runruncampus.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminListPostgresIntegrationTest.java",
+    "name": "AdminListPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 203,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderEvent",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderProof",
+      "com.zhangxuan.runruncampus.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.order.OrderProofType",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminOrderDeliveryProofControllerTest.java",
+    "name": "AdminOrderDeliveryProofControllerTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 79,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderProof",
+      "com.zhangxuan.runruncampus.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.order.OrderProofStorage",
+      "com.zhangxuan.runruncampus.order.OrderProofType",
+      "com.zhangxuan.runruncampus.order.OrderRepository"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminOrderLifecycleServiceTest.java",
+    "name": "AdminOrderLifecycleServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 183,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.order.OrderProofType",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminOrderServiceTest.java",
+    "name": "AdminOrderServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 146,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminPaginationPostgresIntegrationTest.java",
+    "name": "AdminPaginationPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 218,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.courier.CourierCertification",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.feedback.FeedbackType",
+      "com.zhangxuan.runruncampus.feedback.UserFeedback",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderIssue",
+      "com.zhangxuan.runruncampus.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminPushDeliveryControllerTest.java",
+    "name": "AdminPushDeliveryControllerTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 35,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.message.PushDeliveryRepository",
+      "com.zhangxuan.runruncampus.message.PushDeliveryStatus"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminUserServiceTest.java",
+    "name": "AdminUserServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 73,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/CampusDispatchExperimentServiceTest.java",
+    "name": "CampusDispatchExperimentServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 62,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/FulfillmentProvenanceServiceTest.java",
+    "name": "FulfillmentProvenanceServiceTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "lines": 100,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.user.AppUser"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/api/ApiExceptionHandlerTest.java",
+    "name": "ApiExceptionHandlerTest",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 31,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/api/ApiRateLimitFilterTest.java",
+    "name": "ApiRateLimitFilterTest",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 64,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/api/ApiRateLimitServiceTest.java",
+    "name": "ApiRateLimitServiceTest",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 75,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/api/AppVersionControllerTest.java",
+    "name": "AppVersionControllerTest",
+    "package": "com.zhangxuan.runruncampus.api",
+    "lines": 25,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/AdminMfaCryptoTest.java",
+    "name": "AdminMfaCryptoTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 57,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/AdminMfaPostgresIntegrationTest.java",
+    "name": "AdminMfaPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 336,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminRole",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/AuthControllerRateLimitTest.java",
+    "name": "AuthControllerRateLimitTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 63,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.api.ApiRateLimitService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/AuthControllerTest.java",
+    "name": "AuthControllerTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 29,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminRole",
+      "com.zhangxuan.runruncampus.api.ApiRateLimitService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/AuthPasswordPostgresIntegrationTest.java",
+    "name": "AuthPasswordPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 75,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/AuthServiceTest.java",
+    "name": "AuthServiceTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 238,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.admin.AdminRole",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/LoginAttemptServiceTest.java",
+    "name": "LoginAttemptServiceTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 61,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/LoginCaptchaServiceTest.java",
+    "name": "LoginCaptchaServiceTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 39,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/auth/UserRoleSchemaMigrationTest.java",
+    "name": "UserRoleSchemaMigrationTest",
+    "package": "com.zhangxuan.runruncampus.auth",
+    "lines": 48,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/config/ProductionConfigurationValidatorTest.java",
+    "name": "ProductionConfigurationValidatorTest",
+    "package": "com.zhangxuan.runruncampus.config",
+    "lines": 68,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/config/ProductionFoundationTest.java",
+    "name": "ProductionFoundationTest",
+    "package": "com.zhangxuan.runruncampus.config",
+    "lines": 80,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/coupon/CouponServiceTest.java",
+    "name": "CouponServiceTest",
+    "package": "com.zhangxuan.runruncampus.coupon",
+    "lines": 142,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/courier/CourierCertificationGovernanceTest.java",
+    "name": "CourierCertificationGovernanceTest",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 36,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.order.OrderProofStorage",
+      "com.zhangxuan.runruncampus.user.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/courier/CourierCertificationMaintenanceTest.java",
+    "name": "CourierCertificationMaintenanceTest",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 103,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.OrderProofStorage",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/courier/CourierCertificationPostgresIntegrationTest.java",
+    "name": "CourierCertificationPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 71,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/courier/CourierCertificationServiceTest.java",
+    "name": "CourierCertificationServiceTest",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 218,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.order.OrderProofStorage"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/courier/CourierOperationsServiceTest.java",
+    "name": "CourierOperationsServiceTest",
+    "package": "com.zhangxuan.runruncampus.courier",
+    "lines": 100,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/credit/CreditPostgresIntegrationTest.java",
+    "name": "CreditPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 80,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.auth.SessionClientType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderEvent",
+      "com.zhangxuan.runruncampus.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/credit/CreditServiceTest.java",
+    "name": "CreditServiceTest",
+    "package": "com.zhangxuan.runruncampus.credit",
+    "lines": 119,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/feedback/FeedbackServiceTest.java",
+    "name": "FeedbackServiceTest",
+    "package": "com.zhangxuan.runruncampus.feedback",
+    "lines": 99,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/membership/MembershipServiceTest.java",
+    "name": "MembershipServiceTest",
+    "package": "com.zhangxuan.runruncampus.membership",
+    "lines": 150,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole",
+      "com.zhangxuan.runruncampus.user.UserRepository"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/message/AliyunPushRequestFactoryTest.java",
+    "name": "AliyunPushRequestFactoryTest",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 47,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/message/OrderMessageServiceTest.java",
+    "name": "OrderMessageServiceTest",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 123,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/message/PushDeliveryPostgresIntegrationTest.java",
+    "name": "PushDeliveryPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 98,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/message/PushDeliveryProcessorTest.java",
+    "name": "PushDeliveryProcessorTest",
+    "package": "com.zhangxuan.runruncampus.message",
+    "lines": 58,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/CourierReassignmentServiceTest.java",
+    "name": "CourierReassignmentServiceTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 117,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderAuthorizationTest.java",
+    "name": "OrderAuthorizationTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 174,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.coupon.CouponService",
+      "com.zhangxuan.runruncampus.membership.MembershipService",
+      "com.zhangxuan.runruncampus.payment.PaymentService",
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderChatPostgresIntegrationTest.java",
+    "name": "OrderChatPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 131,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(propagation = Propagation.NOT_SUPPORTED)"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderChatServiceTest.java",
+    "name": "OrderChatServiceTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 133,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderConcurrencyPostgresIntegrationTest.java",
+    "name": "OrderConcurrencyPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 524,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.auth.Session",
+      "com.zhangxuan.runruncampus.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.coupon.UserCoupon",
+      "com.zhangxuan.runruncampus.coupon.UserCouponRepository",
+      "com.zhangxuan.runruncampus.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.membership.UserMembership",
+      "com.zhangxuan.runruncampus.membership.UserMembershipRepository",
+      "com.zhangxuan.runruncampus.payment.WechatPayment",
+      "com.zhangxuan.runruncampus.payment.WechatPaymentRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderIssueServiceTest.java",
+    "name": "OrderIssueServiceTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 134,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderMinePostgresIntegrationTest.java",
+    "name": "OrderMinePostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 101,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderProofServiceTest.java",
+    "name": "OrderProofServiceTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 235,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/order/OrderServiceTest.java",
+    "name": "OrderServiceTest",
+    "package": "com.zhangxuan.runruncampus.order",
+    "lines": 949,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.coupon.CouponService",
+      "com.zhangxuan.runruncampus.membership.MembershipService",
+      "com.zhangxuan.runruncampus.payment.PaymentService",
+      "com.zhangxuan.runruncampus.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/payment/ManualQrPaymentServiceTest.java",
+    "name": "ManualQrPaymentServiceTest",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 126,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/payment/PaymentServiceTest.java",
+    "name": "PaymentServiceTest",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 221,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.membership.MembershipService",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/payment/WechatPaymentTest.java",
+    "name": "WechatPaymentTest",
+    "package": "com.zhangxuan.runruncampus.payment",
+    "lines": 52,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/privacy/PrivacyPostgresIntegrationTest.java",
+    "name": "PrivacyPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.privacy",
+    "lines": 85,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.address.AddressRepository",
+      "com.zhangxuan.runruncampus.address.UserAddress",
+      "com.zhangxuan.runruncampus.auth.AuthService",
+      "com.zhangxuan.runruncampus.auth.SessionClientType",
+      "com.zhangxuan.runruncampus.courier.CourierCertification",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationRepository",
+      "com.zhangxuan.runruncampus.order.CampusOrder",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.order.OrderStatus",
+      "com.zhangxuan.runruncampus.order.ServiceType",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/privacy/PrivacyServiceTest.java",
+    "name": "PrivacyServiceTest",
+    "package": "com.zhangxuan.runruncampus.privacy",
+    "lines": 141,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runruncampus.address.AddressRepository",
+      "com.zhangxuan.runruncampus.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.message.OrderMessageRepository",
+      "com.zhangxuan.runruncampus.message.PushDeliveryRepository",
+      "com.zhangxuan.runruncampus.order.OrderRepository",
+      "com.zhangxuan.runruncampus.payment.WechatRefundRepository",
+      "com.zhangxuan.runruncampus.user.AppUser",
+      "com.zhangxuan.runruncampus.user.UserRepository",
+      "com.zhangxuan.runruncampus.user.UserRole"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/CourierCertificationAdminListDatabaseTest.java",
+    "name": "CourierCertificationAdminListDatabaseTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 83,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/CourierCertificationV2DatabaseE2ETest.java",
+    "name": "CourierCertificationV2DatabaseE2ETest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 41,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/CourierEvidenceGovernanceServiceTest.java",
+    "name": "CourierEvidenceGovernanceServiceTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 42,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/FulfillmentIntegrationTest.java",
+    "name": "FulfillmentIntegrationTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 402,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.PaymentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/IdentityIntegrationTest.java",
+    "name": "IdentityIntegrationTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 313,
+    "kind": "test",
+    "database": true,
+    "http": true,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/LocalTestBoundaryTest.java",
+    "name": "LocalTestBoundaryTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 45,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/NotificationRuntimeTest.java",
+    "name": "NotificationRuntimeTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 42,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/OrderIntegrationTest.java",
+    "name": "OrderIntegrationTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 266,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.OrderModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/OrderRequestJsonContractTest.java",
+    "name": "OrderRequestJsonContractTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 15,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/PaymentEnvironmentTest.java",
+    "name": "PaymentEnvironmentTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 30,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/PaymentIntegrationTest.java",
+    "name": "PaymentIntegrationTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 302,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": [
+      "com.zhangxuan.runrunv2.PaymentModels.*"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/V2FeatureWiringIntegrationTest.java",
+    "name": "V2FeatureWiringIntegrationTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 203,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/V2JdbcContractDatabaseTest.java",
+    "name": "V2JdbcContractDatabaseTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 80,
+    "kind": "test",
+    "database": true,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/WechatHttpGatewayTest.java",
+    "name": "WechatHttpGatewayTest",
+    "package": "com.zhangxuan.runrunv2",
+    "lines": 75,
+    "kind": "test",
+    "database": false,
+    "http": false,
+    "transaction": [],
+    "locks": [],
+    "scheduled": [],
+    "imports": []
+  }
+]
