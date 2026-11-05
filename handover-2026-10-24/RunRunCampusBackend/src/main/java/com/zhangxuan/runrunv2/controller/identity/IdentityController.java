@@ -1,5 +1,7 @@
 package com.zhangxuan.runrunv2.controller.identity;
 
+import com.zhangxuan.runrunv2.dto.response.identity.Account;
+import com.zhangxuan.runrunv2.dto.response.identity.LoginResult;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v2")
 public class IdentityController {
+
   private final IdentityService identity;
 
   public IdentityController(IdentityService identity) {
@@ -30,26 +33,26 @@ public class IdentityController {
 
   @PostMapping("/auth/wechat/login")
   @IdentityPermission(anonymous = true)
-  public IdentityService.LoginResult login(@RequestBody WechatLogin body) {
+  public LoginResult login(@RequestBody WechatLogin body) {
     return identity.login(body.code);
   }
 
   @PostMapping("/auth/wechat/bind-phone")
   @IdentityPermission(anonymous = true)
-  public ResponseEntity<IdentityService.LoginResult> bind(@RequestBody BindPhone body) {
+  public ResponseEntity<LoginResult> bind(@RequestBody BindPhone body) {
     return ResponseEntity.status(201)
         .body(identity.bindPhone(body.loginTicket, body.phoneCode, body.requestedRole));
   }
 
   @PostMapping("/auth/password/login")
   @IdentityPermission(anonymous = true)
-  public IdentityService.LoginResult passwordLogin(@RequestBody PasswordLogin body) {
+  public LoginResult passwordLogin(@RequestBody PasswordLogin body) {
     return identity.passwordLogin(body.phone, body.password);
   }
 
   @GetMapping("/auth/session")
   @IdentityPermission
-  public IdentityService.Account session(HttpServletRequest request) {
+  public Account session(HttpServletRequest request) {
     return identity.authenticate(IdentityWebConfiguration.bearer(request));
   }
 

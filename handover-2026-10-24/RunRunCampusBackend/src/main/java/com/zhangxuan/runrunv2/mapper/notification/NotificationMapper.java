@@ -1,6 +1,5 @@
 package com.zhangxuan.runrunv2.mapper.notification;
 
-
 import org.springframework.stereotype.Repository;
 
 /**

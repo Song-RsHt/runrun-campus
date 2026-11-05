@@ -1,6 +1,5 @@
 package com.zhangxuan.runrunv2.mapper.identity;
 
-
 import org.springframework.stereotype.Repository;
 
 /**

@@ -8,7 +8,6 @@ import com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter;
 import com.zhangxuan.runrunv2.mapper.order.OrderStore;
 import com.zhangxuan.runrunv2.mapper.payment.PaymentMapper;
 import com.zhangxuan.runrunv2.model.order.OrderModels;
-import com.zhangxuan.runrunv2.service.configuration.ServiceConfigService;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.time.*;
@@ -514,7 +513,8 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private void lockNotificationRecipient(String orderId) {
-    mapper.lockNotificationRecipientRowsAppUsers(com.zhangxuan.runrunv2.model.ResourceIds.parse(orderId));
+    mapper.lockNotificationRecipientRowsAppUsers(
+        com.zhangxuan.runrunv2.model.ResourceIds.parse(orderId));
   }
 
   private void paymentStatus(String id, String status) {
@@ -522,13 +522,15 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private Payment payment(String id, boolean lock) {
-    var rows = mapper.paymentRowsPaymentOrders(lock, com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows =
+        mapper.paymentRowsPaymentOrders(lock, com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
 
   private Attempt attempt(String id) {
-    var rows = mapper.attemptRowsPaymentAttempts(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows =
+        mapper.attemptRowsPaymentAttempts(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }

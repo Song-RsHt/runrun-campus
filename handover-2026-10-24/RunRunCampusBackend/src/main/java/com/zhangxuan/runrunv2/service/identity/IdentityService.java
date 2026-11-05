@@ -1,5 +1,7 @@
 package com.zhangxuan.runrunv2.service.identity;
 
+import com.zhangxuan.runrunv2.dto.response.identity.Account;
+import com.zhangxuan.runrunv2.dto.response.identity.LoginResult;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
 import com.zhangxuan.runrunv2.mapper.identity.IdentityMapper;
@@ -26,40 +28,6 @@ public class IdentityService {
   private final BCryptPasswordEncoder passwords = new BCryptPasswordEncoder(12);
 
   private final String dummyPassword = passwords.encode("synthetic-unmatchable-password");
-
-  public record Account(
-      String id,
-      String role,
-      String status,
-      boolean adminEnabled,
-      long securityVersion,
-      boolean courierEligible) {
-
-    public List<String> permissions() {
-      if (!"ADMIN".equals(role) || !adminEnabled) return List.of();
-      return List.of(
-          "DASHBOARD_VIEW",
-          "ORDER_VIEW",
-          "ORDER_DISPATCH",
-          "ORDER_FORCE_COMPLETE",
-          "ORDER_ARCHIVE",
-          "PAYMENT_REVIEW",
-          "PLATFORM_SETTINGS_MANAGE",
-          "ORDER_EXPORT",
-          "USER_VIEW",
-          "USER_MANAGE",
-          "COURIER_VIEW",
-          "COURIER_REVIEW",
-          "ISSUE_VIEW",
-          "ISSUE_MANAGE",
-          "FEEDBACK_VIEW",
-          "FEEDBACK_MANAGE",
-          "AUDIT_VIEW",
-          "ADMIN_MANAGE");
-    }
-  }
-
-  public record LoginResult(String loginTicket, String token, Account account) {}
 
   public IdentityService(
       IdentityMapper mapper,
@@ -142,10 +110,10 @@ public class IdentityService {
 
   public Account requireRole(String token, String role, boolean needsCourierEligibility) {
     Account account = authenticate(token);
-    if (!role.equals(account.role)) throw new IdentityFailure(403, "FORBIDDEN");
-    if ("ADMIN".equals(role) && !account.adminEnabled)
+    if (!role.equals(account.role())) throw new IdentityFailure(403, "FORBIDDEN");
+    if ("ADMIN".equals(role) && !account.adminEnabled())
       throw new IdentityFailure(403, "V2_ADMIN_NOT_ENABLED");
-    if ("COURIER".equals(role) && needsCourierEligibility && !account.courierEligible)
+    if ("COURIER".equals(role) && needsCourierEligibility && !account.courierEligible())
       throw new IdentityFailure(403, "COURIER_NOT_APPROVED");
     return account;
   }
@@ -153,17 +121,17 @@ public class IdentityService {
   @Transactional
   public void revoke(String token, boolean all, String key) {
     Account account = authenticate(token);
-    user(Long.parseLong(account.id), true);
+    user(Long.parseLong(account.id()), true);
     authenticate(token);
     // Bind single-session logout idempotency to the exact session being revoked.
     // Reusing a key from another active session must conflict instead of silently
     // reporting the first request as a replay.
     String logoutContent = all ? "all:true" : "all:false:session:" + secrets.hash("session", token);
-    if (!beginWrite(account.id, "identity:logout", key, logoutContent)) return;
-    if (all) mapper.invalidateUserSessions(Long.valueOf(account.id));
+    if (!beginWrite(account.id(), "identity:logout", key, logoutContent)) return;
+    if (all) mapper.invalidateUserSessions(Long.valueOf(account.id()));
     else mapper.invalidateSession(secrets.hash("session", token));
-    mapper.insertRevocationEvent(Long.valueOf(account.id), Long.valueOf(account.id));
-    finishWrite(account.id, "identity:logout", key);
+    mapper.insertRevocationEvent(Long.valueOf(account.id()), Long.valueOf(account.id()));
+    finishWrite(account.id(), "identity:logout", key);
   }
 
   @Transactional
@@ -173,15 +141,15 @@ public class IdentityService {
         || password.length() < 12
         || password.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72)
       throw IdentityFailure.invalid();
-    IdentityUser user = user(Long.parseLong(account.id), true);
+    IdentityUser user = user(Long.parseLong(account.id()), true);
     active(user);
     authenticate(token);
-    if (!beginWrite(account.id, "identity:password", key, password)) return;
+    if (!beginWrite(account.id(), "identity:password", key, password)) return;
     mapper.updatePassword(passwords.encode(password), user.id());
     // Password changes revoke every session, including the caller; no hidden surviving session.
     mapper.invalidatePasswordUserSessions(user.id());
     mapper.insertPasswordRevocationEvent(user.id(), user.id());
-    finishWrite(account.id, "identity:password", key);
+    finishWrite(account.id(), "identity:password", key);
   }
 
   /**
@@ -193,7 +161,7 @@ public class IdentityService {
         .isActualTransactionActive())
       throw new IllegalStateException("Business authorization requires a transaction");
     Account account = authenticate(token);
-    user(Long.parseLong(account.id), true);
+    user(Long.parseLong(account.id()), true);
     return requireRole(token, role, courierEligibility);
   }
 

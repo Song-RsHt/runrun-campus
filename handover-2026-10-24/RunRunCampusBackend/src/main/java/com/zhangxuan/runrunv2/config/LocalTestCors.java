@@ -14,16 +14,17 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @Profile("local-v2-test")
 public class LocalTestCors {
-    @Bean
-    public FilterRegistrationBean<CorsFilter> localTestCorsFilter() {
-        var cors=new CorsConfiguration();
-        cors.setAllowedOrigins(List.of("http://localhost:5173","http://127.0.0.1:5173"));
-        cors.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-        cors.setAllowedHeaders(List.of("Authorization","Content-Type","Idempotency-Key","X-Request-Id"));
-        var source=new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/v2/**",cors);
-        var filter=new FilterRegistrationBean<>(new CorsFilter(source));
-        filter.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return filter;
-    }
+  @Bean
+  public FilterRegistrationBean<CorsFilter> localTestCorsFilter() {
+    var cors = new CorsConfiguration();
+    cors.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+    cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+    cors.setAllowedHeaders(
+        List.of("Authorization", "Content-Type", "Idempotency-Key", "X-Request-Id"));
+    var source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/api/v2/**", cors);
+    var filter = new FilterRegistrationBean<>(new CorsFilter(source));
+    filter.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    return filter;
+  }
 }

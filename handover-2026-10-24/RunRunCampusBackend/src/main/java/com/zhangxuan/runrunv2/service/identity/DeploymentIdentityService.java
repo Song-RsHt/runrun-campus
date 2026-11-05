@@ -3,6 +3,7 @@ package com.zhangxuan.runrunv2.service.identity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper;
+import com.zhangxuan.runrunv2.model.identity.AccessResult;
 import com.zhangxuan.runrunv2.model.identity.IdentityUser;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class DeploymentIdentityService {
-  private final DeploymentIdentityMapper mapper;
-  private final IdentityService identity;
-  private final ObjectMapper json;
 
-  public record AccessResult(String userId, boolean enabled, long securityVersion) {}
+  private final DeploymentIdentityMapper mapper;
+
+  private final IdentityService identity;
+
+  private final ObjectMapper json;
 
   public DeploymentIdentityService(
       DeploymentIdentityMapper mapper, IdentityService identity, ObjectMapper json) {

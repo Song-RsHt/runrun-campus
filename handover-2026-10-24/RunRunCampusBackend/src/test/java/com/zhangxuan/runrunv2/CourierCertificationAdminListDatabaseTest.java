@@ -1,8 +1,8 @@
 package com.zhangxuan.runrunv2;
+
 import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,19 +16,25 @@ import java.util.List;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import com.zhangxuan.runrunv2.dto.response.identity.Account;
 
 @Testcontainers
 class CourierCertificationAdminListDatabaseTest {
-    @Container static final PostgreSQLContainer<?> PG = new PostgreSQLContainer<>("postgres:16-alpine");
+
+    @Container
+    static final PostgreSQLContainer<?> PG = new PostgreSQLContainer<>("postgres:16-alpine");
+
     static JdbcTemplate db;
 
-    @BeforeAll static void migrateFullLocalChain() throws Exception {
+    @BeforeAll
+    static void migrateFullLocalChain() throws Exception {
         var ds = new DriverManagerDataSource(PG.getJdbcUrl(), PG.getUsername(), PG.getPassword());
         db = new JdbcTemplate(ds);
         Path root = Path.of("../..").toAbsolutePath().normalize();
         try (var connection = ds.getConnection()) {
             for (String name : Files.readAllLines(root.resolve("deploy/v2-test/migrations.txt"))) {
-                if (name.isBlank()) continue;
+                if (name.isBlank())
+                    continue;
                 try (var statement = connection.createStatement()) {
                     statement.execute(Files.readString(root.resolve("server/db/migrations/up").resolve(name)));
                 }
@@ -36,11 +42,11 @@ class CourierCertificationAdminListDatabaseTest {
         }
     }
 
-    @Test void emptyAndPopulatedListsUseV2SchemaAndAdminDto() {
+    @Test
+    void emptyAndPopulatedListsUseV2SchemaAndAdminDto() {
         var identity = mock(IdentityService.class);
-        when(identity.requireRole("test-session", "ADMIN", false))
-                .thenReturn(new IdentityService.Account("999", "ADMIN", "ACTIVE", true, 0, false));
-        var service = new CourierCertificationV2Service(db, identity, null, null, null);
+        when(identity.requireRole("test-session", "ADMIN", false)).thenReturn(new Account("999", "ADMIN", "ACTIVE", true, 0, false));
+        var service = new CourierCertificationV2Service(new com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper(db), identity, null, null, null);
         assertEquals(0L, service.adminList("test-session", null, null, 0, 20).get("totalElements"));
         long first = db.queryForObject("INSERT INTO runrun_v2.app_users(phone,role,created_at) VALUES ('test-courier-alpha','COURIER','2026-01-01') RETURNING id", Long.class);
         long second = db.queryForObject("INSERT INTO runrun_v2.app_users(phone,role) VALUES ('test-courier-beta','COURIER') RETURNING id", Long.class);
@@ -71,7 +77,8 @@ class CourierCertificationAdminListDatabaseTest {
         verify(identity, atLeastOnce()).requireRole("test-session", "ADMIN", false);
     }
 
-    @Test void deniedIdentityStopsBeforeAnyDatabaseAccess() {
+    @Test
+    void deniedIdentityStopsBeforeAnyDatabaseAccess() {
         var identity = mock(IdentityService.class);
         when(identity.requireRole("denied-session", "ADMIN", false)).thenThrow(new IdentityFailure(403, "FORBIDDEN"));
         var service = new CourierCertificationV2Service(null, identity, null, null, null);
@@ -79,7 +86,7 @@ class CourierCertificationAdminListDatabaseTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static List<Map<String,Object>> items(Map<String,Object> page) {
-        return (List<Map<String,Object>>) page.get("items");
+    private static List<Map<String, Object>> items(Map<String, Object> page) {
+        return (List<Map<String, Object>>) page.get("items");
     }
 }

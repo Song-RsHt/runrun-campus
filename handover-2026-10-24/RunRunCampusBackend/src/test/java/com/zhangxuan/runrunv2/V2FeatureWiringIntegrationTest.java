@@ -45,6 +45,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.zhangxuan.runrunv2.model.notification.DeliveryResult;
+import com.zhangxuan.runrunv2.dto.response.identity.LoginResult;
 
 /**
  * Real controllers, services, transactions, private files and the complete delivered database chain.
@@ -139,7 +140,7 @@ class V2FeatureWiringIntegrationTest {
         userToken = register("user", "13800000003", "USER").token();
     }
 
-    private IdentityService.LoginResult register(String code, String phone, String role) {
+    private LoginResult register(String code, String phone, String role) {
         return identity.bindPhone(identity.login(code).loginTicket(), phone, role);
     }
 
