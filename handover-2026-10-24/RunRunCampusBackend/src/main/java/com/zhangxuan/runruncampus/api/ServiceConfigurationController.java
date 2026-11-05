@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.api;
 
-import com.zhangxuan.runruncampus.order.DeliveryZone;
-import com.zhangxuan.runruncampus.order.PickupStation;
+import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.order.PickupStation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

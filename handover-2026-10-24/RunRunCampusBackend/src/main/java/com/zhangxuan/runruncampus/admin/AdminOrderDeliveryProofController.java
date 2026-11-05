@@ -1,10 +1,10 @@
 package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.order.OrderProofStorage;
-import com.zhangxuan.runruncampus.order.OrderProofType;
-import com.zhangxuan.runruncampus.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
+import com.zhangxuan.runruncampus.enums.order.OrderProofType;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

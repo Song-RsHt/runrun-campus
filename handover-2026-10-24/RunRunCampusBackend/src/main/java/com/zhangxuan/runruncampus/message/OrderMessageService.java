@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.message;
 
-import com.zhangxuan.runruncampus.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.user.AppUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.context.ApplicationEventPublisher;

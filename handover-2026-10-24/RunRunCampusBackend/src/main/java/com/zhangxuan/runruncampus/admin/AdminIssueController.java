@@ -1,9 +1,9 @@
 package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.order.OrderIssueType;
-import com.zhangxuan.runruncampus.order.OrderIssueHandlingStatus;
-import com.zhangxuan.runruncampus.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

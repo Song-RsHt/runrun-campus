@@ -5,12 +5,12 @@ import com.zhangxuan.runruncampus.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.message.OrderMessageService;
 import com.zhangxuan.runruncampus.message.OrderMessageType;
-import com.zhangxuan.runruncampus.order.CampusOrder;
-import com.zhangxuan.runruncampus.order.CourierSettlementStatus;
-import com.zhangxuan.runruncampus.order.ManualPaymentStatus;
-import com.zhangxuan.runruncampus.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.order.OrderRepository;
-import com.zhangxuan.runruncampus.order.OrderStatus;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
+import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import org.springframework.http.HttpStatus;
@@ -41,7 +41,7 @@ public class ManualQrPaymentService {
         if (order.getStatus() != OrderStatus.PICKED_UP) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "取件并到达交付地点后才能通知付款");
         }
-        if (order.getPaymentStatus() == com.zhangxuan.runruncampus.order.OrderPaymentStatus.PAID) {
+        if (order.getPaymentStatus() == com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus.PAID) {
             return response(order);
         }
         if (order.getManualPaymentStatus() != ManualPaymentStatus.NOT_REQUESTED) {

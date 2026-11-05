@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.address;
 
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
-import com.zhangxuan.runruncampus.order.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

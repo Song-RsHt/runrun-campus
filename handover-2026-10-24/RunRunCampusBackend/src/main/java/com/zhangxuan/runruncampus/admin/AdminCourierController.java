@@ -2,8 +2,8 @@ package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.courier.CourierCertificationStatus;
-import com.zhangxuan.runruncampus.order.OrderStatus;
-import com.zhangxuan.runruncampus.order.ServiceType;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.validation.annotation.Validated;

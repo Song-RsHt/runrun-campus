@@ -1,9 +1,9 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.order.OrderRepository;
-import com.zhangxuan.runruncampus.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.order.OrderStatus;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.user.AppUser;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;

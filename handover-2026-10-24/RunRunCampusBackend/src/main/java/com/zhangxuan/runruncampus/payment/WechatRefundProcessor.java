@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.payment;
 
-import com.zhangxuan.runruncampus.order.CampusOrder;
-import com.zhangxuan.runruncampus.order.OrderRepository;
-import com.zhangxuan.runruncampus.order.OrderStatus;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

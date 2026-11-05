@@ -1,14 +1,14 @@
 package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.order.OrderIssueType;
-import com.zhangxuan.runruncampus.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.order.OrderProofType;
-import com.zhangxuan.runruncampus.order.OrderStatus;
-import com.zhangxuan.runruncampus.order.ServiceType;
-import com.zhangxuan.runruncampus.order.ManualPaymentStatus;
-import com.zhangxuan.runruncampus.order.CourierSettlementStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderProofType;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
 import com.zhangxuan.runruncampus.payment.ManualQrPaymentService;
 import com.zhangxuan.runruncampus.user.UserRole;
 import jakarta.validation.Valid;

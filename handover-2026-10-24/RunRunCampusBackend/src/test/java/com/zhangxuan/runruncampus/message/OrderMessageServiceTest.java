@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.message;
 
-import com.zhangxuan.runruncampus.order.CampusOrder;
-import com.zhangxuan.runruncampus.order.ServiceType;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import org.junit.jupiter.api.BeforeEach;

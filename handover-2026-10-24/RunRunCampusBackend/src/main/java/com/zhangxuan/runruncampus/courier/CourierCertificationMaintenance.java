@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.courier;
 
-import com.zhangxuan.runruncampus.order.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;

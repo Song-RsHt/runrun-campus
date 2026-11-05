@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.address;
 
 import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.order.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import jakarta.persistence.*;
 
 import java.time.Instant;

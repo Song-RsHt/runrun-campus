@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.courier;
 
 import com.zhangxuan.runruncampus.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.order.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.user.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

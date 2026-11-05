@@ -4,7 +4,7 @@ import com.zhangxuan.runruncampus.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.order.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.user.UserRole;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

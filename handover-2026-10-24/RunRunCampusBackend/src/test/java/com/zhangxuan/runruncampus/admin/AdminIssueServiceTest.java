@@ -2,12 +2,12 @@ package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.message.OrderMessageService;
-import com.zhangxuan.runruncampus.order.CampusOrder;
-import com.zhangxuan.runruncampus.order.OrderIssue;
-import com.zhangxuan.runruncampus.order.OrderIssueHandlingStatus;
-import com.zhangxuan.runruncampus.order.OrderIssueRepository;
-import com.zhangxuan.runruncampus.order.OrderIssueType;
-import com.zhangxuan.runruncampus.order.ServiceType;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.order.OrderIssue;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
+import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import org.junit.jupiter.api.Test;

@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import com.zhangxuan.runruncampus.order.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 
 @RestController
 @RequestMapping("/api/v1/addresses")

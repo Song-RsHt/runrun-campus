@@ -3,7 +3,7 @@ package com.zhangxuan.runruncampus.courier;
 import com.zhangxuan.runruncampus.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
-import com.zhangxuan.runruncampus.order.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import org.springframework.mock.web.MockMultipartFile;
 import java.time.LocalDate;
 import org.junit.jupiter.api.BeforeEach;

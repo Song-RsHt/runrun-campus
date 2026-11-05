@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.courier;
 
-import com.zhangxuan.runruncampus.order.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,9 +1,9 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.order.CampusOrder;
-import com.zhangxuan.runruncampus.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.order.OrderRepository;
-import com.zhangxuan.runruncampus.order.OrderStatus;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.user.AppUser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

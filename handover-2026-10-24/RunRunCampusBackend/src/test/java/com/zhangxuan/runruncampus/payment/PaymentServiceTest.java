@@ -2,11 +2,11 @@ package com.zhangxuan.runruncampus.payment;
 
 import com.zhangxuan.runruncampus.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.membership.MembershipService;
-import com.zhangxuan.runruncampus.order.CampusOrder;
-import com.zhangxuan.runruncampus.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.order.OrderRepository;
-import com.zhangxuan.runruncampus.order.OrderStatus;
-import com.zhangxuan.runruncampus.order.ServiceType;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import org.junit.jupiter.api.BeforeEach;
