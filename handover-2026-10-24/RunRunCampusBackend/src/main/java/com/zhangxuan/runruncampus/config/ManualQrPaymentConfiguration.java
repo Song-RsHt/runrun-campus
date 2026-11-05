@@ -5,5 +5,4 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableConfigurationProperties(ManualQrPaymentProperties.class)
-public class ManualQrPaymentConfiguration {
-}
+public class ManualQrPaymentConfiguration {}

@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.controller.privacy;
-import com.zhangxuan.runruncampus.service.privacy.PrivacyService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.privacy.PrivacyService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -17,45 +17,50 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/privacy")
 public class PrivacyController {
-    private final AuthService auth;
-    private final PrivacyService privacy;
+  private final AuthService auth;
+  private final PrivacyService privacy;
 
-    public PrivacyController(AuthService auth, PrivacyService privacy) {
-        this.auth = auth;
-        this.privacy = privacy;
-    }
+  public PrivacyController(AuthService auth, PrivacyService privacy) {
+    this.auth = auth;
+    this.privacy = privacy;
+  }
 
-    @GetMapping("/policy")
-    public PrivacyService.Policy policy() {
-        return privacy.policy();
-    }
+  @GetMapping("/policy")
+  public PrivacyService.Policy policy() {
+    return privacy.policy();
+  }
 
-    @GetMapping("/consent")
-    public PrivacyService.ConsentStatus consentStatus(@RequestHeader("Authorization") String authorization) {
-        return privacy.status(auth.requireUser(authorization));
-    }
+  @GetMapping("/consent")
+  public PrivacyService.ConsentStatus consentStatus(
+      @RequestHeader("Authorization") String authorization) {
+    return privacy.status(auth.requireUser(authorization));
+  }
 
-    @PostMapping("/consent")
-    public PrivacyService.ConsentStatus consent(@RequestHeader("Authorization") String authorization,
-                                         @Valid @RequestBody ConsentRequest request) {
-        return privacy.consent(auth.requireUser(authorization), request.version());
-    }
+  @PostMapping("/consent")
+  public PrivacyService.ConsentStatus consent(
+      @RequestHeader("Authorization") String authorization,
+      @Valid @RequestBody ConsentRequest request) {
+    return privacy.consent(auth.requireUser(authorization), request.version());
+  }
 
-    @PostMapping("/withdrawal")
-    public ResponseEntity<Void> withdrawConsent(@RequestHeader("Authorization") String authorization) {
-        privacy.withdrawConsent(auth.requireUser(authorization));
-        return ResponseEntity.noContent().build();
-    }
+  @PostMapping("/withdrawal")
+  public ResponseEntity<Void> withdrawConsent(
+      @RequestHeader("Authorization") String authorization) {
+    privacy.withdrawConsent(auth.requireUser(authorization));
+    return ResponseEntity.noContent().build();
+  }
 
-    @PostMapping("/account-deletion")
-    public ResponseEntity<Void> deleteAccount(@RequestHeader("Authorization") String authorization,
-                                       @Valid @RequestBody AccountDeletionRequest request) {
-        privacy.deleteAccount(auth.requireUser(authorization), request.password(), request.confirmed());
-        return ResponseEntity.noContent().build();
-    }
+  @PostMapping("/account-deletion")
+  public ResponseEntity<Void> deleteAccount(
+      @RequestHeader("Authorization") String authorization,
+      @Valid @RequestBody AccountDeletionRequest request) {
+    privacy.deleteAccount(auth.requireUser(authorization), request.password(), request.confirmed());
+    return ResponseEntity.noContent().build();
+  }
 
-    public record ConsentRequest(@NotBlank @Size(max = 32) String version) { }
-    public record AccountDeletionRequest(
-            @NotBlank(message = "请输入当前密码") @Size(max = 72) String password,
-            @AssertTrue(message = "请确认注销账号") boolean confirmed) { }
+  public record ConsentRequest(@NotBlank @Size(max = 32) String version) {}
+
+  public record AccountDeletionRequest(
+      @NotBlank(message = "请输入当前密码") @Size(max = 72) String password,
+      @AssertTrue(message = "请确认注销账号") boolean confirmed) {}
 }

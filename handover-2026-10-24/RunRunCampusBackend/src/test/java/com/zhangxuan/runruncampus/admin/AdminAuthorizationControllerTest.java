@@ -1,24 +1,30 @@
 package com.zhangxuan.runruncampus.admin;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 import com.zhangxuan.runruncampus.controller.admin.AdminAccountController;
-import com.zhangxuan.runruncampus.service.admin.AdminAccountService;
 import com.zhangxuan.runruncampus.controller.admin.AdminAuditController;
-import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.controller.admin.AdminCommandCenterController;
-import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
-import com.zhangxuan.runruncampus.service.admin.AdminCouponService;
 import com.zhangxuan.runruncampus.controller.admin.AdminDispatchController;
-import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
 import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
-import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
 import com.zhangxuan.runruncampus.controller.admin.AdminOrderController;
 import com.zhangxuan.runruncampus.controller.admin.AdminOrderLifecycleController;
-import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
-import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
+import com.zhangxuan.runruncampus.controller.admin.AdminUserController;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.controller.admin.AdminUserController;
+import com.zhangxuan.runruncampus.enums.commandcenter.Queue;
+import com.zhangxuan.runruncampus.service.admin.AdminAccountService;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
+import com.zhangxuan.runruncampus.service.admin.AdminCouponService;
+import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
+import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
+import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
+import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.admin.AdminUserService;
-
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
 import org.junit.jupiter.api.Test;
@@ -28,186 +34,182 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class AdminAuthorizationControllerTest {
-    private static final String TOKEN = "Bearer restricted-admin";
 
-    @Mock
-    private AuthService authService;
-    @Mock
-    private AdminOrderService orderService;
-    @Mock
-    private ManualQrPaymentService manualQrPaymentService;
-    @Mock
-    private AdminIssueService issueService;
-    @Mock
-    private AdminUserService userService;
-    @Mock
-    private AdminCouponService couponService;
-    @Mock
-    private AdminAccountService accountService;
-    @Mock
-    private AdminAuditService auditService;
-    @Mock
-    private AdminCommandCenterService commandCenterService;
-    @Mock
-    private AdminDispatchService dispatchService;
-    @Mock
-    private AdminOrderLifecycleService lifecycleService;
+  private static final String TOKEN = "Bearer restricted-admin";
 
-    @Test
-    void commandCenterRequiresDashboardPermissionBeforeReadingData() {
-        deny(AdminPermission.DASHBOARD_VIEW);
-        var controller = new AdminCommandCenterController(authService, commandCenterService);
-        var exception = assertThrows(ResponseStatusException.class,
-                () -> controller.snapshot(TOKEN, AdminCommandCenterService.Queue.WAITING, 0, 0));
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(commandCenterService);
-    }
+  @Mock private AuthService authService;
 
-    @Test
-    void administratorWithoutExportPermissionCannotExportOrders() {
-        deny(AdminPermission.ORDER_EXPORT);
-        AdminOrderController controller = new AdminOrderController(authService, orderService, manualQrPaymentService);
+  @Mock private AdminOrderService orderService;
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.export(TOKEN, null, null, false));
+  @Mock private ManualQrPaymentService manualQrPaymentService;
 
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(orderService);
-    }
+  @Mock private AdminIssueService issueService;
 
-    @Test
-    void administratorWithoutPaymentReviewPermissionCannotConfirmManualPayment() {
-        deny(AdminPermission.PAYMENT_REVIEW);
-        AdminOrderController controller = new AdminOrderController(
-                authService, orderService, manualQrPaymentService);
+  @Mock private AdminUserService userService;
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.confirmManualPayment(TOKEN, 11L));
+  @Mock private AdminCouponService couponService;
 
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(manualQrPaymentService);
-    }
+  @Mock private AdminAccountService accountService;
 
-    @Test
-    void administratorWithoutOverridePermissionCannotForceCompleteOrder() {
-        deny(AdminPermission.ORDER_FORCE_COMPLETE);
-        var controller = new AdminOrderLifecycleController(authService, lifecycleService);
+  @Mock private AdminAuditService auditService;
 
-        var error = assertThrows(ResponseStatusException.class, () -> controller.forceComplete(
-                TOKEN, 11L, new AdminOrderLifecycleController.ReasonRequest("凭证已核对")));
+  @Mock private AdminCommandCenterService commandCenterService;
 
-        assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
-        verifyNoInteractions(lifecycleService);
-    }
+  @Mock private AdminDispatchService dispatchService;
 
-    @Test
-    void administratorWithoutArchivePermissionCannotArchiveOrder() {
-        deny(AdminPermission.ORDER_ARCHIVE);
-        var controller = new AdminOrderLifecycleController(authService, lifecycleService);
+  @Mock private AdminOrderLifecycleService lifecycleService;
 
-        var error = assertThrows(ResponseStatusException.class, () -> controller.archive(
-                TOKEN, 11L, new AdminOrderLifecycleController.ReasonRequest("订单归档原因")));
+  @Test
+  void commandCenterRequiresDashboardPermissionBeforeReadingData() {
+    deny(AdminPermission.DASHBOARD_VIEW);
+    var controller = new AdminCommandCenterController(authService, commandCenterService);
+    var exception =
+        assertThrows(
+            ResponseStatusException.class, () -> controller.snapshot(TOKEN, Queue.WAITING, 0, 0));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(commandCenterService);
+  }
 
-        assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
-        verifyNoInteractions(lifecycleService);
-    }
+  @Test
+  void administratorWithoutExportPermissionCannotExportOrders() {
+    deny(AdminPermission.ORDER_EXPORT);
+    AdminOrderController controller =
+        new AdminOrderController(authService, orderService, manualQrPaymentService);
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class, () -> controller.export(TOKEN, null, null, false));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(orderService);
+  }
 
-    @Test
-    void readOnlyAdministratorCannotDispatchOrder() {
-        deny(AdminPermission.ORDER_DISPATCH);
-        AdminDispatchController controller = new AdminDispatchController(authService, dispatchService);
+  @Test
+  void administratorWithoutPaymentReviewPermissionCannotConfirmManualPayment() {
+    deny(AdminPermission.PAYMENT_REVIEW);
+    AdminOrderController controller =
+        new AdminOrderController(authService, orderService, manualQrPaymentService);
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class, () -> controller.confirmManualPayment(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(manualQrPaymentService);
+  }
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.dispatch(TOKEN, 11L, new AdminDispatchController.DispatchRequest(3L)));
+  @Test
+  void administratorWithoutOverridePermissionCannotForceCompleteOrder() {
+    deny(AdminPermission.ORDER_FORCE_COMPLETE);
+    var controller = new AdminOrderLifecycleController(authService, lifecycleService);
+    var error =
+        assertThrows(
+            ResponseStatusException.class,
+            () ->
+                controller.forceComplete(
+                    TOKEN, 11L, new AdminOrderLifecycleController.ReasonRequest("凭证已核对")));
+    assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
+    verifyNoInteractions(lifecycleService);
+  }
 
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(dispatchService);
-    }
+  @Test
+  void administratorWithoutArchivePermissionCannotArchiveOrder() {
+    deny(AdminPermission.ORDER_ARCHIVE);
+    var controller = new AdminOrderLifecycleController(authService, lifecycleService);
+    var error =
+        assertThrows(
+            ResponseStatusException.class,
+            () ->
+                controller.archive(
+                    TOKEN, 11L, new AdminOrderLifecycleController.ReasonRequest("订单归档原因")));
+    assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
+    verifyNoInteractions(lifecycleService);
+  }
 
-    @Test
-    void readOnlyAdministratorCannotClaimIssue() {
-        deny(AdminPermission.ISSUE_MANAGE);
-        AdminIssueController controller = new AdminIssueController(authService, issueService);
+  @Test
+  void readOnlyAdministratorCannotDispatchOrder() {
+    deny(AdminPermission.ORDER_DISPATCH);
+    AdminDispatchController controller = new AdminDispatchController(authService, dispatchService);
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class,
+            () -> controller.dispatch(TOKEN, 11L, new AdminDispatchController.DispatchRequest(3L)));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(dispatchService);
+  }
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.claim(TOKEN, 11L));
+  @Test
+  void readOnlyAdministratorCannotClaimIssue() {
+    deny(AdminPermission.ISSUE_MANAGE);
+    AdminIssueController controller = new AdminIssueController(authService, issueService);
+    ResponseStatusException exception =
+        assertThrows(ResponseStatusException.class, () -> controller.claim(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(issueService);
+  }
 
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(issueService);
-    }
+  @Test
+  void administratorWithoutUserManagePermissionCannotSuspendUser() {
+    deny(AdminPermission.USER_MANAGE);
+    AdminUserController controller =
+        new AdminUserController(authService, userService, couponService);
+    ResponseStatusException exception =
+        assertThrows(ResponseStatusException.class, () -> controller.suspend(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(userService);
+  }
 
-    @Test
-    void administratorWithoutUserManagePermissionCannotSuspendUser() {
-        deny(AdminPermission.USER_MANAGE);
-        AdminUserController controller = new AdminUserController(authService, userService, couponService);
+  @Test
+  void administratorWithoutUserManagePermissionCannotResetUserPassword() {
+    deny(AdminPermission.USER_MANAGE);
+    AdminUserController controller =
+        new AdminUserController(authService, userService, couponService);
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class,
+            () ->
+                controller.resetPassword(
+                    TOKEN, 11L, new AdminUserController.ResetPasswordRequest("new-password")));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(userService);
+  }
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.suspend(TOKEN, 11L));
+  @Test
+  void administratorWithoutCouponPermissionCannotIssueCoupon() {
+    deny(AdminPermission.COUPON_ISSUE);
+    AdminUserController controller =
+        new AdminUserController(authService, userService, couponService);
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class, () -> controller.issueOneYuanCoupon(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(couponService);
+  }
 
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(userService);
-    }
+  @Test
+  void administratorWithoutAdminManagePermissionCannotCreateAdministrator() {
+    deny(AdminPermission.ADMIN_MANAGE);
+    AdminAccountController controller = new AdminAccountController(authService, accountService);
+    AdminAccountController.CreateAdminRequest request =
+        new AdminAccountController.CreateAdminRequest(
+            "13800000001", "password", "新管理员", AdminRole.SUPPORT);
+    ResponseStatusException exception =
+        assertThrows(ResponseStatusException.class, () -> controller.create(TOKEN, request));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(accountService);
+  }
 
-    @Test
-    void administratorWithoutUserManagePermissionCannotResetUserPassword() {
-        deny(AdminPermission.USER_MANAGE);
-        AdminUserController controller = new AdminUserController(authService, userService, couponService);
+  @Test
+  void administratorWithoutAuditPermissionCannotReadAuditLog() {
+    deny(AdminPermission.AUDIT_VIEW);
+    AdminAuditController controller = new AdminAuditController(authService, auditService);
+    ResponseStatusException exception =
+        assertThrows(
+            ResponseStatusException.class, () -> controller.list(TOKEN, null, null, 0, 20));
+    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    verifyNoInteractions(auditService);
+  }
 
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.resetPassword(
-                        TOKEN, 11L, new AdminUserController.ResetPasswordRequest("new-password")));
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(userService);
-    }
-
-    @Test
-    void administratorWithoutCouponPermissionCannotIssueCoupon() {
-        deny(AdminPermission.COUPON_ISSUE);
-        AdminUserController controller = new AdminUserController(authService, userService, couponService);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.issueOneYuanCoupon(TOKEN, 11L));
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(couponService);
-    }
-
-    @Test
-    void administratorWithoutAdminManagePermissionCannotCreateAdministrator() {
-        deny(AdminPermission.ADMIN_MANAGE);
-        AdminAccountController controller = new AdminAccountController(authService, accountService);
-        AdminAccountController.CreateAdminRequest request = new AdminAccountController.CreateAdminRequest(
-                "13800000001", "password", "新管理员", AdminRole.SUPPORT);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.create(TOKEN, request));
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(accountService);
-    }
-
-    @Test
-    void administratorWithoutAuditPermissionCannotReadAuditLog() {
-        deny(AdminPermission.AUDIT_VIEW);
-        AdminAuditController controller = new AdminAuditController(authService, auditService);
-
-        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
-                () -> controller.list(TOKEN, null, null, 0, 20));
-
-        assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
-        verifyNoInteractions(auditService);
-    }
-
-    private void deny(AdminPermission permission) {
-        when(authService.requirePermission(TOKEN, permission))
-                .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "当前管理员岗位无此权限"));
-    }
+  private void deny(AdminPermission permission) {
+    when(authService.requirePermission(TOKEN, permission))
+        .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "当前管理员岗位无此权限"));
+  }
 }

@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.controller.credit;
-import com.zhangxuan.runruncampus.service.credit.CreditService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.credit.CreditService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.validation.annotation.Validated;
@@ -15,18 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/credit")
 public class CreditController {
-    private final AuthService auth;
-    private final CreditService credit;
+  private final AuthService auth;
+  private final CreditService credit;
 
-    public CreditController(AuthService auth, CreditService credit) {
-        this.auth = auth;
-        this.credit = credit;
-    }
+  public CreditController(AuthService auth, CreditService credit) {
+    this.auth = auth;
+    this.credit = credit;
+  }
 
-    @GetMapping("/me")
-    public CreditService.ProfileResponse mine(@RequestHeader("Authorization") String authorization,
-                                       @RequestParam(defaultValue = "0") @Min(0) int page,
-                                       @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
-        return credit.profile(auth.requireUser(authorization), page, size);
-    }
+  @GetMapping("/me")
+  public CreditService.ProfileResponse mine(
+      @RequestHeader("Authorization") String authorization,
+      @RequestParam(defaultValue = "0") @Min(0) int page,
+      @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
+    return credit.profile(auth.requireUser(authorization), page, size);
+  }
 }

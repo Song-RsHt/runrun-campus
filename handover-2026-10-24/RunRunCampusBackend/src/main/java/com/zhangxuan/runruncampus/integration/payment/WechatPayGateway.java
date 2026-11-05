@@ -1,23 +1,51 @@
 package com.zhangxuan.runruncampus.integration.payment;
-import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
 
+import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
 import java.time.Instant;
 
 public interface WechatPayGateway {
-    AppPayParameters prepay(String outTradeNo, String description, int amountCents, String attach, Instant expiresAt);
-    TradeResult query(String outTradeNo);
-    void close(String outTradeNo);
-    RefundResult refund(String outTradeNo, String outRefundNo, int totalCents, int refundCents, String reason);
-    RefundResult queryRefund(String outRefundNo);
-    TradeResult parsePaymentNotification(NotificationHeaders headers, String body);
-    RefundNotificationResult parseRefundNotification(NotificationHeaders headers, String body);
+  AppPayParameters prepay(
+      String outTradeNo, String description, int amountCents, String attach, Instant expiresAt);
 
-    public record AppPayParameters(String appId, String partnerId, String prepayId, String packageValue,
-                            String nonceStr, String timestamp, String sign) { }
-    public record TradeResult(String appId, String merchantId, String outTradeNo, String transactionId,
-                       int amountCents, boolean paid) { }
-    public record RefundResult(String refundId, RefundStatus status) { }
-    public record RefundNotificationResult(String outTradeNo, String outRefundNo, String refundId,
-                                    int refundCents, RefundStatus status) { }
-    public record NotificationHeaders(String serial, String timestamp, String nonce, String signature, String signType) { }
+  TradeResult query(String outTradeNo);
+
+  void close(String outTradeNo);
+
+  RefundResult refund(
+      String outTradeNo, String outRefundNo, int totalCents, int refundCents, String reason);
+
+  RefundResult queryRefund(String outRefundNo);
+
+  TradeResult parsePaymentNotification(NotificationHeaders headers, String body);
+
+  RefundNotificationResult parseRefundNotification(NotificationHeaders headers, String body);
+
+  public record AppPayParameters(
+      String appId,
+      String partnerId,
+      String prepayId,
+      String packageValue,
+      String nonceStr,
+      String timestamp,
+      String sign) {}
+
+  public record TradeResult(
+      String appId,
+      String merchantId,
+      String outTradeNo,
+      String transactionId,
+      int amountCents,
+      boolean paid) {}
+
+  public record RefundResult(String refundId, RefundStatus status) {}
+
+  public record RefundNotificationResult(
+      String outTradeNo,
+      String outRefundNo,
+      String refundId,
+      int refundCents,
+      RefundStatus status) {}
+
+  public record NotificationHeaders(
+      String serial, String timestamp, String nonce, String signature, String signType) {}
 }
