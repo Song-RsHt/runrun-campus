@@ -3,8 +3,8 @@ import com.zhangxuan.runruncampus.service.admin.AdminFeedbackService;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.feedback.FeedbackHandlingStatus;
-import com.zhangxuan.runruncampus.feedback.FeedbackType;
+import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
+import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

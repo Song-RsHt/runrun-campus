@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.feedback;
+package com.zhangxuan.runruncampus.controller.feedback;
+import com.zhangxuan.runruncampus.service.feedback.FeedbackService;
+import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
@@ -21,12 +23,12 @@ public class FeedbackController {
     }
 
     @GetMapping
-    List<FeedbackService.FeedbackResponse> list(@RequestHeader("Authorization") String authorization) {
+    public List<FeedbackService.FeedbackResponse> list(@RequestHeader("Authorization") String authorization) {
         return feedbackService.list(authService.requireUser(authorization));
     }
 
     @PostMapping
-    FeedbackService.FeedbackResponse submit(@RequestHeader("Authorization") String authorization,
+    public FeedbackService.FeedbackResponse submit(@RequestHeader("Authorization") String authorization,
                                              @Valid @RequestBody CreateFeedbackRequest request) {
         return feedbackService.submit(authService.requireUser(authorization), request.type(), request.content());
     }

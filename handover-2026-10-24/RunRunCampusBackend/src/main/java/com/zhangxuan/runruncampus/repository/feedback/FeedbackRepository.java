@@ -1,4 +1,7 @@
-package com.zhangxuan.runruncampus.feedback;
+package com.zhangxuan.runruncampus.repository.feedback;
+import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
+import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
+import com.zhangxuan.runruncampus.model.feedback.UserFeedback;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
