@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.coupon;
+package com.zhangxuan.runruncampus.repository.coupon;
+import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.LockModeType;

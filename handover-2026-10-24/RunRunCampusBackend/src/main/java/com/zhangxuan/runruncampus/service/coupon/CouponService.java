@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.coupon;
+package com.zhangxuan.runruncampus.service.coupon;
+import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
+import com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.enums.user.UserRole;

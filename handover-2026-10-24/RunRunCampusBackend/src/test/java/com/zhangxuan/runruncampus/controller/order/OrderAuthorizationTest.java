@@ -10,7 +10,7 @@ import com.zhangxuan.runruncampus.service.order.OrderService;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
 
-import com.zhangxuan.runruncampus.coupon.CouponService;
+import com.zhangxuan.runruncampus.service.coupon.CouponService;
 import com.zhangxuan.runruncampus.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;

@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.coupon;
+package com.zhangxuan.runruncampus.controller.coupon;
+import com.zhangxuan.runruncampus.service.coupon.CouponService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ public class CouponController {
     }
 
     @GetMapping
-    List<CouponService.CouponResponse> list(@RequestHeader("Authorization") String authorization) {
+    public List<CouponService.CouponResponse> list(@RequestHeader("Authorization") String authorization) {
         return couponService.list(authService.requireUser(authorization));
     }
 }

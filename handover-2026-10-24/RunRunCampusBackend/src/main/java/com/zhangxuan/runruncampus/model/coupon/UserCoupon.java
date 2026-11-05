@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.coupon;
+package com.zhangxuan.runruncampus.model.coupon;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;
