@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.address;
+package com.zhangxuan.runruncampus.model.address;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;

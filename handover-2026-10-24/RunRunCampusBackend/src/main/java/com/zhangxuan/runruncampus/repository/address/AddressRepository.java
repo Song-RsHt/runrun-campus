@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.address;
+package com.zhangxuan.runruncampus.repository.address;
+import com.zhangxuan.runruncampus.model.address.UserAddress;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;

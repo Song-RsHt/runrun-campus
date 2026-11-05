@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.address;
+package com.zhangxuan.runruncampus.controller.address;
+import com.zhangxuan.runruncampus.service.address.AddressService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
@@ -22,19 +23,19 @@ public class AddressController {
     }
 
     @GetMapping
-    List<AddressService.AddressResponse> list(@RequestHeader("Authorization") String authorization) {
+    public List<AddressService.AddressResponse> list(@RequestHeader("Authorization") String authorization) {
         return addressService.list(authService.requireUser(authorization));
     }
 
     @PostMapping
-    AddressService.AddressResponse create(@RequestHeader("Authorization") String authorization,
+    public AddressService.AddressResponse create(@RequestHeader("Authorization") String authorization,
                                           @Valid @RequestBody AddressRequest request) {
         return addressService.create(authService.requireUser(authorization), request.label(), request.address(),
                 request.deliveryZone(), request.defaultAddress());
     }
 
     @PutMapping("/{id}")
-    AddressService.AddressResponse update(@RequestHeader("Authorization") String authorization,
+    public AddressService.AddressResponse update(@RequestHeader("Authorization") String authorization,
                                           @PathVariable Long id,
                                           @Valid @RequestBody AddressRequest request) {
         return addressService.update(authService.requireUser(authorization), id, request.label(), request.address(),
@@ -42,14 +43,14 @@ public class AddressController {
     }
 
     @PostMapping("/{id}/default")
-    AddressService.AddressResponse setDefault(@RequestHeader("Authorization") String authorization,
+    public AddressService.AddressResponse setDefault(@RequestHeader("Authorization") String authorization,
                                               @PathVariable Long id) {
         return addressService.setDefault(authService.requireUser(authorization), id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void delete(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+    public void delete(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         addressService.delete(authService.requireUser(authorization), id);
     }
 
