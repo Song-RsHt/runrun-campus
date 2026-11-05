@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.enums.credit;
 
 public enum RiskSignalType {
     FREQUENT_CANCELLATION,

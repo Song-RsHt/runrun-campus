@@ -1,4 +1,14 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.service.credit;
+import com.zhangxuan.runruncampus.model.credit.CreditEvent;
+import com.zhangxuan.runruncampus.repository.credit.CreditEventRepository;
+import com.zhangxuan.runruncampus.enums.credit.CreditEventType;
+import com.zhangxuan.runruncampus.model.credit.CreditProfile;
+import com.zhangxuan.runruncampus.repository.credit.CreditProfileRepository;
+import com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel;
+import com.zhangxuan.runruncampus.model.credit.RiskSignal;
+import com.zhangxuan.runruncampus.repository.credit.RiskSignalRepository;
+import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
+import com.zhangxuan.runruncampus.enums.credit.RiskSignalType;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;

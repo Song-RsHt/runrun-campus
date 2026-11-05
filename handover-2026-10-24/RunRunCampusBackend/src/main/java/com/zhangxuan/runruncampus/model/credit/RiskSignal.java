@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.model.credit;
+import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
+import com.zhangxuan.runruncampus.enums.credit.RiskSignalType;
 
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.user.AppUser;

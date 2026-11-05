@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.repository.credit;
+import com.zhangxuan.runruncampus.model.credit.CreditEvent;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

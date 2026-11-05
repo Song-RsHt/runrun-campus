@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.controller.credit;
+import com.zhangxuan.runruncampus.service.credit.CreditService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.constraints.Max;
@@ -23,7 +24,7 @@ public class CreditController {
     }
 
     @GetMapping("/me")
-    CreditService.ProfileResponse mine(@RequestHeader("Authorization") String authorization,
+    public CreditService.ProfileResponse mine(@RequestHeader("Authorization") String authorization,
                                        @RequestParam(defaultValue = "0") @Min(0) int page,
                                        @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {
         return credit.profile(auth.requireUser(authorization), page, size);

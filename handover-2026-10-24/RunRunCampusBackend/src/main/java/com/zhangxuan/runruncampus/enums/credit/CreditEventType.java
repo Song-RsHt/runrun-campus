@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.enums.credit;
 
 public enum CreditEventType {
     ADMIN_ADJUSTMENT,

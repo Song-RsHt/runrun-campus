@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.repository.credit;
+import com.zhangxuan.runruncampus.model.credit.CreditProfile;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;

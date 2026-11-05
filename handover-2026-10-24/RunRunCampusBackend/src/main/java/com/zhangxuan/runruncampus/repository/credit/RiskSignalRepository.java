@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.repository.credit;
+import com.zhangxuan.runruncampus.model.credit.RiskSignal;
+import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
 
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;

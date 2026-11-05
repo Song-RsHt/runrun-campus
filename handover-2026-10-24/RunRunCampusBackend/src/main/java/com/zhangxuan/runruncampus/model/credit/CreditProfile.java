@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.credit;
+package com.zhangxuan.runruncampus.model.credit;
+import com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.Column;
