@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.controller.api;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;

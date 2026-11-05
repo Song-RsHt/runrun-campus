@@ -66,7 +66,7 @@ class OrderAuthorizationTest {
         orderService = new OrderService(orderRepository, eventRepository, proofRepository, messageService,
                 couponService, membershipService, org.mockito.Mockito.mock(com.zhangxuan.runruncampus.repository.user.UserRepository.class),
                 new com.fasterxml.jackson.databind.ObjectMapper(), paymentService,
-                org.mockito.Mockito.mock(com.zhangxuan.runruncampus.api.PlatformSettingsService.class),
+                org.mockito.Mockito.mock(com.zhangxuan.runruncampus.service.api.PlatformSettingsService.class),
                 certificationService,
                 new com.zhangxuan.runruncampus.config.ManualQrPaymentProperties(false));
         org.mockito.Mockito.lenient().when(certificationService.isEligible(org.mockito.ArgumentMatchers.any(AppUser.class)))

@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.controller.api;
 
 import org.junit.jupiter.api.Test;
 

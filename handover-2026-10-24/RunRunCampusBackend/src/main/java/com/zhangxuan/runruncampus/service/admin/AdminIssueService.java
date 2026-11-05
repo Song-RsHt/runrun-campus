@@ -3,7 +3,7 @@ import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
 
-import com.zhangxuan.runruncampus.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderIssue;
 import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;

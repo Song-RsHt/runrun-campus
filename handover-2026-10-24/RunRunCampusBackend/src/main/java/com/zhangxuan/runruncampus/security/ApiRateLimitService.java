@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.security;
 
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class ApiRateLimitService {
         this(Clock.systemUTC());
     }
 
-    ApiRateLimitService(Clock clock) {
+    public ApiRateLimitService(Clock clock) {
         this.clock = clock;
     }
 
@@ -48,7 +48,7 @@ public class ApiRateLimitService {
         return true;
     }
 
-    static String fingerprint(String value) {
+    static public String fingerprint(String value) {
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256")
                     .digest(value.getBytes(StandardCharsets.UTF_8));

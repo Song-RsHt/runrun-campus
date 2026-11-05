@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.security;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;

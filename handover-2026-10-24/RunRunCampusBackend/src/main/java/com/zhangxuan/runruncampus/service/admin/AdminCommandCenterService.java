@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import com.zhangxuan.runruncampus.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 
 import java.sql.Timestamp;
 import java.time.Instant;

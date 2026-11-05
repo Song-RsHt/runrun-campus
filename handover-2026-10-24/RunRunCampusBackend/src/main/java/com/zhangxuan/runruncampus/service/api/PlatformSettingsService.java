@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.service.api;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;

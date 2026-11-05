@@ -9,7 +9,7 @@ import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

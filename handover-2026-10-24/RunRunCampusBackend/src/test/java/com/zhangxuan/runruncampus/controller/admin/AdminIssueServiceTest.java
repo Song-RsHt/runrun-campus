@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.controller.admin;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
 
-import com.zhangxuan.runruncampus.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderIssue;

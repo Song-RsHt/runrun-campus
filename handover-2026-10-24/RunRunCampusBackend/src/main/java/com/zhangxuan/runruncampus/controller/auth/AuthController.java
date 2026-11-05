@@ -7,7 +7,7 @@ import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.api.ApiRateLimitService;
+import com.zhangxuan.runruncampus.security.ApiRateLimitService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

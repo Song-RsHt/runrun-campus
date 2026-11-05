@@ -3,7 +3,7 @@ import com.zhangxuan.runruncampus.service.auth.AdminMfaService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.api.ApiRateLimitService;
+import com.zhangxuan.runruncampus.security.ApiRateLimitService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

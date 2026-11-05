@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.exception;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;

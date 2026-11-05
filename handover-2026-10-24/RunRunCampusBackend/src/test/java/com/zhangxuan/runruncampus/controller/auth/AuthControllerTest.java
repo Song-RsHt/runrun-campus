@@ -3,7 +3,7 @@ import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.auth.LoginCaptchaService;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.api.ApiRateLimitService;
+import com.zhangxuan.runruncampus.security.ApiRateLimitService;
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.controller.api;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
@@ -21,13 +22,13 @@ public class PlatformSettingsController {
     }
 
     @GetMapping
-    PlatformSettingsService.Settings get(@RequestHeader("Authorization") String authorization) {
+    public PlatformSettingsService.Settings get(@RequestHeader("Authorization") String authorization) {
         auth.requirePermission(authorization, AdminPermission.PLATFORM_SETTINGS_MANAGE);
         return settings.get();
     }
 
     @PutMapping
-    PlatformSettingsService.Settings update(@RequestHeader("Authorization") String authorization,
+    public PlatformSettingsService.Settings update(@RequestHeader("Authorization") String authorization,
                                             @Valid @RequestBody UpdateRequest request) {
         var admin = auth.requirePermission(authorization, AdminPermission.PLATFORM_SETTINGS_MANAGE);
         return settings.update(admin, new PlatformSettingsService.Settings(request.businessHours(),

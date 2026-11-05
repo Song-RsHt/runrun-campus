@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.controller.api;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +10,7 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class HealthController {
     @GetMapping("/health")
-    Map<String, String> health() {
+    public Map<String, String> health() {
         return Map.of("status", "ok");
     }
 }

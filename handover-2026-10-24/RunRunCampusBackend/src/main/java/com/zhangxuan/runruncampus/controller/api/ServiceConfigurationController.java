@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.api;
+package com.zhangxuan.runruncampus.controller.api;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import com.zhangxuan.runruncampus.enums.order.PickupStation;
@@ -19,7 +20,7 @@ public class ServiceConfigurationController {
     }
 
     @GetMapping
-    ConfigurationResponse configuration() {
+    public ConfigurationResponse configuration() {
         List<StationResponse> stations = Arrays.stream(PickupStation.values())
                 .map(station -> new StationResponse(station.name(), station.getDisplayName(),
                         station == PickupStation.CAMPUS_PACKAGE_STATION ? "PACKAGE" : "TAKEOUT"))
