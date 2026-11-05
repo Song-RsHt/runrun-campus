@@ -5,7 +5,7 @@ import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.model.auth.Session;
 import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
 
-import com.zhangxuan.runruncampus.admin.AdminRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRepository;
 import com.zhangxuan.runruncampus.user.UserRole;

@@ -1,4 +1,23 @@
 package com.zhangxuan.runruncampus.admin;
+import com.zhangxuan.runruncampus.controller.admin.AdminAccountController;
+import com.zhangxuan.runruncampus.service.admin.AdminAccountService;
+import com.zhangxuan.runruncampus.controller.admin.AdminAuditController;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.controller.admin.AdminCommandCenterController;
+import com.zhangxuan.runruncampus.enums.admin.AdminCommandCenterService;
+import com.zhangxuan.runruncampus.service.admin.AdminCouponService;
+import com.zhangxuan.runruncampus.controller.admin.AdminDispatchController;
+import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
+import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
+import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
+import com.zhangxuan.runruncampus.controller.admin.AdminOrderController;
+import com.zhangxuan.runruncampus.controller.admin.AdminOrderLifecycleController;
+import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
+import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
+import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
+import com.zhangxuan.runruncampus.controller.admin.AdminUserController;
+import com.zhangxuan.runruncampus.service.admin.AdminUserService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;

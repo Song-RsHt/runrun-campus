@@ -3,7 +3,7 @@ import com.zhangxuan.runruncampus.repository.courier.CourierCertificationReposit
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 
-import com.zhangxuan.runruncampus.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;

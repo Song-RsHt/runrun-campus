@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.credit;
 
-import com.zhangxuan.runruncampus.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRepository;
 import com.zhangxuan.runruncampus.user.UserRole;

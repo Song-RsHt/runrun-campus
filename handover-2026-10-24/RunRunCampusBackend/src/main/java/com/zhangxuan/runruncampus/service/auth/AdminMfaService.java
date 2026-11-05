@@ -6,10 +6,10 @@ import com.zhangxuan.runruncampus.controller.auth.AuthController;
 import com.zhangxuan.runruncampus.model.auth.Session;
 import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
 
-import com.zhangxuan.runruncampus.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.admin.AdminRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRepository;
 import com.zhangxuan.runruncampus.user.UserRole;

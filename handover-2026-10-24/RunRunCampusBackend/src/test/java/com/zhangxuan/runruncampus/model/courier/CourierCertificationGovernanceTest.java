@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.model.courier;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 
-import com.zhangxuan.runruncampus.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;

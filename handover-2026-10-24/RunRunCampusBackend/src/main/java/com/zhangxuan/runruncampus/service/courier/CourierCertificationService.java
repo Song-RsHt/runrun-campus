@@ -3,9 +3,9 @@ import com.zhangxuan.runruncampus.model.courier.CourierCertification;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 
-import com.zhangxuan.runruncampus.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.admin.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.user.UserRole;

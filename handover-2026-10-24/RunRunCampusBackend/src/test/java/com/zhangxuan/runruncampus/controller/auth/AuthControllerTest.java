@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.controller.auth;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.auth.LoginCaptchaService;
 
-import com.zhangxuan.runruncampus.admin.AdminRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.api.ApiRateLimitService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;

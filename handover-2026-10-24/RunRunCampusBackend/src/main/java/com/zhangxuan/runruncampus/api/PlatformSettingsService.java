@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.api;
 
-import com.zhangxuan.runruncampus.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.admin.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.user.AppUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;

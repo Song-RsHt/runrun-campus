@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.user;
 
-import com.zhangxuan.runruncampus.admin.AdminRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import jakarta.persistence.*;
 
 import java.time.Instant;

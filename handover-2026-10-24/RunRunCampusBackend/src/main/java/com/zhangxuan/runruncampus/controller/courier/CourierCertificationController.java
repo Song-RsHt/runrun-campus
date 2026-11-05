@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.controller.courier;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.admin.AdminPermission;
+import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
