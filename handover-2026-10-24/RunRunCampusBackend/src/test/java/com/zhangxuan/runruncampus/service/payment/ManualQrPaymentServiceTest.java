@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.service.payment;
 
 import com.zhangxuan.runruncampus.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.message.OrderMessageService;

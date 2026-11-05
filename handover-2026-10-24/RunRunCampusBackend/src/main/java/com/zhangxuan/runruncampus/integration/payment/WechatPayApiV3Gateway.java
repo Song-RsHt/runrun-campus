@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.integration.payment;
+import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
+import com.zhangxuan.runruncampus.config.WechatPayProperties;
 
 import com.wechat.pay.java.core.Config;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
@@ -27,13 +29,13 @@ import java.time.format.DateTimeFormatter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-final class WechatPayApiV3Gateway implements WechatPayGateway {
+final public class WechatPayApiV3Gateway implements WechatPayGateway {
     private final WechatPayProperties properties;
     private final AppServiceExtension appService;
     private final RefundService refundService;
     private final NotificationParser notificationParser;
 
-    WechatPayApiV3Gateway(WechatPayProperties properties) {
+    public WechatPayApiV3Gateway(WechatPayProperties properties) {
         String apiV3Key = resolveApiV3Key(properties);
         requireConfigured(properties, apiV3Key);
         this.properties = properties;

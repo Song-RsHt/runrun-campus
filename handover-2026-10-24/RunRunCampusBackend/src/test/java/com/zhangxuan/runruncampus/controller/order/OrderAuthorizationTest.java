@@ -12,7 +12,7 @@ import com.zhangxuan.runruncampus.enums.order.ServiceType;
 
 import com.zhangxuan.runruncampus.coupon.CouponService;
 import com.zhangxuan.runruncampus.membership.MembershipService;
-import com.zhangxuan.runruncampus.payment.PaymentService;
+import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.message.OrderMessageService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
@@ -68,7 +68,7 @@ class OrderAuthorizationTest {
                 new com.fasterxml.jackson.databind.ObjectMapper(), paymentService,
                 org.mockito.Mockito.mock(com.zhangxuan.runruncampus.api.PlatformSettingsService.class),
                 certificationService,
-                new com.zhangxuan.runruncampus.payment.ManualQrPaymentProperties(false));
+                new com.zhangxuan.runruncampus.config.ManualQrPaymentProperties(false));
         org.mockito.Mockito.lenient().when(certificationService.isEligible(org.mockito.ArgumentMatchers.any(AppUser.class)))
                 .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
         customer = user(1L, UserRole.CUSTOMER);

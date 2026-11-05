@@ -6,7 +6,7 @@ import com.zhangxuan.runruncampus.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.message.OrderMessageRepository;
 import com.zhangxuan.runruncampus.message.PushDeliveryRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.payment.WechatRefundRepository;
+import com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRepository;
 import com.zhangxuan.runruncampus.user.UserRole;

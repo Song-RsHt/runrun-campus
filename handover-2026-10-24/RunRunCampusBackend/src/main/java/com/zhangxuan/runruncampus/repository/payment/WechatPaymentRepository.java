@@ -1,4 +1,7 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.repository.payment;
+import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
+import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
+import com.zhangxuan.runruncampus.model.payment.WechatPayment;
 
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.user.AppUser;
@@ -22,6 +25,6 @@ public interface WechatPaymentRepository extends JpaRepository<WechatPayment, Lo
     Optional<WechatPayment> findFirstByUserAndBusinessTypeAndStatusOrderByCreatedAtDesc(
             AppUser user, PaymentBusinessType businessType, PaymentStatus status);
 
-    @Query("select coalesce(sum(p.amountCents), 0) from WechatPayment p where p.order = :order and p.status = com.zhangxuan.runruncampus.payment.PaymentStatus.PAID")
+    @Query("select coalesce(sum(p.amountCents), 0) from WechatPayment p where p.order = :order and p.status = com.zhangxuan.runruncampus.enums.payment.PaymentStatus.PAID")
     long sumPaidForOrder(@Param("order") CampusOrder order);
 }

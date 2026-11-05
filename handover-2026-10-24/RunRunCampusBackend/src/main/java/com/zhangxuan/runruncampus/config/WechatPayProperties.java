@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

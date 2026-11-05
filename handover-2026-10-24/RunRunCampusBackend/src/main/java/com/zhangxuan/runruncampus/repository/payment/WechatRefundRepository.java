@@ -1,4 +1,7 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.repository.payment;
+import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
+import com.zhangxuan.runruncampus.model.payment.WechatPayment;
+import com.zhangxuan.runruncampus.model.payment.WechatRefund;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -18,14 +21,14 @@ public interface WechatRefundRepository extends JpaRepository<WechatRefund, Long
     @Query("select r from WechatRefund r where r.outRefundNo = :outRefundNo")
     Optional<WechatRefund> findLockedByOutRefundNo(@Param("outRefundNo") String outRefundNo);
 
-    @Query("select coalesce(sum(r.amountCents), 0) from WechatRefund r where r.payment.order = :order and r.status = com.zhangxuan.runruncampus.payment.RefundStatus.SUCCESS")
+    @Query("select coalesce(sum(r.amountCents), 0) from WechatRefund r where r.payment.order = :order and r.status = com.zhangxuan.runruncampus.enums.payment.RefundStatus.SUCCESS")
     long sumSucceededForOrder(@Param("order") CampusOrder order);
 
     @Query("select r from WechatRefund r where r.payment.order = :order order by r.createdAt asc")
     List<WechatRefund> findByOrder(@Param("order") CampusOrder order);
 
     @Query("select count(r) > 0 from WechatRefund r where r.payment.user = :user "
-            + "and r.status in (com.zhangxuan.runruncampus.payment.RefundStatus.PENDING, "
-            + "com.zhangxuan.runruncampus.payment.RefundStatus.PROCESSING)")
+            + "and r.status in (com.zhangxuan.runruncampus.enums.payment.RefundStatus.PENDING, "
+            + "com.zhangxuan.runruncampus.enums.payment.RefundStatus.PROCESSING)")
     boolean existsUnfinishedByUser(@Param("user") AppUser user);
 }

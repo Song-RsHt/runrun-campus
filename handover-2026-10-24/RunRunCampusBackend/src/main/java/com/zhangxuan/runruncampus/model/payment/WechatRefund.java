@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.model.payment;
+import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
+import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 
 import jakarta.persistence.*;
 import java.time.Instant;

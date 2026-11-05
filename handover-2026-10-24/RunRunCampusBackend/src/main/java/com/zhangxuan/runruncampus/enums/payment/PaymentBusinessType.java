@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.enums.payment;
 
 public enum PaymentBusinessType {
     ORDER,

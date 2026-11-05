@@ -1,10 +1,10 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.integration.payment;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.Instant;
 
-final class DisabledWechatPayGateway implements WechatPayGateway {
+final public class DisabledWechatPayGateway implements WechatPayGateway {
     private RuntimeException unavailable() {
         return new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "微信支付尚未完成商户配置");
     }

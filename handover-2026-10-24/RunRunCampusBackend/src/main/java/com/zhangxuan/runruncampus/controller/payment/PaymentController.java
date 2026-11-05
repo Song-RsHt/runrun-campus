@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.controller.payment;
+import com.zhangxuan.runruncampus.service.payment.PaymentService;
+import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.web.bind.annotation.*;
@@ -16,19 +18,19 @@ public class PaymentController {
     }
 
     @PostMapping("/orders/{orderId}/wechat")
-    PaymentService.PaymentResponse orderPayment(@RequestHeader("Authorization") String authorization,
+    public PaymentService.PaymentResponse orderPayment(@RequestHeader("Authorization") String authorization,
                                                  @PathVariable Long orderId) {
         return paymentService.createOrderPayment(authService.requireUser(authorization), orderId);
     }
 
     @GetMapping("/{outTradeNo}")
-    PaymentService.PaymentResponse status(@RequestHeader("Authorization") String authorization,
+    public PaymentService.PaymentResponse status(@RequestHeader("Authorization") String authorization,
                                            @PathVariable String outTradeNo) {
         return paymentService.status(authService.requireUser(authorization), outTradeNo);
     }
 
     @PostMapping("/wechat/notify")
-    Map<String, String> notify(@RequestHeader("Wechatpay-Serial") String serial,
+    public Map<String, String> notify(@RequestHeader("Wechatpay-Serial") String serial,
                                @RequestHeader("Wechatpay-Timestamp") String timestamp,
                                @RequestHeader("Wechatpay-Nonce") String nonce,
                                @RequestHeader("Wechatpay-Signature") String signature,
@@ -40,7 +42,7 @@ public class PaymentController {
     }
 
     @PostMapping("/wechat/refund-notify")
-    Map<String, String> refundNotify(@RequestHeader("Wechatpay-Serial") String serial,
+    public Map<String, String> refundNotify(@RequestHeader("Wechatpay-Serial") String serial,
                                      @RequestHeader("Wechatpay-Timestamp") String timestamp,
                                      @RequestHeader("Wechatpay-Nonce") String nonce,
                                      @RequestHeader("Wechatpay-Signature") String signature,

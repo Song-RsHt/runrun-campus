@@ -16,7 +16,7 @@ import com.zhangxuan.runruncampus.message.OrderMessageService;
 import com.zhangxuan.runruncampus.message.OrderMessageType;
 import com.zhangxuan.runruncampus.coupon.CouponService;
 import com.zhangxuan.runruncampus.membership.MembershipService;
-import com.zhangxuan.runruncampus.payment.PaymentService;
+import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.user.AppUser;
@@ -91,7 +91,7 @@ class OrderServiceTest {
         orderService = new OrderService(orderRepository, eventRepository, proofRepository, messageService,
                 couponService, membershipService, userRepository,
                 new com.fasterxml.jackson.databind.ObjectMapper(), paymentService, settingsService, certificationService,
-                new com.zhangxuan.runruncampus.payment.ManualQrPaymentProperties(true));
+                new com.zhangxuan.runruncampus.config.ManualQrPaymentProperties(true));
         org.mockito.Mockito.lenient().when(certificationService.isEligible(any(AppUser.class)))
                 .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
         customer = user(1L, "13800000001", UserRole.CUSTOMER);
@@ -680,7 +680,7 @@ class OrderServiceTest {
                 messageService, couponService, membershipService, userRepository,
                 new com.fasterxml.jackson.databind.ObjectMapper(), paymentService, settingsService,
                 certificationService,
-                new com.zhangxuan.runruncampus.payment.ManualQrPaymentProperties(false));
+                new com.zhangxuan.runruncampus.config.ManualQrPaymentProperties(false));
         when(couponService.apply(customer, null, 200))
                 .thenReturn(new CouponService.CouponApplication(0, null));
         when(orderRepository.save(any(CampusOrder.class))).thenAnswer(invocation -> invocation.getArgument(0));

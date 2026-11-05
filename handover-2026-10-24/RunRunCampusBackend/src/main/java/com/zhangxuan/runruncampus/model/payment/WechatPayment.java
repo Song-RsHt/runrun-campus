@@ -1,4 +1,7 @@
-package com.zhangxuan.runruncampus.payment;
+package com.zhangxuan.runruncampus.model.payment;
+import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
+import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
+import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 
 import com.zhangxuan.runruncampus.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;

@@ -17,8 +17,8 @@ import com.zhangxuan.runruncampus.enums.order.ServiceType;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.payment.PaymentService;
-import com.zhangxuan.runruncampus.payment.ManualQrPaymentService;
+import com.zhangxuan.runruncampus.service.payment.PaymentService;
+import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.DecimalMax;

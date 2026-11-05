@@ -4,7 +4,7 @@ import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
-import com.zhangxuan.runruncampus.payment.PaymentService;
+import com.zhangxuan.runruncampus.service.payment.PaymentService;
 
 @RestController
 @RequestMapping("/api/v1/membership")
