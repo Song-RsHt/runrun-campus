@@ -14,7 +14,8 @@ public class CourierCertificationV2Controller {
  @IdentityPermission(role="COURIER") @PostMapping("/applications")
  public CourierCertificationV2Service.Certification apply(@RequestHeader("Authorization") String auth,@RequestHeader(value="Idempotency-Key",defaultValue="missing") String key){return service.apply(token(auth),identity,key);}
  @IdentityPermission(role="COURIER") @PostMapping(value="/applications/{id}/student-card",consumes=MediaType.MULTIPART_FORM_DATA_VALUE)
- public CourierCertificationV2Service.Certification upload(@RequestHeader("Authorization") String auth,@PathVariable long id,@RequestPart MultipartFile file,@RequestPart long expectedVersion,@RequestHeader(value="Idempotency-Key",defaultValue="missing") String key){return service.upload(token(auth),identity,id,expectedVersion,key,file);}
+ // A38 defines expectedVersion as a multipart text field, not a JSON request part.
+ public CourierCertificationV2Service.Certification upload(@RequestHeader("Authorization") String auth,@PathVariable long id,@RequestPart MultipartFile file,@RequestParam("expectedVersion") long expectedVersion,@RequestHeader(value="Idempotency-Key",defaultValue="missing") String key){return service.upload(token(auth),identity,id,expectedVersion,key,file);}
  @IdentityPermission(role="ADMIN") @PostMapping("/{id}/decision")
  public CourierCertificationV2Service.Certification decision(@RequestHeader("Authorization") String auth,@PathVariable long id,@RequestBody Decision body,@RequestHeader(value="Idempotency-Key",defaultValue="missing") String key){return service.decide(token(auth),identity,id,body.expectedVersion(),body.photoResourceId(),body.decision(),body.reason(),key);}
  @IdentityPermission(role="ADMIN") @GetMapping("/admin")

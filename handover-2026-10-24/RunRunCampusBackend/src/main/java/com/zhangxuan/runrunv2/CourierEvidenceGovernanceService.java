@@ -1,8 +1,11 @@
 package com.zhangxuan.runrunv2;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.sql.Types;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +32,10 @@ public class CourierEvidenceGovernanceService {
         if(replay!=null) return replay;
         if(orderId!=null && db.queryForObject("SELECT count(*) FROM runrun_v2.v2_orders WHERE id=?",Long.class,orderId)==0) throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
         if(certificationId!=null && db.queryForObject("SELECT count(*) FROM runrun_v2.courier_certifications WHERE id=?",Long.class,certificationId)==0) throw new IdentityFailure(404,"RESOURCE_NOT_FOUND");
-        long id=db.queryForObject("INSERT INTO runrun_v2.evidence_holds(order_id,certification_id,reason,owner_id,review_due_at) VALUES(?,?,?,?,?) RETURNING id",Long.class,orderId,certificationId,reason,owner,due);
-        db.update("INSERT INTO runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata) VALUES(?,'EVIDENCE_HOLD_CREATED','EVIDENCE_HOLD',?,?,?,jsonb_build_object('orderId',?,'certificationId',?))",owner,id,requestId,"evidence hold created",orderId,certificationId);
+        // PostgreSQL JDBC binds OffsetDateTime to TIMESTAMPTZ; Instant itself has no JDBC mapping.
+        long id=db.queryForObject("INSERT INTO runrun_v2.evidence_holds(order_id,certification_id,reason,owner_id,review_due_at) VALUES(?,?,?,?,?) RETURNING id",Long.class,orderId,certificationId,reason,owner,due.atOffset(ZoneOffset.UTC));
+        // jsonb_build_object cannot infer a nullable polymorphic parameter's type; both references are BIGINT.
+        db.update("INSERT INTO runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata) VALUES(?,'EVIDENCE_HOLD_CREATED','EVIDENCE_HOLD',?,?,?,jsonb_build_object('orderId',?,'certificationId',?))",owner,id,requestId,"evidence hold created",new SqlParameterValue(Types.BIGINT,orderId),new SqlParameterValue(Types.BIGINT,certificationId));
         HoldResult result=new HoldResult(id); idempotency.finish(Long.toString(owner),"evidence-hold:create",requestId,"EVIDENCE_HOLD",Long.toString(id),result); return result;
     }
 
@@ -51,7 +56,8 @@ public class CourierEvidenceGovernanceService {
     @Transactional
     public void requestCertificationDeletion(long certificationId, String resourceId, String storageKey, Instant deleteAfter) {
         if (db.queryForObject("SELECT count(*) FROM runrun_v2.evidence_holds WHERE certification_id=? AND released_at IS NULL",Long.class,certificationId)>0) return;
-        db.update("INSERT INTO runrun_v2.evidence_deletion_audits(certification_id,resource_type,resource_id,resource_storage_key,delete_after,policy_snapshot,status) SELECT ?, 'STUDENT_CARD', ?, ?, ?, jsonb_build_object('retentionDays',30), 'REQUESTED' WHERE NOT EXISTS (SELECT 1 FROM runrun_v2.evidence_deletion_audits WHERE certification_id=? AND resource_id=? AND status IN ('REQUESTED','DELETING','SUCCEEDED'))",certificationId,resourceId,storageKey,deleteAfter,certificationId,resourceId);
+        // Preserve the exact retention instant using the driver's TIMESTAMPTZ representation.
+        db.update("INSERT INTO runrun_v2.evidence_deletion_audits(certification_id,resource_type,resource_id,resource_storage_key,delete_after,policy_snapshot,status) SELECT ?, 'STUDENT_CARD', ?, ?, ?, jsonb_build_object('retentionDays',30), 'REQUESTED' WHERE NOT EXISTS (SELECT 1 FROM runrun_v2.evidence_deletion_audits WHERE certification_id=? AND resource_id=? AND status IN ('REQUESTED','DELETING','SUCCEEDED'))",certificationId,resourceId,storageKey,deleteAfter.atOffset(ZoneOffset.UTC),certificationId,resourceId);
     }
 
     @Scheduled(fixedDelayString="${rrc.evidence.cleanup-delay-ms:60000}", initialDelayString="${rrc.evidence.cleanup-delay-ms:60000}")

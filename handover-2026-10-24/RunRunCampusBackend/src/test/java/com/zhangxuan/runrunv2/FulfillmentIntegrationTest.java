@@ -26,6 +26,8 @@ import org.testcontainers.junit.jupiter.*;
 @SpringBootTest(classes=IdentityApplication.class,properties={"spring.config.name=application-v2-test","rrc.identity.environment=test",
         "rrc.identity.app-id=synthetic-app","rrc.identity.app-secret=synthetic-secret","rrc.payment.mock-enabled=true","rrc.fulfillment.capacity=3","rrc.fulfillment.enabled=true","rrc.fulfillment.completion-delay-ms=86400000","rrc.payment.expiry-delay-ms=86400000"})
 @AutoConfigureMockMvc(print=org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
+// Close scheduled workers and JDBC pools with the class-scoped database fixture.
+@org.springframework.test.annotation.DirtiesContext(classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
 class FulfillmentIntegrationTest {
     @Container static final PostgreSQLContainer<?> POSTGRES=new PostgreSQLContainer<>("postgres:16-alpine");
@@ -116,6 +118,23 @@ class FulfillmentIntegrationTest {
         var photo=proof(courier,order,task,FulfillmentModels.Kind.DELIVERY);
         var gps=location(courier,order,task,FulfillmentModels.EventType.DELIVERY,key());
         return fulfillment.deliver(courier,order,key(),new FulfillmentModels.Deliver(v(order),task,photo.id(),gps.eventId()));
+    }
+    @Test void administratorPerformanceReadsDeliveredTasksAndRetainsAuthorization() throws Exception {
+        String order=paid().order().id(), task=picked(order);
+        delivered(order,task);
+        long courierId=db.queryForObject("SELECT courier_id FROM runrun_v2.fulfillment_tasks WHERE id=?",Long.class,Long.valueOf(task));
+        String route="/api/v2/courier/certification/admin/"+courierId+"/performance";
+        http.perform(get(route).header("Authorization","Bearer "+admin))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalCompletedPackageOrders").value(1))
+                .andExpect(jsonPath("$.specialLargeCompletedPackageOrders").value(1))
+                .andExpect(jsonPath("$.orders.totalElements").value(1))
+                .andExpect(jsonPath("$.orders.items[0].id").value(Long.parseLong(order)))
+                .andExpect(jsonPath("$.orders.items[0].fee_cents").value(800));
+        http.perform(get(route).param("page",Integer.toString(Integer.MAX_VALUE)).param("size","100")
+                .header("Authorization","Bearer "+admin))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.orders.items").isEmpty());
+        http.perform(get(route).header("Authorization","Bearer "+user)).andExpect(status().isForbidden());
     }
     @Test void concurrentSameOrderHasExactlyOneWinner() throws Exception {
         String order=paid().order().id(), second=nextCourier(); long version=v(order);

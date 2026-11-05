@@ -26,6 +26,8 @@ import org.testcontainers.junit.jupiter.*;
 @SpringBootTest(classes=IdentityApplication.class,properties={"spring.config.name=application-v2-test","rrc.identity.environment=test",
         "rrc.identity.app-id=synthetic-app","rrc.identity.app-secret=synthetic-secret","rrc.payment.mock-enabled=true","rrc.payment.expiry-delay-ms=86400000"})
 @AutoConfigureMockMvc(print=org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
+// Close scheduled workers and JDBC pools with the class-scoped database fixture.
+@org.springframework.test.annotation.DirtiesContext(classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
 class PaymentIntegrationTest {
     @Container static final PostgreSQLContainer<?> POSTGRES=new PostgreSQLContainer<>("postgres:16-alpine");

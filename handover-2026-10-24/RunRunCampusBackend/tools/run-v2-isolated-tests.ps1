@@ -1,5 +1,5 @@
 param(
-  [string]$Test='IdentityIntegrationTest,OrderIntegrationTest,PaymentIntegrationTest,FulfillmentIntegrationTest,CourierCertificationV2DatabaseE2ETest,NotificationRuntimeTest,PaymentEnvironmentTest,WechatHttpGatewayTest,OrderRequestJsonContractTest',
+  [string]$Test='com.zhangxuan.runrunv2.*Test',
   [switch]$KeepDatabase
 )
 $ErrorActionPreference='Stop'
@@ -28,13 +28,8 @@ try {
   $null = Invoke-Sql postgres 'CREATE DATABASE rrc_v2_test;'
   $rootPath = Split-Path (Split-Path $root -Parent) -Parent
   $migrationRoot = Join-Path $rootPath 'server/db/migrations/up'
-  $chain = @(
-    'rrc_0001__create_v2_schema.sql','rrc_0002__create_identity_foundation.sql','rrc_0003__identity_runtime.sql',
-    'rrc_0100__orders_and_service_config.sql','rrc_0200__mock_payments.sql','rrc_0300__fulfillment.sql',
-    'rrc_0004__adjustments_after_sales.sql','rrc_0006__courier_evidence_governance.sql',
-    'rrc_0101__evidence_order_constraints.sql','rrc_0500__settlement_freeze.sql',
-    'rrc_0007__notifications.sql'
-  )
+  # Use the delivered environment's exact chain, including its existing M09 audit repair.
+  $chain = Get-Content (Join-Path $rootPath 'deploy/v2-test/migrations.txt') | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
   foreach ($file in $chain) { Invoke-Sql rrc_v2_test (Get-Content -Raw -Encoding UTF8 (Join-Path $migrationRoot $file)) | Out-Null }
   $null = Invoke-Sql rrc_v2_test 'CREATE TABLE public.v2_test_sentinel(id bigint);'
   $tables = Invoke-Sql rrc_v2_test "SELECT count(*) FROM pg_tables WHERE schemaname='runrun_v2'"
@@ -46,7 +41,7 @@ try {
   Write-Output ('PASS: PostgreSQL 16 v2 chain initialized in runrun_v2; public sentinel isolated (' + ([string]$tables).Trim() + ' tables)')
   $env:SPRING_CONFIG_NAME='application-v2-test'
   $env:RRC_V2_TEST_RUNTIME='isolated'
-  & mvn -B -ntp "-Dtest=$Test" test
+  & mvn -B -ntp -Pv2-identity "-Dtest=$Test" test
   if ($LASTEXITCODE -ne 0) { throw "v2 isolated test suite failed ($LASTEXITCODE)" }
 } finally {
   if (-not $KeepDatabase) { & docker.exe rm -f -v $container *> $null }

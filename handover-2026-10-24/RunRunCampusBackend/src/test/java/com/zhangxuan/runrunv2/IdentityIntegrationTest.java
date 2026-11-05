@@ -36,6 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "rrc.identity.app-id=synthetic-app", "rrc.identity.app-secret=synthetic-secret", "spring.flyway.enabled=false"})
 @AutoConfigureMockMvc(print = org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
 @Import(IdentityIntegrationTest.Probes.class)
+// Close scheduled workers and JDBC pools with the class-scoped database fixture.
+@org.springframework.test.annotation.DirtiesContext(classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
 class IdentityIntegrationTest {
     @Container static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");

@@ -14,7 +14,11 @@ public class IdentityErrorHandler {
     ResponseEntity<Map<String,String>> notFound(Exception e) { return reply(404, "RESOURCE_NOT_FOUND"); }
     @ExceptionHandler(IdentityFailure.class)
     ResponseEntity<Map<String,String>> identity(IdentityFailure e) { return reply(e.status, e.code); }
-    @ExceptionHandler({HttpMessageNotReadableException.class, MissingRequestHeaderException.class, IllegalArgumentException.class})
+    // Binding failures are invalid requests under E01, rather than a temporary service outage.
+    @ExceptionHandler({HttpMessageNotReadableException.class, MissingRequestHeaderException.class, IllegalArgumentException.class,
+            org.springframework.web.bind.MissingServletRequestParameterException.class,
+            org.springframework.web.multipart.support.MissingServletRequestPartException.class,
+            org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class})
     ResponseEntity<Map<String,String>> invalid(Exception e) { return reply(400, "VALIDATION_ERROR"); }
     @ExceptionHandler(DataIntegrityViolationException.class)
     ResponseEntity<Map<String,String>> conflict(Exception e) { return reply(409, "IDENTITY_BINDING_CONFLICT"); }
