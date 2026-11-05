@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.privacy;
+package com.zhangxuan.runruncampus.controller.privacy;
+import com.zhangxuan.runruncampus.service.privacy.PrivacyService;
 
 import com.zhangxuan.runruncampus.repository.address.AddressRepository;
 import com.zhangxuan.runruncampus.repository.auth.SessionRepository;

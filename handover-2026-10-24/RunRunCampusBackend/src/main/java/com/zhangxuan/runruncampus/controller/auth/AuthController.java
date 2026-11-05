@@ -116,7 +116,7 @@ public class AuthController {
             @NotBlank(message = "请先同意隐私政策") @Size(max = 32) String privacyPolicyVersion
     ) {
         public RegisterRequest(String phone, String password, String displayName, UserRole role) {
-            this(phone, password, displayName, role, null, null, com.zhangxuan.runruncampus.privacy.PrivacyService.CURRENT_VERSION);
+            this(phone, password, displayName, role, null, null, com.zhangxuan.runruncampus.service.privacy.PrivacyService.CURRENT_VERSION);
         }
         public RegisterRequest {
             if (role == null) role = UserRole.CUSTOMER;

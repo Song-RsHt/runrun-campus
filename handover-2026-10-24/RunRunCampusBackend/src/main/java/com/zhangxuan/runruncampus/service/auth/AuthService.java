@@ -7,7 +7,7 @@ import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.privacy.PrivacyService;
+import com.zhangxuan.runruncampus.service.privacy.PrivacyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
