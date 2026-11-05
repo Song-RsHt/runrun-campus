@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.address;
 
-import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

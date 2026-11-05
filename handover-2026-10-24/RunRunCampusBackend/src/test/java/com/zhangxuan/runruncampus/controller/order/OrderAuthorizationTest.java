@@ -14,8 +14,8 @@ import com.zhangxuan.runruncampus.coupon.CouponService;
 import com.zhangxuan.runruncampus.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,7 +64,7 @@ class OrderAuthorizationTest {
     @BeforeEach
     void setUp() {
         orderService = new OrderService(orderRepository, eventRepository, proofRepository, messageService,
-                couponService, membershipService, org.mockito.Mockito.mock(com.zhangxuan.runruncampus.user.UserRepository.class),
+                couponService, membershipService, org.mockito.Mockito.mock(com.zhangxuan.runruncampus.repository.user.UserRepository.class),
                 new com.fasterxml.jackson.databind.ObjectMapper(), paymentService,
                 org.mockito.Mockito.mock(com.zhangxuan.runruncampus.api.PlatformSettingsService.class),
                 certificationService,

@@ -8,7 +8,7 @@ import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.PickupStation;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;
 
 import java.security.SecureRandom;

@@ -10,8 +10,8 @@ import com.zhangxuan.runruncampus.model.order.OrderIssue;
 import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 

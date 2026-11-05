@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.address;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import jakarta.persistence.*;
 

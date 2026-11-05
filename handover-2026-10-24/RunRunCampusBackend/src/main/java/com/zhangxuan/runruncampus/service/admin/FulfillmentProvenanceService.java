@@ -1,10 +1,10 @@
-package com.zhangxuan.runruncampus.enums.admin;
+package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;

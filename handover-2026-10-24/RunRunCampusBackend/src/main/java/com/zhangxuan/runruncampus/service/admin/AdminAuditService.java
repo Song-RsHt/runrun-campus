@@ -5,7 +5,7 @@ import com.zhangxuan.runruncampus.model.admin.AdminAuditLog;
 import com.zhangxuan.runruncampus.repository.admin.AdminAuditLogRepository;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

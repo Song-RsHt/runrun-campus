@@ -6,9 +6,9 @@ import com.zhangxuan.runruncampus.repository.courier.CourierCertificationReposit
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.user.UserRepository;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

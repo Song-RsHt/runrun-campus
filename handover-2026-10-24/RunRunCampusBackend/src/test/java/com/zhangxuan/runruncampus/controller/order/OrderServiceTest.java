@@ -19,8 +19,8 @@ import com.zhangxuan.runruncampus.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -81,7 +81,7 @@ class OrderServiceTest {
     private CourierCertificationService certificationService;
 
     @Mock
-    private com.zhangxuan.runruncampus.user.UserRepository userRepository;
+    private com.zhangxuan.runruncampus.repository.user.UserRepository userRepository;
 
     private OrderService orderService;
     private AppUser customer;

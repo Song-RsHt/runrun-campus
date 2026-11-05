@@ -9,8 +9,8 @@ import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.feedback.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.feedback.FeedbackRepository;
-import com.zhangxuan.runruncampus.user.UserRepository;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

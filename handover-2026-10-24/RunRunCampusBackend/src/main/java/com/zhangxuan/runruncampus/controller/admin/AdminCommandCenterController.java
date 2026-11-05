@@ -1,5 +1,5 @@
 package com.zhangxuan.runruncampus.controller.admin;
-import com.zhangxuan.runruncampus.enums.admin.AdminCommandCenterService;
+import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;

@@ -4,9 +4,9 @@ import com.zhangxuan.runruncampus.enums.auth.SessionClientType;
 import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.user.UserRepository;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.privacy.PrivacyService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

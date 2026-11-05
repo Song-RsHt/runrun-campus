@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.model.order;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;
 
 import java.time.Instant;

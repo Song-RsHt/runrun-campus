@@ -4,7 +4,7 @@ import com.zhangxuan.runruncampus.service.admin.AdminAccountService;
 import com.zhangxuan.runruncampus.controller.admin.AdminAuditController;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.controller.admin.AdminCommandCenterController;
-import com.zhangxuan.runruncampus.enums.admin.AdminCommandCenterService;
+import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
 import com.zhangxuan.runruncampus.service.admin.AdminCouponService;
 import com.zhangxuan.runruncampus.controller.admin.AdminDispatchController;
 import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;

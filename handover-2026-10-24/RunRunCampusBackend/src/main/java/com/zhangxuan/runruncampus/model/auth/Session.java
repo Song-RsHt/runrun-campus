@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.model.auth;
 import com.zhangxuan.runruncampus.enums.auth.SessionClientType;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;
 
 import java.time.Instant;

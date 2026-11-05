@@ -12,7 +12,7 @@ import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;
 import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

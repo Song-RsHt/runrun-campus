@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.repository.message;
 import com.zhangxuan.runruncampus.model.message.OrderMessage;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

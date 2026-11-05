@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.user;
+package com.zhangxuan.runruncampus.model.user;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import jakarta.persistence.*;

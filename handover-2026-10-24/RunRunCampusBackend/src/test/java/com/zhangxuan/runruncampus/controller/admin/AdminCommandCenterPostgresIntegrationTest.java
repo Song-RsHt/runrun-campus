@@ -1,14 +1,14 @@
 package com.zhangxuan.runruncampus.controller.admin;
-import com.zhangxuan.runruncampus.enums.admin.AdminCommandCenterService;
+import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
 import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.user.AppUser;
-import com.zhangxuan.runruncampus.user.UserRepository;
-import com.zhangxuan.runruncampus.user.UserRole;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;

@@ -1,13 +1,13 @@
 package com.zhangxuan.runruncampus.controller.admin;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.admin.FulfillmentProvenanceService;
+import com.zhangxuan.runruncampus.service.admin.FulfillmentProvenanceService;
 
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -95,7 +95,7 @@ class FulfillmentProvenanceServiceTest {
     }
 
     private AppUser admin(long id) {
-        AppUser user = new AppUser("10000000000", "hash", "管理员", com.zhangxuan.runruncampus.user.UserRole.ADMIN);
+        AppUser user = new AppUser("10000000000", "hash", "管理员", com.zhangxuan.runruncampus.enums.user.UserRole.ADMIN);
         ReflectionTestUtils.setField(user, "id", id);
         return user;
     }

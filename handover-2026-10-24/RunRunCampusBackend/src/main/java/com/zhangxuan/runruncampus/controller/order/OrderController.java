@@ -16,7 +16,7 @@ import com.zhangxuan.runruncampus.enums.order.PickupStation;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
 import jakarta.validation.Valid;

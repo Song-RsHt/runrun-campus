@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.user;
+package com.zhangxuan.runruncampus.enums.user;
 
 public enum UserRole {
     CUSTOMER,

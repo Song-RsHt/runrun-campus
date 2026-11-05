@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.enums.admin;
+package com.zhangxuan.runruncampus.service.admin;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;

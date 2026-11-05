@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.coupon;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;
 
 import java.time.Instant;

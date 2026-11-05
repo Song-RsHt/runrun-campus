@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.user;
+package com.zhangxuan.runruncampus.repository.user;
+import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import org.springframework.data.domain.Page;
@@ -42,7 +44,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
 
     @Query(value = """
             select u from AppUser u
-            where u.role = com.zhangxuan.runruncampus.user.UserRole.COURIER
+            where u.role = com.zhangxuan.runruncampus.enums.user.UserRole.COURIER
               and (:query is null
                 or lower(u.displayName) like lower(concat('%', :query, '%'))
                 or u.phone like concat('%', :query, '%')
@@ -61,7 +63,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
             """,
             countQuery = """
             select count(u) from AppUser u
-            where u.role = com.zhangxuan.runruncampus.user.UserRole.COURIER
+            where u.role = com.zhangxuan.runruncampus.enums.user.UserRole.COURIER
               and (:query is null
                 or lower(u.displayName) like lower(concat('%', :query, '%'))
                 or u.phone like concat('%', :query, '%')
@@ -84,7 +86,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
 
     @Query(value = """
             select u from AppUser u
-            where u.role = com.zhangxuan.runruncampus.user.UserRole.COURIER
+            where u.role = com.zhangxuan.runruncampus.enums.user.UserRole.COURIER
               and (:status is null
                 or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
                 or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.NOT_APPLIED
@@ -96,7 +98,7 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
             """,
             countQuery = """
             select count(u) from AppUser u
-            where u.role = com.zhangxuan.runruncampus.user.UserRole.COURIER
+            where u.role = com.zhangxuan.runruncampus.enums.user.UserRole.COURIER
               and (:status is null
                 or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
                 or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.NOT_APPLIED

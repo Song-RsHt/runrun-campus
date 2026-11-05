@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.controller.admin;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.FulfillmentProvenanceService;
+import com.zhangxuan.runruncampus.service.admin.FulfillmentProvenanceService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.repository.courier;
 import com.zhangxuan.runruncampus.model.courier.CourierCertification;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 
-import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
