@@ -82,6 +82,12 @@ try {
   Check (![string]::IsNullOrWhiteSpace($token)) 'independent v2 session issued (not printed)'
   Check ((Http GET '/api/v2/auth/session' '' $token).Code -eq 200) 'v2 session authenticates'
   Check ((Http GET '/api/v2/notifications' '' $token).Code -eq 200) 'authenticated notifications reachable'
+  foreach ($suffix in @('?page=0&size=20','?status=PENDING&page=0&size=20','?query=test-courier&page=0&size=20')) {
+    $list=Http GET ('/api/v2/courier/certification/admin'+$suffix) '' $token
+    Check ($list.Code -eq 200) "ADMIN certification list $suffix => 200"
+    $listPage=$list.Body|ConvertFrom-Json
+    Check ($null -ne $listPage.items -and $null -ne $listPage.totalElements) 'certification list returns a page'
+  }
   Check ((Http GET '/api/v2/courier/certification' '' $token).Code -eq 403) 'ADMIN cannot use COURIER-only certification query'
   Check ((Http POST '/api/v2/auth/wechat/login' '{"code":"synthetic-rejected"}').Code -eq 401) 'real WeChat gateway disabled'
   Check ((Http POST '/api/v2/auth/logout' '{"allSessions":false}' $token).Code -eq 200) 'logout revokes v2 session'
