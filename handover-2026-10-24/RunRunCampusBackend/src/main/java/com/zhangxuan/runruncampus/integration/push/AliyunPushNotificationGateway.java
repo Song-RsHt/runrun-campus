@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.integration.push;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
 
 import com.aliyun.credentials.models.Config;
 import org.springframework.beans.factory.annotation.Value;

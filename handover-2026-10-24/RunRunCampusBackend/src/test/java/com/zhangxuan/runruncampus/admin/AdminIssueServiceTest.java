@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderIssue;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;

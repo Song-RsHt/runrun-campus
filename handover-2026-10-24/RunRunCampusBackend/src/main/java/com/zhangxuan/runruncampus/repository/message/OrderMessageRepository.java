@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.repository.message;
+import com.zhangxuan.runruncampus.model.message.OrderMessage;
 
 import com.zhangxuan.runruncampus.user.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;

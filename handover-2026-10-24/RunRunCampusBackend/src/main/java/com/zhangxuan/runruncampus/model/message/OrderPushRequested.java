@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.model.message;
+import com.zhangxuan.runruncampus.enums.message.PushDestination;
 
 import java.util.UUID;
 
@@ -21,7 +22,7 @@ public record OrderPushRequested(
         }
     }
 
-    static OrderPushRequested create(Long recipientId, Long orderId, String title, String content) {
+    static public OrderPushRequested create(Long recipientId, Long orderId, String title, String content) {
         return new OrderPushRequested(recipientId, orderId, title, content, UUID.randomUUID().toString(), null);
     }
 }

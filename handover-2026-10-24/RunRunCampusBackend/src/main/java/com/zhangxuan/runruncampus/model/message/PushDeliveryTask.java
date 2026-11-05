@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.model.message;
 
 import java.time.Instant;
 

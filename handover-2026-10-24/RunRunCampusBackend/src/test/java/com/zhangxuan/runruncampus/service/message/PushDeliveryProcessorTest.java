@@ -1,4 +1,8 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.service.message;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
+import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.model.message.PushDeliveryTask;
+import com.zhangxuan.runruncampus.integration.push.PushNotificationGateway;
 
 import org.junit.jupiter.api.Test;
 

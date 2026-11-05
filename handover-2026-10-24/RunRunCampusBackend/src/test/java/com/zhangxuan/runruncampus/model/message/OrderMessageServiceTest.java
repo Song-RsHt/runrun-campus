@@ -1,4 +1,7 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.model.message;
+import com.zhangxuan.runruncampus.repository.message.OrderMessageRepository;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;

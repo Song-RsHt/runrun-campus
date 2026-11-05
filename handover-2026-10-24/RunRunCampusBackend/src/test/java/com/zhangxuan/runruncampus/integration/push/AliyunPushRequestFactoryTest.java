@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.integration.push;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
+import com.zhangxuan.runruncampus.enums.message.PushDestination;
 
 import com.aliyun.push20160801.models.PushV2Request;
 import org.junit.jupiter.api.Test;

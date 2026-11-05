@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.integration.push;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
 
 import com.aliyun.push20160801.models.PushTask;
 import com.aliyun.push20160801.models.PushV2Request;
@@ -6,19 +7,19 @@ import com.aliyun.push20160801.models.PushV2Request;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-class AliyunPushRequestFactory {
+public class AliyunPushRequestFactory {
     private final long appKey;
     private final String channelId;
     private final String activity;
 
-    AliyunPushRequestFactory(long appKey, String channelId, String activity) {
+    public AliyunPushRequestFactory(long appKey, String channelId, String activity) {
         if (appKey <= 0) throw new IllegalArgumentException("PUSH_APP_KEY 必须是正整数");
         this.appKey = appKey;
         this.channelId = channelId;
         this.activity = activity;
     }
 
-    PushV2Request create(OrderPushRequested event, Instant now) {
+    public PushV2Request create(OrderPushRequested event, Instant now) {
         String route = event.orderId() == null
                 ? "{\"destination\":\"" + event.destination().name() + "\"}"
                 : "{\"orderId\":" + event.orderId() + "}";

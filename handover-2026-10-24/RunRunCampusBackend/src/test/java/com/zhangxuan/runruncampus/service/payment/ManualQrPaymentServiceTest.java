@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.service.payment;
 
 import com.zhangxuan.runruncampus.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
 import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;

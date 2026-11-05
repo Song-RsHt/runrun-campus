@@ -1,4 +1,8 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.repository.message;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
+import com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus;
+import com.zhangxuan.runruncampus.model.message.PushDeliveryTask;
+import com.zhangxuan.runruncampus.enums.message.PushDestination;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

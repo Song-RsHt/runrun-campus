@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.message.PushDeliveryRepository;
-import com.zhangxuan.runruncampus.message.PushDeliveryStatus;
+import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.validation.annotation.Validated;

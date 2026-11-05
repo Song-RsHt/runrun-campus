@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.message;
+package com.zhangxuan.runruncampus.controller.message;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.http.HttpStatus;
@@ -18,19 +19,19 @@ public class OrderMessageController {
     }
 
     @GetMapping
-    List<OrderMessageService.MessageResponse> list(@RequestHeader("Authorization") String authorization) {
+    public List<OrderMessageService.MessageResponse> list(@RequestHeader("Authorization") String authorization) {
         return messageService.list(authService.requireUser(authorization));
     }
 
     @PostMapping("/{id}/read")
-    OrderMessageService.MessageResponse markRead(@RequestHeader("Authorization") String authorization,
+    public OrderMessageService.MessageResponse markRead(@RequestHeader("Authorization") String authorization,
                                                   @PathVariable Long id) {
         return messageService.markRead(authService.requireUser(authorization), id);
     }
 
     @PostMapping("/read-all")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void markAllRead(@RequestHeader("Authorization") String authorization) {
+    public void markAllRead(@RequestHeader("Authorization") String authorization) {
         messageService.markAllRead(authService.requireUser(authorization));
     }
 }

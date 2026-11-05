@@ -13,7 +13,7 @@ import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.coupon.CouponService;
 import com.zhangxuan.runruncampus.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
-import com.zhangxuan.runruncampus.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import org.junit.jupiter.api.BeforeEach;

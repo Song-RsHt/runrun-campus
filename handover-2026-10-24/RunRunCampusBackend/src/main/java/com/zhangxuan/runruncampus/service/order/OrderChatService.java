@@ -5,8 +5,8 @@ import com.zhangxuan.runruncampus.repository.order.OrderChatRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 
-import com.zhangxuan.runruncampus.message.OrderMessageService;
-import com.zhangxuan.runruncampus.message.OrderMessageType;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.user.AppUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
