@@ -16,7 +16,7 @@ import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.service.coupon.CouponService;
-import com.zhangxuan.runruncampus.membership.MembershipService;
+import com.zhangxuan.runruncampus.service.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;

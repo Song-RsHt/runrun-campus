@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.membership;
+package com.zhangxuan.runruncampus.model.membership;
+import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;

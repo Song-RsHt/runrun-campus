@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.membership;
+package com.zhangxuan.runruncampus.repository.membership;
+import com.zhangxuan.runruncampus.model.membership.UserMembership;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.LockModeType;

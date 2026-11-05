@@ -3,7 +3,7 @@ import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 
-import com.zhangxuan.runruncampus.membership.MembershipPlanType;
+import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;

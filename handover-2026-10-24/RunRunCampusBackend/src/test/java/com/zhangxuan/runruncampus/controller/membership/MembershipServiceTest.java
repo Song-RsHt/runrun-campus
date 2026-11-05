@@ -1,4 +1,8 @@
-package com.zhangxuan.runruncampus.membership;
+package com.zhangxuan.runruncampus.controller.membership;
+import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
+import com.zhangxuan.runruncampus.service.membership.MembershipService;
+import com.zhangxuan.runruncampus.model.membership.UserMembership;
+import com.zhangxuan.runruncampus.repository.membership.UserMembershipRepository;
 
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.enums.user.UserRole;

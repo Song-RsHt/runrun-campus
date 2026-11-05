@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.membership;
+package com.zhangxuan.runruncampus.controller.membership;
+import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
+import com.zhangxuan.runruncampus.service.membership.MembershipService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
@@ -21,12 +23,12 @@ public class MembershipController {
     }
 
     @GetMapping
-    MembershipService.MembershipOverview overview(@RequestHeader("Authorization") String authorization) {
+    public MembershipService.MembershipOverview overview(@RequestHeader("Authorization") String authorization) {
         return membershipService.overview(authService.requireUser(authorization));
     }
 
     @PostMapping("/purchase")
-    PaymentService.PaymentResponse purchase(@RequestHeader("Authorization") String authorization,
+    public PaymentService.PaymentResponse purchase(@RequestHeader("Authorization") String authorization,
                                              @Valid @RequestBody PurchaseRequest request) {
         return paymentService.createMembershipPayment(authService.requireUser(authorization), request.plan());
     }

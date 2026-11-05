@@ -10,8 +10,8 @@ import com.zhangxuan.runruncampus.config.WechatPayProperties;
 import com.zhangxuan.runruncampus.model.payment.WechatRefund;
 import com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository;
 
-import com.zhangxuan.runruncampus.membership.MembershipPlanType;
-import com.zhangxuan.runruncampus.membership.MembershipService;
+import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
+import com.zhangxuan.runruncampus.service.membership.MembershipService;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;

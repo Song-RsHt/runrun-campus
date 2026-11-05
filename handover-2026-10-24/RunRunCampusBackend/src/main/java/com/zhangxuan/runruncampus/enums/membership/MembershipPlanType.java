@@ -1,4 +1,4 @@
-package com.zhangxuan.runruncampus.membership;
+package com.zhangxuan.runruncampus.enums.membership;
 
 public enum MembershipPlanType {
     LIGHT("轻享卡", 10, 1600, "适合偶尔点餐"),
