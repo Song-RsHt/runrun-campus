@@ -1,7 +1,11 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.order.*;
-import com.zhangxuan.runruncampus.user.*;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.user.AppUser;
+import com.zhangxuan.runruncampus.user.UserRepository;
+import com.zhangxuan.runruncampus.user.UserRole;
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
