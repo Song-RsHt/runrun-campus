@@ -24,8 +24,8 @@ class PaymentEnvironmentTest {
                 .run(context->assertEquals(1,context.getBeansOfType(PaymentTestController.class).size()));
     }
     @Test void adapterCannotStartInProductionOrUnderProductionProfile() {
-        assertThrows(IllegalStateException.class,()->new MockPaymentAdapter(mock(JdbcTemplate.class),"production",new StandardEnvironment()));
+        assertThrows(IllegalStateException.class,()->new MockPaymentAdapter(new com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper(mock(JdbcTemplate.class)),"production",new StandardEnvironment()));
         var environment=new StandardEnvironment(); environment.setActiveProfiles("production");
-        assertThrows(IllegalStateException.class,()->new MockPaymentAdapter(mock(JdbcTemplate.class),"test",environment));
+        assertThrows(IllegalStateException.class,()->new MockPaymentAdapter(new com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper(mock(JdbcTemplate.class)),"test",environment));
     }
 }

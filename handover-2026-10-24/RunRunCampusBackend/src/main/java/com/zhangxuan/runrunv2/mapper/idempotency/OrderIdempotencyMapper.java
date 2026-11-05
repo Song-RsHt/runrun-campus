@@ -1,6 +1,5 @@
 package com.zhangxuan.runrunv2.mapper.idempotency;
 
-
 import org.springframework.stereotype.Repository;
 
 /**

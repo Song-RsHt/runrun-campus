@@ -1,0 +1,15 @@
+package com.zhangxuan.runrunv2.model.fulfillment;
+
+import java.time.OffsetDateTime;
+
+/** Persistence projection; allowed HTTP actions are derived by the query service. */
+public record TaskRow(
+    String taskId,
+    String taskStatus,
+    long taskVersion,
+    String orderId,
+    String orderNo,
+    String orderStatus,
+    long orderVersion,
+    OffsetDateTime createdAt,
+    boolean superseded) {}
