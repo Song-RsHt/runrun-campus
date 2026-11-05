@@ -1,4 +1,7 @@
-package com.zhangxuan.runruncampus.courier;
+package com.zhangxuan.runruncampus.model.courier;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationMaintenance;
+import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
+import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.user.AppUser;

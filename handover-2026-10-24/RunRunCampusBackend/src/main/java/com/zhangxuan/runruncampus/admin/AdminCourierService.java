@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.courier.CourierCertification;
-import com.zhangxuan.runruncampus.courier.CourierCertificationRepository;
-import com.zhangxuan.runruncampus.courier.CourierCertificationStatus;
+import com.zhangxuan.runruncampus.model.courier.CourierCertification;
+import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
+import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.user.AppUser;

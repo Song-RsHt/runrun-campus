@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.courier;
+package com.zhangxuan.runruncampus.model.courier;
+import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 
 import com.zhangxuan.runruncampus.user.AppUser;
 import jakarta.persistence.*;
@@ -162,14 +163,14 @@ public class CourierCertification {
     public String getApprovedPhotoResourceId() { return approvedPhotoResourceId; }
     public Instant getApprovedPhotoAt() { return approvedPhotoAt; }
 
-    void clearSubmittedPhoto() {
+    public void clearSubmittedPhoto() {
         submittedPhotoKey = null;
         submittedPhotoContentType = null;
         submittedPhotoAt = null;
         submittedPhotoResourceId = null;
     }
 
-    void clearApprovedPhoto() {
+    public void clearApprovedPhoto() {
         approvedPhotoKey = null;
         approvedPhotoContentType = null;
         approvedPhotoResourceId = null;

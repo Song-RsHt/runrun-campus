@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.courier.CourierCertificationRepository;
-import com.zhangxuan.runruncampus.courier.CourierCertificationStatus;
+import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
+import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;

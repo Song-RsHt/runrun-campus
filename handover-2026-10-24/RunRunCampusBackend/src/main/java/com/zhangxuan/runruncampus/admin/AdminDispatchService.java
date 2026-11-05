@@ -2,7 +2,7 @@ package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.message.OrderMessageService;
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.courier.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.message.OrderMessageType;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderEvent;

@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.courier;
+package com.zhangxuan.runruncampus.controller.courier;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.admin.AdminPermission;
@@ -27,20 +28,20 @@ public class CourierCertificationController {
     }
 
     @GetMapping("/me")
-    CourierCertificationService.CertificationResponse overview(
+    public CourierCertificationService.CertificationResponse overview(
             @RequestHeader("Authorization") String authorization) {
         return certificationService.overview(authService.requireUser(authorization));
     }
 
     @PostMapping("/apply")
-    CourierCertificationService.CertificationResponse submit(
+    public CourierCertificationService.CertificationResponse submit(
             @RequestHeader("Authorization") String authorization,
             @RequestBody(required = false) CertificationRequest request) {
         return certificationService.submit(authService.requireUser(authorization));
     }
 
     @PostMapping(value = "/{id}/student-card", consumes = "multipart/form-data")
-    CourierCertificationService.CertificationResponse uploadStudentCard(
+    public CourierCertificationService.CertificationResponse uploadStudentCard(
             @RequestHeader("Authorization") String authorization, @PathVariable Long id,
             @RequestPart("file") MultipartFile file,
             @RequestPart(value = "expectedVersion", required = false) Long expectedVersion) {
@@ -48,7 +49,7 @@ public class CourierCertificationController {
     }
 
     @GetMapping("/{id}/student-card")
-    ResponseEntity<byte[]> studentCardPhoto(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<byte[]> studentCardPhoto(@RequestHeader("Authorization") String authorization,
                                             @PathVariable Long id) {
         var admin = authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW);
         var photo = certificationService.studentCardPhoto(admin, id);
@@ -58,21 +59,21 @@ public class CourierCertificationController {
     }
 
     @GetMapping("/pending")
-    List<CourierCertificationService.CertificationResponse> pending(
+    public List<CourierCertificationService.CertificationResponse> pending(
             @RequestHeader("Authorization") String authorization) {
         return certificationService.pending(
                 authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW));
     }
 
     @PostMapping("/{id}/approve")
-    CourierCertificationService.CertificationResponse approve(
+    public CourierCertificationService.CertificationResponse approve(
             @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         return certificationService.approve(
                 authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW), id);
     }
 
     @PostMapping("/{id}/decision")
-    CourierCertificationService.CertificationResponse decision(
+    public CourierCertificationService.CertificationResponse decision(
             @RequestHeader("Authorization") String authorization, @PathVariable Long id,
             @Valid @RequestBody DecisionRequest request) {
         var admin = authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW);
@@ -83,7 +84,7 @@ public class CourierCertificationController {
     }
 
     @PostMapping("/{id}/reject")
-    CourierCertificationService.CertificationResponse reject(
+    public CourierCertificationService.CertificationResponse reject(
             @RequestHeader("Authorization") String authorization, @PathVariable Long id,
             @Valid @RequestBody RejectionRequest request) {
         return certificationService.reject(

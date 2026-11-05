@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.admin;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.courier.CourierCertificationStatus;
+import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import jakarta.validation.constraints.Max;

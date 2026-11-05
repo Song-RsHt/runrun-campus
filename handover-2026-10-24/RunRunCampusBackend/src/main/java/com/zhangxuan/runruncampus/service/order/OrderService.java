@@ -20,7 +20,7 @@ import com.zhangxuan.runruncampus.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
 import com.zhangxuan.runruncampus.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.courier.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.user.AppUser;
 import com.zhangxuan.runruncampus.user.UserRole;
 import com.zhangxuan.runruncampus.user.UserRepository;

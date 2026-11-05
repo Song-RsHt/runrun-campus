@@ -1,4 +1,6 @@
-package com.zhangxuan.runruncampus.courier;
+package com.zhangxuan.runruncampus.repository.courier;
+import com.zhangxuan.runruncampus.model.courier.CourierCertification;
+import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 
 import com.zhangxuan.runruncampus.user.AppUser;
 import jakarta.persistence.LockModeType;

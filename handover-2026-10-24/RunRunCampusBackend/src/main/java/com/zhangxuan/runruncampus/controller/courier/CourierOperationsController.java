@@ -1,4 +1,5 @@
-package com.zhangxuan.runruncampus.courier;
+package com.zhangxuan.runruncampus.controller.courier;
+import com.zhangxuan.runruncampus.service.courier.CourierOperationsService;
 
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +23,12 @@ public class CourierOperationsController {
     }
 
     @GetMapping("/me")
-    OperationsResponse overview(@RequestHeader("Authorization") String authorization) {
+    public OperationsResponse overview(@RequestHeader("Authorization") String authorization) {
         return operationsService.overview(authService.requireUser(authorization));
     }
 
     @PutMapping("/me/availability")
-    OperationsResponse updateAvailability(@RequestHeader("Authorization") String authorization,
+    public OperationsResponse updateAvailability(@RequestHeader("Authorization") String authorization,
                                           @RequestBody AvailabilityRequest request) {
         return operationsService.updateAvailability(authService.requireUser(authorization), request.acceptingOrders());
     }

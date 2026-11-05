@@ -52,7 +52,7 @@ class OrderAuthorizationTest {
     @Mock
     private PaymentService paymentService;
     @Mock
-    private com.zhangxuan.runruncampus.courier.CourierCertificationService certificationService;
+    private com.zhangxuan.runruncampus.service.courier.CourierCertificationService certificationService;
     @Mock
     private OrderProofStorage proofStorage;
 

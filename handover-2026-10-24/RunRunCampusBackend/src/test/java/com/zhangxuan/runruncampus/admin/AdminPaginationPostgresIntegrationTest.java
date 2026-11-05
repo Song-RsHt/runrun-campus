@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.courier.CourierCertification;
-import com.zhangxuan.runruncampus.courier.CourierCertificationStatus;
+import com.zhangxuan.runruncampus.model.courier.CourierCertification;
+import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.feedback.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.feedback.FeedbackType;
 import com.zhangxuan.runruncampus.feedback.UserFeedback;
