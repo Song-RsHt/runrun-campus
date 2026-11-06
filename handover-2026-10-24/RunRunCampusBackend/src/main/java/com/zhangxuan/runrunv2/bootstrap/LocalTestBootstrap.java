@@ -63,19 +63,19 @@ public class LocalTestBootstrap implements ApplicationRunner {
     tx.executeWithoutResult(
         status -> {
           mapper.initializeIsolatedFixtures();
-          var existing = mapper.runRowsAppUsers();
+          var existing = mapper.findLocalTestAdmin();
           if (!existing.isEmpty()) {
             var account = existing.get(0);
             if (!"ADMIN".equals(account.get("role"))
                 || !Boolean.TRUE.equals(account.get("v2_admin_enabled"))
                 || !encoder.matches(password, (String) account.get("password_hash"))
-                || !Boolean.TRUE.equals(mapper.runValueAdminAuditLogs()))
+                || !Boolean.TRUE.equals(mapper.hasLocalTestEnableAudit()))
               throw new IllegalStateException(
                   "Local fixture differs; no automatic reset or privilege restoration. Restore"
                       + " local env file or recreate test volumes.");
             return;
           }
-          if (mapper.runValueAppUsers() != 0)
+          if (mapper.countUsers() != 0)
             throw new IllegalStateException(
                 "Local fixture initialization requires an empty v2 account database");
           long actor =
@@ -84,9 +84,9 @@ public class LocalTestBootstrap implements ApplicationRunner {
                       "Isolated synthetic local test fixture",
                       "CREATE DEPLOYMENT IDENTITY",
                       "local-test-deployer"));
-          long id = mapper.runValueAppUsers2(encoder.encode(password));
+          long id = mapper.insertLocalTestAdmin(encoder.encode(password));
           String app = "synthetic-local-app", openid = "local-test-admin";
-          mapper.runWriteWechatIdentities(
+          mapper.insertWechatIdentity(
               id, app, secrets.hash("openid:" + app, openid), secrets.encrypt(app, openid));
           // Reuse controlled provisioning so access versions, revocation and audit follow C01.
           deployment.provisionAdmin(

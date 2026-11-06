@@ -18,39 +18,80 @@ public class LocalTestMapper {
   }
 
   public void initializeIsolatedFixtures() {
-    jdbc.execute("SELECT pg_advisory_xact_lock(7082001)");
+    jdbc.execute(
+        """
+        SELECT pg_advisory_xact_lock(7082001)
+        """);
   }
 
-  public List<Map<String, Object>> runRowsAppUsers() {
+  public List<Map<String, Object>> findLocalTestAdmin() {
     return jdbc.queryForList(
-        "SELECT password_hash,role,v2_admin_enabled FROM runrun_v2.app_users WHERE"
-            + " phone='test-admin'");
+        """
+        SELECT password_hash,
+            role,
+            v2_admin_enabled
+        FROM runrun_v2.app_users
+        WHERE phone = 'test-admin'
+        """);
   }
 
-  public Boolean runValueAdminAuditLogs() {
+  public Boolean hasLocalTestEnableAudit() {
     return jdbc.queryForObject(
-        "SELECT EXISTS(SELECT 1 FROM runrun_v2.admin_audit_logs WHERE"
-            + " request_id='local-test-enable' AND reason='Isolated synthetic local test fixture')",
+        """
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.admin_audit_logs
+            WHERE request_id = 'local-test-enable'
+                AND reason = 'Isolated synthetic local test fixture')
+        """,
         Boolean.class);
   }
 
-  public Long runValueAppUsers() {
-    return jdbc.queryForObject("SELECT count(*) FROM runrun_v2.app_users", Long.class);
+  public Long countUsers() {
+    return jdbc.queryForObject(
+        """
+        SELECT count(*)
+        FROM runrun_v2.app_users
+        """,
+        Long.class);
   }
 
-  public Long runValueAppUsers2(String passwordHash) {
+  public Long insertLocalTestAdmin(String passwordHash) {
     return jdbc.queryForObject(
-        "INSERT INTO runrun_v2.app_users(phone,role,password_hash) VALUES('test-admin','USER',?)"
-            + " RETURNING id",
+        """
+        INSERT INTO runrun_v2.app_users (
+            phone,
+            role,
+            password_hash
+        )
+        VALUES (
+            'test-admin',
+            'USER',
+            ?
+        )
+        RETURNING id
+        """,
         Long.class,
         passwordHash);
   }
 
-  public int runWriteWechatIdentities(
+  public int insertWechatIdentity(
       long userId, String appId, String openidHash, String openidCiphertext) {
     return jdbc.update(
-        "INSERT INTO runrun_v2.wechat_identities(user_id,app_id,openid_hash,openid_ciphertext)"
-            + " VALUES(?,?,?,?)",
+        """
+        INSERT INTO runrun_v2.wechat_identities (
+            user_id,
+            app_id,
+            openid_hash,
+            openid_ciphertext
+        )
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        """,
         userId,
         appId,
         openidHash,

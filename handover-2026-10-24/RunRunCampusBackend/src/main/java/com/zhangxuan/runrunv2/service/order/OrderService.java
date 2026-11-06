@@ -94,12 +94,12 @@ public class OrderService {
     OffsetDateTime deadline =
         created.plusMinutes(ServiceConfigService.number(settings, "pending_payment_minutes"));
     String id =
-        mapper.createValueV(
+        mapper.insertOrder(
             "V2" + UUID.randomUUID().toString().replace("-", ""),
             Long.valueOf(actor.id()),
             request.serviceType().name(),
-            zone.get("id"),
-            point.get("id"),
+            ((Number) zone.get("id")).longValue(),
+            ((Number) point.get("id")).longValue(),
             json.write(address),
             json.write(price),
             json.write(config.policy(settings)),
@@ -120,7 +120,7 @@ public class OrderService {
         || !deadline.toInstant().equals(payment.deadline().toInstant())
         || payment.version() != 0)
       throw new IllegalStateException("M03 original payment contract violated");
-    mapper.createWriteV(
+    mapper.insertOrderCreatedEvent(
         Long.valueOf(id),
         Long.valueOf(actor.id()),
         key,

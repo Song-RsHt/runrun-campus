@@ -41,7 +41,16 @@ public class OrderStore {
   public Order read(String orderId, boolean locked) {
     var rows =
         db.query(
-            "SELECT * FROM runrun_v2.v2_orders WHERE id=?" + (locked ? " FOR UPDATE" : ""),
+            """
+            SELECT *
+            FROM runrun_v2.v2_orders
+            WHERE id = ?
+            """
+                + (locked
+                    ? """
+                      FOR UPDATE
+                      """
+                    : ""),
             (r, n) ->
                 new Order(
                     r.getString("id"),

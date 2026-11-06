@@ -20,17 +20,35 @@ public class ServiceConfigMapper {
     this.jdbc = jdbc;
   }
 
-  public Map<String, Object> settingsRowPlatformSettings(boolean update) {
+  public Map<String, Object> lockSettings(boolean forUpdate) {
     return jdbc.queryForMap(
-        "SELECT * FROM runrun_v2.platform_settings WHERE id=1 FOR "
-            + (update ? "UPDATE" : "SHARE"));
+        """
+        SELECT *
+        FROM runrun_v2.platform_settings
+        WHERE id = 1
+        FOR
+        """
+            + (forUpdate
+                ? """
+                  UPDATE
+                  """
+                : "SHARE"));
   }
 
-  public List<Zone> viewRowsDeliveryZones(boolean includeDisabled) {
+  public List<Zone> findZones(boolean includeDisabled) {
     return jdbc.query(
-        "SELECT * FROM runrun_v2.delivery_zones"
-            + (includeDisabled ? "" : " WHERE enabled")
-            + " ORDER BY id",
+        """
+        SELECT *
+        FROM runrun_v2.delivery_zones
+        """
+            + (includeDisabled
+                ? ""
+                : """
+                  WHERE enabled
+                  """)
+            + """
+              \sORDER BY id
+              """,
         (r, n) ->
             new Zone(
                 r.getString("id"),
@@ -42,11 +60,20 @@ public class ServiceConfigMapper {
                 r.getLong("version")));
   }
 
-  public List<ServicePoint> viewRowsServicePoints(boolean includeDisabled) {
+  public List<ServicePoint> findServicePoints(boolean includeDisabled) {
     return jdbc.query(
-        "SELECT * FROM runrun_v2.service_points"
-            + (includeDisabled ? "" : " WHERE enabled")
-            + " ORDER BY id",
+        """
+        SELECT *
+        FROM runrun_v2.service_points
+        """
+            + (includeDisabled
+                ? ""
+                : """
+                  WHERE enabled
+                  """)
+            + """
+              \sORDER BY id
+              """,
         (r, n) ->
             new ServicePoint(
                 r.getString("id"),
@@ -70,16 +97,48 @@ public class ServiceConfigMapper {
 
   private List<Map<String, Object>> findEnabled(String table, String code) {
     return jdbc.queryForList(
-        "SELECT * FROM runrun_v2." + table + " WHERE code=? AND enabled", code);
+        """
+        SELECT *
+        FROM runrun_v2.\
+        """
+            + table
+            + """
+              \sWHERE code = ?
+                  AND enabled
+              """,
+        code);
   }
 
-  public int patchWriteDeliveryZones(
+  public int upsertZone(
       String code, String name, Long packageSurchargeCents, Boolean enabled, long configVersion) {
     return jdbc.update(
-        "INSERT INTO"
-            + " runrun_v2.delivery_zones(code,name,package_surcharge_cents,enabled,config_version)"
-            + " VALUES(?,?,?,?,?) ON CONFLICT(code) DO UPDATE SET"
-            + " name=excluded.name,package_surcharge_cents=excluded.package_surcharge_cents,enabled=excluded.enabled,config_version=excluded.config_version,version=delivery_zones.version+1,updated_at=now()",
+        """
+        INSERT INTO runrun_v2.delivery_zones (
+            code,
+            name,
+            package_surcharge_cents,
+            enabled,
+            config_version
+        )
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        ON CONFLICT (
+            code
+        ) DO UPDATE
+        SET name = excluded.name,
+            package_surcharge_cents = excluded.package_surcharge_cents,
+            enabled = excluded.enabled,
+            config_version = excluded.config_version,
+            version = delivery_zones.version + 1,
+            updated_at = now (
+
+        )
+        """,
         code,
         name,
         packageSurchargeCents,
@@ -87,7 +146,7 @@ public class ServiceConfigMapper {
         configVersion);
   }
 
-  public int patchWriteServicePoints(
+  public int upsertServicePoint(
       String code,
       String name,
       BigDecimal latitude,
@@ -96,10 +155,39 @@ public class ServiceConfigMapper {
       Boolean enabled,
       long configVersion) {
     return jdbc.update(
-        "INSERT INTO"
-            + " runrun_v2.service_points(code,name,latitude,longitude,coordinate_system,enabled,config_version)"
-            + " VALUES(?,?,?,?,?,?,?) ON CONFLICT(code) DO UPDATE SET"
-            + " name=excluded.name,latitude=excluded.latitude,longitude=excluded.longitude,coordinate_system=excluded.coordinate_system,enabled=excluded.enabled,config_version=excluded.config_version,version=service_points.version+1,updated_at=now()",
+        """
+        INSERT INTO runrun_v2.service_points (
+            code,
+            name,
+            latitude,
+            longitude,
+            coordinate_system,
+            enabled,
+            config_version
+        )
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        ON CONFLICT (
+            code
+        ) DO UPDATE
+        SET name = excluded.name,
+            latitude = excluded.latitude,
+            longitude = excluded.longitude,
+            coordinate_system = excluded.coordinate_system,
+            enabled = excluded.enabled,
+            config_version = excluded.config_version,
+            version = service_points.version + 1,
+            updated_at = now (
+
+        )
+        """,
         code,
         name,
         latitude,
@@ -109,32 +197,63 @@ public class ServiceConfigMapper {
         configVersion);
   }
 
-  public int patchWritePlatformSettings(boolean enabled, Object owner) {
+  public int updateSettings(boolean enabled, Long reviewOwnerId) {
     return jdbc.update(
-        "UPDATE runrun_v2.platform_settings SET"
-            + " new_order_enabled=?,review_owner_id=?,config_version=config_version+1,version=version+1,updated_at=now()"
-            + " WHERE id=1",
+        """
+        UPDATE runrun_v2.platform_settings
+        SET new_order_enabled = ?,
+            review_owner_id = ?,
+            config_version = config_version + 1,
+            version = version + 1,
+            updated_at = now()
+        WHERE id = 1
+        """,
         enabled,
-        owner);
+        reviewOwnerId);
   }
 
-  public int patchWriteAdminAuditLogs(
+  public int insertConfigChangeAudit(
       Long administratorId, String requestId, String reason, String metadata) {
     return jdbc.update(
-        "INSERT INTO"
-            + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
-            + " VALUES(?,'SERVICE_CONFIG_CHANGED','SERVICE_CONFIG',1,?,?,?::jsonb)",
+        """
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            ?,
+            'SERVICE_CONFIG_CHANGED',
+            'SERVICE_CONFIG',
+            1,
+            ?,
+            ?,
+            ?::jsonb
+        )
+        """,
         administratorId,
         requestId,
         reason,
         metadata);
   }
 
-  public Boolean requireOwnerValueAppUsers(Object id) {
+  public Boolean isEligibleReviewOwner(Long userId) {
     return jdbc.queryForObject(
-        "SELECT EXISTS(SELECT 1 FROM runrun_v2.app_users WHERE id=? AND role='ADMIN' AND"
-            + " status='ACTIVE' AND v2_admin_enabled AND NOT controlled_identity)",
+        """
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.app_users
+            WHERE id = ?
+                AND role = 'ADMIN'
+                AND status = 'ACTIVE'
+                AND v2_admin_enabled
+                AND NOT controlled_identity)
+        """,
         Boolean.class,
-        id);
+        userId);
   }
 }

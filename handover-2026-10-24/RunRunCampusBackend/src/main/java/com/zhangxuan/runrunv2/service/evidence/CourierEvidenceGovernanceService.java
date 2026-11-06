@@ -56,17 +56,17 @@ public class CourierEvidenceGovernanceService {
         idempotency.replay(
             Long.toString(owner), "evidence-hold:create", requestId, content, HoldResult.class);
     if (replay != null) return replay;
-    if (orderId != null && mapper.holdValueV(orderId) == 0)
+    if (orderId != null && mapper.countOrderById(orderId) == 0)
       throw new IdentityFailure(404, "RESOURCE_NOT_FOUND");
-    if (certificationId != null && mapper.holdValueCourierCertifications(certificationId) == 0)
+    if (certificationId != null && mapper.countCertificationById(certificationId) == 0)
       throw new IdentityFailure(404, "RESOURCE_NOT_FOUND");
     // PostgreSQL JDBC binds OffsetDateTime to TIMESTAMPTZ; Instant itself has no JDBC mapping.
     long id =
-        mapper.holdValueEvidenceHolds(
+        mapper.insertEvidenceHold(
             orderId, certificationId, reason, owner, due.atOffset(ZoneOffset.UTC));
     // jsonb_build_object cannot infer a nullable polymorphic parameter's type; both references are
     // BIGINT.
-    mapper.holdWriteAdminAuditLogs(
+    mapper.insertHoldCreatedAudit(
         owner,
         id,
         requestId,
@@ -87,7 +87,7 @@ public class CourierEvidenceGovernanceService {
   @Transactional
   public HoldResult release(String token, long holdId, String requestId) {
     long owner = Long.parseLong(identity.authorizeForWrite(token, "ADMIN", false).id());
-    var rows = mapper.releaseRowsEvidenceHolds(holdId);
+    var rows = mapper.lockEvidenceHold(holdId);
     if (rows.isEmpty()) throw new IdentityFailure(404, "RESOURCE_NOT_FOUND");
     var hold = rows.get(0);
     lockAggregate((Number) hold.get("order_id"), (Number) hold.get("certification_id"));
@@ -101,8 +101,8 @@ public class CourierEvidenceGovernanceService {
     if (replay != null) return replay;
     if (hold.get("released_at") != null)
       throw new IdentityFailure(409, "EVIDENCE_HOLD_ALREADY_RELEASED");
-    mapper.releaseWriteEvidenceHolds(holdId);
-    mapper.releaseWriteAdminAuditLogs(owner, holdId, requestId, "evidence hold released");
+    mapper.releaseEvidenceHold(holdId);
+    mapper.insertHoldReleasedAudit(owner, holdId, requestId, "evidence hold released");
     HoldResult result = new HoldResult(holdId);
     idempotency.finish(
         Long.toString(owner),
@@ -117,9 +117,9 @@ public class CourierEvidenceGovernanceService {
   @Transactional
   public void requestCertificationDeletion(
       long certificationId, String resourceId, String storageKey, Instant deleteAfter) {
-    if (mapper.requestCertificationDeletionValueEvidenceHolds(certificationId) > 0) return;
+    if (mapper.countActiveCertificationHolds(certificationId) > 0) return;
     // Preserve the exact retention instant using the driver's TIMESTAMPTZ representation.
-    mapper.requestCertificationDeletionWriteEvidenceDeletionAudits(
+    mapper.insertDeletionRequestIfAbsent(
         certificationId,
         resourceId,
         storageKey,
@@ -130,9 +130,9 @@ public class CourierEvidenceGovernanceService {
 
   @Transactional
   public void cleanupDue() {
-    mapper.cleanupDueRowsEvidenceDeletionAudits().forEach(this::deleteOne);
+    mapper.lockDueDeletions().forEach(this::deleteOne);
     mapper
-        .cleanupDueRowsCourierCertifications()
+        .findExpiredApprovedPhotos()
         .forEach(
             r ->
                 requestCertificationDeletion(
@@ -148,21 +148,21 @@ public class CourierEvidenceGovernanceService {
     String resource = (String) r.get("resource_id");
     String key = (String) r.get("resource_storage_key");
     lockAggregate(null, cert);
-    if (mapper.deleteOneValueEvidenceHolds(cert) > 0) return;
-    mapper.deleteOneWriteEvidenceDeletionAudits(id);
+    if (mapper.countActiveHoldsBeforeDeletion(cert) > 0) return;
+    mapper.markDeletionInProgress(id);
     try {
       storage.delete(key);
-      mapper.deleteOneWriteCourierCertifications(cert, resource);
-      mapper.deleteOneWriteCourierCertifications2(cert, resource);
-      mapper.deleteOneWriteEvidenceDeletionAudits2(id);
+      mapper.clearSubmittedPhoto(cert, resource);
+      mapper.clearApprovedPhoto(cert, resource);
+      mapper.markDeletionSucceeded(id);
     } catch (Exception e) {
-      mapper.deleteOneWriteEvidenceDeletionAudits3(e.getClass().getSimpleName(), id);
+      mapper.markDeletionFailed(e.getClass().getSimpleName(), id);
     }
   }
 
   private void lockAggregate(Long orderId, Long certificationId) {
-    if (orderId != null) mapper.lockAggregateValueV(orderId);
-    if (certificationId != null) mapper.lockAggregateValueCourierCertifications(certificationId);
+    if (orderId != null) mapper.lockOrder(orderId);
+    if (certificationId != null) mapper.lockCertification(certificationId);
   }
 
   private void lockAggregate(Number orderId, Number certificationId) {

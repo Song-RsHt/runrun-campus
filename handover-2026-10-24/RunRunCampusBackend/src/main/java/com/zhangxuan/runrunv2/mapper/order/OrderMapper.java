@@ -18,12 +18,12 @@ public class OrderMapper {
     this.jdbc = jdbc;
   }
 
-  public String createValueV(
+  public String insertOrder(
       String orderNo,
       Long userId,
       String serviceType,
-      Object zoneId,
-      Object servicePointId,
+      Long zoneId,
+      Long servicePointId,
       String addressSnapshot,
       String pricingSnapshot,
       String policySnapshot,
@@ -33,9 +33,39 @@ public class OrderMapper {
       OffsetDateTime createdAt,
       OffsetDateTime updatedAt) {
     return jdbc.queryForObject(
-        "INSERT INTO"
-            + " runrun_v2.v2_orders(order_no,user_id,service_type,zone_id,service_point_id,address_snapshot,pricing_snapshot,policy_snapshot,original_fee_cents,effective_fee_cents,pending_payment_deadline,created_at,updated_at)"
-            + " VALUES(?,?,?,?,?,?::jsonb,?::jsonb,?::jsonb,?,?,?,?,?) RETURNING id::text",
+        """
+        INSERT INTO runrun_v2.v2_orders (
+            order_no,
+            user_id,
+            service_type,
+            zone_id,
+            service_point_id,
+            address_snapshot,
+            pricing_snapshot,
+            policy_snapshot,
+            original_fee_cents,
+            effective_fee_cents,
+            pending_payment_deadline,
+            created_at,
+            updated_at
+        )
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?::jsonb,
+            ?::jsonb,
+            ?::jsonb,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        RETURNING id::text
+        """,
         String.class,
         orderNo,
         userId,
@@ -52,10 +82,24 @@ public class OrderMapper {
         updatedAt);
   }
 
-  public int createWriteV(Long orderId, Long actorId, String requestId, String payload) {
+  public int insertOrderCreatedEvent(Long orderId, Long actorId, String requestId, String payload) {
     return jdbc.update(
-        "INSERT INTO runrun_v2.v2_order_events(order_id,actor_id,event_type,request_id,payload)"
-            + " VALUES(?,?,'ORDER_CREATED',?,?::jsonb)",
+        """
+        INSERT INTO runrun_v2.v2_order_events (
+            order_id,
+            actor_id,
+            event_type,
+            request_id,
+            payload
+        )
+        VALUES (
+            ?,
+            ?,
+            'ORDER_CREATED',
+            ?,
+            ?::jsonb
+        )
+        """,
         orderId,
         actorId,
         requestId,

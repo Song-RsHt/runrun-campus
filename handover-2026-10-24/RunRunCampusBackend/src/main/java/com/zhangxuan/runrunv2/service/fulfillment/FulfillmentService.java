@@ -82,7 +82,7 @@ public class FulfillmentService {
     version(order.version(), body.expectedVersion());
     state(order.status().equals("PENDING_ASSIGNMENT"));
     capacity(actor.id());
-    String task = mapper.acceptValueFulfillmentTasks(id(orderId), id(actor.id()), now(), now());
+    String task = mapper.insertActiveTask(id(orderId), id(actor.id()), now(), now());
     supersede(orderId, task);
     closeOffers(orderId, task);
     mapper.markOrderAccepted(now(), id(orderId));
@@ -106,7 +106,7 @@ public class FulfillmentService {
       String key) {
     var actor = identity.authorizeForWrite(token, "ADMIN", false);
     IdentityService.text(reason, 500);
-    var targets = mapper.inviteRowsAppUsers(id(courierId));
+    var targets = mapper.lockActiveCourier(id(courierId));
     if (targets.isEmpty()) throw missing();
     var order = lock(orderId);
     Task replay =
@@ -119,11 +119,11 @@ public class FulfillmentService {
     if (replay != null) return replay;
     version(order.version(), expectedVersion);
     state(order.status().equals("EXCEPTION"));
-    state(mapper.inviteValueFulfillmentTasks(id(orderId)) == 0);
-    String source = mapper.inviteValueFulfillmentTasks2(id(orderId));
+    state(mapper.countActiveTasksForInvitation(id(orderId)) == 0);
+    String source = mapper.findLatestTaskId(id(orderId));
     closeOffers(orderId, null);
     String task =
-        mapper.inviteValueFulfillmentTasks3(
+        mapper.insertTaskOffer(
             id(orderId), id(courierId), source == null ? null : id(source), now());
     supersede(orderId, task);
     mapper.clearOrderConfirmation(now(), id(orderId));
@@ -154,8 +154,8 @@ public class FulfillmentService {
     if (body.decision() == Decision.DECLINE) end(taskId, "RELEASED");
     else {
       capacity(actor.id());
-      state(mapper.respondValueFulfillmentTasks(id(task.orderId())) == 0);
-      mapper.respondWriteFulfillmentTasks(now(), id(taskId));
+      state(mapper.countActiveTasksForResponse(id(task.orderId())) == 0);
+      mapper.acceptTaskOffer(now(), id(taskId));
       mapper.acceptOrderAndClearConfirmation(now(), id(task.orderId()));
     }
     if (body.decision() == Decision.DECLINE)
@@ -182,7 +182,7 @@ public class FulfillmentService {
     state(order.status().equals("ACCEPTED"));
     // A pickup photo may mean physical custody even before the pickup click.
     // Never discard that ambiguity by allowing a normal self-release (§8).
-    state(mapper.releaseValueV(id(task.id())) == 0);
+    state(mapper.countPickupProofs(id(task.id())) == 0);
     end(task.id(), "RELEASED");
     mapper.markOrderPendingAssignment(now(), id(orderId));
     event(orderId, task.id(), actor.id(), "RELEASED", key, Map.of("reason", body.reason()));
@@ -241,17 +241,17 @@ public class FulfillmentService {
     if (replay != null) return replay;
     version(order.version(), body.expectedVersion());
     if (body.kind() != Kind.SPECIFICATION
-        && mapper.proofValueV(id(task.id()), body.kind().name()) > 0) throw conflict();
+        && mapper.countTaskProofs(id(task.id()), body.kind().name()) > 0) throw conflict();
     var binding = binding(task, body.kind());
     var verified = evidence.verify(binding, body.uploadTicket(), now());
     if (verified == null
         || !binding.equals(verified.binding())
         || verified.storageKey() == null
         || verified.storageKey().isBlank()) throw new IdentityFailure(409, "PROOF_NOT_READY");
-    if (mapper.proofValueV2(verified.storageKey()) > 0)
+    if (mapper.countProofsByStorageKey(verified.storageKey()) > 0)
       throw new IdentityFailure(409, "PROOF_NOT_READY");
     String proof =
-        mapper.proofValueV3(
+        mapper.insertOrderProof(
             id(orderId), id(task.id()), id(actor.id()), body.kind().name(), verified.storageKey());
     mapper.advanceOrderVersion(now(), id(orderId));
     event(
@@ -284,7 +284,7 @@ public class FulfillmentService {
             ? order.status().equals("ACCEPTED")
             : order.status().equals("PICKED_UP"));
     var existing =
-        mapper.locationRowsLocationEvents(id(task.id()), body.eventType().name(), body.requestId());
+        mapper.findLocationRequest(id(task.id()), body.eventType().name(), body.requestId());
     if (!existing.isEmpty()) {
       var row = existing.get(0);
       if (!Objects.equals(row.get("coordinate_system"), body.coordinateSystem())
@@ -315,12 +315,12 @@ public class FulfillmentService {
                   : "ARRIVAL_OUTSIDE_RADIUS";
     } else
       rejection =
-          mapper.locationValueLocationEvents(id(task.id())) == 0
+          mapper.countAcceptedDeliveryLocations(id(task.id())) == 0
               ? null
               : "DELIVERY_LOCATION_ALREADY_SELECTED";
     boolean accepted = rejection == null;
     String event =
-        mapper.locationValueLocationEvents2(
+        mapper.insertLocationEvent(
             id(orderId),
             id(task.id()),
             id(actor.id()),
@@ -359,7 +359,7 @@ public class FulfillmentService {
     active(task, order);
     state(order.status().equals("ACCEPTED"));
     requireProof(orderId, task.id(), body.pickupProofId(), Kind.PICKUP);
-    mapper.pickupWriteFulfillmentTasks(now(), id(task.id()));
+    mapper.markTaskPickedUp(now(), id(task.id()));
     mapper.markOrderPickedUp(now(), id(orderId));
     event(
         orderId, task.id(), actor.id(), "PICKED_UP", key, Map.of("proofId", body.pickupProofId()));
@@ -382,14 +382,14 @@ public class FulfillmentService {
     active(task, order);
     state(order.status().equals("PICKED_UP"));
     requireProof(orderId, task.id(), body.deliveryProofId(), Kind.DELIVERY);
-    if (mapper.deliverValueLocationEvents(
+    if (mapper.countValidDeliveryLocations(
             id(body.locationEventId()), id(orderId), id(task.id()), id(actor.id()))
         != 1) throw new IdentityFailure(409, "PROOF_NOT_READY");
     // Task status and order delivery commit together: pending money or review
     // may block confirmation but must never continue consuming rider capacity.
-    mapper.deliverWriteFulfillmentTasks(now(), now(), id(task.id()));
+    mapper.markTaskDelivered(now(), now(), id(task.id()));
     OffsetDateTime start = blocked(orderId) ? null : now();
-    mapper.deliverWriteV(
+    mapper.markOrderDelivered(
         now(), start, start == null ? null : start.plusMinutes(10), now(), id(orderId));
     event(
         orderId,
@@ -424,7 +424,7 @@ public class FulfillmentService {
   @Transactional
   public int autoComplete() {
     int completed = 0;
-    var ids = mapper.autoCompleteRowsV(now());
+    var ids = mapper.findOrdersDueForConfirmation(now());
     for (String orderId : ids) {
       lock(orderId);
       Order order = order(orderId);
@@ -449,7 +449,7 @@ public class FulfillmentService {
     blockType(type);
     IdentityService.text(sourceId, 128);
     state(!Set.of("COMPLETED", "CANCELLED").contains(order.status()));
-    if (mapper.blockCompletionWriteFulfillmentCompletionBlocks(id(orderId), type, sourceId) > 0)
+    if (mapper.insertCompletionBlock(id(orderId), type, sourceId) > 0)
       mapper.clearOrderConfirmation(now(), id(orderId));
   }
 
@@ -457,8 +457,7 @@ public class FulfillmentService {
   public void unblockCompletion(String orderId, String type, String sourceId) {
     lock(orderId);
     blockType(type);
-    if (mapper.unblockCompletionWriteFulfillmentCompletionBlocks(id(orderId), type, sourceId) > 0)
-      restartWindow(orderId);
+    if (mapper.deleteCompletionBlock(id(orderId), type, sourceId) > 0) restartWindow(orderId);
   }
 
   /** After M03 financial resolution M05 rechecks ALL reviews/cases here. */
@@ -469,7 +468,7 @@ public class FulfillmentService {
     if (order.rawStatus().equals("DELIVERED_PENDING_CONFIRMATION")
         && order.confirmStartedAt() == null
         && !blocked(orderId))
-      mapper.restartWindowWriteV(now(), now().plusMinutes(10), now(), id(orderId));
+      mapper.restartConfirmationWindow(now(), now().plusMinutes(10), now(), id(orderId));
   }
 
   /**
@@ -497,7 +496,7 @@ public class FulfillmentService {
         order.confirmStartedAt() != null
             && order.confirmDeadline() != null
             && (!automatic || !now().isBefore(order.confirmDeadline())));
-    mapper.completeWriteV(now(), now(), id(orderId));
+    mapper.markOrderCompleted(now(), now(), id(orderId));
     event(orderId, null, actor, "COMPLETED", requestId, Map.of("automatic", automatic));
   }
 
@@ -506,11 +505,11 @@ public class FulfillmentService {
   }
 
   private boolean adjustmentBlocked(String order) {
-    return mapper.adjustmentBlockedValueFulfillmentCompletionBlocks(id(order), id(order));
+    return mapper.hasAdjustmentCompletionBlock(id(order), id(order));
   }
 
   private boolean caseBlocked(String order) {
-    return mapper.caseBlockedValueFulfillmentCompletionBlocks(id(order));
+    return mapper.hasAfterSalesCompletionBlock(id(order));
   }
 
   private void blockType(String type) {
@@ -521,13 +520,13 @@ public class FulfillmentService {
   private void capacity(String courier) {
     // authorizeForWrite holds the courier ACCOUNT row until commit, so counts
     // serialize across orders/processes without a drifting capacity counter.
-    if (capacity == 0 || mapper.capacityValueFulfillmentTasks(id(courier)) >= capacity)
+    if (capacity == 0 || mapper.countActiveCourierTasks(id(courier)) >= capacity)
       throw new IdentityFailure(409, "COURIER_CAPACITY_EXCEEDED");
   }
 
   private OrderModels.Order lock(String order) {
     // Same recipient-before-order lock order as M03 callbacks/cancellation.
-    mapper.lockRowsAppUsers(id(order));
+    mapper.lockOrderUser(id(order));
     return orders.read(order, true);
   }
 
@@ -544,19 +543,19 @@ public class FulfillmentService {
   }
 
   private Task current(String actor, String order) {
-    var ids = mapper.currentRowsFulfillmentTasks(id(actor), id(order));
+    var ids = mapper.findLatestCourierTaskId(id(actor), id(order));
     if (ids.isEmpty()) throw missing();
     return task(ids.get(0));
   }
 
   private Task task(String task) {
-    var rows = mapper.taskRowsFulfillmentTasks(id(task));
+    var rows = mapper.findTask(id(task));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
 
   private boolean unsuperseded(String task) {
-    return mapper.unsupersededValueFulfillmentTasks(id(task));
+    return mapper.isTaskUnsuperseded(id(task));
   }
 
   private void active(Task task, OrderModels.Order order) {
@@ -571,7 +570,7 @@ public class FulfillmentService {
       state(
           order.status().equals("DELIVERED_PENDING_CONFIRMATION")
               && unsuperseded(task.id())
-              && mapper.proofPermissionValueFulfillmentTasks(id(task.id()), id(order.id())));
+              && mapper.isLatestOrderTask(id(task.id()), id(order.id())));
       return;
     }
     active(task, order);
@@ -580,7 +579,7 @@ public class FulfillmentService {
   }
 
   private void requireProof(String order, String task, String proof, Kind kind) {
-    if (mapper.requireProofValueV(id(proof), id(order), id(task), kind.name()) != 1)
+    if (mapper.countAvailableTaskProofs(id(proof), id(order), id(task), kind.name()) != 1)
       throw new IdentityFailure(409, "PROOF_NOT_READY");
   }
 
@@ -589,20 +588,20 @@ public class FulfillmentService {
   }
 
   private void supersede(String order, String keep) {
-    mapper.supersedeWriteFulfillmentTasks(now(), id(order), id(keep));
+    mapper.supersedeOtherTasks(now(), id(order), id(keep));
   }
 
   private void closeOffers(String order, String keep) {
-    mapper.closeOffersWriteFulfillmentTasks(
+    mapper.cancelOtherOffers(
         now(), id(order), keep == null ? null : id(keep), keep == null ? null : id(keep));
   }
 
   private void end(String task, String status) {
-    mapper.endWriteFulfillmentTasks(status, now(), id(task));
+    mapper.endTask(status, now(), id(task));
   }
 
   private Order order(String order) {
-    var row = mapper.orderValueV(id(order));
+    var row = mapper.findOrder(id(order));
     return new Order(
         row.id(),
         row.orderNo(),
@@ -620,7 +619,7 @@ public class FulfillmentService {
   private String displayStatus(String status, String orderId) {
     if (status.equals("PICKED_UP")) return "DELIVERING";
     if (!status.equals("DELIVERED_PENDING_CONFIRMATION")) return status;
-    if (mapper.displayStatusValuePaymentAdjustments(id(orderId))) return "PENDING_SUPPLEMENT";
+    if (mapper.hasPendingSupplement(id(orderId))) return "PENDING_SUPPLEMENT";
     return adjustmentBlocked(orderId) ? "ADJUSTMENT_PROCESSING" : "PENDING_CONFIRMATION";
   }
 
@@ -630,7 +629,7 @@ public class FulfillmentService {
   }
 
   private Event readEvent(String event, long version) {
-    return mapper.readEventValueLocationEvents(id(event), version);
+    return mapper.findLocationEvent(id(event), version);
   }
 
   private static double distanceMeters(double lat1, double lon1, double lat2, double lon2) {
@@ -663,7 +662,7 @@ public class FulfillmentService {
 
   private void event(
       String order, String task, String actor, String type, String key, Object payload) {
-    mapper.eventWriteV(
+    mapper.insertOrderEvent(
         id(order),
         task == null ? null : id(task),
         actor == null ? null : id(actor),
@@ -673,7 +672,7 @@ public class FulfillmentService {
   }
 
   private void notify(String recipient, String key, String order, String type) {
-    mapper.notifyWriteNotificationOutbox(
+    mapper.insertNotificationIfAbsent(
         id(recipient), "fulfillment:" + key, json.write(Map.of("orderId", order, "kind", type)));
   }
 

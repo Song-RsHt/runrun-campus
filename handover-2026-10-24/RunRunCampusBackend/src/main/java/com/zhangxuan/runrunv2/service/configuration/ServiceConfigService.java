@@ -55,7 +55,7 @@ public class ServiceConfigService {
   // Shared configuration lock protects both the quote version and all constituent rows.
   // Updates lock the singleton first and commit all zone/point changes with one version.
   public Map<String, Object> settings(boolean update) {
-    return mapper.settingsRowPlatformSettings(update);
+    return mapper.lockSettings(update);
   }
 
   @Transactional
@@ -70,8 +70,8 @@ public class ServiceConfigService {
         Arrays.stream(ServiceType.values())
             .map(s -> new OrderModels.Service(s.name(), s.name, s.baseCents, s.zoneSurcharge))
             .toList();
-    var zones = mapper.viewRowsDeliveryZones(includeDisabled);
-    var points = mapper.viewRowsServicePoints(includeDisabled);
+    var zones = mapper.findZones(includeDisabled);
+    var points = mapper.findServicePoints(includeDisabled);
     return new Config(
         services,
         zones,
@@ -132,7 +132,7 @@ public class ServiceConfigService {
   public void allowNewOrder(Map<String, Object> settings) {
     if (!Boolean.TRUE.equals(settings.get("new_order_enabled")))
       throw new IdentityFailure(503, "NEW_ORDER_DISABLED");
-    requireOwner(settings.get("review_owner_id"));
+    requireOwner((Long) settings.get("review_owner_id"));
     LocalTime now =
         clock
             .instant()
@@ -197,9 +197,9 @@ public class ServiceConfigService {
     if (change.businessSchedule() != null
         && !new Schedule("Asia/Shanghai", "09:00", "23:00").equals(change.businessSchedule()))
       throw IdentityFailure.invalid();
-    Object owner =
+    Long owner =
         change.reviewOwnerId() == null
-            ? settings.get("review_owner_id")
+            ? (Long) settings.get("review_owner_id")
             : id(change.reviewOwnerId());
     boolean enabled =
         change.newOrderEnabled() == null
@@ -218,7 +218,7 @@ public class ServiceConfigService {
             || zone.packageSurchargeCents() == null
             || zone.packageSurchargeCents() < 0
             || zone.packageSurchargeCents() > Long.MAX_VALUE - 800) throw IdentityFailure.invalid();
-        mapper.patchWriteDeliveryZones(
+        mapper.upsertZone(
             zone.code(), zone.name(), zone.packageSurchargeCents(), zone.enabled(), version + 1);
       }
     }
@@ -240,7 +240,7 @@ public class ServiceConfigService {
                 || point.latitude().abs().compareTo(java.math.BigDecimal.valueOf(90)) > 0
                 || point.longitude().abs().compareTo(java.math.BigDecimal.valueOf(180)) > 0))
           throw IdentityFailure.invalid();
-        mapper.patchWriteServicePoints(
+        mapper.upsertServicePoint(
             point.code(),
             point.name(),
             point.latitude(),
@@ -250,8 +250,8 @@ public class ServiceConfigService {
             version + 1);
       }
     }
-    mapper.patchWritePlatformSettings(enabled, owner);
-    mapper.patchWriteAdminAuditLogs(
+    mapper.updateSettings(enabled, owner);
+    mapper.insertConfigChangeAudit(
         Long.valueOf(actor.id()),
         key,
         change.reason(),
@@ -263,8 +263,8 @@ public class ServiceConfigService {
     return result;
   }
 
-  private void requireOwner(Object id) {
-    if (id == null || !Boolean.TRUE.equals(mapper.requireOwnerValueAppUsers(id)))
+  private void requireOwner(Long id) {
+    if (id == null || !Boolean.TRUE.equals(mapper.isEligibleReviewOwner(id)))
       throw new IdentityFailure(409, "REVIEW_OWNER_REQUIRED");
   }
 

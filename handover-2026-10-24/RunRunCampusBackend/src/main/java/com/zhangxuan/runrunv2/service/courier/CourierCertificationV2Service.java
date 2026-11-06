@@ -62,16 +62,16 @@ public class CourierCertificationV2Service {
             "apply",
             Certification.class);
     if (replay != null) return replay;
-    var rows = mapper.applyRowsCourierCertifications(courier);
+    var rows = mapper.lockCourierCertification(courier);
     if (rows.isEmpty()) {
-      mapper.applyWriteCourierCertifications(courier);
+      mapper.insertPendingCertification(courier);
     } else {
       var row = rows.get(0);
       if ("PENDING".equals(row.get("status")))
         throw new IdentityFailure(409, "CERTIFICATION_STATE_CONFLICT");
-      mapper.applyWriteCourierCertifications2(courier);
+      mapper.resubmitCertification(courier);
     }
-    long id = mapper.applyValueCourierCertifications(courier);
+    long id = mapper.findCertificationId(courier);
     event(id, courier, "COURIER", "SUBMITTED", requestId);
     Certification result = get(courier, id);
     idempotency.finish(
@@ -146,8 +146,8 @@ public class CourierCertificationV2Service {
     } catch (IOException e) {
       throw new IdentityFailure(500, "UPLOAD_STORAGE_FAILED");
     }
-    mapper.uploadWriteCourierCertifications(resource, key, id, expectedVersion);
-    if (mapper.uploadWriteCourierCertifications2(id, expectedVersion + 1) != 1)
+    mapper.updateSubmittedPhoto(resource, key, id, expectedVersion);
+    if (mapper.touchCertificationIfVersionMatches(id, expectedVersion + 1) != 1)
       throw new IdentityFailure(409, "CERTIFICATION_STATE_CONFLICT");
     if (oldResource != null && !oldResource.equals(resource))
       governance.requestCertificationDeletion(
@@ -196,7 +196,7 @@ public class CourierCertificationV2Service {
     if ("APPROVE".equals(decision)) {
       if (resource == null || !resource.equals(row.get("submitted_photo_resource_id")))
         throw new IdentityFailure(409, "PROOF_NOT_READY");
-      mapper.decideWriteCourierCertifications(id, expectedVersion);
+      mapper.approveCertification(id, expectedVersion);
       if (oldApprovedResource != null && !oldApprovedResource.equals(resource))
         governance.requestCertificationDeletion(
             id,
@@ -205,7 +205,7 @@ public class CourierCertificationV2Service {
             Instant.now().plus(java.time.Duration.ofDays(30)));
     } else {
       if (reason == null || reason.isBlank()) throw new IdentityFailure(400, "INVALID_REQUEST");
-      mapper.decideWriteCourierCertifications2(reason, id, expectedVersion);
+      mapper.rejectCertification(reason, id, expectedVersion);
     }
     event(id, admin, "ADMIN", "REVIEWED", requestId);
     Certification result = get(admin, id);
@@ -230,7 +230,7 @@ public class CourierCertificationV2Service {
         || !actual.equals(row.get("approved_photo_resource_id"))
             && !actual.equals(row.get("submitted_photo_resource_id")))
       throw new IdentityFailure(404, "PROOF_EXPIRED");
-    if (mapper.readValueEvidenceDeletionAudits(id, actual) > 0)
+    if (mapper.countPhotoDeletionsInProgress(id, actual) > 0)
       throw new IdentityFailure(409, "EVIDENCE_DELETION_IN_PROGRESS");
     try {
       byte[] result =
@@ -239,7 +239,7 @@ public class CourierCertificationV2Service {
                   (actual.equals(row.get("approved_photo_resource_id"))
                       ? row.get("approved_photo_storage_key")
                       : row.get("submitted_photo_storage_key")));
-      mapper.readWriteAdminAuditLogs(
+      mapper.insertPhotoReadAudit(
           Long.parseLong(a.id()), id, requestId, "controlled student-card read", actual);
       return result;
     } catch (IOException e) {
@@ -254,9 +254,9 @@ public class CourierCertificationV2Service {
     int safePage = Math.max(0, page), safeSize = Math.max(1, Math.min(size, 100));
     String filter = (status == null || status.isBlank()) ? null : status;
     String q = (query == null || query.isBlank()) ? null : "%" + query.trim() + "%";
-    long total = mapper.adminListValueAppUsers(filter, filter, q, q);
+    long total = mapper.countCertifications(filter, filter, q, q);
     var items =
-        mapper.adminListRowsAppUsers(filter, filter, q, q, safeSize, (long) safePage * safeSize);
+        mapper.pageCertifications(filter, filter, q, q, safeSize, (long) safePage * safeSize);
     // v2 does not collect legacy names or student metadata; keep the admin DTO without inventing
     // identity data.
     items.forEach(
@@ -340,13 +340,13 @@ public class CourierCertificationV2Service {
   }
 
   public Certification getMine(long courier) {
-    var rows = mapper.getMineRowsCourierCertifications(courier);
+    var rows = mapper.findCourierCertification(courier);
     if (rows.isEmpty()) return null;
     return map(rows.get(0));
   }
 
   private Map<String, Object> locked(long id) {
-    var rows = mapper.lockedRowsCourierCertifications(id);
+    var rows = mapper.lockCertification(id);
     if (rows.isEmpty()) throw new IdentityFailure(404, "RESOURCE_NOT_FOUND");
     return rows.get(0);
   }
@@ -388,10 +388,10 @@ public class CourierCertificationV2Service {
   }
 
   private void lockActor(long actor) {
-    mapper.lockActorValueAppUsers(actor);
+    mapper.lockActor(actor);
   }
 
   private void event(long id, long actor, String kind, String type, String request) {
-    mapper.eventWriteCourierCertificationEvents(id, actor, kind, type, request, id);
+    mapper.insertCertificationEvent(id, actor, kind, type, request, id);
   }
 }

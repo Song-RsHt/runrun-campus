@@ -29,7 +29,7 @@ public class NotificationOutboxWorker {
 
   public List<Delivery> claim(int limit) {
     return transactions.execute(
-        status -> mapper.claimRowsClaimNotificationOutbox(Math.max(1, Math.min(limit, 100))));
+        status -> mapper.claimOutboxDeliveries(Math.max(1, Math.min(limit, 100))));
   }
 
   public void complete(long id, boolean success, String error) {

@@ -36,7 +36,7 @@ public class IdentityStartupGuard
     if (Boolean.TRUE.equals(legacy))
       throw new IllegalStateException(
           "Legacy public objects detected; an isolated v2 database is required");
-    mapper.runValueAppUsers();
-    mapper.runValueIdentityTickets();
+    mapper.countUsersWithControlledIdentityFlag();
+    mapper.countIdentityTickets();
   }
 }

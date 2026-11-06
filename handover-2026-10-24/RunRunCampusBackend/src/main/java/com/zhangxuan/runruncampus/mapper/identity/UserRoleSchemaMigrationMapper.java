@@ -10,11 +10,14 @@ import org.springframework.stereotype.Repository;
 public class UserRoleSchemaMigrationMapper {
 
   public static final String ADD_CONSTRAINT =
-      "ALTER TABLE app_users ADD CONSTRAINT app_users_role_check "
-          + "CHECK (role IN ('CUSTOMER', 'COURIER', 'ADMIN'))";
+      """
+ALTER TABLE app_users ADD CONSTRAINT app_users_role_check CHECK (role IN ('CUSTOMER', 'COURIER', 'ADMIN'))
+""";
 
   public static final String DROP_CONSTRAINT =
-      "ALTER TABLE app_users DROP CONSTRAINT IF EXISTS app_users_role_check";
+      """
+      ALTER TABLE app_users DROP CONSTRAINT IF EXISTS app_users_role_check
+      """;
 
   public static final String CONSTRAINT_QUERY =
       """

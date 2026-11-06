@@ -68,12 +68,18 @@ public class AdminCommandCenterMapper {
     return jdbc.queryForObject(
         ORDER_CTE
             + """
-select count(*) filter (where status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')),
-       count(*) filter (where status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT') and stage_start <= ?),
-       count(*) filter (where status not in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')),
-       count(*) filter (where status not in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT') and stage_start <= ?)
-from queue_orders
-""",
+              \sselect count(*) filter (
+                  where status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')),
+                  count(*) filter (
+                  where status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')
+                      and stage_start <= ?),
+                  count(*) filter (
+                  where status not in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')),
+                  count(*) filter (
+                  where status not in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')
+                      and stage_start <= ?)
+              from queue_orders
+              """,
         (rs, row) -> new long[] {rs.getLong(1), rs.getLong(2), rs.getLong(3), rs.getLong(4)},
         waitCutoff,
         deliveryCutoff);
@@ -85,16 +91,31 @@ from queue_orders
         switch (queue) {
           case WAITING -> "status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')";
           case LATE_WAITING ->
-              "status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT') and stage_start <= ?";
+              """
+              status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')
+                  and stage_start <= ?
+              """;
           case ACTIVE -> "status not in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')";
           case LATE_DELIVERY ->
-              "status not in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT') and stage_start <= ?";
+              """
+              status not in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')
+                  and stage_start <= ?
+              """;
         };
     String sql =
         ORDER_CTE
-            + "select * from queue_orders where "
+            + """
+              \sselect *
+              from queue_orders
+              where
+              """
             + condition
-            + " order by stage_start asc, id asc limit ? offset ?";
+            + """
+              \sorder by stage_start asc,
+                  id asc
+              limit ?
+              offset ?
+              """;
     Object[] args =
         switch (queue) {
           case LATE_WAITING -> new Object[] {waitCutoff, limit, offset};
@@ -119,23 +140,33 @@ from queue_orders
     return jdbc.queryForObject(
         COURIER_CTE
             + """
-              select count(*), count(*) filter (where active_orders = 0) from online_couriers
+              \sselect count(*),
+                  count(*) filter (
+                  where active_orders = 0)
+              from online_couriers
               """,
         (rs, row) -> new long[] {rs.getLong(1), rs.getLong(2)});
   }
 
-  public List<CourierItem> pageOnlineCouriers(int PAGE_SIZE, int count) {
+  public List<CourierItem> pageOnlineCouriers(int limit, int offset) {
     return jdbc.query(
         COURIER_CTE
-            + "select * from online_couriers order by active_orders asc,"
-            + " courier_availability_updated_at asc nulls last, id asc limit ? offset ?",
+            + """
+              \sselect *
+              from online_couriers
+              order by active_orders asc,
+                  courier_availability_updated_at asc nulls last,
+                  id asc
+              limit ?
+              offset ?
+              """,
         (rs, row) ->
             new CourierItem(
                 rs.getLong("id"),
                 rs.getString("display_name"),
                 rs.getLong("active_orders"),
                 rs.getTimestamp("courier_availability_updated_at").toInstant()),
-        PAGE_SIZE,
-        count);
+        limit,
+        offset);
   }
 }

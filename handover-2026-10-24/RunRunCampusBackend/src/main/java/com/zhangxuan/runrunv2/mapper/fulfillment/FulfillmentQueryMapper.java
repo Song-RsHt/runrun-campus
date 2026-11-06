@@ -36,10 +36,22 @@ public class FulfillmentQueryMapper {
     }
     parameters.add(limit);
     return jdbc.query(
-        "SELECT t.*,o.order_no,o.status AS order_status,o.version AS order_version FROM"
-            + " runrun_v2.fulfillment_tasks t JOIN runrun_v2.v2_orders o ON o.id=t.order_id WHERE "
+        """
+        SELECT t.*,
+            o.order_no,
+            o.status AS order_status,
+            o.version AS order_version
+        FROM runrun_v2.fulfillment_tasks t
+        JOIN runrun_v2.v2_orders o
+        ON o.id = t.order_id
+        WHERE
+        """
             + where
-            + " ORDER BY t.created_at DESC,t.id DESC LIMIT ?",
+            + """
+              \sORDER BY t.created_at DESC,
+                  t.id DESC
+              LIMIT ?
+              """,
         (row, index) ->
             new TaskRow(
                 row.getString("id"),
@@ -58,8 +70,15 @@ public class FulfillmentQueryMapper {
       OffsetDateTime afterCreatedAt, Long afterId, int limit) {
     var parameters = new ArrayList<Object>();
     String where =
-        "o.status='PENDING_ASSIGNMENT' AND EXISTS(SELECT 1 FROM runrun_v2.payment_orders p"
-            + " WHERE p.order_id=o.id AND p.purpose='ORIGINAL' AND p.status='PAID')";
+        """
+        o.status = 'PENDING_ASSIGNMENT'
+            AND EXISTS (
+            SELECT 1
+            FROM runrun_v2.payment_orders p
+            WHERE p.order_id = o.id
+                AND p.purpose = 'ORIGINAL'
+                AND p.status = 'PAID')
+        """;
     if (afterCreatedAt != null) {
       where += " AND (o.created_at,o.id)<(?,?)";
       parameters.add(afterCreatedAt);
@@ -67,9 +86,17 @@ public class FulfillmentQueryMapper {
     }
     parameters.add(limit);
     return jdbc.queryForList(
-        "SELECT o.* FROM runrun_v2.v2_orders o WHERE "
+        """
+        SELECT o.*
+        FROM runrun_v2.v2_orders o
+        WHERE
+        """
             + where
-            + " ORDER BY o.created_at DESC,o.id DESC LIMIT ?",
+            + """
+              \sORDER BY o.created_at DESC,
+                  o.id DESC
+              LIMIT ?
+              """,
         parameters.toArray());
   }
 }

@@ -68,7 +68,7 @@ public class PaymentService implements OriginalPaymentWriter {
         || amountCents != order.originalFeeCents()
         || !deadline.toInstant().equals(order.pendingPaymentDeadline().toInstant()))
       throw conflict();
-    String id = mapper.createValuePaymentOrders(Long.valueOf(orderId), amountCents, deadline);
+    String id = mapper.insertOriginalPayment(Long.valueOf(orderId), amountCents, deadline);
     return new OrderModels.OriginalPayment(
         id, orderId, "ORIGINAL", amountCents, "UNPAID", deadline, 0);
   }
@@ -94,9 +94,9 @@ public class PaymentService implements OriginalPaymentWriter {
     if (p.status().equals("PAID")) throw conflict();
     // UNKNOWN includes transport timeout: only reconciliation can clear the old attempt.
     if (!active(p.id()).isEmpty()) throw new IdentityFailure(409, "PAYMENT_RESULT_PENDING");
-    int number = mapper.startValuePaymentAttempts(Long.valueOf(p.id()));
+    int number = mapper.findNextAttemptNumber(Long.valueOf(p.id()));
     String id =
-        mapper.startValuePaymentAttempts2(
+        mapper.insertPaymentAttempt(
             Long.valueOf(p.id()), number, "mock-payment-" + UUID.randomUUID());
     channel.submit("PAYMENT", id);
     paymentStatus(p.id(), "PROCESSING");
@@ -211,7 +211,7 @@ public class PaymentService implements OriginalPaymentWriter {
       throw conflict();
     closeOrder(id);
     // Cancel all financial obligations, retaining their evidence and every receipt.
-    mapper.cancelWritePaymentAdjustments(now(), Long.valueOf(id));
+    mapper.cancelPendingAdjustments(now(), Long.valueOf(id));
     for (Payment p : paymentsForOrder(id)) {
       payment(p.id(), true);
       for (Attempt a : attempts(p.id()))
@@ -251,7 +251,7 @@ public class PaymentService implements OriginalPaymentWriter {
     Result actual = channel.query("REFUND", id);
     if (!r.status().equals("SUCCEEDED") && actual == Result.FAILED) {
       channel.retryRefund(id);
-      mapper.retryRefundWriteRefundOrders(Long.valueOf(id));
+      mapper.markRefundProcessing(Long.valueOf(id));
       event(
           r.orderId(), actor.id(), "REFUND_RETRIED", key, Map.of("refundId", id, "reason", reason));
     } else applyRefund(r, actual, "query:refund:" + id + ":" + channel.revision("REFUND", id));
@@ -285,11 +285,10 @@ public class PaymentService implements OriginalPaymentWriter {
         requests.replay(actor.id(), "payments:adjustment", key, content, AdjustmentFunds.class);
     if (replay != null) return replay;
     version(order.version(), expectedOrderVersion);
-    if (mapper.approvedAdjustmentValuePaymentAdjustments(Long.valueOf(adjustmentId)) > 0)
-      throw conflict();
+    if (mapper.countAdjustmentById(Long.valueOf(adjustmentId)) > 0) throw conflict();
     if (!Set.of("PENDING_ASSIGNMENT", "ACCEPTED", "PICKED_UP", "DELIVERED_PENDING_CONFIRMATION")
         .contains(order.status())) throw conflict();
-    if (mapper.approvedAdjustmentValuePaymentAdjustments2(Long.valueOf(orderId)) > 0)
+    if (mapper.countPendingAdjustments(Long.valueOf(orderId)) > 0)
       throw new IdentityFailure(409, "ADJUSTMENT_ALREADY_OPEN");
     long effective;
     try {
@@ -304,7 +303,7 @@ public class PaymentService implements OriginalPaymentWriter {
             .findFirst()
             .orElseThrow(PaymentService::conflict);
     if (!original.status().equals("PAID")) throw conflict();
-    mapper.approvedAdjustmentWritePaymentAdjustments(
+    mapper.insertApprovedAdjustment(
         Long.valueOf(adjustmentId),
         Long.valueOf(orderId),
         deltaCents,
@@ -312,11 +311,11 @@ public class PaymentService implements OriginalPaymentWriter {
         Long.valueOf(actor.id()),
         reason,
         now());
-    mapper.approvedAdjustmentWriteV(effective, now(), Long.valueOf(orderId));
+    mapper.updateEffectiveFeeAndClearConfirmation(effective, now(), Long.valueOf(orderId));
     Payment supplement = null;
     if (deltaCents > 0) {
       String id =
-          mapper.approvedAdjustmentValuePaymentOrders(
+          mapper.insertSupplementPayment(
               Long.valueOf(orderId), Long.valueOf(adjustmentId), deltaCents, now().plusMinutes(15));
       supplement = payment(id, false);
     } else {
@@ -363,14 +362,14 @@ public class PaymentService implements OriginalPaymentWriter {
 
   @Transactional
   public int closeExpired() {
-    var ids = mapper.closeExpiredRowsV(now());
+    var ids = mapper.findExpiredUnpaidOrderIds(now());
     int closed = 0;
     for (String id : ids) {
       var order = orders.read(id, true);
       if (order.status().equals("PENDING_PAYMENT")
           && !now().isBefore(order.pendingPaymentDeadline())) {
         closeOrder(id);
-        mapper.closeExpiredWritePaymentOrders(now(), Long.valueOf(id));
+        mapper.closeUnpaidOriginalPayments(now(), Long.valueOf(id));
         event(id, null, "PAYMENT_EXPIRED", id, Map.of());
         closed++;
       }
@@ -384,8 +383,7 @@ public class PaymentService implements OriginalPaymentWriter {
     Payment p = payment(stale.id(), false);
     String status = result.name();
     if (a.status().equals("FAILED") && result != Result.SUCCESS) return;
-    if (!a.status().equals(status))
-      mapper.applyPaymentWritePaymentAttempts(status, now(), Long.valueOf(a.id()));
+    if (!a.status().equals(status)) mapper.updateAttemptResult(status, now(), Long.valueOf(a.id()));
     if (result != Result.SUCCESS) {
       if (!Set.of("PAID", "CLOSED").contains(p.status()))
         paymentStatus(p.id(), result == Result.PROCESSING ? "PROCESSING" : status);
@@ -415,10 +413,10 @@ public class PaymentService implements OriginalPaymentWriter {
     }
     if (p.purpose().equals("ORIGINAL") && !order.status().equals("PENDING_PAYMENT"))
       throw conflict();
-    mapper.applyPaymentWritePaymentOrders(now(), Long.valueOf(a.id()), now(), Long.valueOf(p.id()));
+    mapper.markPaymentPaid(now(), Long.valueOf(a.id()), now(), Long.valueOf(p.id()));
     if (p.purpose().equals("ORIGINAL")) {
       // Payment receipt and task-pool admission are committed atomically (payment rules §2).
-      mapper.applyPaymentWriteV(now(), Long.valueOf(p.orderId()));
+      mapper.markOrderPendingAssignment(now(), Long.valueOf(p.orderId()));
     } else resolveAdjustment(p.adjustmentId());
     financial(
         p.orderId(),
@@ -436,11 +434,11 @@ public class PaymentService implements OriginalPaymentWriter {
     // Failed refunds retain their balance reservation: a late receipt must never
     // over-refund after another request reused that money. Retry/query the SAME row.
     if (!r.status().equals(status))
-      mapper.applyRefundWriteRefundOrders(
+      mapper.updateRefundResult(
           status, result == Result.SUCCESS ? now() : null, Long.valueOf(r.id()));
     if (result == Result.SUCCESS) {
       if (r.adjustmentId() != null
-          && mapper.applyRefundValueRefundOrders(Long.valueOf(r.adjustmentId())) == 0)
+          && mapper.countUnfinishedAdjustmentRefunds(Long.valueOf(r.adjustmentId())) == 0)
         resolveAdjustment(r.adjustmentId());
       refundFinancial(r);
       event(r.orderId(), null, "REFUND_SUCCEEDED", r.id(), Map.of("refundId", r.id()));
@@ -456,13 +454,13 @@ public class PaymentService implements OriginalPaymentWriter {
       String purpose,
       String businessKey,
       String reason) {
-    var existing = mapper.createRefundRowsRefundOrders(businessKey);
+    var existing = mapper.findRefundIdsByBusinessKey(businessKey);
     if (!existing.isEmpty()) return refund(existing.get(0));
     if (cents <= 0 || cents > available(source, p.amountCents()))
       throw new IdentityFailure(409, "AMOUNT_EXCEEDS_AVAILABLE");
     if (!attempt(source).status().equals("SUCCESS")) throw conflict();
     String id =
-        mapper.createRefundValueRefundOrders(
+        mapper.insertRefund(
             Long.valueOf(p.orderId()),
             Long.valueOf(p.id()),
             Long.valueOf(source),
@@ -481,26 +479,26 @@ public class PaymentService implements OriginalPaymentWriter {
   private void resolveAdjustment(String id) {
     // M05 consumes this event before starting its full ten-minute window; M03
     // cannot decide whether another review/after-sales case still blocks completion.
-    if (mapper.resolveAdjustmentWritePaymentAdjustments(now(), Long.valueOf(id)) > 0) {
-      String orderId = mapper.resolveAdjustmentValuePaymentAdjustments(Long.valueOf(id));
+    if (mapper.completePendingAdjustment(now(), Long.valueOf(id)) > 0) {
+      String orderId = mapper.findAdjustmentOrderId(Long.valueOf(id));
       event(orderId, null, "ADJUSTMENT_FUNDS_RESOLVED", id, Map.of("adjustmentId", id));
     }
   }
 
   private boolean adjustmentOpen(String id) {
-    return mapper.adjustmentOpenValuePaymentAdjustments(Long.valueOf(id));
+    return mapper.isSupplementPending(Long.valueOf(id));
   }
 
   private long available(String source, long received) {
-    return received - mapper.availableValueRefundOrders(Long.valueOf(source));
+    return received - mapper.sumReservedRefundCents(Long.valueOf(source));
   }
 
   private String credited(String payment) {
-    return mapper.creditedValuePaymentOrders(Long.valueOf(payment));
+    return mapper.findCreditedAttemptId(Long.valueOf(payment));
   }
 
   private void closeOrder(String id) {
-    mapper.closeOrderWriteV(now(), now(), Long.valueOf(id));
+    mapper.cancelOrderAndClearConfirmation(now(), now(), Long.valueOf(id));
   }
 
   private boolean originalExpired(Payment p) {
@@ -518,38 +516,33 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private void lockNotificationRecipient(String orderId) {
-    mapper.lockNotificationRecipientRowsAppUsers(
-        com.zhangxuan.runrunv2.model.ResourceIds.parse(orderId));
+    mapper.lockOrderNotificationRecipient(com.zhangxuan.runrunv2.model.ResourceIds.parse(orderId));
   }
 
   private void paymentStatus(String id, String status) {
-    mapper.paymentStatusWritePaymentOrders(status, now(), Long.valueOf(id), status);
+    mapper.updatePaymentStatusIfDifferent(status, now(), Long.valueOf(id), status);
   }
 
   private Payment payment(String id, boolean lock) {
-    var rows =
-        mapper.paymentRowsPaymentOrders(lock, com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows = mapper.findPayment(lock, com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
 
   private Attempt attempt(String id) {
-    var rows =
-        mapper.attemptRowsPaymentAttempts(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows = mapper.findAttempt(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
 
   private Refund refund(String id) {
-    var rows = mapper.refundRowsRefundOrders(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows = mapper.findRefund(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
 
   private List<Attempt> attempts(String id) {
-    return mapper.attemptsRowsPaymentAttempts(Long.valueOf(id)).stream()
-        .map(this::attempt)
-        .toList();
+    return mapper.findAttemptIds(Long.valueOf(id)).stream().map(this::attempt).toList();
   }
 
   private List<Attempt> active(String id) {
@@ -559,15 +552,13 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private List<Payment> paymentsForOrder(String id) {
-    return mapper.paymentsForOrderRowsPaymentOrders(Long.valueOf(id)).stream()
+    return mapper.findPaymentIdsByOrder(Long.valueOf(id)).stream()
         .map(p -> payment(p, false))
         .toList();
   }
 
   private List<Refund> refundsForOrder(String id) {
-    return mapper.refundsForOrderRowsRefundOrders(Long.valueOf(id)).stream()
-        .map(this::refund)
-        .toList();
+    return mapper.findRefundIdsByOrder(Long.valueOf(id)).stream().map(this::refund).toList();
   }
 
   private Summary summary(Payment p) {
@@ -618,14 +609,14 @@ public class PaymentService implements OriginalPaymentWriter {
 
   private boolean seen(String type, String id, Result result, String eventId) {
     if (knownEvent(type, id, result, eventId)) return true;
-    mapper.seenWritePaymentResultEvents(eventId, type, Long.valueOf(id), result.name());
+    mapper.insertResultEvent(eventId, type, Long.valueOf(id), result.name());
     return false;
   }
 
   private boolean knownEvent(String type, String id, Result result, String eventId) {
     // Event IDs are global, including across orders and administrator accounts.
     mapper.lockResultEvent("payment-event:" + eventId);
-    var rows = mapper.knownEventRowsPaymentResultEvents(eventId);
+    var rows = mapper.findResultEvent(eventId);
     if (!rows.isEmpty()) {
       var row = rows.get(0);
       if (!type.equals(row.get("resource_type"))
@@ -638,18 +629,18 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private void refundFinancial(Refund r) {
-    String source = mapper.refundFinancialValueRefundOrders(Long.valueOf(r.id()));
+    String source = mapper.findRefundSourceAttemptId(Long.valueOf(r.id()));
     long received = payment(r.paymentOrderId(), false).amountCents();
-    long total = mapper.refundFinancialValueRefundOrders2(Long.valueOf(source));
+    long total = mapper.sumSucceededRefundCents(Long.valueOf(source));
     long originalPlatform = received / 100 * 30 + (received % 100) * 30 / 100;
     long target =
         java.math.BigInteger.valueOf(total)
             .multiply(java.math.BigInteger.valueOf(originalPlatform))
             .divide(java.math.BigInteger.valueOf(received))
             .longValueExact();
-    long previous = mapper.refundFinancialValuePaymentFinancialEvents(source);
+    long previous = mapper.sumRecordedPlatformRefundCents(source);
     long platform = target - previous;
-    mapper.refundFinancialWritePaymentFinancialEvents(
+    mapper.insertRefundFinancialEvent(
         Long.valueOf(r.orderId()),
         "refund:" + r.id(),
         r.purpose() + "_REFUND",
@@ -662,7 +653,7 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private void event(String order, String actor, String type, String key, Object payload) {
-    mapper.eventWriteV(
+    mapper.insertOrderEventIfAbsent(
         Long.valueOf(order),
         actor == null ? null : Long.valueOf(actor),
         type,
@@ -672,16 +663,16 @@ public class PaymentService implements OriginalPaymentWriter {
 
   private void financial(String order, String key, String kind, long cents, Object payload) {
     long platform = cents / 100 * 30 + (cents % 100) * 30 / 100;
-    mapper.financialWritePaymentFinancialEvents(
+    mapper.insertFinancialEventIfAbsent(
         Long.valueOf(order), key, kind, cents, platform, cents - platform, json.write(payload));
   }
 
   private void notifyUser(String order, String key, String type) {
-    mapper.notifyUserWriteNotificationOutbox(
+    mapper.insertOrderNotificationIfAbsent(
         key, json.write(Map.of("orderId", order, "kind", type)), Long.valueOf(order));
   }
 
   private void audit(String actor, String action, String id, String key, String reason) {
-    mapper.auditWritePaymentAdminAudit(Long.valueOf(actor), action, Long.valueOf(id), key, reason);
+    mapper.insertAdminAudit(Long.valueOf(actor), action, Long.valueOf(id), key, reason);
   }
 }

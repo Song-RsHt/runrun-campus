@@ -71,8 +71,8 @@ public class IdentityService {
     if (phone == null || !phone.matches("1[3-9][0-9]{9}"))
       throw new IdentityFailure(401, "WECHAT_AUTH_FAILED");
     lock("phone:" + phone);
-    lock("wechat:" + appId + ":" + ticket.get("openid_hash"));
-    if (mapper.countWechatIdentity(appId, ticket.get("openid_hash")) > 0)
+    lock("wechat:" + appId + ":" + (String) ticket.get("openid_hash"));
+    if (mapper.countWechatIdentity(appId, (String) ticket.get("openid_hash")) > 0)
       throw IdentityFailure.conflict();
     List<IdentityUser> existing = mapper.findPhoneUsersForUpdate(phone);
     if (!existing.isEmpty()) throw IdentityFailure.conflict();
@@ -82,7 +82,10 @@ public class IdentityService {
     active(user);
     if (mapper.countUserWechatBindings(appId, user.id()) > 0) throw IdentityFailure.conflict();
     mapper.insertWechatBinding(
-        user.id(), appId, ticket.get("openid_hash"), ticket.get("openid_ciphertext"));
+        user.id(),
+        appId,
+        (String) ticket.get("openid_hash"),
+        (String) ticket.get("openid_ciphertext"));
     consume(loginTicket);
     mapper.insertWechatBoundEvent(user.id(), user.id());
     return issue(user);

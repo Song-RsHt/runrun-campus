@@ -18,24 +18,48 @@ public class CourierEvidenceGovernanceMapper {
     this.jdbc = jdbc;
   }
 
-  public Long holdValueV(Long orderId) {
+  public Long countOrderById(Long orderId) {
     return jdbc.queryForObject(
-        "SELECT count(*) FROM runrun_v2.v2_orders WHERE id=?", Long.class, orderId);
+        """
+        SELECT count(*)
+        FROM runrun_v2.v2_orders
+        WHERE id = ?
+        """,
+        Long.class,
+        orderId);
   }
 
-  public Long holdValueCourierCertifications(Long certificationId) {
+  public Long countCertificationById(Long certificationId) {
     return jdbc.queryForObject(
-        "SELECT count(*) FROM runrun_v2.courier_certifications WHERE id=?",
+        """
+        SELECT count(*)
+        FROM runrun_v2.courier_certifications
+        WHERE id = ?
+        """,
         Long.class,
         certificationId);
   }
 
-  public Long holdValueEvidenceHolds(
+  public Long insertEvidenceHold(
       Long orderId, Long certificationId, String reason, long ownerId, OffsetDateTime reviewDueAt) {
     return jdbc.queryForObject(
-        "INSERT INTO"
-            + " runrun_v2.evidence_holds(order_id,certification_id,reason,owner_id,review_due_at)"
-            + " VALUES(?,?,?,?,?) RETURNING id",
+        """
+        INSERT INTO runrun_v2.evidence_holds (
+            order_id,
+            certification_id,
+            reason,
+            owner_id,
+            review_due_at
+        )
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )
+        RETURNING id
+        """,
         Long.class,
         orderId,
         certificationId,
@@ -44,151 +68,280 @@ public class CourierEvidenceGovernanceMapper {
         reviewDueAt);
   }
 
-  public int holdWriteAdminAuditLogs(
-      long owner,
-      long id,
+  public int insertHoldCreatedAudit(
+      long administratorId,
+      long holdId,
       String requestId,
-      String value,
-      org.springframework.jdbc.core.SqlParameterValue value2,
-      org.springframework.jdbc.core.SqlParameterValue value3) {
+      String reason,
+      org.springframework.jdbc.core.SqlParameterValue orderIdParameter,
+      org.springframework.jdbc.core.SqlParameterValue certificationIdParameter) {
     return jdbc.update(
-        "INSERT INTO"
-            + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
-            + " VALUES(?,'EVIDENCE_HOLD_CREATED','EVIDENCE_HOLD',?,?,?,jsonb_build_object('orderId',?,'certificationId',?))",
-        owner,
-        id,
+        """
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            ?,
+            'EVIDENCE_HOLD_CREATED',
+            'EVIDENCE_HOLD',
+            ?,
+            ?,
+            ?,
+            jsonb_build_object('orderId', ?, 'certificationId', ?)
+        )
+        """,
+        administratorId,
+        holdId,
         requestId,
-        value,
-        value2,
-        value3);
+        reason,
+        orderIdParameter,
+        certificationIdParameter);
   }
 
-  public List<Map<String, Object>> releaseRowsEvidenceHolds(long holdId) {
+  public List<Map<String, Object>> lockEvidenceHold(long holdId) {
     return jdbc.queryForList(
-        "SELECT order_id,certification_id,released_at FROM runrun_v2.evidence_holds WHERE id=? FOR"
-            + " UPDATE",
+        """
+        SELECT order_id,
+            certification_id,
+            released_at
+        FROM runrun_v2.evidence_holds
+        WHERE id = ?
+        FOR UPDATE
+        """,
         holdId);
   }
 
-  public int releaseWriteEvidenceHolds(long holdId) {
-    return jdbc.update("UPDATE runrun_v2.evidence_holds SET released_at=now() WHERE id=?", holdId);
+  public int releaseEvidenceHold(long holdId) {
+    return jdbc.update(
+        """
+        UPDATE runrun_v2.evidence_holds
+        SET released_at = now()
+        WHERE id = ?
+        """,
+        holdId);
   }
 
-  public int releaseWriteAdminAuditLogs(
+  public int insertHoldReleasedAudit(
       long administratorId, long targetId, String requestId, String reason) {
     return jdbc.update(
-        "INSERT INTO"
-            + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
-            + " VALUES(?,'EVIDENCE_HOLD_RELEASED','EVIDENCE_HOLD',?,?,?,'{}'::jsonb)",
+        """
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            ?,
+            'EVIDENCE_HOLD_RELEASED',
+            'EVIDENCE_HOLD',
+            ?,
+            ?,
+            ?,
+            '{}'::jsonb
+        )
+        """,
         administratorId,
         targetId,
         requestId,
         reason);
   }
 
-  public Long requestCertificationDeletionValueEvidenceHolds(long certificationId) {
+  public Long countActiveCertificationHolds(long certificationId) {
     return jdbc.queryForObject(
-        "SELECT count(*) FROM runrun_v2.evidence_holds WHERE certification_id=? AND released_at IS"
-            + " NULL",
+        """
+        SELECT count(*)
+        FROM runrun_v2.evidence_holds
+        WHERE certification_id = ?
+            AND released_at IS NULL
+        """,
         Long.class,
         certificationId);
   }
 
-  public int requestCertificationDeletionWriteEvidenceDeletionAudits(
+  public int insertDeletionRequestIfAbsent(
       long certificationId,
       String resourceId,
       String storageKey,
-      OffsetDateTime timestamp,
-      long certificationId2,
-      String resourceId2) {
+      OffsetDateTime deleteAfter,
+      long existingCertificationId,
+      String existingResourceId) {
     return jdbc.update(
-        "INSERT INTO"
-            + " runrun_v2.evidence_deletion_audits(certification_id,resource_type,resource_id,resource_storage_key,delete_after,policy_snapshot,status)"
-            + " SELECT ?, 'STUDENT_CARD', ?, ?, ?, jsonb_build_object('retentionDays',30),"
-            + " 'REQUESTED' WHERE NOT EXISTS (SELECT 1 FROM runrun_v2.evidence_deletion_audits"
-            + " WHERE certification_id=? AND resource_id=? AND status IN"
-            + " ('REQUESTED','DELETING','SUCCEEDED'))",
+        """
+        INSERT INTO runrun_v2.evidence_deletion_audits (
+            certification_id,
+            resource_type,
+            resource_id,
+            resource_storage_key,
+            delete_after,
+            policy_snapshot,
+            status
+        )
+        SELECT ?,
+            'STUDENT_CARD',
+            ?,
+            ?,
+            ?,
+            jsonb_build_object (
+            'retentionDays',
+            30
+        ),
+            'REQUESTED'
+        WHERE NOT EXISTS (
+
+            SELECT 1
+            FROM runrun_v2.evidence_deletion_audits
+            WHERE certification_id = ?
+                AND resource_id = ?
+                AND status IN ('REQUESTED', 'DELETING', 'SUCCEEDED')
+        )
+        """,
         certificationId,
         resourceId,
         storageKey,
-        timestamp,
-        certificationId2,
-        resourceId2);
+        deleteAfter,
+        existingCertificationId,
+        existingResourceId);
   }
 
-  public List<Map<String, Object>> cleanupDueRowsEvidenceDeletionAudits() {
+  public List<Map<String, Object>> lockDueDeletions() {
     return jdbc.queryForList(
-        "SELECT id,certification_id,resource_id,resource_storage_key FROM"
-            + " runrun_v2.evidence_deletion_audits WHERE status IN ('REQUESTED','FAILED') AND"
-            + " delete_after<=now() ORDER BY id FOR UPDATE SKIP LOCKED");
+        """
+        SELECT id,
+            certification_id,
+            resource_id,
+            resource_storage_key
+        FROM runrun_v2.evidence_deletion_audits
+        WHERE status IN ('REQUESTED', 'FAILED')
+            AND delete_after <= now()
+        ORDER BY id
+        FOR UPDATE SKIP LOCKED
+        """);
   }
 
-  public List<Map<String, Object>> cleanupDueRowsCourierCertifications() {
+  public List<Map<String, Object>> findExpiredApprovedPhotos() {
     return jdbc.queryForList(
-        "SELECT c.id,c.approved_photo_resource_id,c.approved_photo_storage_key,c.approved_photo_at"
-            + " FROM runrun_v2.courier_certifications c WHERE c.approved_photo_resource_id IS NOT"
-            + " NULL AND c.approved_photo_at<=now()-interval '30 days' AND NOT EXISTS (SELECT 1"
-            + " FROM runrun_v2.evidence_deletion_audits d WHERE d.certification_id=c.id AND"
-            + " d.resource_id=c.approved_photo_resource_id AND d.status IN"
-            + " ('REQUESTED','DELETING','SUCCEEDED'))");
+        """
+        SELECT c.id,
+            c.approved_photo_resource_id,
+            c.approved_photo_storage_key,
+            c.approved_photo_at
+        FROM runrun_v2.courier_certifications c
+        WHERE c.approved_photo_resource_id IS NOT NULL
+            AND c.approved_photo_at <= now() - interval '30 days'
+            AND NOT EXISTS (
+            SELECT 1
+            FROM runrun_v2.evidence_deletion_audits d
+            WHERE d.certification_id = c.id
+                AND d.resource_id = c.approved_photo_resource_id
+                AND d.status IN ('REQUESTED', 'DELETING', 'SUCCEEDED'))
+        """);
   }
 
-  public Long deleteOneValueEvidenceHolds(long cert) {
+  public Long countActiveHoldsBeforeDeletion(long certificationId) {
     return jdbc.queryForObject(
-        "SELECT count(*) FROM runrun_v2.evidence_holds WHERE certification_id=? AND released_at IS"
-            + " NULL",
+        """
+        SELECT count(*)
+        FROM runrun_v2.evidence_holds
+        WHERE certification_id = ?
+            AND released_at IS NULL
+        """,
         Long.class,
-        cert);
+        certificationId);
   }
 
-  public int deleteOneWriteEvidenceDeletionAudits(long id) {
+  public int markDeletionInProgress(long deletionAuditId) {
     return jdbc.update(
-        "UPDATE runrun_v2.evidence_deletion_audits SET status='DELETING',attempt_no=attempt_no+1"
-            + " WHERE id=?",
-        id);
+        """
+        UPDATE runrun_v2.evidence_deletion_audits
+        SET status = 'DELETING',
+            attempt_no = attempt_no + 1
+        WHERE id = ?
+        """,
+        deletionAuditId);
   }
 
-  public int deleteOneWriteCourierCertifications(long cert, String resource) {
+  public int clearSubmittedPhoto(long certificationId, String resourceId) {
     return jdbc.update(
-        "UPDATE runrun_v2.courier_certifications SET"
-            + " submitted_photo_resource_id=NULL,submitted_photo_storage_key=NULL WHERE id=? AND"
-            + " submitted_photo_resource_id=?",
-        cert,
-        resource);
+        """
+        UPDATE runrun_v2.courier_certifications
+        SET submitted_photo_resource_id = NULL,
+            submitted_photo_storage_key = NULL
+        WHERE id = ?
+            AND submitted_photo_resource_id = ?
+        """,
+        certificationId,
+        resourceId);
   }
 
-  public int deleteOneWriteCourierCertifications2(long cert, String resource) {
+  public int clearApprovedPhoto(long certificationId, String resourceId) {
     return jdbc.update(
-        "UPDATE runrun_v2.courier_certifications SET"
-            + " approved_photo_resource_id=NULL,approved_photo_storage_key=NULL,approved_photo_at=NULL"
-            + " WHERE id=? AND approved_photo_resource_id=?",
-        cert,
-        resource);
+        """
+        UPDATE runrun_v2.courier_certifications
+        SET approved_photo_resource_id = NULL,
+            approved_photo_storage_key = NULL,
+            approved_photo_at = NULL
+        WHERE id = ?
+            AND approved_photo_resource_id = ?
+        """,
+        certificationId,
+        resourceId);
   }
 
-  public int deleteOneWriteEvidenceDeletionAudits2(long id) {
+  public int markDeletionSucceeded(long deletionAuditId) {
     return jdbc.update(
-        "UPDATE runrun_v2.evidence_deletion_audits SET"
-            + " status='SUCCEEDED',finished_at=now(),resource_storage_key=NULL WHERE id=?",
-        id);
+        """
+        UPDATE runrun_v2.evidence_deletion_audits
+        SET status = 'SUCCEEDED',
+            finished_at = now(),
+            resource_storage_key = NULL
+        WHERE id = ?
+        """,
+        deletionAuditId);
   }
 
-  public int deleteOneWriteEvidenceDeletionAudits3(String simpleName, long id) {
+  public int markDeletionFailed(String errorCode, long deletionAuditId) {
     return jdbc.update(
-        "UPDATE runrun_v2.evidence_deletion_audits SET"
-            + " status='FAILED',error_code=?,finished_at=now() WHERE id=?",
-        simpleName,
-        id);
+        """
+        UPDATE runrun_v2.evidence_deletion_audits
+        SET status = 'FAILED',
+            error_code = ?,
+            finished_at = now()
+        WHERE id = ?
+        """,
+        errorCode,
+        deletionAuditId);
   }
 
-  public Long lockAggregateValueV(Long orderId) {
+  public Long lockOrder(Long orderId) {
     return jdbc.queryForObject(
-        "SELECT id FROM runrun_v2.v2_orders WHERE id=? FOR UPDATE", Long.class, orderId);
+        """
+        SELECT id
+        FROM runrun_v2.v2_orders
+        WHERE id = ?
+        FOR UPDATE
+        """,
+        Long.class,
+        orderId);
   }
 
-  public Long lockAggregateValueCourierCertifications(Long certificationId) {
+  public Long lockCertification(Long certificationId) {
     return jdbc.queryForObject(
-        "SELECT id FROM runrun_v2.courier_certifications WHERE id=? FOR UPDATE",
+        """
+        SELECT id
+        FROM runrun_v2.courier_certifications
+        WHERE id = ?
+        FOR UPDATE
+        """,
         Long.class,
         certificationId);
   }

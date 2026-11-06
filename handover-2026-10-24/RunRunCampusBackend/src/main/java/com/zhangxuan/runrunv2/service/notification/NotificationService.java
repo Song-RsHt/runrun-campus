@@ -22,18 +22,18 @@ public class NotificationService {
   @Transactional(readOnly = true)
   public List<Map<String, Object>> list(String token) {
     long user = Long.parseLong(identity.authenticate(token).id());
-    return mapper.listRowsUserNotifications(user);
+    return mapper.findUserNotifications(user);
   }
 
   @Transactional
   public void markRead(String token, long id) {
     long user = Long.parseLong(identity.authenticate(token).id());
-    mapper.markReadWriteUserNotifications(id, user);
+    mapper.markNotificationRead(id, user);
   }
 
   @Transactional
   public List<Map<String, Object>> claim(int limit) {
-    return mapper.claimRowsClaimNotificationOutbox(Math.max(1, Math.min(limit, 100)));
+    return mapper.claimOutboxDeliveries(Math.max(1, Math.min(limit, 100)));
   }
 
   @Transactional

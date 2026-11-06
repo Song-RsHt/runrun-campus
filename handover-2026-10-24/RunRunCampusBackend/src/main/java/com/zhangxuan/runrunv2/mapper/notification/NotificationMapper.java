@@ -17,27 +17,53 @@ public class NotificationMapper {
     this.jdbc = jdbc;
   }
 
-  public List<Map<String, Object>> listRowsUserNotifications(long user) {
+  public List<Map<String, Object>> findUserNotifications(long userId) {
     return jdbc.queryForList(
-        "SELECT id,order_id,type,content,created_at,read_at FROM runrun_v2.user_notifications WHERE"
-            + " user_id=? ORDER BY created_at DESC,id DESC LIMIT 100",
-        user);
+        """
+        SELECT id,
+            order_id,
+            type,
+            content,
+            created_at,
+            read_at
+        FROM runrun_v2.user_notifications
+        WHERE user_id = ?
+        ORDER BY created_at DESC,
+            id DESC
+        LIMIT 100
+        """,
+        userId);
   }
 
-  public int markReadWriteUserNotifications(long id, long user) {
+  public int markNotificationRead(long notificationId, long userId) {
     return jdbc.update(
-        "UPDATE runrun_v2.user_notifications SET read_at=COALESCE(read_at,now()) WHERE id=? AND"
-            + " user_id=?",
-        id,
-        user);
+        """
+        UPDATE runrun_v2.user_notifications
+        SET read_at = COALESCE(read_at, now())
+        WHERE id = ?
+            AND user_id = ?
+        """,
+        notificationId,
+        userId);
   }
 
-  public List<Map<String, Object>> claimRowsClaimNotificationOutbox(int max) {
-    return jdbc.queryForList("SELECT * FROM runrun_v2.claim_notification_outbox(?)", max);
+  public List<Map<String, Object>> claimOutboxDeliveries(int limit) {
+    return jdbc.queryForList(
+        """
+        SELECT *
+        FROM runrun_v2.claim_notification_outbox(?)
+        """,
+        limit);
   }
 
   public Object completeDelivery(long id, boolean success, String error) {
     return jdbc.queryForObject(
-        "SELECT runrun_v2.complete_notification_outbox(?,?,?)", Object.class, id, success, error);
+        """
+        SELECT runrun_v2.complete_notification_outbox(?, ?, ?)
+        """,
+        Object.class,
+        id,
+        success,
+        error);
   }
 }

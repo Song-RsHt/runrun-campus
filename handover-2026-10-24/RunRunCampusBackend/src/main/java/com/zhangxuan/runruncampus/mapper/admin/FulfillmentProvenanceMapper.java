@@ -31,7 +31,7 @@ public class FulfillmentProvenanceMapper {
       Long platformRevenueCents,
       Long courierSettlementCents,
       String completionEvidenceSha256,
-      Object financialEvidenceSha256,
+      String financialEvidenceSha256,
       Long recordedBy) {
     return jdbc.queryForObject(
         """
@@ -54,24 +54,25 @@ public class FulfillmentProvenanceMapper {
         recordedBy);
   }
 
-  public int verifyByIndependentAdministrator(Long id2, long id, Long id3) {
+  public int verifyByIndependentAdministrator(
+      Long verifierId, long provenanceId, Long excludedRecorderId) {
     return jdbc.update(
         """
         update fulfillment_provenance set verified_by = ?, verified_at = now()
         where id = ? and verified_by is null and recorded_by <> ?
         """,
-        id2,
-        id,
-        id3);
+        verifierId,
+        provenanceId,
+        excludedRecorderId);
   }
 
-  public List<Entry> pageProvenance(int count) {
+  public List<Entry> pageProvenance(int offset) {
     return jdbc.query(
         """
         select * from fulfillment_provenance order by id desc limit 100 offset ?
         """,
         (rs, row) -> map(rs),
-        count);
+        offset);
   }
 
   public Summary summarizeVerifiedProvenance() {
@@ -98,7 +99,13 @@ from fulfillment_provenance
 
   public Entry findProvenance(long id) {
     return jdbc.queryForObject(
-        "select * from fulfillment_provenance where id = ?", (rs, row) -> map(rs), id);
+        """
+        select *
+        from fulfillment_provenance
+        where id = ?
+        """,
+        (rs, row) -> map(rs),
+        id);
   }
 
   private static Entry map(ResultSet rs) throws SQLException {

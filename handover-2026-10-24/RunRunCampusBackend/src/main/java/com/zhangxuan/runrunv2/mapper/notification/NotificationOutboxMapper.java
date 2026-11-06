@@ -23,10 +23,17 @@ public class NotificationOutboxMapper {
     this.json = json;
   }
 
-  public List<Delivery> claimRowsClaimNotificationOutbox(int max) {
+  public List<Delivery> claimOutboxDeliveries(int limit) {
     return jdbc.query(
-        "SELECT id,recipient_id,event_key,channel,payload,attempt_count FROM"
-            + " runrun_v2.claim_notification_outbox(?)",
+        """
+        SELECT id,
+            recipient_id,
+            event_key,
+            channel,
+            payload,
+            attempt_count
+        FROM runrun_v2.claim_notification_outbox(?)
+        """,
         (r, n) -> {
           try {
             @SuppressWarnings("unchecked")
@@ -42,26 +49,34 @@ public class NotificationOutboxMapper {
             throw new IllegalStateException("outbox payload unavailable");
           }
         },
-        max);
+        limit);
   }
 
-  public Object completeDelivery(long id, boolean success, String sanitize) {
+  public Object completeDelivery(long outboxId, boolean success, String error) {
     return jdbc.queryForObject(
-        "SELECT runrun_v2.complete_notification_outbox(?,?,?)",
+        """
+        SELECT runrun_v2.complete_notification_outbox(?, ?, ?)
+        """,
         Object.class,
-        id,
+        outboxId,
         success,
-        sanitize);
+        error);
   }
 
   public Integer runReviewTimers() {
-    return jdbc.queryForObject("SELECT runrun_v2.run_notification_review_timers()", Integer.class);
+    return jdbc.queryForObject(
+        """
+        SELECT runrun_v2.run_notification_review_timers()
+        """,
+        Integer.class);
   }
 
   public Boolean isNotificationRuntimeInstalled() {
     return jdbc.queryForObject(
-        "SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL AND"
-            + " to_regprocedure('runrun_v2.run_notification_review_timers()') IS NOT NULL",
+        """
+        SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL
+            AND to_regprocedure('runrun_v2.run_notification_review_timers()') IS NOT NULL
+        """,
         Boolean.class);
   }
 }

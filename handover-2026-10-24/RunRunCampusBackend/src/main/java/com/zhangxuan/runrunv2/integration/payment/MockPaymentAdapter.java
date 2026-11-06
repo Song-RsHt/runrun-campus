@@ -29,26 +29,26 @@ public class MockPaymentAdapter {
 
   public void submit(String type, String id) {
     // Persist channel acceptance in the caller's transaction; acceptance is never a receipt.
-    mapper.submitWriteMockChannelResults(type, Long.valueOf(id));
+    mapper.insertProcessingResult(type, Long.valueOf(id));
   }
 
   public Result query(String type, String id) {
-    var rows = mapper.queryRowsMockChannelResults(type, Long.valueOf(id));
+    var rows = mapper.findResult(type, Long.valueOf(id));
     return rows.isEmpty() ? Result.UNKNOWN : Result.valueOf(rows.get(0).get("result").toString());
   }
 
   public long revision(String type, String id) {
-    return mapper.revisionValueMockChannelResults(type, Long.valueOf(id));
+    return mapper.findResultVersion(type, Long.valueOf(id));
   }
 
   public void record(String type, String id, Result result) {
     // A previously confirmed receipt cannot turn back into failure/processing.
-    mapper.recordWriteMockChannelResults(result.name(), type, Long.valueOf(id));
+    mapper.updateResultUnlessSuccessful(result.name(), type, Long.valueOf(id));
   }
 
   public void retryRefund(String id) {
     // Retry the original channel identity; never create a second refund transfer.
-    if (mapper.retryRefundWriteMockChannelResults(Long.valueOf(id)) != 1)
+    if (mapper.retryFailedRefund(Long.valueOf(id)) != 1)
       throw new IdentityFailure(409, "PAYMENT_RESULT_PENDING");
   }
 }

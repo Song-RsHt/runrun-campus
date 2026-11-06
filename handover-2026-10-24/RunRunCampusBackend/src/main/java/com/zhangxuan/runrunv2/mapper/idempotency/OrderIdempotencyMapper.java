@@ -19,8 +19,16 @@ public class OrderIdempotencyMapper {
 
   public List<Map<String, Object>> findRequestForUpdate(Long actor, String scope, String key) {
     return jdbc.queryForList(
-        "SELECT request_hash,response_snapshot,status FROM runrun_v2.idempotency_requests WHERE"
-            + " actor_id=? AND scope=? AND key=? FOR UPDATE",
+        """
+        SELECT request_hash,
+            response_snapshot,
+            status
+        FROM runrun_v2.idempotency_requests
+        WHERE actor_id = ?
+            AND scope = ?
+            AND key = ?
+        FOR UPDATE
+        """,
         actor,
         scope,
         key);
@@ -28,8 +36,22 @@ public class OrderIdempotencyMapper {
 
   public int insertRequest(Long actorId, String scope, String key, String requestHash) {
     return jdbc.update(
-        "INSERT INTO runrun_v2.idempotency_requests(actor_id,scope,key,request_hash,status)"
-            + " VALUES(?,?,?,?,'PROCESSING')",
+        """
+        INSERT INTO runrun_v2.idempotency_requests (
+            actor_id,
+            scope,
+            key,
+            request_hash,
+            status
+        )
+        VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            'PROCESSING'
+        )
+        """,
         actorId,
         scope,
         key,
@@ -44,9 +66,17 @@ public class OrderIdempotencyMapper {
       String scope,
       String key) {
     return jdbc.update(
-        "UPDATE runrun_v2.idempotency_requests SET"
-            + " status='SUCCEEDED',resource_type=?,resource_id=?,response_snapshot=?::jsonb,updated_at=now()"
-            + " WHERE actor_id=? AND scope=? AND key=?",
+        """
+        UPDATE runrun_v2.idempotency_requests
+        SET status = 'SUCCEEDED',
+            resource_type = ?,
+            resource_id = ?,
+            response_snapshot = ?::jsonb,
+            updated_at = now()
+        WHERE actor_id = ?
+            AND scope = ?
+            AND key = ?
+        """,
         resourceType,
         resourceId,
         responseJson,
