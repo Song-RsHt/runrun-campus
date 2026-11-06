@@ -13,7 +13,6 @@ import com.zhangxuan.runrunv2.mapper.PaymentMapper;
 import com.zhangxuan.runrunv2.model.InputValidation;
 import com.zhangxuan.runrunv2.model.ResourceIds;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.service.OriginalPaymentWriter;
 import com.zhangxuan.runrunv2.service.PaymentService;
 import com.zhangxuan.runrunv2.vo.AdjustmentFundsVO;
 import com.zhangxuan.runrunv2.vo.CancelledOrderVO;
@@ -37,6 +36,45 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 编排隔离支付、退款和资金事件。行锁、渠道事件幂等与并发版本共同防止重复推进；金额继续使用整数分。 渠道交互通过适配器完成，Mapper 不承担状态机。参见《支付与退款规则》。

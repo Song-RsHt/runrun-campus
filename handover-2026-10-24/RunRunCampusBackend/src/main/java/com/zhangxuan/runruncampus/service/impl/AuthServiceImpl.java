@@ -5,6 +5,7 @@ import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.Session;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.model.PrivacyPolicyValidation;
 import com.zhangxuan.runruncampus.model.SessionMetadata;
 import com.zhangxuan.runruncampus.repository.SessionRepository;
@@ -18,11 +19,34 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

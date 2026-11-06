@@ -1,7 +1,5 @@
 package com.zhangxuan.runrunv2.architecture;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.zhangxuan.runruncampus.RunRunCampusBackendApplication;
 import com.zhangxuan.runrunv2.IdentityApplication;
 import java.io.IOException;
@@ -14,6 +12,26 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** Enforces boundaries for both applications without starting or substituting either database. */
 class BackendLayeringTest {

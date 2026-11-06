@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.handler;
 
-import java.util.Map;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
+import java.util.Map;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +11,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -28,7 +41,7 @@ public class ApiExceptionHandler {
     /** 保留业务异常原有状态、提示和限流响应头。 */
   @ExceptionHandler(BusinessFailure.class)
   public ResponseEntity<Map<String, String>> handleBusiness(BusinessFailure exception) {
-    ResponseEntity.BodyBuilder response = ResponseEntity.status(exception.status());
+    BodyBuilder response = ResponseEntity.status(exception.status());
     if (exception.status() == HttpStatus.TOO_MANY_REQUESTS.value()) {
       response.header(HttpHeaders.RETRY_AFTER, "60");
       response.header(HttpHeaders.CACHE_CONTROL, "no-store");

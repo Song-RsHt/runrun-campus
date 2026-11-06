@@ -6,6 +6,7 @@ import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.enums.AdminRole;
 import com.zhangxuan.runruncampus.enums.SessionClientType;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.repository.SessionRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.service.AuthService;
@@ -24,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,6 +33,41 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

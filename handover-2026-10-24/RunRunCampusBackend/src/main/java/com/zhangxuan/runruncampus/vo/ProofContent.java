@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.vo;
 
+
+
 /**
  * Internal binary response payload; never exposes a storage path.
  */

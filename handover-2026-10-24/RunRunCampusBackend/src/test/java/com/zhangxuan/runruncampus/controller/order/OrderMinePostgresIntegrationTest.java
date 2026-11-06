@@ -80,6 +80,33 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @SpringBootTest(
     webEnvironment = WebEnvironment.NONE,
     properties = "app.proof-storage.local-directory=target/test-mine-proofs")

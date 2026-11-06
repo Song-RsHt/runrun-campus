@@ -4,7 +4,9 @@ import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CourierCertification;
 import com.zhangxuan.runruncampus.enums.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.repository.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
@@ -22,13 +24,43 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -198,7 +230,7 @@ class CourierCertificationServiceTest {
             "card.jpg",
             "image/jpeg",
             new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff, 1, 2});
-    var response = certificationService.uploadStudentCard(courier, 11L, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file));
+    var response = certificationService.uploadStudentCard(courier, 11L, MultipartUploads.adapt(file));
     assertTrue(response.photoUploaded());
   }
 

@@ -7,6 +7,10 @@ import java.util.Map;
 
 
 
+
+
+
+
 /** Adapter boundary for WeChat subscriptions. It is deliberately best effort. */
 public interface WechatSubscriptionGateway {
 

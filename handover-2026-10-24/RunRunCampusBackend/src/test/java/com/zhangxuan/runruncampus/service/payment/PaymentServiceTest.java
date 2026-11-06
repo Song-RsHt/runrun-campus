@@ -13,6 +13,7 @@ import com.zhangxuan.runruncampus.enums.PaymentStatus;
 import com.zhangxuan.runruncampus.enums.RefundStatus;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import com.zhangxuan.runruncampus.model.AppPayParameters;
 import com.zhangxuan.runruncampus.model.NotificationHeaders;
@@ -37,7 +38,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,6 +49,57 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

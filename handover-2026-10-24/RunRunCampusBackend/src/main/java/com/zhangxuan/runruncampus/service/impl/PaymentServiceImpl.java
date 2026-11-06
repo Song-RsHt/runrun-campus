@@ -13,6 +13,7 @@ import com.zhangxuan.runruncampus.enums.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.PaymentStatus;
 import com.zhangxuan.runruncampus.enums.RefundStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import com.zhangxuan.runruncampus.model.AppPayParameters;
 import com.zhangxuan.runruncampus.model.NotificationHeaders;
@@ -23,17 +24,51 @@ import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.WechatPaymentRepository;
 import com.zhangxuan.runruncampus.repository.WechatRefundRepository;
 import com.zhangxuan.runruncampus.service.MembershipService;
+import com.zhangxuan.runruncampus.service.PaymentService;
 import com.zhangxuan.runruncampus.vo.AppPaymentParameters;
 import com.zhangxuan.runruncampus.vo.PaymentResponse;
 import com.zhangxuan.runruncampus.vo.RefundResponse;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.service.PaymentService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * legacy 支付与退款业务边界，使用原 JPA Repository 及支付网关。金额和幂等保持旧契约，不能作为 v2 支付兼容层。

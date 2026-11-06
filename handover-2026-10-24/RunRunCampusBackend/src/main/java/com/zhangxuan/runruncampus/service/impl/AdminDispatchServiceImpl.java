@@ -9,12 +9,14 @@ import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.mapper.AdminDispatchMapper;
 import com.zhangxuan.runruncampus.model.DispatchScoreCalculator;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminDispatchService;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
@@ -27,11 +29,42 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.service.AdminDispatchService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 保留 legacy 派单资格、推荐排名及审计规则。Mapper 返回骑手原始事实，在线时长及推荐策略在本层计算。

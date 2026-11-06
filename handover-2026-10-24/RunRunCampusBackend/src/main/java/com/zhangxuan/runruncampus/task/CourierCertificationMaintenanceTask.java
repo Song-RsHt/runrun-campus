@@ -4,6 +4,11 @@ import com.zhangxuan.runruncampus.integration.maintenance.CourierCertificationMa
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+
+
+
+
+
 /**
  * Schedules CourierCertificationMaintenance through its Spring service proxy; transactions and
  * retry policy remain in that service.

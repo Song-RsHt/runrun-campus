@@ -1,17 +1,44 @@
 package com.zhangxuan.runrunv2.integration.wechat;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.*;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Version;
+import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandler;
+import java.util.Map;
 import java.util.Optional;
+import javax.net.ssl.SSLSession;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class WechatHttpGatewayTest {
 
@@ -31,23 +58,23 @@ class WechatHttpGatewayTest {
       }
 
       public Optional<HttpResponse<String>> previousResponse() {
-        return java.util.Optional.empty();
+        return Optional.empty();
       }
 
       public HttpHeaders headers() {
-        return HttpHeaders.of(java.util.Map.of(), (k, v) -> true);
+        return HttpHeaders.of(Map.of(), (k, v) -> true);
       }
 
-      public Optional<javax.net.ssl.SSLSession> sslSession() {
-        return java.util.Optional.empty();
+      public Optional<SSLSession> sslSession() {
+        return Optional.empty();
       }
 
       public URI uri() {
-        return java.net.URI.create("https://api.weixin.qq.com");
+        return URI.create("https://api.weixin.qq.com");
       }
 
-      public HttpClient.Version version() {
-        return HttpClient.Version.HTTP_1_1;
+      public Version version() {
+        return Version.HTTP_1_1;
       }
     };
   }
@@ -59,11 +86,11 @@ class WechatHttpGatewayTest {
   @Test
   void exchangesLoginOnlyAtWechatAndReturnsOnlyOpenid() throws Exception {
     HttpClient http = mock(HttpClient.class);
-    when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+    when(http.send(any(HttpRequest.class), any(BodyHandler.class)))
         .thenReturn(response("{\"openid\":\"synthetic-openid\",\"session_key\":\"discarded\"}"));
     assertEquals("synthetic-openid", gateway(http).exchangeLoginCode("code & value"));
     var captured = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(http).send(captured.capture(), any(HttpResponse.BodyHandler.class));
+    verify(http).send(captured.capture(), any(BodyHandler.class));
     assertEquals("api.weixin.qq.com", captured.getValue().uri().getHost());
     assertEquals("/sns/jscode2session", captured.getValue().uri().getPath());
     assertEquals("GET", captured.getValue().method());
@@ -73,7 +100,7 @@ class WechatHttpGatewayTest {
   @Test
   void phoneExchangeUsesStableTokenAndChecksWatermarkWhileCachingAccessToken() throws Exception {
     HttpClient http = mock(HttpClient.class);
-    when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+    when(http.send(any(HttpRequest.class), any(BodyHandler.class)))
         .thenReturn(
             response("{\"access_token\":\"synthetic-access-token\",\"expires_in\":7200}"),
             response(
@@ -82,7 +109,7 @@ class WechatHttpGatewayTest {
     assertEquals("13800000001", gateway.exchangePhoneCode("phone-code"));
     assertEquals("13800000001", gateway.exchangePhoneCode("another-code"));
     var captured = ArgumentCaptor.forClass(HttpRequest.class);
-    verify(http, times(3)).send(captured.capture(), any(HttpResponse.BodyHandler.class));
+    verify(http, times(3)).send(captured.capture(), any(BodyHandler.class));
     assertEquals("/cgi-bin/stable_token", captured.getAllValues().get(0).uri().getPath());
     assertEquals(
         "/wxa/business/getuserphonenumber", captured.getAllValues().get(1).uri().getPath());
@@ -96,14 +123,14 @@ class WechatHttpGatewayTest {
           "{\"errcode\":40029,\"errmsg\":\"synthetic-error\"}", "{}", "null", "invalid-json"
         }) {
       HttpClient http = mock(HttpClient.class);
-      when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+      when(http.send(any(HttpRequest.class), any(BodyHandler.class)))
           .thenReturn(response(body));
       var error = assertThrows(IdentityFailure.class, () -> gateway(http).exchangeLoginCode("bad"));
       assertEquals("WECHAT_AUTH_FAILED", error.code);
       assertNull(error.getCause());
     }
     HttpClient http = mock(HttpClient.class);
-    when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+    when(http.send(any(HttpRequest.class), any(BodyHandler.class)))
         .thenThrow(new IOException("sensitive upstream diagnostics"));
     var error = assertThrows(IdentityFailure.class, () -> gateway(http).exchangeLoginCode("bad"));
     assertFalse(error.toString().contains("sensitive"));
@@ -118,7 +145,7 @@ class WechatHttpGatewayTest {
           "{\"purePhoneNumber\":\"invalid\",\"countryCode\":\"86\",\"watermark\":{\"appid\":\"synthetic-app\"}}"
         }) {
       HttpClient http = mock(HttpClient.class);
-      when(http.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+      when(http.send(any(HttpRequest.class), any(BodyHandler.class)))
           .thenReturn(
               response("{\"access_token\":\"synthetic\",\"expires_in\":7200}"),
               response("{\"phone_info\":" + info + "}"));

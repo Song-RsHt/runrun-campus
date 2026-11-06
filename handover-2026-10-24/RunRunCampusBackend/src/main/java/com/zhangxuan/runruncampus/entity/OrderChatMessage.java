@@ -10,6 +10,17 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "order_chat_messages")
 public class OrderChatMessage {

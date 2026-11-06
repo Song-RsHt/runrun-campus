@@ -1,7 +1,6 @@
 package com.zhangxuan.runrunv2.controller.courier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -10,6 +9,19 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Testcontainers
 class CourierCertificationV2DatabaseE2ETest {
@@ -34,7 +46,7 @@ class CourierCertificationV2DatabaseE2ETest {
             "rrc_0101__evidence_order_constraints.sql"
           }) {
         try (Statement migration = c.createStatement()) {
-          migration.execute(java.nio.file.Files.readString(root.resolve(name)));
+          migration.execute(Files.readString(root.resolve(name)));
         }
       }
       try (Statement s = c.createStatement()) {

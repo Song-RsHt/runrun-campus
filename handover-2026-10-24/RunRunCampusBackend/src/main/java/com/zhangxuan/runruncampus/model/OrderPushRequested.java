@@ -3,6 +3,10 @@ package com.zhangxuan.runruncampus.model;
 import com.zhangxuan.runruncampus.enums.PushDestination;
 import java.util.UUID;
 
+
+
+
+
 public record OrderPushRequested(Long recipientId, Long orderId, String title, String content, String idempotentToken, PushDestination destination) {
 
     public OrderPushRequested(Long recipientId, Long orderId, String title, String content, String idempotentToken) {

@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
+
+
 public enum PickupStation {
 
     EAST_GATE_TAKEOUT("东门外卖集中取餐点", false), CAMPUS_PACKAGE_STATION("校内快递驿站", true);

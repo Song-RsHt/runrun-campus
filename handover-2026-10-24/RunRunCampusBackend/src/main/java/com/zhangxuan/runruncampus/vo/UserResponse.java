@@ -13,5 +13,12 @@ import java.util.Set;
 
 
 
+
+
+
+
+
+
+
 public record UserResponse(Long id, String phone, String displayName, UserRole role, AdminRole adminRole, Set<AdminPermission> permissions, String privacyPolicyVersion, Instant privacyConsentAt) {
 }

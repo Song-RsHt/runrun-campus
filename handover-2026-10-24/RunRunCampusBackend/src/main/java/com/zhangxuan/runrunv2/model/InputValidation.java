@@ -2,6 +2,9 @@ package com.zhangxuan.runrunv2.model;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 
+
+
+
 public final class InputValidation {
 
     private InputValidation() {

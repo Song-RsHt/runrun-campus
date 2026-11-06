@@ -6,8 +6,10 @@ import com.zhangxuan.runruncampus.enums.Channel;
 import com.zhangxuan.runruncampus.enums.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.enums.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.mapper.FulfillmentProvenanceMapper;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.service.FulfillmentProvenanceService;
 import com.zhangxuan.runruncampus.vo.Entry;
 import com.zhangxuan.runruncampus.vo.Summary;
 import java.sql.Timestamp;
@@ -15,11 +17,30 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.dao.DuplicateKeyException;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.service.FulfillmentProvenanceService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 维护履约溯源及独立核验约束。金额、证据摘要及录入人与核验人关系在业务层校验，再按原事务持久化。

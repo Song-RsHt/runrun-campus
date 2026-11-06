@@ -2,6 +2,7 @@ package com.zhangxuan.runrunv2.security;
 
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
@@ -9,6 +10,17 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+
+
+
+
+
+
+
+
+
+
 
 @Component
 public class IdentitySecrets {
@@ -27,7 +39,7 @@ public class IdentitySecrets {
       hashKey = Base64.getDecoder().decode(hash);
       if (encryptionKey.length != 32
           || hashKey.length < 32
-          || java.util.Arrays.equals(encryptionKey, hashKey)) {
+          || Arrays.equals(encryptionKey, hashKey)) {
         throw new IllegalArgumentException();
       }
     } catch (IllegalArgumentException e) {

@@ -13,6 +13,20 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public interface CourierCertificationRepository extends JpaRepository<CourierCertification, Long> {
 
     Optional<CourierCertification> findByCourier(AppUser courier);

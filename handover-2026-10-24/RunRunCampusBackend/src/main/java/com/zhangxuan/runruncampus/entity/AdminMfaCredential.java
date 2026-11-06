@@ -6,6 +6,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
 
+
+
+
+
+
+
+
 @Entity
 @Table(name = "admin_mfa_credentials")
 public class AdminMfaCredential {

@@ -1,5 +1,6 @@
 package com.zhangxuan.runruncampus.service.auth;
 
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.LoginCaptchaService;
 import com.zhangxuan.runruncampus.service.impl.LoginCaptchaServiceImpl;
 import com.zhangxuan.runruncampus.vo.LoginCaptchaVO;
@@ -7,11 +8,24 @@ import java.security.SecureRandom;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

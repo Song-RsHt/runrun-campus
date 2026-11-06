@@ -8,6 +8,15 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
+
+
+
+
+
+
+
+
 public interface CreditProfileRepository extends JpaRepository<CreditProfile, Long> {
 
     Optional<CreditProfile> findByUserId(Long userId);

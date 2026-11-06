@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.exception;
 
+
+
 /** 旧业务失败；保存既有错误分类和提示，由异常处理器映射 HTTP，业务层不依赖 Web 框架。 */
 public class BusinessFailure extends RuntimeException {
     private final int status;

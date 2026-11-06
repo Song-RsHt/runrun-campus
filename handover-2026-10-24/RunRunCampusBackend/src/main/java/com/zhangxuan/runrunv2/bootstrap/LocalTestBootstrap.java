@@ -13,6 +13,20 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /** Host-authorized synthetic fixtures only; never available as an HTTP bootstrap. */
 @Component
 @Profile("local-v2-test")

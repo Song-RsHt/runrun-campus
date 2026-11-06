@@ -15,6 +15,22 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "risk_signals")
 public class RiskSignal {

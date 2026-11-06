@@ -44,6 +44,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class WechatPaymentTest {
 
   private final AppUser customer = user(1L);

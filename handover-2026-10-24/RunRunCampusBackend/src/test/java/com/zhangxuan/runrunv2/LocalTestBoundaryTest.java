@@ -1,9 +1,5 @@
 package com.zhangxuan.runrunv2;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
-
 import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
 import com.zhangxuan.runrunv2.bootstrap.LocalTestBootstrap;
 import com.zhangxuan.runrunv2.mapper.LocalTestMapper;
@@ -17,6 +13,28 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.transaction.PlatformTransactionManager;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class LocalTestBoundaryTest {
 

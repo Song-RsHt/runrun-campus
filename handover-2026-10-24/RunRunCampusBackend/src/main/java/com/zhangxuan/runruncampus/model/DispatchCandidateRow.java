@@ -2,6 +2,9 @@ package com.zhangxuan.runruncampus.model;
 
 import java.time.Instant;
 
+
+
+
 /**
  * Database facts used by the service's recommendation policy. No computed ranking or HTTP state.
  */

@@ -7,6 +7,14 @@ import com.zhangxuan.runrunv2.vo.UploadTicketVO;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Component;
 
+
+
+
+
+
+
+
+
 /**
  * Evidence lifecycle is not yet accepted: fail closed instead of silently using the legacy public
  * upload service. M07 replaces this adapter after lifecycle QA.

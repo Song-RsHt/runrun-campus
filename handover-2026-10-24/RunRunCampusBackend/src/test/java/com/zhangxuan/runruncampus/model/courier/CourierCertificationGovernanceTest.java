@@ -3,7 +3,9 @@ package com.zhangxuan.runruncampus.model.courier;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CourierCertification;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.repository.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.impl.CourierCertificationServiceImpl;
@@ -13,9 +15,26 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -88,7 +107,7 @@ class CourierCertificationGovernanceTest {
     var file = new MockMultipartFile("file", "x.jpg", "image/jpeg", new byte[8 * 1024 * 1024 + 1]);
     var ex =
         Assertions.assertThrows(
-            BusinessFailure.class, () -> service.uploadStudentCard(courier, 3L, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file)));
+            BusinessFailure.class, () -> service.uploadStudentCard(courier, 3L, MultipartUploads.adapt(file)));
     assertEquals(400, ex.status());
   }
 }

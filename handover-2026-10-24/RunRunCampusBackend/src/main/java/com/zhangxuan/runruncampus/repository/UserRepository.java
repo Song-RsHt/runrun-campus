@@ -27,6 +27,20 @@ import org.springframework.data.repository.query.Param;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public interface UserRepository extends JpaRepository<AppUser, Long> {
 
     Optional<AppUser> findByPhone(String phone);

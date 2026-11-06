@@ -21,6 +21,17 @@ import org.springframework.stereotype.Component;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 /** Database-backed isolated channel. No merchant SDK, network call or client amount. */
 @Component
 @ConditionalOnProperty(name = "rrc.payment.mock-enabled", havingValue = "true")

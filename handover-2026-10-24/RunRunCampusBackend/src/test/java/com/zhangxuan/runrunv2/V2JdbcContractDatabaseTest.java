@@ -116,6 +116,35 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /** Exercise JDBC bindings against the delivered schema, rather than mocking the driver. */
 @Testcontainers
 class V2JdbcContractDatabaseTest {

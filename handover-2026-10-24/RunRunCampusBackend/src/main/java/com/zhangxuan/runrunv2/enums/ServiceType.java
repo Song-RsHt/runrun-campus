@@ -1,5 +1,7 @@
 package com.zhangxuan.runrunv2.enums;
 
+
+
 public enum ServiceType {
 
     LOBBY("楼下取餐", 200, false),

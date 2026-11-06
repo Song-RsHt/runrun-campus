@@ -18,6 +18,25 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public interface OrderRepository extends JpaRepository<CampusOrder, Long> {
 
     Optional<CampusOrder> findByCustomerAndRequestKey(AppUser customer, UUID requestKey);

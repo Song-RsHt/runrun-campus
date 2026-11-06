@@ -2,6 +2,9 @@ package com.zhangxuan.runrunv2.model;
 
 import java.time.OffsetDateTime;
 
+
+
+
 /**
  * Persistence projection; allowed HTTP actions are derived by the query service.
  */

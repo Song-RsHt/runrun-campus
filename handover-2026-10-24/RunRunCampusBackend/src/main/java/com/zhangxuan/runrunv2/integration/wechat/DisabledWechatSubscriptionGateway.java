@@ -9,6 +9,11 @@ import org.springframework.stereotype.Component;
 
 
 
+
+
+
+
+
 /** No network call is made until a configured WeChat subscription adapter is supplied. */
 @Component
 public class DisabledWechatSubscriptionGateway implements WechatSubscriptionGateway {

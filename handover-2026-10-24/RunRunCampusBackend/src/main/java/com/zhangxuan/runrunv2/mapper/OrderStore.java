@@ -13,6 +13,20 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Shared order lock for later payment/fulfillment modules; never expose arbitrary state writes as
  * HTTP.

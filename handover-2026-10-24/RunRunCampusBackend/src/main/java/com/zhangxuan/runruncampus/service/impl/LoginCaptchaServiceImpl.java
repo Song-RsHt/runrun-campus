@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.service.impl;
 
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
+import com.zhangxuan.runruncampus.service.LoginCaptchaService;
 import com.zhangxuan.runruncampus.vo.LoginCaptchaVO;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -14,10 +16,27 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
-
 import org.springframework.stereotype.Service;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.service.LoginCaptchaService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class LoginCaptchaServiceImpl implements LoginCaptchaService {

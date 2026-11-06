@@ -2,6 +2,9 @@ package com.zhangxuan.runrunv2.vo;
 
 import java.util.List;
 
+
+
+
 public record Account(String id, String role, String status, boolean adminEnabled, long securityVersion, boolean courierEligible) {
 
     public List<String> permissions() {

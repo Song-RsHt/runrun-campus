@@ -11,6 +11,7 @@ import com.zhangxuan.runruncampus.dto.SubmitManualPaymentRequest;
 import com.zhangxuan.runruncampus.dto.UnableRequest;
 import com.zhangxuan.runruncampus.enums.OrderProofType;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.CourierReassignmentService;
 import com.zhangxuan.runruncampus.service.ManualQrPaymentService;
@@ -46,6 +47,54 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -137,7 +186,7 @@ public class OrderController {
 
     @PostMapping(value = "/{id}/proofs/{type}", consumes = "multipart/form-data")
     public OrderProofVO uploadProof(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @PathVariable OrderProofType type, @RequestPart("file") MultipartFile file) {
-        return proofService.upload(authService.requireUser(authorization), id, type, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file));
+        return proofService.upload(authService.requireUser(authorization), id, type, MultipartUploads.adapt(file));
     }
 
     @PostMapping("/{id}/package-size")

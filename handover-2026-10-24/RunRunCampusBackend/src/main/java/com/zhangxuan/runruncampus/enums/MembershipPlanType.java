@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
+
+
 public enum MembershipPlanType {
 
     LIGHT("轻享卡", 10, 1600, "适合偶尔点餐"), STUDENT("学生月卡", 20, 2900, "最受欢迎"), ROOMMATE("宿舍搭子", 30, 3900, "30 次大额套餐");

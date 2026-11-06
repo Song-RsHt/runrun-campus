@@ -4,6 +4,8 @@ import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
 import com.zhangxuan.runrunv2.mapper.CourierCertificationV2Mapper;
+import com.zhangxuan.runrunv2.model.UploadSource;
+import com.zhangxuan.runrunv2.service.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.CourierEvidenceGovernanceService;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.vo.Account;
@@ -19,8 +21,29 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runrunv2.model.UploadSource;
-import com.zhangxuan.runrunv2.service.CourierCertificationV2Service;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * JDBC implementation used by the isolated v2 application; it never touches legacy tables.

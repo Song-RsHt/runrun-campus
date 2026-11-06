@@ -5,6 +5,7 @@ import com.zhangxuan.runrunv2.mapper.FulfillmentQueryMapper;
 import com.zhangxuan.runrunv2.model.ResourceIds;
 import com.zhangxuan.runrunv2.model.TaskRow;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
+import com.zhangxuan.runrunv2.service.FulfillmentQueryService;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.vo.CourierTaskVO;
 import com.zhangxuan.runrunv2.vo.CursorPageVO;
@@ -21,7 +22,30 @@ import java.util.Objects;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runrunv2.service.FulfillmentQueryService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 将数据库任务事实转换为当前参与人的可见任务及允许操作。游标签名和操作资格属于业务策略，不下放给 SQL 行映射。

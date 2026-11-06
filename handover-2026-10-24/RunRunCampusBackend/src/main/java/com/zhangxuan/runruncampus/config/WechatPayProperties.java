@@ -2,6 +2,9 @@ package com.zhangxuan.runruncampus.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+
+
+
 @ConfigurationProperties(prefix = "wechat.pay")
 public record WechatPayProperties(
     boolean enabled,

@@ -5,13 +5,13 @@ import com.zhangxuan.runruncampus.dto.ChangePasswordRequest;
 import com.zhangxuan.runruncampus.dto.LoginRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.model.SessionMetadata;
 import com.zhangxuan.runruncampus.security.ApiRateLimitService;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.LoginCaptchaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +21,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

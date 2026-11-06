@@ -4,6 +4,7 @@ import com.zhangxuan.runruncampus.dto.CertificationRequest;
 import com.zhangxuan.runruncampus.dto.DecisionRequest;
 import com.zhangxuan.runruncampus.dto.RejectionRequest;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
+import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.vo.CertificationResponse;
@@ -21,6 +22,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v2/courier/certification")
@@ -47,7 +71,7 @@ public class CourierCertificationController {
 
     @PostMapping(value = "/{id}/student-card", consumes = "multipart/form-data")
     public CertificationResponse uploadStudentCard(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestPart(value = "expectedVersion", required = false) Long expectedVersion) {
-        return certificationService.uploadStudentCard(authService.requireUser(authorization), id, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file), expectedVersion);
+        return certificationService.uploadStudentCard(authService.requireUser(authorization), id, MultipartUploads.adapt(file), expectedVersion);
     }
 
     @GetMapping("/{id}/student-card")

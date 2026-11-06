@@ -27,6 +27,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Component
 @Order(1)
 public class AdminAccountInitializer implements ApplicationRunner {

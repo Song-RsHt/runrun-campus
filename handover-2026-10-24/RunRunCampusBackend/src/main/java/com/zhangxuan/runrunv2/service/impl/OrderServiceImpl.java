@@ -10,6 +10,7 @@ import com.zhangxuan.runrunv2.model.Address;
 import com.zhangxuan.runrunv2.model.OrderInput;
 import com.zhangxuan.runrunv2.model.Pricing;
 import com.zhangxuan.runrunv2.service.IdentityService;
+import com.zhangxuan.runrunv2.service.OrderService;
 import com.zhangxuan.runrunv2.service.OriginalPaymentWriter;
 import com.zhangxuan.runrunv2.service.ServiceConfigService;
 import com.zhangxuan.runrunv2.vo.CreatedOrderVO;
@@ -24,7 +25,33 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runrunv2.service.OrderService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 编排 v2 报价、配置快照及订单创建。金额继续使用分及既有舍入规则，订单和原始付款共享调用方事务。 不添加 legacy 订单兼容逻辑。参见《订单与履约规则》《支付与退款规则》。

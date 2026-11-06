@@ -6,17 +6,39 @@ import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
+import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Component
-@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+@ConditionalOnProperty(
     name = "rrc.identity.wechat-enabled",
     havingValue = "true",
     matchIfMissing = true)
@@ -34,7 +56,7 @@ public class WechatHttpGateway implements WechatGateway {
 
   private Instant tokenExpires = Instant.EPOCH;
 
-  @org.springframework.beans.factory.annotation.Autowired
+  @Autowired
   public WechatHttpGateway(
       @Value("${rrc.identity.app-id}") String appId,
       @Value("${rrc.identity.app-secret}") String secret,
@@ -45,7 +67,7 @@ public class WechatHttpGateway implements WechatGateway {
         json,
         HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(5))
-            .followRedirects(HttpClient.Redirect.NEVER)
+            .followRedirects(Redirect.NEVER)
             .build());
   }
 
@@ -104,16 +126,16 @@ public class WechatHttpGateway implements WechatGateway {
 
   private JsonNode send(String path, Map<String, String> body) {
     try {
-      HttpRequest.Builder request =
+      Builder request =
           HttpRequest.newBuilder(URI.create("https://api.weixin.qq.com" + path))
               .timeout(Duration.ofSeconds(10));
       if (body == null) request.GET();
       else
         request
             .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(json.writeValueAsString(body)));
+            .POST(BodyPublishers.ofString(json.writeValueAsString(body)));
       HttpResponse<String> response =
-          http.send(request.build(), HttpResponse.BodyHandlers.ofString());
+          http.send(request.build(), BodyHandlers.ofString());
       if (response.statusCode() != 200) throw failure();
       JsonNode result = json.readTree(response.body());
       if (result == null || result.path("errcode").asInt(0) != 0) throw failure();

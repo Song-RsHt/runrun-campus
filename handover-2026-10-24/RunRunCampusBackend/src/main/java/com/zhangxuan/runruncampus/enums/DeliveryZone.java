@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
+
+
 public enum DeliveryZone {
 
     STANDARD("其他区域", 0), MEIYUAN("梅园", 200);

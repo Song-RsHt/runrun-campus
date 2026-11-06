@@ -19,6 +19,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 
+
+
+
+
+
+
+
+
+
+
 public final class DisabledWechatPayGateway implements WechatPayGateway {
 
   private RuntimeException unavailable() {

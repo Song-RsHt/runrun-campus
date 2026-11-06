@@ -5,6 +5,7 @@ import com.zhangxuan.runruncampus.entity.CampusOrder;
 import com.zhangxuan.runruncampus.entity.OrderProof;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.enums.OrderProofType;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
@@ -17,13 +18,37 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

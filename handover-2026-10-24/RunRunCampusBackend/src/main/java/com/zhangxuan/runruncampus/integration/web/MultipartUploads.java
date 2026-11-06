@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.springframework.web.multipart.MultipartFile;
 
+
+
+
+
+
+
 /** 将 HTTP 上传适配为业务输入；仅延迟委托，保持原有校验、锁和文件读取顺序。 */
 public final class MultipartUploads {
     private MultipartUploads() {}

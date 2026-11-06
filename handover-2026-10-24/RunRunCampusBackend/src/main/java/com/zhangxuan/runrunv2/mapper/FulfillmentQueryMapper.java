@@ -8,6 +8,15 @@ import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+
+
+
+
+
+
+
+
+
 /**
  * Read projections with stable (created_at,id) pagination; no permission or cursor-token policy.
  */

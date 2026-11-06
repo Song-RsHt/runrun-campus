@@ -1,23 +1,28 @@
 package com.zhangxuan.runrunv2.service;
 
-import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
-import com.zhangxuan.runrunv2.mapper.CourierCertificationV2Mapper;
-import com.zhangxuan.runrunv2.vo.Account;
-import com.zhangxuan.runrunv2.vo.Certification;
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.sql.Timestamp;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.zhangxuan.runrunv2.model.UploadSource;
+import com.zhangxuan.runrunv2.vo.Certification;
+import java.util.Map;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 业务服务契约；由实现类维护事务与并发边界。

@@ -27,6 +27,20 @@ import java.util.Objects;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "app_users")
 public class AppUser {

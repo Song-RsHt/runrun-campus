@@ -9,6 +9,7 @@ import com.zhangxuan.runruncampus.enums.Channel;
 import com.zhangxuan.runruncampus.enums.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.mapper.FulfillmentProvenanceMapper;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.FulfillmentProvenanceService;
@@ -23,7 +24,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +31,39 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

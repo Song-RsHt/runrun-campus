@@ -2,6 +2,7 @@ package com.zhangxuan.runrunv2.controller;
 
 import com.zhangxuan.runrunv2.dto.CertificationDecisionRequest;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
+import com.zhangxuan.runrunv2.integration.web.MultipartUploads;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.service.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.IdentityService;
@@ -20,6 +21,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v2/courier/certification")
@@ -51,7 +74,7 @@ public class CourierCertificationV2Controller {
     @PostMapping(value = "/applications/{id}/student-card", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public // A38 defines expectedVersion as a multipart text field, not a JSON request part.
     Certification upload(@RequestHeader("Authorization") String auth, @PathVariable long id, @RequestPart MultipartFile file, @RequestParam("expectedVersion") long expectedVersion, @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
-        return service.upload(token(auth), identity, id, expectedVersion, key, com.zhangxuan.runrunv2.integration.web.MultipartUploads.adapt(file));
+        return service.upload(token(auth), identity, id, expectedVersion, key, MultipartUploads.adapt(file));
     }
 
     @IdentityPermission(role = "ADMIN")

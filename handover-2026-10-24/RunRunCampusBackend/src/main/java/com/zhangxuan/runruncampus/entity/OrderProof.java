@@ -15,6 +15,22 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.time.Instant;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "order_proofs", uniqueConstraints = @UniqueConstraint(name = "uk_order_proof_order_type", columnNames = { "order_id", "type" }))
 public class OrderProof {

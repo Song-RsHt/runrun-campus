@@ -9,7 +9,9 @@ import com.zhangxuan.runruncampus.enums.OrderProofType;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
@@ -37,12 +39,56 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -322,7 +368,7 @@ class OrderAuthorizationTest {
         assertThrows(
             BusinessFailure.class,
             () ->
-                proofService.upload(user(3L, UserRole.COURIER), 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
+                proofService.upload(user(3L, UserRole.COURIER), 11L, OrderProofType.PICKUP, MultipartUploads.adapt(image)));
     assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(proofRepository, proofStorage);
   }

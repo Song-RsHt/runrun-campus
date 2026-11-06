@@ -14,6 +14,21 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @RestControllerAdvice
 public class IdentityErrorHandler {
 

@@ -8,5 +8,14 @@ import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import java.time.Instant;
 
+
+
+
+
+
+
+
+
+
 public record AdminOrderListItem(Long id, String orderNo, OrderStatus status, ServiceType serviceType, String merchant, String destination, int feeCents, OrderPaymentMethod paymentMethod, OrderPaymentStatus paymentStatus, int paidCents, ManualPaymentStatus manualPaymentStatus, CourierSettlementStatus courierSettlementStatus, UserSummary customer, UserSummary courier, Instant createdAt, Instant updatedAt, Instant archivedAt) {
 }

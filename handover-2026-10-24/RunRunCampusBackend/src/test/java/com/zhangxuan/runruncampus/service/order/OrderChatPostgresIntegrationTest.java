@@ -72,6 +72,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @SpringBootTest(
     webEnvironment = WebEnvironment.NONE,
     properties = "app.proof-storage.local-directory=target/test-chat-proofs")

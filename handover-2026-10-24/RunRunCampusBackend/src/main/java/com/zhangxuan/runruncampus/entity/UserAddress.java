@@ -13,6 +13,20 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "user_addresses")
 public class UserAddress {

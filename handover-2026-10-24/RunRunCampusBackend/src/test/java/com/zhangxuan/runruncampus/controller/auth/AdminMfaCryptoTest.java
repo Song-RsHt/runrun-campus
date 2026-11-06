@@ -1,7 +1,5 @@
 package com.zhangxuan.runruncampus.controller.auth;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.zhangxuan.runruncampus.security.AdminMfaCrypto;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -10,6 +8,22 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+
+
+
+
+
+
+
+
+
+
+
 
 class AdminMfaCryptoTest {
 

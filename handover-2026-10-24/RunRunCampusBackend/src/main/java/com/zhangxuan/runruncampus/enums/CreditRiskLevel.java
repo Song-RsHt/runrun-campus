@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
+
+
 public enum CreditRiskLevel {
 
     NORMAL, WATCH, HIGH_RISK;

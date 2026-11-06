@@ -8,6 +8,15 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+
+
+
+
+
+
+
+
+
 public interface SessionRepository extends JpaRepository<Session, Long> {
 
     @Query("select s from Session s join fetch s.user where s.token = :token")

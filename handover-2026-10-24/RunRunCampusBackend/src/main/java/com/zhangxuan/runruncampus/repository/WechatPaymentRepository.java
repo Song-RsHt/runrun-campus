@@ -13,6 +13,20 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public interface WechatPaymentRepository extends JpaRepository<WechatPayment, Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

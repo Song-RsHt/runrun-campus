@@ -12,6 +12,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /** Separate scan/config prevents legacy controllers, repositories and migrations from starting. */
 @SpringBootConfiguration
 @EnableAutoConfiguration(

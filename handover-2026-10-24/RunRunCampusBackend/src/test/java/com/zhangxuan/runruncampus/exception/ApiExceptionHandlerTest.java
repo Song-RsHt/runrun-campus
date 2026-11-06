@@ -2,11 +2,22 @@ package com.zhangxuan.runruncampus.exception;
 
 import com.zhangxuan.runruncampus.handler.ApiExceptionHandler;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+
+
+
+
+
+
+
+
 
 
 
@@ -40,8 +51,8 @@ class ApiExceptionHandlerTest {
   }
 
   /** 业务异常改用中立类型后，逐个核对原 HTTP 状态、正文与限流响应头。 */
-  @org.junit.jupiter.params.ParameterizedTest
-  @org.junit.jupiter.params.provider.ValueSource(ints = {400, 401, 403, 404, 409, 428, 429, 500})
+  @ParameterizedTest
+  @ValueSource(ints = {400, 401, 403, 404, 409, 428, 429, 500})
   void businessFailurePreservesExistingHttpContract(int status) {
     var handler = new ApiExceptionHandler();
     var previous = handler.handleStatus(new ResponseStatusException(HttpStatus.valueOf(status), "测试失败提示"));

@@ -1,5 +1,7 @@
 package com.zhangxuan.runrunv2.exception;
 
+
+
 public class IdentityFailure extends RuntimeException {
 
   public final int status;

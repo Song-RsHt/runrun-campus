@@ -17,6 +17,24 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "courier_certifications")
 public class CourierCertification {

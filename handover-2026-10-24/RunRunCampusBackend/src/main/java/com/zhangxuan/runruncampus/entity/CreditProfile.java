@@ -8,6 +8,15 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.Instant;
 
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "credit_profiles")
 public class CreditProfile {

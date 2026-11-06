@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.model.courier;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import java.util.UUID;
@@ -21,6 +22,29 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -102,7 +126,7 @@ class CourierCertificationPostgresIntegrationTest {
     byte[] image = new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff, 1, 2, 3};
     var uploaded =
         service.uploadStudentCard(
-            courier, pending.id(), com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(new MockMultipartFile("file", "card.jpg", "image/jpeg", image)));
+            courier, pending.id(), MultipartUploads.adapt(new MockMultipartFile("file", "card.jpg", "image/jpeg", image)));
     var photo = service.studentCardPhoto(administrator, pending.id());
     var approved = service.approve(administrator, pending.id());
     assertTrue(uploaded.photoUploaded());

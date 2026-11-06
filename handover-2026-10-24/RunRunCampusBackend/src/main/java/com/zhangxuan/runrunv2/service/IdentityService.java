@@ -4,6 +4,11 @@ import com.zhangxuan.runrunv2.model.IdentityUser;
 import com.zhangxuan.runrunv2.vo.Account;
 import com.zhangxuan.runrunv2.vo.LoginResult;
 
+
+
+
+
+
 /**
  * 业务服务契约；由实现类维护事务与并发边界。
  */

@@ -6,6 +6,13 @@ import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 
+
+
+
+
+
+
+
 /**
  * Deployment access is host access plus isolated DB credentials; no web flag can assert this
  * identity.

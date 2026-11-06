@@ -3,7 +3,9 @@ package com.zhangxuan.runruncampus.service.impl;
 import com.zhangxuan.runruncampus.dto.DispatchExperimentRequest;
 import com.zhangxuan.runruncampus.dto.DispatchScenario;
 import com.zhangxuan.runruncampus.dto.DispatchScenarioCandidate;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.model.DispatchScoreCalculator;
+import com.zhangxuan.runruncampus.service.CampusDispatchExperimentService;
 import com.zhangxuan.runruncampus.vo.DispatchChoiceVO;
 import com.zhangxuan.runruncampus.vo.DispatchComparisonVO;
 import com.zhangxuan.runruncampus.vo.DispatchExperimentVO;
@@ -12,10 +14,25 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.stereotype.Service;
-import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.service.CampusDispatchExperimentService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class CampusDispatchExperimentServiceImpl implements CampusDispatchExperimentService {

@@ -3,6 +3,10 @@ package com.zhangxuan.runrunv2.model;
 import java.io.IOException;
 import java.io.InputStream;
 
+
+
+
+
 /** 待上传文件的延迟读取契约；业务层在完成鉴权和状态校验后决定何时读取内容。 */
 public interface UploadSource {
     boolean isEmpty();

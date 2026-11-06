@@ -20,6 +20,7 @@ import com.zhangxuan.runrunv2.mapper.OrderStore;
 import com.zhangxuan.runrunv2.model.EvidenceBinding;
 import com.zhangxuan.runrunv2.model.InputValidation;
 import com.zhangxuan.runrunv2.model.ResourceIds;
+import com.zhangxuan.runrunv2.service.FulfillmentService;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.vo.FulfillmentOrderVO;
 import com.zhangxuan.runrunv2.vo.FulfillmentResultVO;
@@ -41,7 +42,50 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import com.zhangxuan.runrunv2.service.FulfillmentService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 协调 v2 接单、邀请、凭证和完成确认。状态判定、幂等与事务保留在本层，Mapper 保留原行锁与更新条件。 凭证未接入时继续拒绝推进，不把占位适配器视为已验证证据。参见《订单与履约规则》。

@@ -10,6 +10,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+
+
+
+
+
+
+
+
+
+
+
 /** Local admin preview is a separate origin; preflight must run before identity interception. */
 @Configuration
 @Profile("local-v2-test")

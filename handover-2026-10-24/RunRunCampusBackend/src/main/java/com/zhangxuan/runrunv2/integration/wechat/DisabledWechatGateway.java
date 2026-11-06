@@ -4,6 +4,11 @@ import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+
+
+
+
+
 /** Local fixtures must never exchange codes with real WeChat. */
 @Component
 @ConditionalOnProperty(name = "rrc.identity.wechat-enabled", havingValue = "false")

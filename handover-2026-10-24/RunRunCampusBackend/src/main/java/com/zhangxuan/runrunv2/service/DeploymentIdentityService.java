@@ -2,6 +2,9 @@ package com.zhangxuan.runrunv2.service;
 
 import com.zhangxuan.runrunv2.model.AccessResult;
 
+
+
+
 /**
  * 业务服务契约；由实现类维护事务与并发边界。
  */

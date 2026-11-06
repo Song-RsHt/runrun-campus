@@ -11,6 +11,18 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.Instant;
 
+
+
+
+
+
+
+
+
+
+
+
+
 @Entity
 @Table(name = "user_coupons")
 public class UserCoupon {
