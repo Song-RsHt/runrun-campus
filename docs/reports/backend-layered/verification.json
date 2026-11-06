@@ -79,5 +79,40 @@
     "compose": "b9e734e320c3ad1850dd2b14083879bf757304e6eacf33067b5953f1dd738541",
     "environment": "917e5b544ad09f95f77d88393f89087ba3da42dc6f65f3f1a7c0f9bde54992b0",
     "cleanup": "86a99acbfa1b795adf5d62cba05d2c87ae2b2f81ca55a3a1c5a591152dce45a7"
+  },
+  "mapperRemediation": {
+    "date": "2026-11-06",
+    "status": "pending-independent-reinspection",
+    "sourceCommit": "4577164dfd2276a6e3d80b9c34a9e8a585b5ab56",
+    "sourceTree": "d54097248bc0cbd5b3403e0ad79ca5483bfda178",
+    "reviewedMapperFiles": 22,
+    "renamedMethods": 144,
+    "narrowedObjectParameters": 11,
+    "affected": {
+      "tests": 154,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": 20,
+      "exitCode": 0,
+      "logSha256": "72bf620ea6f8fc133b2250b12f7c12e3c6f7671ead746ad382c5778ee0545b46",
+      "surefireExitWaitWarning": false
+    },
+    "full": {
+      "tests": 488,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": 78,
+      "exitCode": 0,
+      "logSha256": "b04926a96abbf8e99755dece660e9fed2863c17c9143ec92cf926b1647994c51",
+      "surefireExitWaitWarning": true
+    },
+    "detail": "mapper-cleanup.json",
+    "protectedPathChanges": [],
+    "notRerunOnThisCommit": [
+      "cold Compose build/environment verifier",
+      "standalone fixed migration chain and backup/restore exercise"
+    ]
   }
 }

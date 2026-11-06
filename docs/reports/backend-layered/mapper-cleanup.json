@@ -1,0 +1,1321 @@
+{
+  "date": "2026-11-06",
+  "scope": "Mapper naming, business parameter types and SQL layout; necessary callers only",
+  "previousDeliveryCommit": "4b4cbb9",
+  "sourceCommit": "4577164dfd2276a6e3d80b9c34a9e8a585b5ab56",
+  "sourceTree": "d54097248bc0cbd5b3403e0ad79ca5483bfda178",
+  "status": "pending-independent-reinspection",
+  "reviewedMapperFiles": 22,
+  "changedMapperFiles": 19,
+  "reviewedMethods": 228,
+  "renamedMethods": 144,
+  "narrowedObjectParameters": 11,
+  "remainingDirectObjectParameters": 0,
+  "sqlAudit": {
+    "jdbcCalls": 217,
+    "stringInitializers": 12,
+    "sqlTokens": "unchanged, including quoted values and multi-character operators",
+    "dynamicSql": "concatenation boundaries and conditional branches compared",
+    "jdbcOperations": "unchanged",
+    "bindingCountAndOrder": "unchanged after positional parameter normalization",
+    "rowMappersAndResultTypes": "unchanged",
+    "tool": "external JavaParser 3.26.3 audit against 4b4cbb9; no project dependency added"
+  },
+  "tests": {
+    "affected": {
+      "command": "mvn -B -ntp '-Dtest=com.zhangxuan.runrunv2.**,AdminCommandCenterPostgresIntegrationTest,AdminDispatchServiceTest,FulfillmentProvenanceServiceTest,UserRoleSchemaMigrationTest,CreditPostgresIntegrationTest' test",
+      "tests": 154,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": 20,
+      "exitCode": 0,
+      "logSha256": "72bf620ea6f8fc133b2250b12f7c12e3c6f7671ead746ad382c5778ee0545b46",
+      "surefireExitWaitWarning": false
+    },
+    "full": {
+      "command": "mvn -B -ntp test",
+      "tests": 488,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": 78,
+      "exitCode": 0,
+      "logSha256": "b04926a96abbf8e99755dece660e9fed2863c17c9143ec92cf926b1647994c51",
+      "surefireExitWaitWarning": true
+    },
+    "addedRegression": "OrderIntegrationTest.disabledConfigPreservesNullableReviewOwner",
+    "previousFullCount": 487,
+    "finalFullCount": 488
+  },
+  "methodMapping": [
+    {
+      "mapper": "OrderMapper",
+      "before": "createValueV",
+      "after": "insertOrder"
+    },
+    {
+      "mapper": "OrderMapper",
+      "before": "createWriteV",
+      "after": "insertOrderCreatedEvent"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "createValuePaymentOrders",
+      "after": "insertOriginalPayment"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "startValuePaymentAttempts",
+      "after": "findNextAttemptNumber",
+      "parametersAfter": [
+        "paymentOrderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "startValuePaymentAttempts2",
+      "after": "insertPaymentAttempt"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "cancelWritePaymentAdjustments",
+      "after": "cancelPendingAdjustments",
+      "parametersAfter": [
+        "resolvedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "retryRefundWriteRefundOrders",
+      "after": "markRefundProcessing",
+      "parametersAfter": [
+        "refundId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "approvedAdjustmentValuePaymentAdjustments",
+      "after": "countAdjustmentById"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "approvedAdjustmentValuePaymentAdjustments2",
+      "after": "countPendingAdjustments"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "approvedAdjustmentWritePaymentAdjustments",
+      "after": "insertApprovedAdjustment",
+      "parametersAfter": [
+        "adjustmentId",
+        "orderId",
+        "deltaCents",
+        "status",
+        "approvedBy",
+        "reason",
+        "approvedAt"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "approvedAdjustmentWriteV",
+      "after": "updateEffectiveFeeAndClearConfirmation",
+      "parametersAfter": [
+        "effectiveFeeCents",
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "approvedAdjustmentValuePaymentOrders",
+      "after": "insertSupplementPayment"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "closeExpiredRowsV",
+      "after": "findExpiredUnpaidOrderIds",
+      "parametersAfter": [
+        "deadlineCutoff"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "closeExpiredWritePaymentOrders",
+      "after": "closeUnpaidOriginalPayments",
+      "parametersAfter": [
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "applyPaymentWritePaymentAttempts",
+      "after": "updateAttemptResult",
+      "parametersAfter": [
+        "status",
+        "resultReceivedAt",
+        "attemptId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "applyPaymentWritePaymentOrders",
+      "after": "markPaymentPaid",
+      "parametersAfter": [
+        "paidAt",
+        "creditedAttemptId",
+        "updatedAt",
+        "paymentOrderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "applyPaymentWriteV",
+      "after": "markOrderPendingAssignment",
+      "parametersAfter": [
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "applyRefundWriteRefundOrders",
+      "after": "updateRefundResult",
+      "parametersAfter": [
+        "status",
+        "succeededAt",
+        "refundId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "applyRefundValueRefundOrders",
+      "after": "countUnfinishedAdjustmentRefunds"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "createRefundRowsRefundOrders",
+      "after": "findRefundIdsByBusinessKey"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "createRefundValueRefundOrders",
+      "after": "insertRefund"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "resolveAdjustmentWritePaymentAdjustments",
+      "after": "completePendingAdjustment",
+      "parametersAfter": [
+        "resolvedAt",
+        "adjustmentId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "resolveAdjustmentValuePaymentAdjustments",
+      "after": "findAdjustmentOrderId",
+      "parametersAfter": [
+        "adjustmentId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "adjustmentOpenValuePaymentAdjustments",
+      "after": "isSupplementPending",
+      "parametersAfter": [
+        "adjustmentId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "availableValueRefundOrders",
+      "after": "sumReservedRefundCents",
+      "parametersAfter": [
+        "sourceAttemptId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "creditedValuePaymentOrders",
+      "after": "findCreditedAttemptId",
+      "parametersAfter": [
+        "paymentOrderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "closeOrderWriteV",
+      "after": "cancelOrderAndClearConfirmation",
+      "parametersAfter": [
+        "cancelledAt",
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "lockNotificationRecipientRowsAppUsers",
+      "after": "lockOrderNotificationRecipient"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "paymentStatusWritePaymentOrders",
+      "after": "updatePaymentStatusIfDifferent",
+      "parametersAfter": [
+        "status",
+        "updatedAt",
+        "paymentOrderId",
+        "excludedStatus"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "paymentRowsPaymentOrders",
+      "after": "findPayment",
+      "parametersAfter": [
+        "lock",
+        "paymentOrderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "attemptRowsPaymentAttempts",
+      "after": "findAttempt",
+      "parametersAfter": [
+        "attemptId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "refundRowsRefundOrders",
+      "after": "findRefund",
+      "parametersAfter": [
+        "refundId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "attemptsRowsPaymentAttempts",
+      "after": "findAttemptIds",
+      "parametersAfter": [
+        "paymentOrderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "paymentsForOrderRowsPaymentOrders",
+      "after": "findPaymentIdsByOrder",
+      "parametersAfter": [
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "refundsForOrderRowsRefundOrders",
+      "after": "findRefundIdsByOrder",
+      "parametersAfter": [
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "seenWritePaymentResultEvents",
+      "after": "insertResultEvent"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "lockResultEvent",
+      "after": "lockResultEvent",
+      "parametersAfter": [
+        "eventId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "knownEventRowsPaymentResultEvents",
+      "after": "findResultEvent"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "refundFinancialValueRefundOrders",
+      "after": "findRefundSourceAttemptId",
+      "parametersAfter": [
+        "refundId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "refundFinancialValueRefundOrders2",
+      "after": "sumSucceededRefundCents",
+      "parametersAfter": [
+        "sourceAttemptId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "refundFinancialValuePaymentFinancialEvents",
+      "after": "sumRecordedPlatformRefundCents",
+      "parametersAfter": [
+        "sourceAttemptId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "refundFinancialWritePaymentFinancialEvents",
+      "after": "insertRefundFinancialEvent"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "eventWriteV",
+      "after": "insertOrderEventIfAbsent"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "financialWritePaymentFinancialEvents",
+      "after": "insertFinancialEventIfAbsent"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "notifyUserWriteNotificationOutbox",
+      "after": "insertOrderNotificationIfAbsent",
+      "parametersAfter": [
+        "eventKey",
+        "payload",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "PaymentMapper",
+      "before": "auditWritePaymentAdminAudit",
+      "after": "insertAdminAudit"
+    },
+    {
+      "mapper": "MockPaymentMapper",
+      "before": "submitWriteMockChannelResults",
+      "after": "insertProcessingResult"
+    },
+    {
+      "mapper": "MockPaymentMapper",
+      "before": "queryRowsMockChannelResults",
+      "after": "findResult",
+      "parametersAfter": [
+        "resourceType",
+        "resourceId"
+      ]
+    },
+    {
+      "mapper": "MockPaymentMapper",
+      "before": "revisionValueMockChannelResults",
+      "after": "findResultVersion",
+      "parametersAfter": [
+        "resourceType",
+        "resourceId"
+      ]
+    },
+    {
+      "mapper": "MockPaymentMapper",
+      "before": "recordWriteMockChannelResults",
+      "after": "updateResultUnlessSuccessful",
+      "parametersAfter": [
+        "result",
+        "resourceType",
+        "resourceId"
+      ]
+    },
+    {
+      "mapper": "MockPaymentMapper",
+      "before": "retryRefundWriteMockChannelResults",
+      "after": "retryFailedRefund",
+      "parametersAfter": [
+        "refundId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "acceptValueFulfillmentTasks",
+      "after": "insertActiveTask"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "inviteRowsAppUsers",
+      "after": "lockActiveCourier"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "inviteValueFulfillmentTasks",
+      "after": "countActiveTasksForInvitation"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "inviteValueFulfillmentTasks2",
+      "after": "findLatestTaskId"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "inviteValueFulfillmentTasks3",
+      "after": "insertTaskOffer"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "respondValueFulfillmentTasks",
+      "after": "countActiveTasksForResponse"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "respondWriteFulfillmentTasks",
+      "after": "acceptTaskOffer",
+      "parametersAfter": [
+        "acceptedAt",
+        "taskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "releaseValueV",
+      "after": "countPickupProofs"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "proofValueV",
+      "after": "countTaskProofs"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "proofValueV2",
+      "after": "countProofsByStorageKey"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "proofValueV3",
+      "after": "insertOrderProof"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "locationRowsLocationEvents",
+      "after": "findLocationRequest"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "locationValueLocationEvents",
+      "after": "countAcceptedDeliveryLocations"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "locationValueLocationEvents2",
+      "after": "insertLocationEvent"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "pickupWriteFulfillmentTasks",
+      "after": "markTaskPickedUp",
+      "parametersAfter": [
+        "pickedUpAt",
+        "taskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "deliverValueLocationEvents",
+      "after": "countValidDeliveryLocations"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "deliverWriteFulfillmentTasks",
+      "after": "markTaskDelivered",
+      "parametersAfter": [
+        "deliveredAt",
+        "endedAt",
+        "taskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "deliverWriteV",
+      "after": "markOrderDelivered",
+      "parametersAfter": [
+        "deliveredAt",
+        "confirmStartedAt",
+        "confirmDeadline",
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "autoCompleteRowsV",
+      "after": "findOrdersDueForConfirmation",
+      "parametersAfter": [
+        "deadlineCutoff"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "blockCompletionWriteFulfillmentCompletionBlocks",
+      "after": "insertCompletionBlock",
+      "parametersAfter": [
+        "orderId",
+        "sourceType",
+        "sourceId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "unblockCompletionWriteFulfillmentCompletionBlocks",
+      "after": "deleteCompletionBlock",
+      "parametersAfter": [
+        "orderId",
+        "sourceType",
+        "sourceId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "restartWindowWriteV",
+      "after": "restartConfirmationWindow",
+      "parametersAfter": [
+        "confirmStartedAt",
+        "confirmDeadline",
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "completeWriteV",
+      "after": "markOrderCompleted",
+      "parametersAfter": [
+        "completedAt",
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "adjustmentBlockedValueFulfillmentCompletionBlocks",
+      "after": "hasAdjustmentCompletionBlock",
+      "parametersAfter": [
+        "blockedOrderId",
+        "adjustmentOrderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "caseBlockedValueFulfillmentCompletionBlocks",
+      "after": "hasAfterSalesCompletionBlock",
+      "parametersAfter": [
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "capacityValueFulfillmentTasks",
+      "after": "countActiveCourierTasks",
+      "parametersAfter": [
+        "courierId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "lockRowsAppUsers",
+      "after": "lockOrderUser",
+      "parametersAfter": [
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "currentRowsFulfillmentTasks",
+      "after": "findLatestCourierTaskId",
+      "parametersAfter": [
+        "courierId",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "taskRowsFulfillmentTasks",
+      "after": "findTask",
+      "parametersAfter": [
+        "taskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "unsupersededValueFulfillmentTasks",
+      "after": "isTaskUnsuperseded",
+      "parametersAfter": [
+        "taskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "proofPermissionValueFulfillmentTasks",
+      "after": "isLatestOrderTask"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "requireProofValueV",
+      "after": "countAvailableTaskProofs",
+      "parametersAfter": [
+        "proofId",
+        "orderId",
+        "taskId",
+        "kind"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "supersedeWriteFulfillmentTasks",
+      "after": "supersedeOtherTasks",
+      "parametersAfter": [
+        "supersededAt",
+        "orderId",
+        "retainedTaskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "closeOffersWriteFulfillmentTasks",
+      "after": "cancelOtherOffers",
+      "parametersAfter": [
+        "endedAt",
+        "orderId",
+        "retainedTaskId",
+        "excludedTaskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "endWriteFulfillmentTasks",
+      "after": "endTask",
+      "parametersAfter": [
+        "status",
+        "endedAt",
+        "taskId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "updateOrder",
+      "after": "updateOrder",
+      "parametersAfter": [
+        "assignment",
+        "updatedAt",
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "orderValueV",
+      "after": "findOrder",
+      "parametersAfter": [
+        "orderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "displayStatusValuePaymentAdjustments",
+      "after": "hasPendingSupplement"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "readEventValueLocationEvents",
+      "after": "findLocationEvent",
+      "parametersAfter": [
+        "eventId",
+        "orderVersion"
+      ]
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "eventWriteV",
+      "after": "insertOrderEvent"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "before": "notifyWriteNotificationOutbox",
+      "after": "insertNotificationIfAbsent"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "settingsRowPlatformSettings",
+      "after": "lockSettings",
+      "parametersAfter": [
+        "forUpdate"
+      ]
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "viewRowsDeliveryZones",
+      "after": "findZones"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "viewRowsServicePoints",
+      "after": "findServicePoints"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "patchWriteDeliveryZones",
+      "after": "upsertZone"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "patchWriteServicePoints",
+      "after": "upsertServicePoint"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "patchWritePlatformSettings",
+      "after": "updateSettings",
+      "parametersAfter": [
+        "enabled",
+        "reviewOwnerId"
+      ]
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "patchWriteAdminAuditLogs",
+      "after": "insertConfigChangeAudit"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "before": "requireOwnerValueAppUsers",
+      "after": "isEligibleReviewOwner",
+      "parametersAfter": [
+        "userId"
+      ]
+    },
+    {
+      "mapper": "IdentityStartupMapper",
+      "before": "runValueAppUsers",
+      "after": "countUsersWithControlledIdentityFlag"
+    },
+    {
+      "mapper": "IdentityStartupMapper",
+      "before": "runValueIdentityTickets",
+      "after": "countIdentityTickets"
+    },
+    {
+      "mapper": "LocalTestMapper",
+      "before": "runRowsAppUsers",
+      "after": "findLocalTestAdmin"
+    },
+    {
+      "mapper": "LocalTestMapper",
+      "before": "runValueAdminAuditLogs",
+      "after": "hasLocalTestEnableAudit"
+    },
+    {
+      "mapper": "LocalTestMapper",
+      "before": "runValueAppUsers",
+      "after": "countUsers"
+    },
+    {
+      "mapper": "LocalTestMapper",
+      "before": "runValueAppUsers2",
+      "after": "insertLocalTestAdmin"
+    },
+    {
+      "mapper": "LocalTestMapper",
+      "before": "runWriteWechatIdentities",
+      "after": "insertWechatIdentity"
+    },
+    {
+      "mapper": "NotificationMapper",
+      "before": "listRowsUserNotifications",
+      "after": "findUserNotifications",
+      "parametersAfter": [
+        "userId"
+      ]
+    },
+    {
+      "mapper": "NotificationMapper",
+      "before": "markReadWriteUserNotifications",
+      "after": "markNotificationRead",
+      "parametersAfter": [
+        "notificationId",
+        "userId"
+      ]
+    },
+    {
+      "mapper": "NotificationMapper",
+      "before": "claimRowsClaimNotificationOutbox",
+      "after": "claimOutboxDeliveries",
+      "parametersAfter": [
+        "limit"
+      ]
+    },
+    {
+      "mapper": "NotificationOutboxMapper",
+      "before": "claimRowsClaimNotificationOutbox",
+      "after": "claimOutboxDeliveries",
+      "parametersAfter": [
+        "limit"
+      ]
+    },
+    {
+      "mapper": "NotificationOutboxMapper",
+      "before": "completeDelivery",
+      "after": "completeDelivery",
+      "parametersAfter": [
+        "outboxId",
+        "success",
+        "error"
+      ]
+    },
+    {
+      "mapper": "IdentityMapper",
+      "before": "countWechatIdentity",
+      "after": "countWechatIdentity",
+      "parametersAfter": [
+        "appId",
+        "openidHash"
+      ]
+    },
+    {
+      "mapper": "IdentityMapper",
+      "before": "updatePassword",
+      "after": "updatePassword",
+      "parametersAfter": [
+        "passwordHash",
+        "userId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "applyRowsCourierCertifications",
+      "after": "lockCourierCertification",
+      "parametersAfter": [
+        "courierId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "applyWriteCourierCertifications",
+      "after": "insertPendingCertification"
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "applyWriteCourierCertifications2",
+      "after": "resubmitCertification",
+      "parametersAfter": [
+        "courierId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "applyValueCourierCertifications",
+      "after": "findCertificationId",
+      "parametersAfter": [
+        "courierId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "uploadWriteCourierCertifications",
+      "after": "updateSubmittedPhoto",
+      "parametersAfter": [
+        "resourceId",
+        "storageKey",
+        "certificationId",
+        "expectedVersion"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "uploadWriteCourierCertifications2",
+      "after": "touchCertificationIfVersionMatches",
+      "parametersAfter": [
+        "certificationId",
+        "expectedVersion"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "decideWriteCourierCertifications",
+      "after": "approveCertification",
+      "parametersAfter": [
+        "certificationId",
+        "expectedVersion"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "decideWriteCourierCertifications2",
+      "after": "rejectCertification",
+      "parametersAfter": [
+        "reason",
+        "certificationId",
+        "expectedVersion"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "readValueEvidenceDeletionAudits",
+      "after": "countPhotoDeletionsInProgress",
+      "parametersAfter": [
+        "certificationId",
+        "resourceId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "readWriteAdminAuditLogs",
+      "after": "insertPhotoReadAudit",
+      "parametersAfter": [
+        "administratorId",
+        "certificationId",
+        "requestId",
+        "reason",
+        "resourceId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "adminListValueAppUsers",
+      "after": "countCertifications",
+      "parametersAfter": [
+        "statusFilter",
+        "status",
+        "phoneFilter",
+        "phonePattern"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "adminListRowsAppUsers",
+      "after": "pageCertifications",
+      "parametersAfter": [
+        "statusFilter",
+        "status",
+        "phoneFilter",
+        "phonePattern",
+        "limit",
+        "offset"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "countDeliveredTasks",
+      "after": "countDeliveredTasks",
+      "parametersAfter": [
+        "courierId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "summarizeDeliveredTasks",
+      "after": "summarizeDeliveredTasks",
+      "parametersAfter": [
+        "courierId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "pageDeliveredTasks",
+      "after": "pageDeliveredTasks",
+      "parametersAfter": [
+        "courierId",
+        "limit",
+        "offset"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "getMineRowsCourierCertifications",
+      "after": "findCourierCertification",
+      "parametersAfter": [
+        "courierId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "lockedRowsCourierCertifications",
+      "after": "lockCertification",
+      "parametersAfter": [
+        "certificationId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "lockActorValueAppUsers",
+      "after": "lockActor",
+      "parametersAfter": [
+        "actorId"
+      ]
+    },
+    {
+      "mapper": "CourierCertificationV2Mapper",
+      "before": "eventWriteCourierCertificationEvents",
+      "after": "insertCertificationEvent",
+      "parametersAfter": [
+        "certificationId",
+        "actorId",
+        "actorKind",
+        "eventType",
+        "requestId",
+        "versionSourceCertificationId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "holdValueV",
+      "after": "countOrderById"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "holdValueCourierCertifications",
+      "after": "countCertificationById"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "holdValueEvidenceHolds",
+      "after": "insertEvidenceHold"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "holdWriteAdminAuditLogs",
+      "after": "insertHoldCreatedAudit",
+      "parametersAfter": [
+        "administratorId",
+        "holdId",
+        "requestId",
+        "reason",
+        "orderIdParameter",
+        "certificationIdParameter"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "releaseRowsEvidenceHolds",
+      "after": "lockEvidenceHold"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "releaseWriteEvidenceHolds",
+      "after": "releaseEvidenceHold"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "releaseWriteAdminAuditLogs",
+      "after": "insertHoldReleasedAudit"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "requestCertificationDeletionValueEvidenceHolds",
+      "after": "countActiveCertificationHolds"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "requestCertificationDeletionWriteEvidenceDeletionAudits",
+      "after": "insertDeletionRequestIfAbsent",
+      "parametersAfter": [
+        "certificationId",
+        "resourceId",
+        "storageKey",
+        "deleteAfter",
+        "existingCertificationId",
+        "existingResourceId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "cleanupDueRowsEvidenceDeletionAudits",
+      "after": "lockDueDeletions"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "cleanupDueRowsCourierCertifications",
+      "after": "findExpiredApprovedPhotos"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "deleteOneValueEvidenceHolds",
+      "after": "countActiveHoldsBeforeDeletion",
+      "parametersAfter": [
+        "certificationId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "deleteOneWriteEvidenceDeletionAudits",
+      "after": "markDeletionInProgress",
+      "parametersAfter": [
+        "deletionAuditId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "deleteOneWriteCourierCertifications",
+      "after": "clearSubmittedPhoto",
+      "parametersAfter": [
+        "certificationId",
+        "resourceId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "deleteOneWriteCourierCertifications2",
+      "after": "clearApprovedPhoto",
+      "parametersAfter": [
+        "certificationId",
+        "resourceId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "deleteOneWriteEvidenceDeletionAudits2",
+      "after": "markDeletionSucceeded",
+      "parametersAfter": [
+        "deletionAuditId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "deleteOneWriteEvidenceDeletionAudits3",
+      "after": "markDeletionFailed",
+      "parametersAfter": [
+        "errorCode",
+        "deletionAuditId"
+      ]
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "lockAggregateValueV",
+      "after": "lockOrder"
+    },
+    {
+      "mapper": "CourierEvidenceGovernanceMapper",
+      "before": "lockAggregateValueCourierCertifications",
+      "after": "lockCertification"
+    },
+    {
+      "mapper": "FulfillmentProvenanceMapper",
+      "before": "verifyByIndependentAdministrator",
+      "after": "verifyByIndependentAdministrator",
+      "parametersAfter": [
+        "verifierId",
+        "provenanceId",
+        "excludedRecorderId"
+      ]
+    },
+    {
+      "mapper": "FulfillmentProvenanceMapper",
+      "before": "pageProvenance",
+      "after": "pageProvenance",
+      "parametersAfter": [
+        "offset"
+      ]
+    },
+    {
+      "mapper": "AdminCommandCenterMapper",
+      "before": "pageOnlineCouriers",
+      "after": "pageOnlineCouriers",
+      "parametersAfter": [
+        "limit",
+        "offset"
+      ]
+    }
+  ],
+  "typeMapping": [
+    {
+      "mapper": "OrderMapper",
+      "method": "insertOrder",
+      "parameter": "zoneId",
+      "before": "Object",
+      "after": "Long",
+      "basis": "rrc_0100__orders_and_service_config.sql: BIGINT"
+    },
+    {
+      "mapper": "OrderMapper",
+      "method": "insertOrder",
+      "parameter": "servicePointId",
+      "before": "Object",
+      "after": "Long",
+      "basis": "rrc_0100__orders_and_service_config.sql: BIGINT"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "method": "updateSettings",
+      "parameter": "reviewOwnerId",
+      "before": "Object",
+      "after": "Long",
+      "basis": "rrc_0100__orders_and_service_config.sql: nullable BIGINT"
+    },
+    {
+      "mapper": "ServiceConfigMapper",
+      "method": "isEligibleReviewOwner",
+      "parameter": "userId",
+      "before": "Object",
+      "after": "Long",
+      "basis": "app_users.id BIGINT"
+    },
+    {
+      "mapper": "IdentityMapper",
+      "method": "countWechatIdentity",
+      "parameter": "openidHash",
+      "before": "Object",
+      "after": "String",
+      "basis": "wechat_identities.openid_hash TEXT"
+    },
+    {
+      "mapper": "IdentityMapper",
+      "method": "insertWechatBinding",
+      "parameter": "openidHash",
+      "before": "Object",
+      "after": "String",
+      "basis": "wechat_identities.openid_hash TEXT"
+    },
+    {
+      "mapper": "IdentityMapper",
+      "method": "insertWechatBinding",
+      "parameter": "openidCiphertext",
+      "before": "Object",
+      "after": "String",
+      "basis": "wechat_identities.openid_ciphertext TEXT"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "method": "insertApprovedAdjustment",
+      "parameter": "status",
+      "before": "Object",
+      "after": "String",
+      "basis": "payment_adjustments.status TEXT; caller selects existing status string"
+    },
+    {
+      "mapper": "PaymentMapper",
+      "method": "updateRefundResult",
+      "parameter": "succeededAt",
+      "before": "Object",
+      "after": "OffsetDateTime",
+      "basis": "refund_orders.succeeded_at TIMESTAMPTZ; now() or null"
+    },
+    {
+      "mapper": "FulfillmentMapper",
+      "method": "markOrderDelivered",
+      "parameter": "confirmDeadline",
+      "before": "Object",
+      "after": "OffsetDateTime",
+      "basis": "v2_orders.confirm_deadline TIMESTAMPTZ; confirmation start plus minutes or null"
+    },
+    {
+      "mapper": "FulfillmentProvenanceMapper",
+      "method": "insertProvenance",
+      "parameter": "financialEvidenceSha256",
+      "before": "Object",
+      "after": "String",
+      "basis": "legacy request SHA-256 String; lower-case String or null"
+    }
+  ],
+  "protectedPathChanges": [],
+  "notRerunOnThisCommit": [
+    "cold Compose build/environment verifier",
+    "standalone fixed migration chain and backup/restore exercise"
+  ],
+  "auditLogSha256": "d56d9d21afe3ef3fcef66605dc71f03e96951080b47c1e151a403fabbf4a79b7"
+}

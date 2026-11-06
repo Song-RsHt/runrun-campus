@@ -1,7 +1,12 @@
 A	docs/reports/Backend-layered-refactor.md
+A	docs/reports/backend-layered/after.json
 A	docs/reports/backend-layered/before.json
+A	docs/reports/backend-layered/changed-files.txt
+A	docs/reports/backend-layered/dependencies.json
 A	docs/reports/backend-layered/inventory.md
 A	docs/reports/backend-layered/mapping.md
+A	docs/reports/backend-layered/verification.json
+A	docs/后端分层维护指南.md
 M	handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/RunRunCampusBackendApplication.java
 D	handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/address/AddressController.java
 D	handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/address/AddressRepository.java
@@ -740,8 +745,5 @@ A	handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/i
 A	handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/service/evidence/CourierEvidenceGovernanceServiceTest.java
 M	handover-2026-10-24/RunRunCampusBackend/tools/run-v2-isolated-tests.ps1
 M	tools/run-v2-isolated-tests.ps1
-A	docs/reports/backend-layered/after.json
-A	docs/reports/backend-layered/changed-files.txt
-A	docs/reports/backend-layered/dependencies.json
-A	docs/reports/backend-layered/verification.json
-A	docs/后端分层维护指南.md
+A	docs/reports/Mapper-cleanup-2026-11-06.md
+A	docs/reports/backend-layered/mapper-cleanup.json

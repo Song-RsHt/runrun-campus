@@ -1716,7 +1716,7 @@
     "name": "AdminCommandCenterMapper",
     "package": "com.zhangxuan.runruncampus.mapper.admin",
     "kind": "main",
-    "lines": 142,
+    "lines": 173,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -1736,7 +1736,7 @@
     "name": "FulfillmentProvenanceMapper",
     "package": "com.zhangxuan.runruncampus.mapper.admin",
     "kind": "main",
-    "lines": 122,
+    "lines": 129,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -1766,7 +1766,7 @@
     "name": "UserRoleSchemaMigrationMapper",
     "package": "com.zhangxuan.runruncampus.mapper.identity",
     "kind": "main",
-    "lines": 45,
+    "lines": 48,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3567,7 +3567,7 @@
     "name": "ServiceConfigMapper",
     "package": "com.zhangxuan.runrunv2.mapper.configuration",
     "kind": "main",
-    "lines": 141,
+    "lines": 260,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3577,7 +3577,7 @@
     "name": "CourierCertificationV2Mapper",
     "package": "com.zhangxuan.runrunv2.mapper.courier",
     "kind": "main",
-    "lines": 203,
+    "lines": 392,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3587,7 +3587,7 @@
     "name": "CourierEvidenceGovernanceMapper",
     "package": "com.zhangxuan.runrunv2.mapper.evidence",
     "kind": "main",
-    "lines": 196,
+    "lines": 349,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3597,7 +3597,7 @@
     "name": "FulfillmentMapper",
     "package": "com.zhangxuan.runrunv2.mapper.fulfillment",
     "kind": "main",
-    "lines": 469,
+    "lines": 769,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3607,7 +3607,7 @@
     "name": "FulfillmentQueryMapper",
     "package": "com.zhangxuan.runrunv2.mapper.fulfillment",
     "kind": "main",
-    "lines": 76,
+    "lines": 103,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3617,7 +3617,7 @@
     "name": "OrderIdempotencyMapper",
     "package": "com.zhangxuan.runrunv2.mapper.idempotency",
     "kind": "main",
-    "lines": 58,
+    "lines": 88,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3627,7 +3627,7 @@
     "name": "DeploymentIdentityMapper",
     "package": "com.zhangxuan.runrunv2.mapper.identity",
     "kind": "main",
-    "lines": 106,
+    "lines": 174,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3637,7 +3637,7 @@
     "name": "IdentityMapper",
     "package": "com.zhangxuan.runrunv2.mapper.identity",
     "kind": "main",
-    "lines": 243,
+    "lines": 447,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3647,7 +3647,7 @@
     "name": "IdentityStartupMapper",
     "package": "com.zhangxuan.runrunv2.mapper.identity",
     "kind": "main",
-    "lines": 34,
+    "lines": 50,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3657,7 +3657,7 @@
     "name": "LocalTestMapper",
     "package": "com.zhangxuan.runrunv2.mapper.identity",
     "kind": "main",
-    "lines": 60,
+    "lines": 101,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3667,7 +3667,7 @@
     "name": "NotificationMapper",
     "package": "com.zhangxuan.runrunv2.mapper.notification",
     "kind": "main",
-    "lines": 44,
+    "lines": 70,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3677,7 +3677,7 @@
     "name": "NotificationOutboxMapper",
     "package": "com.zhangxuan.runrunv2.mapper.notification",
     "kind": "main",
-    "lines": 68,
+    "lines": 83,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3687,7 +3687,7 @@
     "name": "OrderMapper",
     "package": "com.zhangxuan.runrunv2.mapper.order",
     "kind": "main",
-    "lines": 65,
+    "lines": 109,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3697,7 +3697,7 @@
     "name": "OrderStore",
     "package": "com.zhangxuan.runrunv2.mapper.order",
     "kind": "main",
-    "lines": 77,
+    "lines": 86,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3707,7 +3707,7 @@
     "name": "MockPaymentMapper",
     "package": "com.zhangxuan.runrunv2.mapper.payment",
     "kind": "main",
-    "lines": 62,
+    "lines": 93,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3717,7 +3717,7 @@
     "name": "PaymentMapper",
     "package": "com.zhangxuan.runrunv2.mapper.payment",
     "kind": "main",
-    "lines": 474,
+    "lines": 809,
     "database": true,
     "transaction": [],
     "scheduled": []
@@ -3916,7 +3916,7 @@
     "name": "FulfillmentService",
     "package": "com.zhangxuan.runrunv2.service.fulfillment",
     "kind": "main",
-    "lines": 712,
+    "lines": 711,
     "database": false,
     "transaction": [
       "@Transactional",
@@ -3976,7 +3976,7 @@
     "name": "IdentityService",
     "package": "com.zhangxuan.runrunv2.service.identity",
     "kind": "main",
-    "lines": 242,
+    "lines": 245,
     "database": false,
     "transaction": [
       "@Transactional",
@@ -4040,7 +4040,7 @@
     "name": "PaymentService",
     "package": "com.zhangxuan.runrunv2.service.payment",
     "kind": "main",
-    "lines": 688,
+    "lines": 679,
     "database": false,
     "transaction": [
       "@Transactional(propagation = Propagation.MANDATORY)",
@@ -4808,7 +4808,7 @@
     "name": "OrderIntegrationTest",
     "package": "com.zhangxuan.runrunv2.controller.order",
     "kind": "test",
-    "lines": 635,
+    "lines": 658,
     "database": true,
     "transaction": [],
     "scheduled": []

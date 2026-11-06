@@ -1,5 +1,7 @@
 # Java 后端分层重构
 
+> 2026-11-06 验收返工：用户结论为“部分通过，暂不建议合并”。后续仅清理全部 Mapper 的命名、参数类型和 SQL 排版，详见 [Mapper 专项返工及复验记录](Mapper-cleanup-2026-11-06.md)。下文的原有构建、迁移链和 Compose 证据仍对应其注明的旧源码提交，不能视为后续源码已通过独立验收。
+
 日期：2026-11-05 至 2026-11-06（Asia/Shanghai）。分支 `refactor/backend-layered-architecture`；独立 worktree `D:/biancheng/RunRunCampus-worktrees/rrc-refactor-backend`。
 
 ## 基线与授权
