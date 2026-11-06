@@ -198,7 +198,7 @@ class CourierCertificationServiceTest {
             "card.jpg",
             "image/jpeg",
             new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff, 1, 2});
-    var response = certificationService.uploadStudentCard(courier, 11L, file);
+    var response = certificationService.uploadStudentCard(courier, 11L, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file));
     assertTrue(response.photoUploaded());
   }
 

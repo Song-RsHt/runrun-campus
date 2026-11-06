@@ -18,7 +18,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import com.zhangxuan.runruncampus.model.UploadSource;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -26,5 +26,5 @@ import org.springframework.web.server.ResponseStatusException;
  */
 public interface OrderProofService {
 
-    OrderProofVO upload(AppUser courier, Long orderId, OrderProofType type, MultipartFile file);
+    OrderProofVO upload(AppUser courier, Long orderId, OrderProofType type, UploadSource file);
 }

@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.web.multipart.MultipartFile;
+import com.zhangxuan.runruncampus.model.UploadSource;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -49,9 +49,9 @@ public interface CourierCertificationService {
 
     CertificationResponse reject(AppUser admin, Long id, String reason);
 
-    CertificationResponse uploadStudentCard(AppUser courier, Long id, MultipartFile file);
+    CertificationResponse uploadStudentCard(AppUser courier, Long id, UploadSource file);
 
-    CertificationResponse uploadStudentCard(AppUser courier, Long id, MultipartFile file, Long expectedVersion);
+    CertificationResponse uploadStudentCard(AppUser courier, Long id, UploadSource file, Long expectedVersion);
 
     CertificationPhoto studentCardPhoto(AppUser admin, Long id);
 

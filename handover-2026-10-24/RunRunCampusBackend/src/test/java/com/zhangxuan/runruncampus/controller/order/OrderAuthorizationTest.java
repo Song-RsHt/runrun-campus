@@ -322,7 +322,7 @@ class OrderAuthorizationTest {
         assertThrows(
             ResponseStatusException.class,
             () ->
-                proofService.upload(user(3L, UserRole.COURIER), 11L, OrderProofType.PICKUP, image));
+                proofService.upload(user(3L, UserRole.COURIER), 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     verifyNoInteractions(proofRepository, proofStorage);
   }

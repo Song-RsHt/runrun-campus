@@ -137,7 +137,7 @@ public class OrderController {
 
     @PostMapping(value = "/{id}/proofs/{type}", consumes = "multipart/form-data")
     public OrderProofVO uploadProof(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @PathVariable OrderProofType type, @RequestPart("file") MultipartFile file) {
-        return proofService.upload(authService.requireUser(authorization), id, type, file);
+        return proofService.upload(authService.requireUser(authorization), id, type, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file));
     }
 
     @PostMapping("/{id}/package-size")

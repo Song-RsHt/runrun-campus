@@ -161,7 +161,7 @@ class OrderProofServiceTest {
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderProofVO response =
-        proofService.upload(courier, 11L, OrderProofType.PICKUP, image);
+        proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image));
     assertEquals(OrderProofType.PICKUP, response.type());
     assertEquals("pickup.jpg", response.originalFileName());
     try (var files = Files.list(storageDirectory)) {
@@ -176,7 +176,7 @@ class OrderProofServiceTest {
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderProofVO response =
-        proofService.upload(courier, 11L, OrderProofType.PICKUP, image);
+        proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image));
     assertEquals("image/png", response.contentType());
     assertEquals("pickup.png", response.originalFileName());
     try (var files = Files.list(storageDirectory)) {
@@ -193,7 +193,7 @@ class OrderProofServiceTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, image));
+            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(400, exception.getStatusCode().value());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
@@ -205,7 +205,7 @@ class OrderProofServiceTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, image));
+            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(400, exception.getStatusCode().value());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
@@ -218,7 +218,7 @@ class OrderProofServiceTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, image));
+            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(400, exception.getStatusCode().value());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
@@ -232,7 +232,7 @@ class OrderProofServiceTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, image));
+            () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(400, exception.getStatusCode().value());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
@@ -255,7 +255,7 @@ class OrderProofServiceTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> proofService.upload(courier, 12L, OrderProofType.PICKUP, image));
+            () -> proofService.upload(courier, 12L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(409, exception.getStatusCode().value());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
@@ -281,7 +281,7 @@ class OrderProofServiceTest {
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderProofVO response =
-        proofService.upload(courier, 12L, OrderProofType.SIZE_REVIEW, image);
+        proofService.upload(courier, 12L, OrderProofType.SIZE_REVIEW, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image));
     assertEquals(OrderProofType.SIZE_REVIEW, response.type());
     assertEquals("size-review.jpg", response.originalFileName());
     try (var files = Files.list(storageDirectory)) {
@@ -297,7 +297,7 @@ class OrderProofServiceTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> proofService.upload(courier, 11L, OrderProofType.SIZE_REVIEW, image));
+            () -> proofService.upload(courier, 11L, OrderProofType.SIZE_REVIEW, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(409, exception.getStatusCode().value());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
@@ -316,7 +316,7 @@ class OrderProofServiceTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> service.upload(courier, 11L, OrderProofType.PICKUP, image));
+            () -> service.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
     assertEquals(500, exception.getStatusCode().value());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }

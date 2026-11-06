@@ -47,7 +47,7 @@ public class CourierCertificationController {
 
     @PostMapping(value = "/{id}/student-card", consumes = "multipart/form-data")
     public CertificationResponse uploadStudentCard(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestPart(value = "expectedVersion", required = false) Long expectedVersion) {
-        return certificationService.uploadStudentCard(authService.requireUser(authorization), id, file, expectedVersion);
+        return certificationService.uploadStudentCard(authService.requireUser(authorization), id, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file), expectedVersion);
     }
 
     @GetMapping("/{id}/student-card")

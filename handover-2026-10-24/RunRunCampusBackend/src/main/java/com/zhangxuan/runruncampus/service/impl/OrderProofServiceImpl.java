@@ -18,7 +18,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
+import com.zhangxuan.runruncampus.model.UploadSource;
 import org.springframework.web.server.ResponseStatusException;
 import com.zhangxuan.runruncampus.service.OrderProofService;
 
@@ -43,7 +43,7 @@ public class OrderProofServiceImpl implements OrderProofService {
 
     @Transactional
     @Override
-    public OrderProofVO upload(AppUser courier, Long orderId, OrderProofType type, MultipartFile file) {
+    public OrderProofVO upload(AppUser courier, Long orderId, OrderProofType type, UploadSource file) {
         if (courier.getRole() != UserRole.COURIER) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有骑手可以上传配送凭证");
         }
@@ -118,7 +118,7 @@ public class OrderProofServiceImpl implements OrderProofService {
         return fileName.substring(separator + 1).toLowerCase(Locale.ROOT);
     }
 
-    private String detectContentType(MultipartFile file) {
+    private String detectContentType(UploadSource file) {
         byte[] signature;
         try (var input = file.getInputStream()) {
             signature = input.readNBytes(12);

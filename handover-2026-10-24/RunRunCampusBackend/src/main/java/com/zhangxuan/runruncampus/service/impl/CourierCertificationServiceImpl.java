@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.web.multipart.MultipartFile;
+import com.zhangxuan.runruncampus.model.UploadSource;
 import org.springframework.web.server.ResponseStatusException;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
 
@@ -149,7 +149,7 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
 
     @Transactional
     @Override
-    public CertificationResponse uploadStudentCard(AppUser courier, Long id, MultipartFile file) {
+    public CertificationResponse uploadStudentCard(AppUser courier, Long id, UploadSource file) {
         requireRole(courier, UserRole.COURIER);
         CourierCertification application = certificationRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
         if (!application.getCourier().getId().equals(courier.getId())) {
@@ -196,7 +196,7 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
 
     @Transactional
     @Override
-    public CertificationResponse uploadStudentCard(AppUser courier, Long id, MultipartFile file, Long expectedVersion) {
+    public CertificationResponse uploadStudentCard(AppUser courier, Long id, UploadSource file, Long expectedVersion) {
         CourierCertification current = certificationRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
         if (expectedVersion != null && current.getVersion() != expectedVersion)
             conflict();

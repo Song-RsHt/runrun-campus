@@ -88,7 +88,7 @@ class CourierCertificationGovernanceTest {
     var file = new MockMultipartFile("file", "x.jpg", "image/jpeg", new byte[8 * 1024 * 1024 + 1]);
     var ex =
         Assertions.assertThrows(
-            ResponseStatusException.class, () -> service.uploadStudentCard(courier, 3L, file));
+            ResponseStatusException.class, () -> service.uploadStudentCard(courier, 3L, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file)));
     assertEquals(400, ex.getStatusCode().value());
   }
 }
