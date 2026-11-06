@@ -1,5 +1,7 @@
 # 苍穹外卖风格后端返工
 
+> 2026-11-06 最新用户确认已替代本报告原“技术层平铺”要求：现在采用技术层下的业务子包，类实际放入 `controller/order`、`service/order`、`service/impl/order`、`mapper/order` 等目录。当前结构、提交及重新验证见 [业务子包归类报告](Backend-business-subpackages.md)；[最终映射](backend-sky-style/final-mapping.md) 和机器清单已同步为当前路径。以下保留截至 `2836dee` 的历史实施与验证，不能将其中平铺目录或旧运行记录当作本次最终结果。
+
 基线：`030924f625bb1c9403062e2601fdb09d27189551`；分支：`refactor/backend-sky-style`；独立 worktree：`D:/biancheng/RunRunCampus-worktrees/rrc-refactor-backend-sky`。起始工作区干净。参考工程只读，不修改 main、m09/integration 或 feature/m01-identity。
 
 ## 参考核对与实施前差距
