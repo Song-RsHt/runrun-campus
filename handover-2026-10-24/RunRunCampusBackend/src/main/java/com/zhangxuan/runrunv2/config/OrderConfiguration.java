@@ -1,13 +1,24 @@
 package com.zhangxuan.runrunv2.config;
 
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter;
+import com.zhangxuan.runrunv2.service.OriginalPaymentWriter;
+import com.zhangxuan.runrunv2.vo.OriginalPaymentVO;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+
+
+
+
+
+
+
+
+
 
 @Configuration
 public class OrderConfiguration {
@@ -19,7 +30,7 @@ public class OrderConfiguration {
   }
 
   @Bean
-  @org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+  @ConditionalOnProperty(
       name = "rrc.payment.mock-enabled",
       havingValue = "false",
       matchIfMissing = true)
@@ -32,7 +43,7 @@ public class OrderConfiguration {
         return false;
       }
 
-      public OrderModels.OriginalPayment create(String id, long cents, OffsetDateTime deadline) {
+      public OriginalPaymentVO create(String id, long cents, OffsetDateTime deadline) {
         throw new IdentityFailure(503, "NEW_ORDER_DISABLED");
       }
     };

@@ -1,11 +1,11 @@
 package com.zhangxuan.runrunv2.controller.courier;
 
 import com.zhangxuan.runrunv2.dto.request.courier.CertificationDecisionRequest;
-import com.zhangxuan.runrunv2.dto.response.courier.Certification;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
-import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
+import com.zhangxuan.runrunv2.service.IdentityService;
+import com.zhangxuan.runrunv2.dto.response.courier.Certification;
 import java.util.Map;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -20,6 +20,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v2/courier/certification")

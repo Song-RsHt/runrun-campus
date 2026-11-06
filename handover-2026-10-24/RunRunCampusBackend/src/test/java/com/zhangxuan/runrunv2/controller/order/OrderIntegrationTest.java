@@ -1,43 +1,26 @@
 package com.zhangxuan.runrunv2.controller.order;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
-import com.zhangxuan.runrunv2.dto.request.order.ConfigChange;
-import com.zhangxuan.runrunv2.dto.request.order.CreateRequest;
-import com.zhangxuan.runrunv2.dto.request.order.PointChange;
-import com.zhangxuan.runrunv2.dto.request.order.QuoteRequest;
-import com.zhangxuan.runrunv2.dto.request.order.ZoneChange;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Config;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Created;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Order;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels.OriginalPayment;
-import com.zhangxuan.runrunv2.enums.order.ServiceType;
+import com.zhangxuan.runrunv2.dto.ConfigChange;
+import com.zhangxuan.runrunv2.dto.CreateRequest;
+import com.zhangxuan.runrunv2.dto.PointChange;
+import com.zhangxuan.runrunv2.dto.QuoteRequest;
+import com.zhangxuan.runrunv2.dto.ZoneChange;
+import com.zhangxuan.runrunv2.enums.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
-import com.zhangxuan.runrunv2.mapper.order.OrderStore;
-import com.zhangxuan.runrunv2.model.order.Schedule;
+import com.zhangxuan.runrunv2.mapper.OrderStore;
+import com.zhangxuan.runrunv2.model.Schedule;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
-import com.zhangxuan.runrunv2.service.configuration.ServiceConfigService;
-import com.zhangxuan.runrunv2.service.order.OrderService;
-import com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter;
+import com.zhangxuan.runrunv2.service.OrderService;
+import com.zhangxuan.runrunv2.service.OriginalPaymentWriter;
+import com.zhangxuan.runrunv2.service.ServiceConfigService;
+import com.zhangxuan.runrunv2.vo.CreatedOrderVO;
+import com.zhangxuan.runrunv2.vo.OrderVO;
+import com.zhangxuan.runrunv2.vo.OriginalPaymentVO;
+import com.zhangxuan.runrunv2.vo.ServiceConfigVO;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -75,6 +58,99 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
     classes = IdentityApplication.class,
@@ -181,7 +257,7 @@ class OrderIntegrationTest {
     when(payments.create(anyString(), anyLong(), any()))
         .thenAnswer(
             i ->
-                new OriginalPayment(
+                new OriginalPaymentVO(
                     i.getArgument(0),
                     i.getArgument(0),
                     "ORIGINAL",
@@ -269,7 +345,7 @@ class OrderIntegrationTest {
         .andExpect(jsonPath("$.order.originalFeeCents").value(300))
         .andExpect(jsonPath("$.originalPayment.amountCents").value(300))
         .andExpect(jsonPath("$.order.addressSnapshot.coordinateSystem").value("GCJ02"));
-    Order order = orders.get(user, "1");
+    OrderVO order = orders.get(user, "1");
     assertEquals(OffsetDateTime.parse("2026-10-27T01:30:00Z"), order.pendingPaymentDeadline());
     assertEquals(30, ((Number) order.policySnapshot().get("pendingPaymentMinutes")).intValue());
     assertEquals(10, ((Number) order.policySnapshot().get("deliveryConfirmMinutes")).intValue());
@@ -345,7 +421,7 @@ class OrderIntegrationTest {
       now("2026-10-27T01:00:00Z");
       orders.create(user, "open" + service, request(service, "STANDARD", 0));
       now("2026-10-27T14:59:59.999999999Z");
-      Created last = orders.create(user, "last" + service, request(service, "STANDARD", 0));
+      CreatedOrderVO last = orders.create(user, "last" + service, request(service, "STANDARD", 0));
       assertEquals(last.order().pendingPaymentDeadline(), last.originalPayment().deadline());
       now("2026-10-27T15:00:00Z");
       failure(
@@ -358,7 +434,7 @@ class OrderIntegrationTest {
 
   @Test
   void replayAfterCloseAndConfigChangeReturnsOriginalWithoutIncrementOrRenewal() {
-    Created first = orders.create(user, "same", request());
+    CreatedOrderVO first = orders.create(user, "same", request());
     now("2026-10-27T15:00:00Z");
     config.patch(admin, "disable", change(0, false, null, null));
     assertEquals(first, orders.create(user, "same", request()));
@@ -383,7 +459,7 @@ class OrderIntegrationTest {
         race(
             () -> orders.create(user, "race-diff", request()),
             () -> orders.create(user, "race-diff", request(ServiceType.DOOR, "STANDARD", 0)));
-    assertEquals(1, results.stream().filter(x -> x instanceof Created).count());
+    assertEquals(1, results.stream().filter(x -> x instanceof CreatedOrderVO).count());
     assertEquals(1, results.stream().filter(x -> x.equals("IDEMPOTENCY_KEY_CONFLICT")).count());
     assertEquals(2, count("v2_orders"));
     assertEquals(2, count("v2_order_events"));
@@ -459,7 +535,7 @@ class OrderIntegrationTest {
   void configPatchHasVersionConflictIdempotencyAuditAndOwnerValidation() throws Exception {
     ConfigChange change =
         change(0, null, List.of(new ZoneChange("MEIYUAN", "梅园", 300L, true)), null);
-    Config first = config.patch(admin, "config-once", change);
+    ServiceConfigVO first = config.patch(admin, "config-once", change);
     assertEquals(first, config.patch(admin, "config-once", change));
     assertEquals(1, count("admin_audit_logs"));
     assertEquals(1, first.configVersion());
@@ -509,7 +585,7 @@ class OrderIntegrationTest {
   void disabledConfigPreservesNullableReviewOwner() {
     db.update(
         "UPDATE runrun_v2.platform_settings SET new_order_enabled=false,review_owner_id=NULL");
-    Config updated =
+    ServiceConfigVO updated =
         config.patch(
             admin,
             "unassigned-disabled-config",
@@ -535,7 +611,7 @@ class OrderIntegrationTest {
         race(
             () -> config.patch(admin, "one", change(0, false, null, null)),
             () -> config.patch(admin2, "two", change(0, false, null, null)));
-    assertEquals(1, results.stream().filter(x -> x instanceof Config).count());
+    assertEquals(1, results.stream().filter(x -> x instanceof ServiceConfigVO).count());
     assertTrue(results.contains("CONFIG_VERSION_CONFLICT"));
     assertEquals(1, count("admin_audit_logs"));
   }
@@ -573,8 +649,8 @@ class OrderIntegrationTest {
                     "config-race",
                     change(
                         0, null, List.of(new ZoneChange("MEIYUAN", "新测试价格", 700L, true)), null)));
-    assertTrue(results.get(1) instanceof Config);
-    if (results.get(0) instanceof Created created) {
+    assertTrue(results.get(1) instanceof ServiceConfigVO);
+    if (results.get(0) instanceof CreatedOrderVO created) {
       assertEquals(0, created.order().pricingSnapshot().configVersion());
       assertEquals(300, created.order().originalFeeCents());
       assertEquals("梅园", created.order().addressSnapshot().zoneName());
@@ -601,7 +677,7 @@ class OrderIntegrationTest {
 
   @Test
   void concurrentOrderUpdatesUseSharedLockAndIncrementExactlyOnce() throws Exception {
-    Order order = orders.create(user, "order", request()).order();
+    OrderVO order = orders.create(user, "order", request()).order();
     Supplier<Object> update =
         () ->
             new TransactionTemplate(transactions)
@@ -623,7 +699,7 @@ class OrderIntegrationTest {
     List<Object> results = race(update, update);
     assertTrue(results.contains("updated"));
     assertTrue(results.contains("ORDER_STATE_CONFLICT"));
-    Order latest = orders.get(user, order.id());
+    OrderVO latest = orders.get(user, order.id());
     assertEquals(1, latest.version());
     assertEquals(2, latest.orderFlowVersion());
     assertEquals(400, latest.effectiveFeeCents());

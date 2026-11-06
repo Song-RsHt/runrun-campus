@@ -1,14 +1,25 @@
 package com.zhangxuan.runrunv2.integration.payment;
 
-import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
-
-import com.zhangxuan.runrunv2.enums.payment.Result;
+import com.zhangxuan.runrunv2.enums.Result;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper;
+import com.zhangxuan.runrunv2.mapper.MockPaymentMapper;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.stereotype.Component;
+
+
+
+
+
+
+
+
+
+
+
 
 /** Database-backed isolated channel. No merchant SDK, network call or client amount. */
 @Component
@@ -20,9 +31,9 @@ public class MockPaymentAdapter {
   public MockPaymentAdapter(
       MockPaymentMapper mapper,
       @Value("${rrc.identity.environment}") String environment,
-      org.springframework.core.env.Environment spring) {
+      Environment spring) {
     if (!Set.of("local", "test", "staging").contains(environment)
-        || spring.acceptsProfiles(org.springframework.core.env.Profiles.of("production", "prod")))
+        || spring.acceptsProfiles(Profiles.of("production", "prod")))
       throw new IllegalStateException("Mock payments require an isolated environment");
     this.mapper = mapper;
   }

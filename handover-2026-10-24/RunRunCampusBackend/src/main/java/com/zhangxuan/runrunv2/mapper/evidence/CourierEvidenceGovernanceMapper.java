@@ -3,7 +3,15 @@ package com.zhangxuan.runrunv2.mapper.evidence;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.stereotype.Repository;
+
+
+
+
+
+
 
 /**
  * SQL for CourierEvidenceGovernanceService. Uses the caller's transaction-bound JDBC connection;
@@ -12,9 +20,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class CourierEvidenceGovernanceMapper {
 
-  private final org.springframework.jdbc.core.JdbcTemplate jdbc;
+  private final JdbcTemplate jdbc;
 
-  public CourierEvidenceGovernanceMapper(org.springframework.jdbc.core.JdbcTemplate jdbc) {
+  public CourierEvidenceGovernanceMapper(JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 
@@ -73,8 +81,8 @@ public class CourierEvidenceGovernanceMapper {
       long holdId,
       String requestId,
       String reason,
-      org.springframework.jdbc.core.SqlParameterValue orderIdParameter,
-      org.springframework.jdbc.core.SqlParameterValue certificationIdParameter) {
+      SqlParameterValue orderIdParameter,
+      SqlParameterValue certificationIdParameter) {
     return jdbc.update(
         """
         INSERT INTO runrun_v2.admin_audit_logs (

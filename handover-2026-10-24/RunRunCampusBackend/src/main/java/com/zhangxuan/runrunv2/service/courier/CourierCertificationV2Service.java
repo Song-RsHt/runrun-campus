@@ -1,13 +1,13 @@
 package com.zhangxuan.runrunv2.service.courier;
 
-import com.zhangxuan.runrunv2.dto.response.courier.Certification;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
+import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
 import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
-import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
-import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.vo.Account;
+import com.zhangxuan.runrunv2.dto.response.courier.Certification;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
@@ -20,6 +20,50 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** JDBC implementation used by the isolated v2 application; it never touches legacy tables. */
 @Service

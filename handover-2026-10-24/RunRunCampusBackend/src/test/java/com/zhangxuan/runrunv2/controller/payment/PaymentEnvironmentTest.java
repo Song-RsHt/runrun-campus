@@ -1,15 +1,28 @@
 package com.zhangxuan.runrunv2.controller.payment;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+import com.zhangxuan.runrunv2.controller.PaymentTestController;
 import com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter;
-import com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper;
-import com.zhangxuan.runrunv2.service.payment.PaymentService;
+import com.zhangxuan.runrunv2.mapper.MockPaymentMapper;
+import com.zhangxuan.runrunv2.service.PaymentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+
+
+
+
+
+
+
+
+
+
+
+
 
 class PaymentEnvironmentTest {
 

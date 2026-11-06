@@ -2,7 +2,13 @@ package com.zhangxuan.runrunv2.mapper.courier;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+
+
+
+
 
 /**
  * SQL for CourierCertificationV2Service. Uses the caller's transaction-bound JDBC connection; never
@@ -29,9 +35,9 @@ public class CourierCertificationV2Mapper {
               OR u.phone ILIKE ?)
       """;
 
-  private final org.springframework.jdbc.core.JdbcTemplate jdbc;
+  private final JdbcTemplate jdbc;
 
-  public CourierCertificationV2Mapper(org.springframework.jdbc.core.JdbcTemplate jdbc) {
+  public CourierCertificationV2Mapper(JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 

@@ -1,61 +1,163 @@
 package com.zhangxuan.runrunv2.controller.fulfillment;
-
-import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.Deliver;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.Location;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.Pickup;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.RegisterProof;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.Release;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.Respond;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.Upload;
-import com.zhangxuan.runrunv2.dto.request.fulfillment.Version;
-import com.zhangxuan.runrunv2.dto.request.order.CreateRequest;
-import com.zhangxuan.runrunv2.dto.request.payment.CancelRequest;
-import com.zhangxuan.runrunv2.dto.request.payment.ResultRequest;
-import com.zhangxuan.runrunv2.dto.request.payment.VersionRequest;
-import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
-import com.zhangxuan.runrunv2.enums.fulfillment.Decision;
-import com.zhangxuan.runrunv2.enums.fulfillment.EventType;
-import com.zhangxuan.runrunv2.enums.fulfillment.Kind;
-import com.zhangxuan.runrunv2.enums.order.ServiceType;
-import com.zhangxuan.runrunv2.enums.payment.Result;
+import com.zhangxuan.runrunv2.dto.CancelRequest;
+import com.zhangxuan.runrunv2.dto.CreateRequest;
+import com.zhangxuan.runrunv2.dto.Deliver;
+import com.zhangxuan.runrunv2.dto.Location;
+import com.zhangxuan.runrunv2.dto.Pickup;
+import com.zhangxuan.runrunv2.dto.RegisterProof;
+import com.zhangxuan.runrunv2.dto.Release;
+import com.zhangxuan.runrunv2.dto.Respond;
+import com.zhangxuan.runrunv2.dto.ResultRequest;
+import com.zhangxuan.runrunv2.dto.Upload;
+import com.zhangxuan.runrunv2.dto.Version;
+import com.zhangxuan.runrunv2.dto.VersionRequest;
+import com.zhangxuan.runrunv2.enums.Decision;
+import com.zhangxuan.runrunv2.enums.EventType;
+import com.zhangxuan.runrunv2.enums.Kind;
+import com.zhangxuan.runrunv2.enums.Result;
+import com.zhangxuan.runrunv2.enums.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter;
+import com.zhangxuan.runrunv2.integration.storage.FulfillmentEvidence;
+import com.zhangxuan.runrunv2.integration.storage.PendingFulfillmentEvidence;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
+import com.zhangxuan.runrunv2.model.EvidenceBinding;
+import com.zhangxuan.runrunv2.model.VerifiedEvidence;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.fulfillment.FulfillmentEvidence;
-import com.zhangxuan.runrunv2.service.fulfillment.FulfillmentQueries;
-import com.zhangxuan.runrunv2.service.fulfillment.FulfillmentService;
-import com.zhangxuan.runrunv2.service.fulfillment.PendingFulfillmentEvidence;
-import com.zhangxuan.runrunv2.service.order.OrderService;
-import com.zhangxuan.runrunv2.service.payment.PaymentService;
+import com.zhangxuan.runrunv2.service.FulfillmentQueryService;
+import com.zhangxuan.runrunv2.service.FulfillmentService;
+import com.zhangxuan.runrunv2.service.OrderService;
+import com.zhangxuan.runrunv2.service.PaymentService;
+import com.zhangxuan.runrunv2.vo.AdjustmentFundsVO;
+import com.zhangxuan.runrunv2.vo.CancelledOrderVO;
+import com.zhangxuan.runrunv2.vo.CreatedOrderVO;
+import com.zhangxuan.runrunv2.vo.FulfillmentResultVO;
+import com.zhangxuan.runrunv2.vo.LocationEventVO;
+import com.zhangxuan.runrunv2.vo.OrderProofVO;
+import com.zhangxuan.runrunv2.vo.PaymentAttemptVO;
+import com.zhangxuan.runrunv2.vo.PaymentSummaryVO;
+import com.zhangxuan.runrunv2.vo.RefundOrderVO;
+import com.zhangxuan.runrunv2.vo.StartedPaymentVO;
+import com.zhangxuan.runrunv2.vo.UploadTicketVO;
 import java.math.BigDecimal;
-import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.DriverManager;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.*;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.*;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
     classes = IdentityApplication.class,
@@ -71,10 +173,10 @@ import org.testcontainers.junit.jupiter.*;
       "rrc.payment.expiry-delay-ms=86400000"
     })
 @AutoConfigureMockMvc(
-    print = org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
+    print = MockMvcPrint.NONE)
 // Close scheduled workers and JDBC pools with the class-scoped database fixture.
-@org.springframework.test.annotation.DirtiesContext(
-    classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(
+    classMode = ClassMode.AFTER_CLASS)
 @Testcontainers
 class FulfillmentIntegrationTest {
 
@@ -108,10 +210,10 @@ class FulfillmentIntegrationTest {
             Base64.getEncoder()
                 .encodeToString(
                     "synthetic-different-hash-key-000001"
-                        .getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+                        .getBytes(StandardCharsets.UTF_8)));
   }
 
-  @Autowired FulfillmentQueries queries;
+  @Autowired FulfillmentQueryService queries;
 
   @Autowired FulfillmentService fulfillment;
 
@@ -173,12 +275,12 @@ class FulfillmentIntegrationTest {
     when(evidence.verify(any(), anyString(), any()))
         .thenAnswer(
             inv ->
-                new FulfillmentEvidence.Verified(
+                new VerifiedEvidence(
                     inv.getArgument(0), "private-test-" + inv.getArgument(1)));
     when(evidence.issue(any(), anyString(), anyLong(), any()))
         .thenAnswer(
             inv ->
-                new FulfillmentModels.Ticket(
+                new UploadTicketVO(
                     "ticket-" + UUID.randomUUID(),
                     "https://isolated.invalid/private-upload",
                     ((OffsetDateTime) inv.getArgument(3)).plusMinutes(5)));
@@ -210,17 +312,17 @@ class FulfillmentIntegrationTest {
     return "synthetic-" + (++seq);
   }
 
-  OrderModels.Created create() {
+  CreatedOrderVO create() {
     return orders.create(
         user, key(), new CreateRequest(ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
   }
 
-  Started start(String id) {
+  StartedPaymentVO start(String id) {
     return payments.start(
         user, id, key(), new VersionRequest(payments.get(user, id).payment().version()));
   }
 
-  Attempt result(String id, Result result) {
+  PaymentAttemptVO result(String id, Result result) {
     long version =
         db.queryForObject(
             "SELECT version FROM runrun_v2.payment_attempts WHERE id=?",
@@ -230,7 +332,7 @@ class FulfillmentIntegrationTest {
         admin, id, key(), new ResultRequest(version, result, "event-" + key()));
   }
 
-  Refund resultRefund(String id, Result result) {
+  RefundOrderVO resultRefund(String id, Result result) {
     long version =
         db.queryForObject(
             "SELECT version FROM runrun_v2.refund_orders WHERE id=?", Long.class, Long.valueOf(id));
@@ -238,17 +340,17 @@ class FulfillmentIntegrationTest {
         admin, id, key(), new ResultRequest(version, result, "event-" + key()));
   }
 
-  OrderModels.Created paid() {
+  CreatedOrderVO paid() {
     var c = create();
     result(start(c.originalPayment().id()).attempt().id(), Result.SUCCESS);
     return c;
   }
 
-  Summary summary(OrderModels.Created c) {
+  PaymentSummaryVO summary(CreatedOrderVO c) {
     return payments.get(user, c.originalPayment().id());
   }
 
-  Cancelled cancel(OrderModels.Created c) {
+  CancelledOrderVO cancel(CreatedOrderVO c) {
     return payments.cancel(
         user,
         c.order().id(),
@@ -256,7 +358,7 @@ class FulfillmentIntegrationTest {
         new CancelRequest(orders.get(user, c.order().id()).version(), "合成取消原因"));
   }
 
-  AdjustmentFunds approve(OrderModels.Created c, String adjustment, long delta) {
+  AdjustmentFundsVO approve(CreatedOrderVO c, String adjustment, long delta) {
     return new TransactionTemplate(transactions)
         .execute(
             s ->
@@ -270,7 +372,7 @@ class FulfillmentIntegrationTest {
                     key()));
   }
 
-  void failure(String code, org.junit.jupiter.api.function.Executable action) {
+  void failure(String code, Executable action) {
     assertEquals(code, assertThrows(IdentityFailure.class, action).code);
   }
 
@@ -314,12 +416,12 @@ class FulfillmentIntegrationTest {
     return fulfillment.accept(courier, order, key(), new Version(v(order))).task().id();
   }
 
-  FulfillmentModels.Proof proof(String token, String order, String task, Kind kind) {
+  OrderProofVO proof(String token, String order, String task, Kind kind) {
     return fulfillment.proof(
         token, order, key(), new RegisterProof(v(order), kind, task, "synthetic-ticket-" + key()));
   }
 
-  FulfillmentModels.Event location(
+  LocationEventVO location(
       String token, String order, String task, EventType kind, String request) {
     return fulfillment.location(
         token,
@@ -336,7 +438,7 @@ class FulfillmentIntegrationTest {
     return task;
   }
 
-  FulfillmentModels.Result delivered(String order, String task) {
+  FulfillmentResultVO delivered(String order, String task) {
     var photo = proof(courier, order, task, Kind.DELIVERY);
     var gps = location(courier, order, task, EventType.DELIVERY, key());
     return fulfillment.deliver(
@@ -783,7 +885,7 @@ class FulfillmentIntegrationTest {
             + " CHECK(event_type<>'FULFILLMENT_LOCATION_RECORDED')");
     try {
       assertThrows(
-          org.springframework.dao.DataAccessException.class,
+          DataAccessException.class,
           () -> location(courier, order, task, EventType.ARRIVAL, "rollback-gps"));
     } finally {
       db.execute("ALTER TABLE runrun_v2.v2_order_events DROP CONSTRAINT synthetic_m04_failure");
@@ -947,7 +1049,7 @@ class FulfillmentIntegrationTest {
         .andExpect(header().string("Cache-Control", "no-store"))
         .andExpect(jsonPath("$.items[0].taskStatus").value("DELIVERED"));
     var pending = new PendingFulfillmentEvidence();
-    var binding = new FulfillmentEvidence.Binding(order, task, "synthetic", Kind.SPECIFICATION);
+    var binding = new EvidenceBinding(order, task, "synthetic", Kind.SPECIFICATION);
     failure(
         "PROOF_NOT_READY",
         () -> pending.issue(binding, "image/jpeg", 10, done.order().deliveredAt()));

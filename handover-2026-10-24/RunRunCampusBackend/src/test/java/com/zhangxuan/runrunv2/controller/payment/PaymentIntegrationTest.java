@@ -1,43 +1,112 @@
 package com.zhangxuan.runrunv2.controller.payment;
 
-import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
-import com.zhangxuan.runrunv2.dto.request.order.CreateRequest;
-import com.zhangxuan.runrunv2.dto.request.payment.CancelRequest;
-import com.zhangxuan.runrunv2.dto.request.payment.ResultRequest;
-import com.zhangxuan.runrunv2.dto.request.payment.VersionRequest;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
-import com.zhangxuan.runrunv2.enums.order.ServiceType;
-import com.zhangxuan.runrunv2.enums.payment.Result;
+import com.zhangxuan.runrunv2.dto.CancelRequest;
+import com.zhangxuan.runrunv2.dto.CreateRequest;
+import com.zhangxuan.runrunv2.dto.ResultRequest;
+import com.zhangxuan.runrunv2.dto.VersionRequest;
+import com.zhangxuan.runrunv2.enums.Result;
+import com.zhangxuan.runrunv2.enums.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.order.OrderService;
-import com.zhangxuan.runrunv2.service.payment.PaymentService;
-import java.nio.file.*;
+import com.zhangxuan.runrunv2.service.OrderService;
+import com.zhangxuan.runrunv2.service.PaymentService;
+import com.zhangxuan.runrunv2.vo.AdjustmentFundsVO;
+import com.zhangxuan.runrunv2.vo.CancelledOrderVO;
+import com.zhangxuan.runrunv2.vo.CreatedOrderVO;
+import com.zhangxuan.runrunv2.vo.PaymentAttemptVO;
+import com.zhangxuan.runrunv2.vo.PaymentSummaryVO;
+import com.zhangxuan.runrunv2.vo.RefundOrderVO;
+import com.zhangxuan.runrunv2.vo.StartedPaymentVO;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.DriverManager;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
-import org.junit.jupiter.api.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.*;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.*;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
     classes = IdentityApplication.class,
@@ -50,10 +119,10 @@ import org.testcontainers.junit.jupiter.*;
       "rrc.payment.expiry-delay-ms=86400000"
     })
 @AutoConfigureMockMvc(
-    print = org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
+    print = MockMvcPrint.NONE)
 // Close scheduled workers and JDBC pools with the class-scoped database fixture.
-@org.springframework.test.annotation.DirtiesContext(
-    classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(
+    classMode = ClassMode.AFTER_CLASS)
 @Testcontainers
 class PaymentIntegrationTest {
 
@@ -86,7 +155,7 @@ class PaymentIntegrationTest {
             Base64.getEncoder()
                 .encodeToString(
                     "synthetic-different-hash-key-000001"
-                        .getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+                        .getBytes(StandardCharsets.UTF_8)));
   }
 
   @Autowired JdbcTemplate db;
@@ -167,17 +236,17 @@ class PaymentIntegrationTest {
     return "synthetic-" + (++seq);
   }
 
-  OrderModels.Created create() {
+  CreatedOrderVO create() {
     return orders.create(
         user, key(), new CreateRequest(ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
   }
 
-  Started start(String id) {
+  StartedPaymentVO start(String id) {
     return payments.start(
         user, id, key(), new VersionRequest(payments.get(user, id).payment().version()));
   }
 
-  Attempt result(String id, Result result) {
+  PaymentAttemptVO result(String id, Result result) {
     long version =
         db.queryForObject(
             "SELECT version FROM runrun_v2.payment_attempts WHERE id=?",
@@ -187,7 +256,7 @@ class PaymentIntegrationTest {
         admin, id, key(), new ResultRequest(version, result, "event-" + key()));
   }
 
-  Refund resultRefund(String id, Result result) {
+  RefundOrderVO resultRefund(String id, Result result) {
     long version =
         db.queryForObject(
             "SELECT version FROM runrun_v2.refund_orders WHERE id=?", Long.class, Long.valueOf(id));
@@ -195,17 +264,17 @@ class PaymentIntegrationTest {
         admin, id, key(), new ResultRequest(version, result, "event-" + key()));
   }
 
-  OrderModels.Created paid() {
+  CreatedOrderVO paid() {
     var c = create();
     result(start(c.originalPayment().id()).attempt().id(), Result.SUCCESS);
     return c;
   }
 
-  Summary summary(OrderModels.Created c) {
+  PaymentSummaryVO summary(CreatedOrderVO c) {
     return payments.get(user, c.originalPayment().id());
   }
 
-  Cancelled cancel(OrderModels.Created c) {
+  CancelledOrderVO cancel(CreatedOrderVO c) {
     return payments.cancel(
         user,
         c.order().id(),
@@ -213,7 +282,7 @@ class PaymentIntegrationTest {
         new CancelRequest(orders.get(user, c.order().id()).version(), "合成取消原因"));
   }
 
-  AdjustmentFunds approve(OrderModels.Created c, String adjustment, long delta) {
+  AdjustmentFundsVO approve(CreatedOrderVO c, String adjustment, long delta) {
     return new TransactionTemplate(transactions)
         .execute(
             s ->
@@ -227,7 +296,7 @@ class PaymentIntegrationTest {
                     key()));
   }
 
-  void failure(String code, org.junit.jupiter.api.function.Executable action) {
+  void failure(String code, Executable action) {
     assertEquals(code, assertThrows(IdentityFailure.class, action).code);
   }
 
@@ -285,7 +354,7 @@ class PaymentIntegrationTest {
   @Test
   void concurrentAttemptRequestsProduceOnlyOneEffectivePayment() throws Exception {
     var c = create();
-    Callable<Started> start =
+    Callable<StartedPaymentVO> start =
         () ->
             payments.start(
                 user, c.originalPayment().id(), "same-concurrent-key", new VersionRequest(0L));
@@ -343,7 +412,7 @@ class PaymentIntegrationTest {
     var c = create();
     String id = c.originalPayment().id();
     var request = new VersionRequest(0L);
-    Started first = payments.start(user, id, "attempt-key", request);
+    StartedPaymentVO first = payments.start(user, id, "attempt-key", request);
     assertEquals(first, payments.start(user, id, "attempt-key", request));
     failure(
         "IDEMPOTENCY_KEY_CONFLICT",
@@ -470,7 +539,7 @@ class PaymentIntegrationTest {
   void paidCancellationRefundStagesAndQueryNeverPretendAcceptanceIsReceipt() {
     var c = paid();
     var cancelled = cancel(c);
-    Refund r = cancelled.refunds().get(0);
+    RefundOrderVO r = cancelled.refunds().get(0);
     assertEquals("REQUESTED", r.status());
     assertEquals(800, r.amountCents());
     r = resultRefund(r.id(), Result.PROCESSING);
@@ -529,12 +598,12 @@ class PaymentIntegrationTest {
   void downgradeRefundCompletesOnlyOnReceiptAndCancellationSubtractsReservedMoney() {
     var c = paid();
     var adjustment = approve(c, "101", -100);
-    Refund down = adjustment.refunds().get(0);
+    RefundOrderVO down = adjustment.refunds().get(0);
     assertEquals(
         "PENDING_REFUND",
         db.queryForObject("SELECT status FROM runrun_v2.payment_adjustments", String.class));
     var cancelled = cancel(c);
-    assertEquals(800, cancelled.refunds().stream().mapToLong(Refund::amountCents).sum());
+    assertEquals(800, cancelled.refunds().stream().mapToLong(RefundOrderVO::amountCents).sum());
     assertEquals(
         700,
         cancelled.refunds().stream()
@@ -653,7 +722,7 @@ class PaymentIntegrationTest {
   void databaseGuardRejectsUnpaidPoolAndCrossOrderRefundReferences() {
     var c = create();
     assertThrows(
-        org.springframework.dao.DataAccessException.class,
+        DataAccessException.class,
         () ->
             db.update(
                 "UPDATE runrun_v2.v2_orders SET status='PENDING_ASSIGNMENT',version=version+1 WHERE"
@@ -662,7 +731,7 @@ class PaymentIntegrationTest {
     var p = paid();
     var r = cancel(p).refunds().get(0);
     assertThrows(
-        org.springframework.dao.DataAccessException.class,
+        DataAccessException.class,
         () ->
             db.update(
                 "UPDATE runrun_v2.refund_orders SET order_id=? WHERE id=?",
@@ -679,7 +748,7 @@ class PaymentIntegrationTest {
             + " NOT LIKE 'payment:%')");
     try {
       assertThrows(
-          org.springframework.dao.DataAccessException.class,
+          DataAccessException.class,
           () -> result(a.attempt().id(), Result.SUCCESS));
     } finally {
       db.execute("ALTER TABLE runrun_v2.notification_outbox DROP CONSTRAINT synthetic_failure");
