@@ -14,6 +14,7 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @Profile("local-v2-test")
 public class LocalTestCors {
+
   @Bean
   public FilterRegistrationBean<CorsFilter> localTestCorsFilter() {
     var cors = new CorsConfiguration();

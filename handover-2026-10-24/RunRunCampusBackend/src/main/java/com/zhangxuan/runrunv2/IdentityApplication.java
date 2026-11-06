@@ -23,6 +23,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan(basePackageClasses = IdentityApplication.class)
 @EnableScheduling
 public class IdentityApplication {
+
   @Bean
   public Jackson2ObjectMapperBuilderCustomizer rejectUnknownJsonFields() {
     return builder -> builder.featuresToEnable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

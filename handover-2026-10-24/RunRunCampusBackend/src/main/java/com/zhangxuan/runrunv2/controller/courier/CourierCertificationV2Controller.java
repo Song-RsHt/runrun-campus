@@ -1,10 +1,12 @@
 package com.zhangxuan.runrunv2.controller.courier;
 
+import com.zhangxuan.runrunv2.dto.request.courier.CertificationDecisionRequest;
 import com.zhangxuan.runrunv2.dto.response.courier.Certification;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import java.util.Map;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -57,7 +59,7 @@ public class CourierCertificationV2Controller {
   public Certification decision(
       @RequestHeader("Authorization") String auth,
       @PathVariable long id,
-      @RequestBody Decision body,
+      @RequestBody CertificationDecisionRequest body,
       @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
     return service.decide(
         token(auth),
@@ -72,7 +74,7 @@ public class CourierCertificationV2Controller {
 
   @IdentityPermission(role = "ADMIN")
   @GetMapping("/admin")
-  public java.util.Map<String, Object> adminList(
+  public Map<String, Object> adminList(
       @RequestHeader("Authorization") String auth,
       @RequestParam(defaultValue = "") String status,
       @RequestParam(defaultValue = "") String query,
@@ -83,7 +85,7 @@ public class CourierCertificationV2Controller {
 
   @IdentityPermission(role = "ADMIN")
   @GetMapping("/admin/{id}/performance")
-  public java.util.Map<String, Object> performance(
+  public Map<String, Object> performance(
       @RequestHeader("Authorization") String auth,
       @PathVariable long id,
       @RequestParam(defaultValue = "0") int page,
@@ -106,9 +108,6 @@ public class CourierCertificationV2Controller {
         .header("X-Content-Type-Options", "nosniff")
         .body(service.read(token(auth), identity, id, photoResourceId, requestId));
   }
-
-  public record Decision(
-      String decision, long expectedVersion, String photoResourceId, String reason) {}
 
   private static String token(String h) {
     if (h == null || !h.startsWith("Bearer ")) throw IdentityFailure.auth();

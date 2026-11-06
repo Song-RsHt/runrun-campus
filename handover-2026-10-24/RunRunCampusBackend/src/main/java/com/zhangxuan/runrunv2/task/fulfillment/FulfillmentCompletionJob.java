@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableScheduling
 public class FulfillmentCompletionJob {
+
   private final FulfillmentService service;
 
   public FulfillmentCompletionJob(FulfillmentService service) {

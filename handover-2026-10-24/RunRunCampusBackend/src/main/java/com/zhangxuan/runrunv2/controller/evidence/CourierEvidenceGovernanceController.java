@@ -1,14 +1,16 @@
 package com.zhangxuan.runrunv2.controller.evidence;
 
+import com.zhangxuan.runrunv2.dto.request.evidence.HoldRequest;
+import com.zhangxuan.runrunv2.dto.response.evidence.HoldResponse;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
-import java.time.Instant;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v2/admin/evidence-holds")
 public class CourierEvidenceGovernanceController {
+
   private final CourierEvidenceGovernanceService service;
 
   public CourierEvidenceGovernanceController(CourierEvidenceGovernanceService service) {
@@ -40,11 +42,6 @@ public class CourierEvidenceGovernanceController {
       @PathVariable long id) {
     return new HoldResponse(service.release(token(auth), id, key).id());
   }
-
-  public record HoldRequest(
-      Long orderId, Long certificationId, String reason, Instant reviewDueAt) {}
-
-  public record HoldResponse(long id) {}
 
   private static String token(String h) {
     if (h == null || !h.startsWith("Bearer ")) throw IdentityFailure.auth();

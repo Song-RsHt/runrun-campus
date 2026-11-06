@@ -1,5 +1,8 @@
 package com.zhangxuan.runrunv2.mapper.evidence;
 
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -8,30 +11,27 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class CourierEvidenceGovernanceMapper {
+
   private final org.springframework.jdbc.core.JdbcTemplate jdbc;
 
   public CourierEvidenceGovernanceMapper(org.springframework.jdbc.core.JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 
-  public java.lang.Long holdValueV(java.lang.Long orderId) {
+  public Long holdValueV(Long orderId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.v2_orders WHERE id=?", Long.class, orderId);
   }
 
-  public java.lang.Long holdValueCourierCertifications(java.lang.Long certificationId) {
+  public Long holdValueCourierCertifications(Long certificationId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.courier_certifications WHERE id=?",
         Long.class,
         certificationId);
   }
 
-  public java.lang.Long holdValueEvidenceHolds(
-      java.lang.Long orderId,
-      java.lang.Long certificationId,
-      java.lang.String reason,
-      long owner,
-      java.time.OffsetDateTime parameter6) {
+  public Long holdValueEvidenceHolds(
+      Long orderId, Long certificationId, String reason, long ownerId, OffsetDateTime reviewDueAt) {
     return jdbc.queryForObject(
         "INSERT INTO"
             + " runrun_v2.evidence_holds(order_id,certification_id,reason,owner_id,review_due_at)"
@@ -40,17 +40,17 @@ public class CourierEvidenceGovernanceMapper {
         orderId,
         certificationId,
         reason,
-        owner,
-        parameter6);
+        ownerId,
+        reviewDueAt);
   }
 
   public int holdWriteAdminAuditLogs(
       long owner,
       long id,
-      java.lang.String requestId,
-      java.lang.String parameter4,
-      org.springframework.jdbc.core.SqlParameterValue parameter5,
-      org.springframework.jdbc.core.SqlParameterValue parameter6) {
+      String requestId,
+      String value,
+      org.springframework.jdbc.core.SqlParameterValue value2,
+      org.springframework.jdbc.core.SqlParameterValue value3) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
@@ -58,13 +58,12 @@ public class CourierEvidenceGovernanceMapper {
         owner,
         id,
         requestId,
-        parameter4,
-        parameter5,
-        parameter6);
+        value,
+        value2,
+        value3);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> releaseRowsEvidenceHolds(
-      long holdId) {
+  public List<Map<String, Object>> releaseRowsEvidenceHolds(long holdId) {
     return jdbc.queryForList(
         "SELECT order_id,certification_id,released_at FROM runrun_v2.evidence_holds WHERE id=? FOR"
             + " UPDATE",
@@ -76,18 +75,18 @@ public class CourierEvidenceGovernanceMapper {
   }
 
   public int releaseWriteAdminAuditLogs(
-      long owner, long holdId, java.lang.String requestId, java.lang.String parameter4) {
+      long administratorId, long targetId, String requestId, String reason) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
             + " VALUES(?,'EVIDENCE_HOLD_RELEASED','EVIDENCE_HOLD',?,?,?,'{}'::jsonb)",
-        owner,
-        holdId,
+        administratorId,
+        targetId,
         requestId,
-        parameter4);
+        reason);
   }
 
-  public java.lang.Long requestCertificationDeletionValueEvidenceHolds(long certificationId) {
+  public Long requestCertificationDeletionValueEvidenceHolds(long certificationId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.evidence_holds WHERE certification_id=? AND released_at IS"
             + " NULL",
@@ -97,11 +96,11 @@ public class CourierEvidenceGovernanceMapper {
 
   public int requestCertificationDeletionWriteEvidenceDeletionAudits(
       long certificationId,
-      java.lang.String resourceId,
-      java.lang.String storageKey,
-      java.time.OffsetDateTime parameter4,
-      long binding5,
-      java.lang.String binding6) {
+      String resourceId,
+      String storageKey,
+      OffsetDateTime timestamp,
+      long certificationId2,
+      String resourceId2) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.evidence_deletion_audits(certification_id,resource_type,resource_id,resource_storage_key,delete_after,policy_snapshot,status)"
@@ -112,21 +111,19 @@ public class CourierEvidenceGovernanceMapper {
         certificationId,
         resourceId,
         storageKey,
-        parameter4,
-        binding5,
-        binding6);
+        timestamp,
+        certificationId2,
+        resourceId2);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      cleanupDueRowsEvidenceDeletionAudits() {
+  public List<Map<String, Object>> cleanupDueRowsEvidenceDeletionAudits() {
     return jdbc.queryForList(
         "SELECT id,certification_id,resource_id,resource_storage_key FROM"
             + " runrun_v2.evidence_deletion_audits WHERE status IN ('REQUESTED','FAILED') AND"
             + " delete_after<=now() ORDER BY id FOR UPDATE SKIP LOCKED");
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      cleanupDueRowsCourierCertifications() {
+  public List<Map<String, Object>> cleanupDueRowsCourierCertifications() {
     return jdbc.queryForList(
         "SELECT c.id,c.approved_photo_resource_id,c.approved_photo_storage_key,c.approved_photo_at"
             + " FROM runrun_v2.courier_certifications c WHERE c.approved_photo_resource_id IS NOT"
@@ -136,7 +133,7 @@ public class CourierEvidenceGovernanceMapper {
             + " ('REQUESTED','DELETING','SUCCEEDED'))");
   }
 
-  public java.lang.Long deleteOneValueEvidenceHolds(long cert) {
+  public Long deleteOneValueEvidenceHolds(long cert) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.evidence_holds WHERE certification_id=? AND released_at IS"
             + " NULL",
@@ -151,7 +148,7 @@ public class CourierEvidenceGovernanceMapper {
         id);
   }
 
-  public int deleteOneWriteCourierCertifications(long cert, java.lang.String resource) {
+  public int deleteOneWriteCourierCertifications(long cert, String resource) {
     return jdbc.update(
         "UPDATE runrun_v2.courier_certifications SET"
             + " submitted_photo_resource_id=NULL,submitted_photo_storage_key=NULL WHERE id=? AND"
@@ -160,7 +157,7 @@ public class CourierEvidenceGovernanceMapper {
         resource);
   }
 
-  public int deleteOneWriteCourierCertifications2(long cert, java.lang.String resource) {
+  public int deleteOneWriteCourierCertifications2(long cert, String resource) {
     return jdbc.update(
         "UPDATE runrun_v2.courier_certifications SET"
             + " approved_photo_resource_id=NULL,approved_photo_storage_key=NULL,approved_photo_at=NULL"
@@ -176,20 +173,20 @@ public class CourierEvidenceGovernanceMapper {
         id);
   }
 
-  public int deleteOneWriteEvidenceDeletionAudits3(java.lang.String parameter1, long id) {
+  public int deleteOneWriteEvidenceDeletionAudits3(String simpleName, long id) {
     return jdbc.update(
         "UPDATE runrun_v2.evidence_deletion_audits SET"
             + " status='FAILED',error_code=?,finished_at=now() WHERE id=?",
-        parameter1,
+        simpleName,
         id);
   }
 
-  public java.lang.Long lockAggregateValueV(java.lang.Long orderId) {
+  public Long lockAggregateValueV(Long orderId) {
     return jdbc.queryForObject(
         "SELECT id FROM runrun_v2.v2_orders WHERE id=? FOR UPDATE", Long.class, orderId);
   }
 
-  public java.lang.Long lockAggregateValueCourierCertifications(java.lang.Long certificationId) {
+  public Long lockAggregateValueCourierCertifications(Long certificationId) {
     return jdbc.queryForObject(
         "SELECT id FROM runrun_v2.courier_certifications WHERE id=? FOR UPDATE",
         Long.class,

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 /** Schedules the existing worker; claim, lease and completion transactions stay in the service. */
 @Component
 public class NotificationDeliveryTask {
+
   private final NotificationOutboxWorker worker;
 
   public NotificationDeliveryTask(NotificationOutboxWorker worker) {

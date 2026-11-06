@@ -14,8 +14,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class IdentityWebConfiguration implements WebMvcConfigurer {
+
   private final IdentityService identity;
+
   private final IdentitySecrets secrets;
+
   private final ConcurrentHashMap<String, Window> attempts = new ConcurrentHashMap<>();
 
   private record Window(long start, int count) {}
@@ -30,6 +33,7 @@ public class IdentityWebConfiguration implements WebMvcConfigurer {
     registry
         .addInterceptor(
             new HandlerInterceptor() {
+
               @Override
               public boolean preHandle(
                   HttpServletRequest request, HttpServletResponse response, Object handler) {

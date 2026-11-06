@@ -1,5 +1,7 @@
 package com.zhangxuan.runrunv2.mapper.identity;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -8,26 +10,27 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class DeploymentIdentityMapper {
+
   private final org.springframework.jdbc.core.JdbcTemplate jdbc;
 
   public DeploymentIdentityMapper(org.springframework.jdbc.core.JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 
-  public java.lang.Boolean deploymentIdentityExists() {
+  public Boolean deploymentIdentityExists() {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.app_users WHERE controlled_identity)",
         Boolean.class);
   }
 
-  public java.lang.Long insertDeploymentIdentity() {
+  public Long insertDeploymentIdentity() {
     return jdbc.queryForObject(
         "INSERT INTO runrun_v2.app_users(phone,role,controlled_identity)"
             + " VALUES('deployment:'||gen_random_uuid(),'ADMIN',true) RETURNING id",
         Long.class);
   }
 
-  public java.lang.Boolean hasWechatBinding(long userId) {
+  public Boolean hasWechatBinding(long userId) {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.wechat_identities WHERE user_id=?)",
         Boolean.class,
@@ -43,12 +46,12 @@ public class DeploymentIdentityMapper {
         userId);
   }
 
-  public java.lang.Boolean settingsInstalled() {
+  public Boolean settingsInstalled() {
     return jdbc.queryForObject(
         "SELECT to_regclass('runrun_v2.platform_settings') IS NOT NULL", Boolean.class);
   }
 
-  public java.lang.Boolean isReviewOwner(long userId) {
+  public Boolean isReviewOwner(long userId) {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.platform_settings WHERE review_owner_id=?)",
         Boolean.class,
@@ -73,26 +76,25 @@ public class DeploymentIdentityMapper {
   }
 
   public int insertAccessAudit(
-      long actor,
-      java.lang.String action,
-      long target,
-      java.lang.String requestId,
-      java.lang.String reason,
-      java.lang.String parameter6) {
+      long administratorId,
+      String action,
+      long targetId,
+      String requestId,
+      String reason,
+      String metadata) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
             + " VALUES(?,?,'APP_USER',?,?,?,?::jsonb)",
-        actor,
+        administratorId,
         action,
-        target,
+        targetId,
         requestId,
         reason,
-        parameter6);
+        metadata);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> findAccessAudit(
-      long actor, java.lang.String action, java.lang.String requestId) {
+  public List<Map<String, Object>> findAccessAudit(long actor, String action, String requestId) {
     return jdbc.queryForList(
         "SELECT target_id,reason,metadata::text AS data FROM runrun_v2.admin_audit_logs WHERE"
             + " administrator_id=? AND action=? AND request_id=?",

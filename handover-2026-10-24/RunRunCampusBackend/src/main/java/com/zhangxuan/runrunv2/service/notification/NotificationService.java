@@ -38,6 +38,6 @@ public class NotificationService {
 
   @Transactional
   public void complete(long id, boolean success, String error) {
-    mapper.completeValueStatement(id, success, error);
+    mapper.completeDelivery(id, success, error);
   }
 }

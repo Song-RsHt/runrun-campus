@@ -13,6 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 class CourierCertificationV2DatabaseE2ETest {
+
   @Container
   static final PostgreSQLContainer<?> PG = new PostgreSQLContainer<>("postgres:16-alpine");
 

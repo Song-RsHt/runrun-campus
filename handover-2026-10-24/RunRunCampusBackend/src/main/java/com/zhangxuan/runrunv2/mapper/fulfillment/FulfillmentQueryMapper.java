@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class FulfillmentQueryMapper {
+
   private final JdbcTemplate jdbc;
 
   public FulfillmentQueryMapper(JdbcTemplate jdbc) {

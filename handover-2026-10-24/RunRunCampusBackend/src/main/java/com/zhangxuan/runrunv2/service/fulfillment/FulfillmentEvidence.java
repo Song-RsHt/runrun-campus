@@ -1,7 +1,8 @@
 package com.zhangxuan.runrunv2.service.fulfillment;
 
-import static com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.*;
 
+import com.zhangxuan.runrunv2.enums.fulfillment.Kind;
 import java.time.OffsetDateTime;
 
 /**
@@ -10,6 +11,7 @@ import java.time.OffsetDateTime;
  * client claims of successful upload are evidence.
  */
 public interface FulfillmentEvidence {
+
   public record Binding(String orderId, String taskId, String actorId, Kind kind) {}
 
   public record Verified(Binding binding, String storageKey) {}

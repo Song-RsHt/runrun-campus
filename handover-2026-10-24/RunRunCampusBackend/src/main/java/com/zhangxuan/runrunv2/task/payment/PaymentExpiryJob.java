@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.*;
 @EnableScheduling
 @ConditionalOnProperty(name = "rrc.payment.mock-enabled", havingValue = "true")
 public class PaymentExpiryJob {
+
   private final PaymentService service;
 
   public PaymentExpiryJob(PaymentService service) {

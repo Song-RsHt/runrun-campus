@@ -8,25 +8,26 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class IdentityStartupMapper {
+
   private final org.springframework.jdbc.core.JdbcTemplate jdbc;
 
   public IdentityStartupMapper(org.springframework.jdbc.core.JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 
-  public java.lang.Boolean runValueStatement() {
+  public Boolean isIdentitySchemaInstalled() {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE"
             + " n.nspname='public' AND c.relkind IN ('r','p','v','m','S','f'))",
         Boolean.class);
   }
 
-  public java.lang.Long runValueAppUsers() {
+  public Long runValueAppUsers() {
     return jdbc.queryForObject(
         "SELECT count(controlled_identity) FROM runrun_v2.app_users", Long.class);
   }
 
-  public java.lang.Long runValueIdentityTickets() {
+  public Long runValueIdentityTickets() {
     return jdbc.queryForObject("SELECT count(*) FROM runrun_v2.identity_tickets", Long.class);
   }
 }

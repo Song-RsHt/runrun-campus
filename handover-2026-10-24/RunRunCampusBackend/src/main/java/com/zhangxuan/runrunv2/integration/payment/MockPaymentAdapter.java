@@ -1,7 +1,8 @@
 package com.zhangxuan.runrunv2.integration.payment;
 
-import static com.zhangxuan.runrunv2.model.payment.PaymentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
 
+import com.zhangxuan.runrunv2.enums.payment.Result;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper;
 import java.util.Set;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConditionalOnProperty(name = "rrc.payment.mock-enabled", havingValue = "true")
 public class MockPaymentAdapter {
+
   private final MockPaymentMapper mapper;
 
   public MockPaymentAdapter(

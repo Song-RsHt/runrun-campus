@@ -1,7 +1,15 @@
 package com.zhangxuan.runrunv2.controller.fulfillment;
 
-import static com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.*;
 
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Deliver;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Location;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Pickup;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.RegisterProof;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Release;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Respond;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Upload;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Version;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
 import com.zhangxuan.runrunv2.service.fulfillment.FulfillmentQueries;
@@ -12,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v2")
 public class FulfillmentController {
+
   private final FulfillmentService service;
+
   private final FulfillmentQueries queries;
 
   public FulfillmentController(FulfillmentService service, FulfillmentQueries queries) {

@@ -1,6 +1,8 @@
 package com.zhangxuan.runrunv2.mapper.identity;
 
 import com.zhangxuan.runrunv2.model.identity.IdentityUser;
+import java.util.List;
+import java.util.Map;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -28,8 +30,7 @@ public class IdentityMapper {
     this.jdbc = jdbc;
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.identity.IdentityUser>
-      findWechatUsersForUpdate(java.lang.String appId, java.lang.String digest) {
+  public List<IdentityUser> findWechatUsersForUpdate(String appId, String digest) {
     return jdbc.query(
         "SELECT u.* FROM runrun_v2.app_users u JOIN runrun_v2.wechat_identities w ON w.user_id=u.id"
             + " WHERE w.app_id=? AND w.openid_hash=? FOR UPDATE OF u",
@@ -39,216 +40,200 @@ public class IdentityMapper {
   }
 
   public int insertWechatTicket(
-      java.lang.String parameter1,
-      java.lang.String appId,
-      java.lang.String digest,
-      java.lang.String parameter4) {
+      String tokenHash, String appId, String openidHash, String openidCiphertext) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.identity_tickets(token_hash,kind,app_id,openid_hash,openid_ciphertext,expires_at)"
             + " VALUES(?,'WECHAT_LOGIN',?,?,?,now()+interval '5 minutes')",
-        parameter1,
+        tokenHash,
         appId,
-        digest,
-        parameter4);
+        openidHash,
+        openidCiphertext);
   }
 
-  public java.lang.Long countWechatIdentity(java.lang.String appId, java.lang.Object parameter3) {
+  public Long countWechatIdentity(String appId, Object get) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.wechat_identities WHERE app_id=? AND openid_hash=?",
         Long.class,
         appId,
-        parameter3);
+        get);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.identity.IdentityUser> findPhoneUsersForUpdate(
-      java.lang.String phone) {
+  public List<IdentityUser> findPhoneUsersForUpdate(String phone) {
     return jdbc.query("SELECT * FROM runrun_v2.app_users WHERE phone=? FOR UPDATE", USER, phone);
   }
 
-  public java.lang.Long insertAccount(java.lang.String phone, java.lang.String requestedRole) {
+  public Long insertAccount(String phone, String role) {
     return jdbc.queryForObject(
         "INSERT INTO runrun_v2.app_users(phone,role) VALUES(?,?) RETURNING id",
         Long.class,
         phone,
-        requestedRole);
+        role);
   }
 
-  public int insertPendingCertification(java.lang.Long id) {
-    return jdbc.update("INSERT INTO runrun_v2.courier_certifications(courier_id) VALUES(?)", id);
+  public int insertPendingCertification(Long courierId) {
+    return jdbc.update(
+        "INSERT INTO runrun_v2.courier_certifications(courier_id) VALUES(?)", courierId);
   }
 
-  public java.lang.Long countUserWechatBindings(java.lang.String appId, long parameter3) {
+  public Long countUserWechatBindings(String appId, long userId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.wechat_identities WHERE app_id=? AND user_id=?",
         Long.class,
         appId,
-        parameter3);
+        userId);
   }
 
   public int insertWechatBinding(
-      long parameter1,
-      java.lang.String appId,
-      java.lang.Object parameter3,
-      java.lang.Object parameter4) {
+      long userId, String appId, Object openidHash, Object openidCiphertext) {
     return jdbc.update(
         "INSERT INTO runrun_v2.wechat_identities(user_id,app_id,openid_hash,openid_ciphertext)"
             + " VALUES(?,?,?,?)",
-        parameter1,
+        userId,
         appId,
-        parameter3,
-        parameter4);
+        openidHash,
+        openidCiphertext);
   }
 
-  public int insertWechatBoundEvent(long parameter1, long parameter2) {
+  public int insertWechatBoundEvent(long actorId, long subjectId) {
     return jdbc.update(
         "INSERT INTO runrun_v2.identity_audit_events(actor_id,event_type,subject_id)"
             + " VALUES(?,'WECHAT_BOUND',?)",
-        parameter1,
-        parameter2);
+        actorId,
+        subjectId);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.identity.IdentityUser>
-      findPasswordUsersForUpdate(java.lang.String phone) {
+  public List<IdentityUser> findPasswordUsersForUpdate(String phone) {
     return jdbc.query("SELECT * FROM runrun_v2.app_users WHERE phone=? FOR UPDATE", USER, phone);
   }
 
-  public java.lang.Long countPasswordUserBindings(long parameter2, java.lang.String appId) {
+  public Long countPasswordUserBindings(long userId, String appId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.wechat_identities WHERE user_id=? AND app_id=?",
         Long.class,
-        parameter2,
+        userId,
         appId);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.identity.IdentityUser> findActiveSessionUser(
-      java.lang.String parameter2) {
+  public List<IdentityUser> findActiveSessionUser(String hash) {
     return jdbc.query(
         "SELECT u.* FROM runrun_v2.user_sessions s JOIN runrun_v2.app_users u ON u.id=s.user_id"
             + " WHERE s.token_hash=? AND s.invalidated_at IS NULL AND s.expires_at>now() AND"
             + " s.security_version=u.v2_admin_security_version",
         USER,
-        parameter2);
+        hash);
   }
 
-  public int invalidateUserSessions(java.lang.Long parameter1) {
+  public int invalidateUserSessions(Long accountId) {
     return jdbc.update(
         "UPDATE runrun_v2.user_sessions SET invalidated_at=now() WHERE user_id=? AND invalidated_at"
             + " IS NULL",
-        parameter1);
+        accountId);
   }
 
-  public int invalidateSession(java.lang.String parameter1) {
+  public int invalidateSession(String hash) {
     return jdbc.update(
         "UPDATE runrun_v2.user_sessions SET invalidated_at=now() WHERE token_hash=? AND"
             + " invalidated_at IS NULL",
-        parameter1);
+        hash);
   }
 
-  public int insertRevocationEvent(java.lang.Long parameter1, java.lang.Long parameter2) {
+  public int insertRevocationEvent(Long actorId, Long subjectId) {
     return jdbc.update(
         "INSERT INTO runrun_v2.identity_audit_events(actor_id,event_type,subject_id)"
             + " VALUES(?,'SESSION_REVOKED',?)",
-        parameter1,
-        parameter2);
+        actorId,
+        subjectId);
   }
 
-  public int updatePassword(java.lang.String parameter1, long parameter2) {
+  public int updatePassword(String encode, long userId) {
     return jdbc.update(
         "UPDATE runrun_v2.app_users SET password_hash=?,version=version+1,updated_at=now() WHERE"
             + " id=?",
-        parameter1,
-        parameter2);
+        encode,
+        userId);
   }
 
-  public int invalidatePasswordUserSessions(long parameter1) {
+  public int invalidatePasswordUserSessions(long userId) {
     return jdbc.update(
         "UPDATE runrun_v2.user_sessions SET invalidated_at=now() WHERE user_id=? AND invalidated_at"
             + " IS NULL",
-        parameter1);
+        userId);
   }
 
-  public int insertPasswordRevocationEvent(long parameter1, long parameter2) {
+  public int insertPasswordRevocationEvent(long actorId, long subjectId) {
     return jdbc.update(
         "INSERT INTO runrun_v2.identity_audit_events(actor_id,event_type,subject_id)"
             + " VALUES(?,'SESSION_REVOKED',?)",
-        parameter1,
-        parameter2);
+        actorId,
+        subjectId);
   }
 
-  public java.util.List<java.lang.String> findIdentityRequestHashes(
-      java.lang.Long parameter2, java.lang.String scope, java.lang.String key) {
+  public List<String> findIdentityRequestHashes(Long id, String scope, String key) {
     return jdbc.query(
         "SELECT request_hash FROM runrun_v2.idempotency_requests WHERE actor_id=? AND scope=? AND"
             + " key=?",
         (r, n) -> r.getString(1),
-        parameter2,
+        id,
         scope,
         key);
   }
 
-  public int insertIdentityRequest(
-      java.lang.Long parameter1,
-      java.lang.String scope,
-      java.lang.String key,
-      java.lang.String digest) {
+  public int insertIdentityRequest(Long actorId, String scope, String key, String requestHash) {
     return jdbc.update(
         "INSERT INTO runrun_v2.idempotency_requests(actor_id,scope,key,request_hash,status)"
             + " VALUES(?,?,?,?,'PROCESSING')",
-        parameter1,
+        actorId,
         scope,
         key,
-        digest);
+        requestHash);
   }
 
-  public int completeIdentityRequest(
-      java.lang.Long parameter1, java.lang.String scope, java.lang.String key) {
+  public int completeIdentityRequest(Long id, String scope, String key) {
     return jdbc.update(
         "UPDATE runrun_v2.idempotency_requests SET status='SUCCEEDED',updated_at=now() WHERE"
             + " actor_id=? AND scope=? AND key=?",
-        parameter1,
+        id,
         scope,
         key);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.identity.IdentityUser> findUser(
-      boolean locked, long id) {
+  public List<IdentityUser> findUser(boolean locked, long id) {
     return jdbc.query(
         "SELECT * FROM runrun_v2.app_users WHERE id=?" + (locked ? " FOR UPDATE" : ""), USER, id);
   }
 
-  public int insertSession(long parameter1, java.lang.String parameter2, long parameter3) {
+  public int insertSession(long userId, String tokenHash, long securityVersion) {
     return jdbc.update(
         "INSERT INTO runrun_v2.user_sessions(user_id,token_hash,expires_at,security_version)"
             + " VALUES(?,?,now()+interval '24 hours',?)",
-        parameter1,
-        parameter2,
-        parameter3);
+        userId,
+        tokenHash,
+        securityVersion);
   }
 
-  public java.lang.Boolean isCourierEligible(long parameter2) {
+  public Boolean isCourierEligible(long userId) {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.courier_certifications WHERE courier_id=? AND"
             + " eligible)",
         Boolean.class,
-        parameter2);
+        userId);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> findTicketForUpdate(
-      java.lang.String parameter1, java.lang.String kind) {
+  public List<Map<String, Object>> findTicketForUpdate(String hash, String kind) {
     return jdbc.queryForList(
         "SELECT * FROM runrun_v2.identity_tickets WHERE token_hash=? AND kind=? AND consumed_at IS"
             + " NULL AND expires_at>now() FOR UPDATE",
-        parameter1,
+        hash,
         kind);
   }
 
-  public int consumeTicket(java.lang.String parameter1) {
+  public int consumeTicket(String hash) {
     return jdbc.update(
-        "UPDATE runrun_v2.identity_tickets SET consumed_at=now() WHERE token_hash=?", parameter1);
+        "UPDATE runrun_v2.identity_tickets SET consumed_at=now() WHERE token_hash=?", hash);
   }
 
-  public java.util.List<java.lang.Object> lockIdentityScope(java.lang.String key) {
+  public List<Object> lockIdentityScope(String key) {
     return jdbc.query(
         "SELECT pg_advisory_xact_lock(hashtextextended(?,0))",
         (RowMapper<Object>) (r, n) -> null,

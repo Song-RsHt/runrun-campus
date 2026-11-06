@@ -11,6 +11,7 @@ import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
 import com.zhangxuan.runrunv2.dto.response.identity.LoginResult;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
+import com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
@@ -486,10 +487,7 @@ class IdentityIntegrationTest {
       assertEquals("USER", fresh.account().role());
       assertThrows(
           IllegalStateException.class,
-          () ->
-              new IdentityStartupGuard(
-                      new com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper(db), "test")
-                  .run(null));
+          () -> new IdentityStartupGuard(new IdentityStartupMapper(db), "test").run(null));
     } finally {
       db.execute("DROP TABLE public.app_users");
     }
@@ -538,11 +536,7 @@ class IdentityIntegrationTest {
   void productionAndMissingRuntimeMigrationFailClosed() {
     assertThrows(
         IllegalStateException.class,
-        () ->
-            new IdentityStartupGuard(
-                    new com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper(db),
-                    "production")
-                .run(null));
+        () -> new IdentityStartupGuard(new IdentityStartupMapper(db), "production").run(null));
     assertThrows(
         IllegalStateException.class,
         () ->

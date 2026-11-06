@@ -1,20 +1,35 @@
 package com.zhangxuan.runrunv2.service.fulfillment;
 
-import static com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.*;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Deliver;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Location;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Pickup;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.RegisterProof;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Release;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Respond;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Upload;
+import com.zhangxuan.runrunv2.dto.request.fulfillment.Version;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
+import com.zhangxuan.runrunv2.enums.fulfillment.Decision;
+import com.zhangxuan.runrunv2.enums.fulfillment.EventType;
+import com.zhangxuan.runrunv2.enums.fulfillment.Kind;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper;
 import com.zhangxuan.runrunv2.mapper.order.OrderStore;
-import com.zhangxuan.runrunv2.model.order.OrderModels;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
 
+/**
+ * 协调 v2 接单、邀请、凭证和完成确认。状态判定、幂等与事务保留在本层，Mapper 保留原行锁与更新条件。 凭证未接入时继续拒绝推进，不把占位适配器视为已验证证据。参见《订单与履约规则》。
+ */
 @Service
 public class FulfillmentService {
 
@@ -70,7 +85,7 @@ public class FulfillmentService {
     String task = mapper.acceptValueFulfillmentTasks(id(orderId), id(actor.id()), now(), now());
     supersede(orderId, task);
     closeOffers(orderId, task);
-    updateOrder(orderId, "status='ACCEPTED'");
+    mapper.markOrderAccepted(now(), id(orderId));
     event(orderId, task, actor.id(), "ACCEPTED", key, Map.of());
     Result result = result(orderId, task);
     finish(actor.id(), "accept", key, orderId, result);
@@ -111,7 +126,7 @@ public class FulfillmentService {
         mapper.inviteValueFulfillmentTasks3(
             id(orderId), id(courierId), source == null ? null : id(source), now());
     supersede(orderId, task);
-    updateOrder(orderId, "confirm_started_at=NULL,confirm_deadline=NULL");
+    mapper.clearOrderConfirmation(now(), id(orderId));
     event(orderId, task, actor.id(), "INVITED", key, Map.of("reason", reason));
     notify(courierId, "invitation:" + task, orderId, "TASK_OFFERED");
     Task result = task(task);
@@ -141,11 +156,10 @@ public class FulfillmentService {
       capacity(actor.id());
       state(mapper.respondValueFulfillmentTasks(id(task.orderId())) == 0);
       mapper.respondWriteFulfillmentTasks(now(), id(taskId));
-      updateOrder(
-          task.orderId(), "status='ACCEPTED',confirm_started_at=NULL,confirm_deadline=NULL");
+      mapper.acceptOrderAndClearConfirmation(now(), id(task.orderId()));
     }
     if (body.decision() == Decision.DECLINE)
-      updateOrder(task.orderId(), "confirm_started_at=NULL,confirm_deadline=NULL");
+      mapper.clearOrderConfirmation(now(), id(task.orderId()));
     event(task.orderId(), taskId, actor.id(), "INVITATION_" + body.decision(), key, Map.of());
     Result result = result(task.orderId(), taskId);
     finish(actor.id(), "respond", key, task.orderId(), result);
@@ -170,7 +184,7 @@ public class FulfillmentService {
     // Never discard that ambiguity by allowing a normal self-release (§8).
     state(mapper.releaseValueV(id(task.id())) == 0);
     end(task.id(), "RELEASED");
-    updateOrder(orderId, "status='PENDING_ASSIGNMENT'");
+    mapper.markOrderPendingAssignment(now(), id(orderId));
     event(orderId, task.id(), actor.id(), "RELEASED", key, Map.of("reason", body.reason()));
     Result result = result(orderId, task.id());
     finish(actor.id(), "release", key, orderId, result);
@@ -208,7 +222,7 @@ public class FulfillmentService {
         || ticket.uploadUrl() == null
         || ticket.expiresAt() == null
         || !ticket.expiresAt().isAfter(now())) throw new IdentityFailure(409, "PROOF_NOT_READY");
-    updateOrder(orderId, "status=status");
+    mapper.advanceOrderVersion(now(), id(orderId));
     event(orderId, task.id(), actor.id(), "UPLOAD_ISSUED", key, Map.of("kind", body.kind()));
     finish(actor.id(), "upload", key, orderId, ticket);
     return ticket;
@@ -239,7 +253,7 @@ public class FulfillmentService {
     String proof =
         mapper.proofValueV3(
             id(orderId), id(task.id()), id(actor.id()), body.kind().name(), verified.storageKey());
-    updateOrder(orderId, "status=status");
+    mapper.advanceOrderVersion(now(), id(orderId));
     event(
         orderId,
         task.id(),
@@ -275,8 +289,8 @@ public class FulfillmentService {
       var row = existing.get(0);
       if (!Objects.equals(row.get("coordinate_system"), body.coordinateSystem())
           || row.get("latitude") == null
-          || ((java.math.BigDecimal) row.get("latitude")).compareTo(body.latitude()) != 0
-          || ((java.math.BigDecimal) row.get("longitude")).compareTo(body.longitude()) != 0)
+          || ((BigDecimal) row.get("latitude")).compareTo(body.latitude()) != 0
+          || ((BigDecimal) row.get("longitude")).compareTo(body.longitude()) != 0)
         throw new IdentityFailure(409, "IDEMPOTENCY_KEY_CONFLICT");
       Event result = readEvent(row.get("id").toString(), order.version());
       finish(actor.id(), "location", key, orderId, result);
@@ -318,7 +332,7 @@ public class FulfillmentService {
             body.requestId(),
             accepted,
             rejection);
-    updateOrder(orderId, "status=status");
+    mapper.advanceOrderVersion(now(), id(orderId));
     event(
         orderId,
         task.id(),
@@ -346,7 +360,7 @@ public class FulfillmentService {
     state(order.status().equals("ACCEPTED"));
     requireProof(orderId, task.id(), body.pickupProofId(), Kind.PICKUP);
     mapper.pickupWriteFulfillmentTasks(now(), id(task.id()));
-    updateOrder(orderId, "status='PICKED_UP'");
+    mapper.markOrderPickedUp(now(), id(orderId));
     event(
         orderId, task.id(), actor.id(), "PICKED_UP", key, Map.of("proofId", body.pickupProofId()));
     Result result = result(orderId, task.id());
@@ -436,7 +450,7 @@ public class FulfillmentService {
     IdentityService.text(sourceId, 128);
     state(!Set.of("COMPLETED", "CANCELLED").contains(order.status()));
     if (mapper.blockCompletionWriteFulfillmentCompletionBlocks(id(orderId), type, sourceId) > 0)
-      updateOrder(orderId, "confirm_started_at=NULL,confirm_deadline=NULL");
+      mapper.clearOrderConfirmation(now(), id(orderId));
   }
 
   @Transactional(propagation = Propagation.MANDATORY)
@@ -585,10 +599,6 @@ public class FulfillmentService {
 
   private void end(String task, String status) {
     mapper.endWriteFulfillmentTasks(status, now(), id(task));
-  }
-
-  private void updateOrder(String order, String assignment) {
-    mapper.updateOrderWriteV(assignment, now(), id(order));
   }
 
   private Order order(String order) {

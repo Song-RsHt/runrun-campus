@@ -1,13 +1,22 @@
 package com.zhangxuan.runrunv2.service.configuration;
 
-import static com.zhangxuan.runrunv2.model.order.OrderModels.*;
+import static com.zhangxuan.runrunv2.dto.response.order.OrderModels.*;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
+import com.zhangxuan.runrunv2.dto.request.order.ConfigChange;
+import com.zhangxuan.runrunv2.dto.request.order.PointChange;
+import com.zhangxuan.runrunv2.dto.request.order.QuoteRequest;
+import com.zhangxuan.runrunv2.dto.request.order.ZoneChange;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
+import com.zhangxuan.runrunv2.enums.order.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper;
+import com.zhangxuan.runrunv2.model.order.Pricing;
+import com.zhangxuan.runrunv2.model.order.Schedule;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter;
+import java.sql.Time;
 import java.time.*;
 import java.util.*;
 import org.springframework.stereotype.Service;
@@ -57,16 +66,12 @@ public class ServiceConfigService {
   }
 
   private Config view(Map<String, Object> settings, boolean includeDisabled) {
-    List<com.zhangxuan.runrunv2.model.order.OrderModels.Service> services =
+    List<OrderModels.Service> services =
         Arrays.stream(ServiceType.values())
-            .map(
-                s ->
-                    new com.zhangxuan.runrunv2.model.order.OrderModels.Service(
-                        s.name(), s.name, s.baseCents, s.zoneSurcharge))
+            .map(s -> new OrderModels.Service(s.name(), s.name, s.baseCents, s.zoneSurcharge))
             .toList();
-    String filter = includeDisabled ? "" : " WHERE enabled";
-    var zones = mapper.viewRowsDeliveryZones(filter);
-    var points = mapper.viewRowsServicePoints(filter);
+    var zones = mapper.viewRowsDeliveryZones(includeDisabled);
+    var points = mapper.viewRowsServicePoints(includeDisabled);
     return new Config(
         services,
         zones,
@@ -112,15 +117,14 @@ public class ServiceConfigService {
   }
 
   public Map<String, Object> zone(String code) {
-    return enabled("delivery_zones", code);
+    return requireEnabled(mapper.findEnabledZone(code));
   }
 
   public Map<String, Object> point(String code) {
-    return enabled("service_points", code);
+    return requireEnabled(mapper.findEnabledServicePoint(code));
   }
 
-  private Map<String, Object> enabled(String table, String code) {
-    var rows = mapper.enabledRowsStatement(table, code);
+  private Map<String, Object> requireEnabled(List<Map<String, Object>> rows) {
     if (rows.size() != 1) throw IdentityFailure.invalid();
     return rows.get(0);
   }
@@ -134,8 +138,8 @@ public class ServiceConfigService {
             .instant()
             .atZone(ZoneId.of(settings.get("business_timezone").toString()))
             .toLocalTime();
-    LocalTime open = ((java.sql.Time) settings.get("business_open")).toLocalTime();
-    LocalTime close = ((java.sql.Time) settings.get("business_close")).toLocalTime();
+    LocalTime open = ((Time) settings.get("business_open")).toLocalTime();
+    LocalTime close = ((Time) settings.get("business_close")).toLocalTime();
     if (now.isBefore(open) || !now.isBefore(close))
       throw new IdentityFailure(409, "OUTSIDE_BUSINESS_HOURS");
   }

@@ -1,6 +1,6 @@
 package com.zhangxuan.runrunv2.controller.order;
 
-import static com.zhangxuan.runrunv2.model.order.OrderModels.*;
+import static com.zhangxuan.runrunv2.dto.response.order.OrderModels.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -9,9 +9,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
+import com.zhangxuan.runrunv2.dto.request.order.ConfigChange;
+import com.zhangxuan.runrunv2.dto.request.order.CreateRequest;
+import com.zhangxuan.runrunv2.dto.request.order.PointChange;
+import com.zhangxuan.runrunv2.dto.request.order.QuoteRequest;
+import com.zhangxuan.runrunv2.dto.request.order.ZoneChange;
+import com.zhangxuan.runrunv2.enums.order.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
 import com.zhangxuan.runrunv2.mapper.order.OrderStore;
+import com.zhangxuan.runrunv2.model.order.Schedule;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.configuration.ServiceConfigService;
 import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
@@ -54,6 +61,7 @@ import org.testcontainers.junit.jupiter.*;
     classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
 class OrderIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -86,19 +94,32 @@ class OrderIntegrationTest {
   }
 
   @Autowired JdbcTemplate db;
+
   @Autowired IdentitySecrets secrets;
+
   @Autowired DeploymentIdentityService deployment;
+
   @Autowired ServiceConfigService config;
+
   @Autowired OrderService orders;
+
   @Autowired OrderStore store;
+
   @Autowired OrderJson json;
+
   @Autowired MockMvc http;
+
   @Autowired PlatformTransactionManager transactions;
+
   @MockitoBean Clock clock;
+
   @MockitoBean WechatGateway wechat;
+
   // Explicit M03 substitute: no production payment table or payment processing is implemented here.
   @MockitoBean OriginalPaymentWriter payments;
+
   String user, other, admin, courier;
+
   String adminId;
 
   @BeforeEach

@@ -1,7 +1,9 @@
 package com.zhangxuan.runrunv2.mapper.payment;
 
-import static com.zhangxuan.runrunv2.model.payment.PaymentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -10,52 +12,50 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class MockPaymentMapper {
+
   private final org.springframework.jdbc.core.JdbcTemplate jdbc;
 
   public MockPaymentMapper(org.springframework.jdbc.core.JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 
-  public int submitWriteMockChannelResults(java.lang.String type, java.lang.Long parameter2) {
+  public int submitWriteMockChannelResults(String resourceType, Long resourceId) {
     return jdbc.update(
         "INSERT INTO runrun_v2.mock_channel_results(resource_type,resource_id,result)"
             + " VALUES(?,?,'PROCESSING')",
-        type,
-        parameter2);
+        resourceType,
+        resourceId);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      queryRowsMockChannelResults(java.lang.String type, java.lang.Long parameter2) {
+  public List<Map<String, Object>> queryRowsMockChannelResults(String type, Long id) {
     return jdbc.queryForList(
         "SELECT result FROM runrun_v2.mock_channel_results WHERE resource_type=? AND resource_id=?",
         type,
-        parameter2);
+        id);
   }
 
-  public java.lang.Long revisionValueMockChannelResults(
-      java.lang.String type, java.lang.Long parameter3) {
+  public Long revisionValueMockChannelResults(String type, Long id) {
     return jdbc.queryForObject(
         "SELECT version FROM runrun_v2.mock_channel_results WHERE resource_type=? AND"
             + " resource_id=?",
         Long.class,
         type,
-        parameter3);
+        id);
   }
 
-  public int recordWriteMockChannelResults(
-      java.lang.String parameter1, java.lang.String type, java.lang.Long parameter3) {
+  public int recordWriteMockChannelResults(String status, String type, Long id) {
     return jdbc.update(
         "UPDATE runrun_v2.mock_channel_results SET result=?,version=version+1 WHERE resource_type=?"
             + " AND resource_id=? AND result<>'SUCCESS'",
-        parameter1,
+        status,
         type,
-        parameter3);
+        id);
   }
 
-  public int retryRefundWriteMockChannelResults(java.lang.Long parameter1) {
+  public int retryRefundWriteMockChannelResults(Long id) {
     return jdbc.update(
         "UPDATE runrun_v2.mock_channel_results SET result='PROCESSING',version=version+1 WHERE"
             + " resource_type='REFUND' AND resource_id=? AND result='FAILED'",
-        parameter1);
+        id);
   }
 }

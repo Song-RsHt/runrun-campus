@@ -1,7 +1,7 @@
 package com.zhangxuan.runrunv2.service.fulfillment;
 
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels;
 import java.time.OffsetDateTime;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PendingFulfillmentEvidence implements FulfillmentEvidence {
+
   public FulfillmentModels.Ticket issue(
       Binding binding, String type, long size, OffsetDateTime now) {
     throw new IdentityFailure(409, "PROOF_NOT_READY");

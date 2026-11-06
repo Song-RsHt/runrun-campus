@@ -1,6 +1,6 @@
 package com.zhangxuan.runrunv2.controller.payment;
 
-import static com.zhangxuan.runrunv2.model.payment.PaymentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -8,10 +8,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
+import com.zhangxuan.runrunv2.dto.request.order.CreateRequest;
+import com.zhangxuan.runrunv2.dto.request.payment.CancelRequest;
+import com.zhangxuan.runrunv2.dto.request.payment.ResultRequest;
+import com.zhangxuan.runrunv2.dto.request.payment.VersionRequest;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
+import com.zhangxuan.runrunv2.enums.order.ServiceType;
+import com.zhangxuan.runrunv2.enums.payment.Result;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
-import com.zhangxuan.runrunv2.model.order.OrderModels;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.order.OrderService;
 import com.zhangxuan.runrunv2.service.payment.PaymentService;
@@ -50,6 +56,7 @@ import org.testcontainers.junit.jupiter.*;
     classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
 @Testcontainers
 class PaymentIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -83,16 +90,27 @@ class PaymentIntegrationTest {
   }
 
   @Autowired JdbcTemplate db;
+
   @Autowired PaymentService payments;
+
   @Autowired MockPaymentAdapter adapter;
+
   @Autowired OrderService orders;
+
   @Autowired IdentitySecrets secrets;
+
   @Autowired PlatformTransactionManager transactions;
+
   @Autowired MockMvc http;
+
   @Autowired OrderJson json;
+
   @MockitoBean Clock clock;
+
   @MockitoBean WechatGateway wechat;
+
   String user, other, admin, courier;
+
   int seq;
 
   @BeforeEach
@@ -151,10 +169,7 @@ class PaymentIntegrationTest {
 
   OrderModels.Created create() {
     return orders.create(
-        user,
-        key(),
-        new OrderModels.CreateRequest(
-            OrderModels.ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
+        user, key(), new CreateRequest(ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
   }
 
   Started start(String id) {
@@ -545,7 +560,8 @@ class PaymentIntegrationTest {
             "SELECT sum(platform_cents) FROM runrun_v2.payment_financial_events WHERE"
                 + " kind='DOWNGRADE_REFUND'",
             Long.class);
-    assertEquals(0, platform); // floor(3*240/800), rather than rounding each change up.
+    // floor(3*240/800), rather than rounding each change up.
+    assertEquals(0, platform);
     var fourth = approve(c, "104", -1);
     resultRefund(fourth.refunds().get(0).id(), Result.SUCCESS);
     assertEquals(

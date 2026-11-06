@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class IdentityErrorHandler {
+
   @ExceptionHandler({
     org.springframework.web.servlet.resource.NoResourceFoundException.class,
     org.springframework.web.servlet.NoHandlerFoundException.class

@@ -1,5 +1,5 @@
 param(
-  [string]$Test='com.zhangxuan.runrunv2.*Test',
+  [string]$Test='',
   [switch]$KeepDatabase
 )
 $ErrorActionPreference='Stop'

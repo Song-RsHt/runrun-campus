@@ -5,6 +5,7 @@ import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper;
 import com.zhangxuan.runrunv2.model.identity.AccessResult;
 import com.zhangxuan.runrunv2.model.identity.IdentityUser;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
@@ -176,7 +177,7 @@ public class DeploymentIdentityService {
       String reason,
       Map<String, Object> metadata) {
     try {
-      Map<String, Object> details = new java.util.LinkedHashMap<>(metadata);
+      Map<String, Object> details = new LinkedHashMap<>(metadata);
       details.put("reason", reason);
       mapper.insertAccessAudit(
           actor, action, target, requestId, reason, json.writeValueAsString(details));

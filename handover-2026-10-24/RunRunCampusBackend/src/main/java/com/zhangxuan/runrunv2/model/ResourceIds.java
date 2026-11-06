@@ -4,6 +4,7 @@ import com.zhangxuan.runrunv2.exception.IdentityFailure;
 
 /** Existing positive BIGINT identifier validation shared across v2 layer boundaries. */
 public final class ResourceIds {
+
   private ResourceIds() {}
 
   public static long parse(String value) {

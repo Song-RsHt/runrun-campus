@@ -1,7 +1,8 @@
 package com.zhangxuan.runrunv2.mapper.fulfillment;
 
-import static com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.*;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import org.springframework.stereotype.Repository;
@@ -20,314 +21,288 @@ public class FulfillmentMapper {
     this.jdbc = jdbc;
   }
 
-  public java.lang.String acceptValueFulfillmentTasks(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.time.OffsetDateTime parameter4,
-      java.time.OffsetDateTime parameter5) {
+  public String acceptValueFulfillmentTasks(
+      Long orderId, Long courierId, OffsetDateTime acceptedAt, OffsetDateTime createdAt) {
     return jdbc.queryForObject(
         "INSERT INTO runrun_v2.fulfillment_tasks(order_id,courier_id,status,accepted_at,created_at)"
             + " VALUES(?,?,'ACTIVE',?,?) RETURNING id::text",
         String.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5);
+        orderId,
+        courierId,
+        acceptedAt,
+        createdAt);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> inviteRowsAppUsers(
-      java.lang.Long parameter1) {
+  public List<Map<String, Object>> inviteRowsAppUsers(Long courierId) {
     return jdbc.queryForList(
         "SELECT id FROM runrun_v2.app_users WHERE id=? AND role='COURIER' AND status='ACTIVE' FOR"
             + " KEY SHARE",
-        parameter1);
+        courierId);
   }
 
-  public java.lang.Long inviteValueFulfillmentTasks(java.lang.Long parameter2) {
+  public Long inviteValueFulfillmentTasks(Long orderId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.fulfillment_tasks WHERE order_id=? AND status='ACTIVE'",
         Long.class,
-        parameter2);
+        orderId);
   }
 
-  public java.lang.String inviteValueFulfillmentTasks2(java.lang.Long parameter2) {
+  public String inviteValueFulfillmentTasks2(Long orderId) {
     return jdbc.queryForObject(
         "SELECT max(id)::text FROM runrun_v2.fulfillment_tasks WHERE order_id=?",
         String.class,
-        parameter2);
+        orderId);
   }
 
-  public java.lang.String inviteValueFulfillmentTasks3(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.Long parameter4,
-      java.time.OffsetDateTime parameter5) {
+  public String inviteValueFulfillmentTasks3(
+      Long orderId, Long courierId, Long sourceTaskId, OffsetDateTime createdAt) {
     return jdbc.queryForObject(
         "INSERT INTO"
             + " runrun_v2.fulfillment_tasks(order_id,courier_id,status,source_task_id,created_at)"
             + " VALUES(?,?,'OFFERED',?,?) RETURNING id::text",
         String.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5);
+        orderId,
+        courierId,
+        sourceTaskId,
+        createdAt);
   }
 
-  public java.lang.Long respondValueFulfillmentTasks(java.lang.Long parameter2) {
+  public Long respondValueFulfillmentTasks(Long orderId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.fulfillment_tasks WHERE order_id=? AND status='ACTIVE'",
         Long.class,
-        parameter2);
+        orderId);
   }
 
-  public int respondWriteFulfillmentTasks(
-      java.time.OffsetDateTime parameter1, java.lang.Long parameter2) {
+  public int respondWriteFulfillmentTasks(OffsetDateTime timestamp, Long taskId) {
     return jdbc.update(
         "UPDATE runrun_v2.fulfillment_tasks SET status='ACTIVE',accepted_at=?,version=version+1"
             + " WHERE id=?",
-        parameter1,
-        parameter2);
+        timestamp,
+        taskId);
   }
 
-  public java.lang.Long releaseValueV(java.lang.Long parameter2) {
+  public Long releaseValueV(Long taskId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.v2_order_proofs WHERE task_id=? AND kind='PICKUP'",
         Long.class,
-        parameter2);
+        taskId);
   }
 
-  public java.lang.Long proofValueV(java.lang.Long parameter2, java.lang.String parameter3) {
+  public Long proofValueV(Long taskId, String kind) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.v2_order_proofs WHERE task_id=? AND kind=?",
         Long.class,
-        parameter2,
-        parameter3);
+        taskId,
+        kind);
   }
 
-  public java.lang.Long proofValueV2(java.lang.String parameter2) {
+  public Long proofValueV2(String storageKey) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.v2_order_proofs WHERE storage_key=?",
         Long.class,
-        parameter2);
+        storageKey);
   }
 
-  public java.lang.String proofValueV3(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.Long parameter4,
-      java.lang.String parameter5,
-      java.lang.String parameter6) {
+  public String proofValueV3(
+      Long orderId, Long taskId, Long uploadedBy, String kind, String storageKey) {
     return jdbc.queryForObject(
         "INSERT INTO"
             + " runrun_v2.v2_order_proofs(order_id,task_id,uploaded_by,kind,storage_key,storage_status)"
             + " VALUES(?,?,?,?,?,'AVAILABLE') RETURNING id::text",
         String.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5,
-        parameter6);
+        orderId,
+        taskId,
+        uploadedBy,
+        kind,
+        storageKey);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      locationRowsLocationEvents(
-          java.lang.Long parameter1, java.lang.String parameter2, java.lang.String parameter3) {
+  public List<Map<String, Object>> locationRowsLocationEvents(
+      Long taskId, String eventType, String requestId) {
     return jdbc.queryForList(
         "SELECT * FROM runrun_v2.location_events WHERE task_id=? AND event_type=? AND request_id=?",
-        parameter1,
-        parameter2,
-        parameter3);
+        taskId,
+        eventType,
+        requestId);
   }
 
-  public java.lang.Long locationValueLocationEvents(java.lang.Long parameter2) {
+  public Long locationValueLocationEvents(Long taskId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.location_events WHERE task_id=? AND event_type='DELIVERY'"
             + " AND accepted",
         Long.class,
-        parameter2);
+        taskId);
   }
 
-  public java.lang.String locationValueLocationEvents2(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.Long parameter4,
-      java.lang.String parameter5,
-      java.math.BigDecimal parameter6,
-      java.math.BigDecimal parameter7,
-      java.lang.String parameter8,
-      java.time.OffsetDateTime parameter9,
-      java.lang.String parameter10,
+  public String locationValueLocationEvents2(
+      Long orderId,
+      Long taskId,
+      Long courierId,
+      String eventType,
+      BigDecimal latitude,
+      BigDecimal longitude,
+      String coordinateSystem,
+      OffsetDateTime receivedAt,
+      String requestId,
       boolean accepted,
-      java.lang.String rejection) {
+      String decisionReason) {
     return jdbc.queryForObject(
         "INSERT INTO"
             + " runrun_v2.location_events(order_id,task_id,courier_id,event_type,latitude,longitude,coordinate_system,received_at,request_id,accepted,decision_reason)"
             + " VALUES(?,?,?,?,?,?,?,?,?,?,?) RETURNING id::text",
         String.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5,
-        parameter6,
-        parameter7,
-        parameter8,
-        parameter9,
-        parameter10,
+        orderId,
+        taskId,
+        courierId,
+        eventType,
+        latitude,
+        longitude,
+        coordinateSystem,
+        receivedAt,
+        requestId,
         accepted,
-        rejection);
+        decisionReason);
   }
 
-  public int pickupWriteFulfillmentTasks(
-      java.time.OffsetDateTime parameter1, java.lang.Long parameter2) {
+  public int pickupWriteFulfillmentTasks(OffsetDateTime timestamp, Long taskId) {
     return jdbc.update(
         "UPDATE runrun_v2.fulfillment_tasks SET picked_up_at=?,version=version+1 WHERE id=?",
-        parameter1,
-        parameter2);
+        timestamp,
+        taskId);
   }
 
-  public java.lang.Long deliverValueLocationEvents(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.Long parameter4,
-      java.lang.Long parameter5) {
+  public Long deliverValueLocationEvents(
+      Long locationEventId, Long orderId, Long taskId, Long actorId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.location_events WHERE id=? AND order_id=? AND task_id=? AND"
             + " courier_id=? AND event_type='DELIVERY' AND accepted AND deleted_at IS NULL",
         Long.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5);
+        locationEventId,
+        orderId,
+        taskId,
+        actorId);
   }
 
   public int deliverWriteFulfillmentTasks(
-      java.time.OffsetDateTime parameter1,
-      java.time.OffsetDateTime parameter2,
-      java.lang.Long parameter3) {
+      OffsetDateTime timestamp, OffsetDateTime timestamp2, Long taskId) {
     return jdbc.update(
         "UPDATE runrun_v2.fulfillment_tasks SET"
             + " status='DELIVERED',delivered_at=?,ended_at=?,version=version+1 WHERE id=?",
-        parameter1,
-        parameter2,
-        parameter3);
+        timestamp,
+        timestamp2,
+        taskId);
   }
 
   public int deliverWriteV(
-      java.time.OffsetDateTime parameter1,
-      java.time.OffsetDateTime start,
-      java.lang.Object parameter3,
-      java.time.OffsetDateTime parameter4,
-      java.lang.Long parameter5) {
+      OffsetDateTime timestamp,
+      OffsetDateTime start,
+      Object value,
+      OffsetDateTime timestamp2,
+      Long orderId) {
     return jdbc.update(
         "UPDATE runrun_v2.v2_orders SET"
             + " status='DELIVERED_PENDING_CONFIRMATION',delivered_at=coalesce(delivered_at,?),confirm_started_at=?,confirm_deadline=?,version=version+1,updated_at=?"
             + " WHERE id=?",
-        parameter1,
+        timestamp,
         start,
-        parameter3,
-        parameter4,
-        parameter5);
+        value,
+        timestamp2,
+        orderId);
   }
 
-  public java.util.List<java.lang.String> autoCompleteRowsV(java.time.OffsetDateTime parameter2) {
+  public List<String> autoCompleteRowsV(OffsetDateTime timestamp) {
     return jdbc.queryForList(
         "SELECT id::text FROM runrun_v2.v2_orders WHERE status='DELIVERED_PENDING_CONFIRMATION' AND"
             + " confirm_deadline<=? ORDER BY id LIMIT 100",
         String.class,
-        parameter2);
+        timestamp);
   }
 
   public int blockCompletionWriteFulfillmentCompletionBlocks(
-      java.lang.Long parameter1, java.lang.String type, java.lang.String sourceId) {
+      Long orderId, String type, String sourceId) {
     return jdbc.update(
         "INSERT INTO runrun_v2.fulfillment_completion_blocks VALUES(?,?,?) ON CONFLICT DO NOTHING",
-        parameter1,
+        orderId,
         type,
         sourceId);
   }
 
   public int unblockCompletionWriteFulfillmentCompletionBlocks(
-      java.lang.Long parameter1, java.lang.String type, java.lang.String sourceId) {
+      Long orderId, String type, String sourceId) {
     return jdbc.update(
         "DELETE FROM runrun_v2.fulfillment_completion_blocks WHERE order_id=? AND source_type=? AND"
             + " source_id=?",
-        parameter1,
+        orderId,
         type,
         sourceId);
   }
 
   public int restartWindowWriteV(
-      java.time.OffsetDateTime parameter1,
-      java.time.OffsetDateTime parameter2,
-      java.time.OffsetDateTime parameter3,
-      java.lang.Long parameter4) {
+      OffsetDateTime timestamp,
+      OffsetDateTime plusMinutes,
+      OffsetDateTime timestamp2,
+      Long orderId) {
     return jdbc.update(
         "UPDATE runrun_v2.v2_orders SET"
             + " confirm_started_at=?,confirm_deadline=?,version=version+1,updated_at=? WHERE id=?",
-        parameter1,
-        parameter2,
-        parameter3,
-        parameter4);
+        timestamp,
+        plusMinutes,
+        timestamp2,
+        orderId);
   }
 
-  public int completeWriteV(
-      java.time.OffsetDateTime parameter1,
-      java.time.OffsetDateTime parameter2,
-      java.lang.Long parameter3) {
+  public int completeWriteV(OffsetDateTime timestamp, OffsetDateTime timestamp2, Long orderId) {
     return jdbc.update(
         "UPDATE runrun_v2.v2_orders SET"
             + " status='COMPLETED',completed_at=?,version=version+1,updated_at=? WHERE id=?",
-        parameter1,
-        parameter2,
-        parameter3);
+        timestamp,
+        timestamp2,
+        orderId);
   }
 
-  public java.lang.Boolean adjustmentBlockedValueFulfillmentCompletionBlocks(
-      java.lang.Long parameter2, java.lang.Long parameter3) {
+  public Boolean adjustmentBlockedValueFulfillmentCompletionBlocks(Long order, Long order2) {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.fulfillment_completion_blocks WHERE order_id=? AND"
             + " source_type='ADJUSTMENT') OR EXISTS(SELECT 1 FROM runrun_v2.payment_adjustments"
             + " WHERE order_id=? AND status IN ('PENDING_SUPPLEMENT','PENDING_REFUND'))",
         Boolean.class,
-        parameter2,
-        parameter3);
+        order,
+        order2);
   }
 
-  public java.lang.Boolean caseBlockedValueFulfillmentCompletionBlocks(java.lang.Long parameter2) {
+  public Boolean caseBlockedValueFulfillmentCompletionBlocks(Long order) {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.fulfillment_completion_blocks WHERE order_id=? AND"
             + " source_type='AFTER_SALES')",
         Boolean.class,
-        parameter2);
+        order);
   }
 
-  public java.lang.Long capacityValueFulfillmentTasks(java.lang.Long parameter2) {
+  public Long capacityValueFulfillmentTasks(Long courier) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.fulfillment_tasks WHERE courier_id=? AND status='ACTIVE'",
         Long.class,
-        parameter2);
+        courier);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> lockRowsAppUsers(
-      java.lang.Long parameter1) {
+  public List<Map<String, Object>> lockRowsAppUsers(Long order) {
     return jdbc.queryForList(
         "SELECT id FROM runrun_v2.app_users WHERE id=(SELECT user_id FROM runrun_v2.v2_orders WHERE"
             + " id=?) FOR KEY SHARE",
-        parameter1);
+        order);
   }
 
-  public java.util.List<java.lang.String> currentRowsFulfillmentTasks(
-      java.lang.Long parameter2, java.lang.Long parameter3) {
+  public List<String> currentRowsFulfillmentTasks(Long actor, Long order) {
     return jdbc.queryForList(
         "SELECT id::text FROM runrun_v2.fulfillment_tasks WHERE courier_id=? AND order_id=? ORDER"
             + " BY id DESC LIMIT 1",
         String.class,
-        parameter2,
-        parameter3);
+        actor,
+        order);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.Task>
-      taskRowsFulfillmentTasks(java.lang.Long parameter2) {
+  public List<Task> taskRowsFulfillmentTasks(Long task) {
     return jdbc.query(
         "SELECT * FROM runrun_v2.fulfillment_tasks WHERE id=?",
         (r, n) ->
@@ -338,85 +313,73 @@ public class FulfillmentMapper {
                 r.getString("status"),
                 r.getLong("version"),
                 r.getObject("created_at", OffsetDateTime.class)),
-        parameter2);
+        task);
   }
 
-  public java.lang.Boolean unsupersededValueFulfillmentTasks(java.lang.Long parameter2) {
+  public Boolean unsupersededValueFulfillmentTasks(Long task) {
     return jdbc.queryForObject(
         "SELECT superseded_at IS NULL FROM runrun_v2.fulfillment_tasks WHERE id=?",
         Boolean.class,
-        parameter2);
+        task);
   }
 
-  public java.lang.Boolean proofPermissionValueFulfillmentTasks(
-      java.lang.Long parameter2, java.lang.Long parameter3) {
+  public Boolean proofPermissionValueFulfillmentTasks(Long taskId, Long orderId) {
     return jdbc.queryForObject(
         "SELECT id=? FROM runrun_v2.fulfillment_tasks WHERE order_id=? ORDER BY id DESC LIMIT 1",
         Boolean.class,
-        parameter2,
-        parameter3);
+        taskId,
+        orderId);
   }
 
-  public java.lang.Long requireProofValueV(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.Long parameter4,
-      java.lang.String parameter5) {
+  public Long requireProofValueV(Long proof, Long order, Long task, String status) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.v2_order_proofs WHERE id=? AND order_id=? AND task_id=? AND"
             + " kind=? AND storage_status='AVAILABLE' AND deleted_at IS NULL",
         Long.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5);
+        proof,
+        order,
+        task,
+        status);
   }
 
-  public int supersedeWriteFulfillmentTasks(
-      java.time.OffsetDateTime parameter1, java.lang.Long parameter2, java.lang.Long parameter3) {
+  public int supersedeWriteFulfillmentTasks(OffsetDateTime timestamp, Long order, Long keep) {
     return jdbc.update(
         "UPDATE runrun_v2.fulfillment_tasks SET superseded_at=?,version=version+1 WHERE order_id=?"
             + " AND id<>? AND superseded_at IS NULL",
-        parameter1,
-        parameter2,
-        parameter3);
+        timestamp,
+        order,
+        keep);
   }
 
   public int closeOffersWriteFulfillmentTasks(
-      java.time.OffsetDateTime parameter1,
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.Long parameter4) {
+      OffsetDateTime timestamp, Long order, Long resourceId, Long resourceId2) {
     return jdbc.update(
         "UPDATE runrun_v2.fulfillment_tasks SET status='CANCELLED',ended_at=?,version=version+1"
             + " WHERE order_id=? AND status='OFFERED' AND (?::bigint IS NULL OR id<>?::bigint)",
-        parameter1,
-        parameter2,
-        parameter3,
-        parameter4);
+        timestamp,
+        order,
+        resourceId,
+        resourceId2);
   }
 
-  public int endWriteFulfillmentTasks(
-      java.lang.String status, java.time.OffsetDateTime parameter2, java.lang.Long parameter3) {
+  public int endWriteFulfillmentTasks(String status, OffsetDateTime timestamp, Long task) {
     return jdbc.update(
         "UPDATE runrun_v2.fulfillment_tasks SET status=?,ended_at=?,version=version+1 WHERE id=?",
         status,
-        parameter2,
-        parameter3);
+        timestamp,
+        task);
   }
 
-  public int updateOrderWriteV(
-      java.lang.String assignment, java.time.OffsetDateTime parameter1, java.lang.Long parameter2) {
+  private int updateOrder(String assignment, OffsetDateTime timestamp, Long resourceId) {
     return jdbc.update(
         "UPDATE runrun_v2.v2_orders SET "
             + assignment
             + ",version=version+1,updated_at=? WHERE id=?",
-        parameter1,
-        parameter2);
+        timestamp,
+        resourceId);
   }
 
-  public com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.Order orderValueV(
-      java.lang.Long parameter2) {
+  public Order orderValueV(Long order) {
     return jdbc.queryForObject(
         "SELECT * FROM runrun_v2.v2_orders WHERE id=?",
         (r, n) ->
@@ -432,19 +395,18 @@ public class FulfillmentMapper {
                 r.getObject("delivered_at", OffsetDateTime.class),
                 r.getObject("confirm_started_at", OffsetDateTime.class),
                 r.getObject("confirm_deadline", OffsetDateTime.class)),
-        parameter2);
+        order);
   }
 
-  public java.lang.Boolean displayStatusValuePaymentAdjustments(java.lang.Long parameter2) {
+  public Boolean displayStatusValuePaymentAdjustments(Long orderId) {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.payment_adjustments WHERE order_id=? AND"
             + " status='PENDING_SUPPLEMENT')",
         Boolean.class,
-        parameter2);
+        orderId);
   }
 
-  public com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.Event
-      readEventValueLocationEvents(java.lang.Long parameter2, long version) {
+  public Event readEventValueLocationEvents(Long event, long version) {
     return jdbc.queryForObject(
         "SELECT * FROM runrun_v2.location_events WHERE id=?",
         (r, n) ->
@@ -453,35 +415,54 @@ public class FulfillmentMapper {
                 r.getObject("received_at", OffsetDateTime.class),
                 r.getBoolean("accepted"),
                 version),
-        parameter2);
+        event);
   }
 
   public int eventWriteV(
-      java.lang.Long parameter1,
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.String parameter4,
-      java.lang.String key,
-      java.lang.String parameter6) {
+      Long orderId, Long taskId, Long actorId, String eventType, String requestId, String payload) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.v2_order_events(order_id,task_id,actor_id,event_type,request_id,payload)"
             + " VALUES(?,?,?,?,?,?::jsonb)",
-        parameter1,
-        parameter2,
-        parameter3,
-        parameter4,
-        key,
-        parameter6);
+        orderId,
+        taskId,
+        actorId,
+        eventType,
+        requestId,
+        payload);
   }
 
-  public int notifyWriteNotificationOutbox(
-      java.lang.Long parameter1, java.lang.String parameter2, java.lang.String parameter3) {
+  public int notifyWriteNotificationOutbox(Long recipientId, String eventKey, String payload) {
     return jdbc.update(
         "INSERT INTO runrun_v2.notification_outbox(recipient_id,event_key,channel,payload)"
             + " VALUES(?,?,'IN_APP',?::jsonb) ON CONFLICT DO NOTHING",
-        parameter1,
-        parameter2,
-        parameter3);
+        recipientId,
+        eventKey,
+        payload);
+  }
+
+  public int markOrderAccepted(OffsetDateTime updatedAt, Long orderId) {
+    return updateOrder("status='ACCEPTED'", updatedAt, orderId);
+  }
+
+  public int clearOrderConfirmation(OffsetDateTime updatedAt, Long orderId) {
+    return updateOrder("confirm_started_at=NULL,confirm_deadline=NULL", updatedAt, orderId);
+  }
+
+  public int acceptOrderAndClearConfirmation(OffsetDateTime updatedAt, Long orderId) {
+    return updateOrder(
+        "status='ACCEPTED',confirm_started_at=NULL,confirm_deadline=NULL", updatedAt, orderId);
+  }
+
+  public int markOrderPendingAssignment(OffsetDateTime updatedAt, Long orderId) {
+    return updateOrder("status='PENDING_ASSIGNMENT'", updatedAt, orderId);
+  }
+
+  public int advanceOrderVersion(OffsetDateTime updatedAt, Long orderId) {
+    return updateOrder("status=status", updatedAt, orderId);
+  }
+
+  public int markOrderPickedUp(OffsetDateTime updatedAt, Long orderId) {
+    return updateOrder("status='PICKED_UP'", updatedAt, orderId);
   }
 }

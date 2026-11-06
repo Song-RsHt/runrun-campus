@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
 import com.zhangxuan.runrunv2.bootstrap.LocalTestBootstrap;
+import com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
 import java.util.stream.Stream;
@@ -16,6 +17,7 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.transaction.PlatformTransactionManager;
 
 class LocalTestBoundaryTest {
+
   static Stream<Arguments> unsafeInputs() {
     return Stream.of(
         Arguments.of("RRC_V2_ENVIRONMENT", "production"),
@@ -46,7 +48,7 @@ class LocalTestBoundaryTest {
     var deployment = mock(DeploymentIdentityService.class);
     var bootstrap =
         new LocalTestBootstrap(
-            new com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper(db),
+            new LocalTestMapper(db),
             env,
             mock(IdentitySecrets.class),
             deployment,

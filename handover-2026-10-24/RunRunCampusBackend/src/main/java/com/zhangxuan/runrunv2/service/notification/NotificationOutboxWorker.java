@@ -34,12 +34,12 @@ public class NotificationOutboxWorker {
 
   public void complete(long id, boolean success, String error) {
     transactions.executeWithoutResult(
-        status -> mapper.completeValueStatement(id, success, sanitize(error)));
+        status -> mapper.completeDelivery(id, success, sanitize(error)));
   }
 
   public void runOnce() {
     if (!m08Installed()) return;
-    transactions.executeWithoutResult(status -> mapper.runOnceValueStatement());
+    transactions.executeWithoutResult(status -> mapper.runReviewTimers());
     for (Delivery delivery : claim(50)) {
       if ("IN_APP".equals(delivery.channel())) {
         complete(delivery.id(), true, null);
@@ -59,7 +59,7 @@ public class NotificationOutboxWorker {
 
   private boolean m08Installed() {
     try {
-      return Boolean.TRUE.equals(mapper.m08InstalledValueStatement());
+      return Boolean.TRUE.equals(mapper.isNotificationRuntimeInstalled());
     } catch (RuntimeException ignored) {
       return false;
     }

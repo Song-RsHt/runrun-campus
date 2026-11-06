@@ -16,10 +16,15 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Component
 @Profile("local-v2-test")
 public class LocalTestBootstrap implements ApplicationRunner {
+
   private final LocalTestMapper mapper;
+
   private final Environment env;
+
   private final IdentitySecrets secrets;
+
   private final DeploymentIdentityService deployment;
+
   private final TransactionTemplate tx;
 
   public LocalTestBootstrap(
@@ -57,7 +62,7 @@ public class LocalTestBootstrap implements ApplicationRunner {
     var encoder = new BCryptPasswordEncoder(12);
     tx.executeWithoutResult(
         status -> {
-          mapper.runRowsStatement();
+          mapper.initializeIsolatedFixtures();
           var existing = mapper.runRowsAppUsers();
           if (!existing.isEmpty()) {
             var account = existing.get(0);

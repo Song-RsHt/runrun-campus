@@ -12,8 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IdentitySecrets {
+
   private final byte[] encryptionKey;
+
   private final byte[] hashKey;
+
   private final SecureRandom random = new SecureRandom();
 
   public IdentitySecrets(

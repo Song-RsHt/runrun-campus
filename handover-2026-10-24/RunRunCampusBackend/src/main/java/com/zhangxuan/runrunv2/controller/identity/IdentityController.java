@@ -1,5 +1,10 @@
 package com.zhangxuan.runrunv2.controller.identity;
 
+import com.zhangxuan.runrunv2.dto.request.identity.BindPhone;
+import com.zhangxuan.runrunv2.dto.request.identity.Logout;
+import com.zhangxuan.runrunv2.dto.request.identity.PasswordChange;
+import com.zhangxuan.runrunv2.dto.request.identity.PasswordLogin;
+import com.zhangxuan.runrunv2.dto.request.identity.WechatLogin;
 import com.zhangxuan.runrunv2.dto.response.identity.Account;
 import com.zhangxuan.runrunv2.dto.response.identity.LoginResult;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
@@ -21,33 +26,23 @@ public class IdentityController {
     this.identity = identity;
   }
 
-  public record WechatLogin(String code) {}
-
-  public record BindPhone(String loginTicket, String phoneCode, String requestedRole) {}
-
-  public record PasswordLogin(String phone, String password) {}
-
-  public record PasswordChange(String password) {}
-
-  public record Logout(boolean allSessions) {}
-
   @PostMapping("/auth/wechat/login")
   @IdentityPermission(anonymous = true)
   public LoginResult login(@RequestBody WechatLogin body) {
-    return identity.login(body.code);
+    return identity.login(body.code());
   }
 
   @PostMapping("/auth/wechat/bind-phone")
   @IdentityPermission(anonymous = true)
   public ResponseEntity<LoginResult> bind(@RequestBody BindPhone body) {
     return ResponseEntity.status(201)
-        .body(identity.bindPhone(body.loginTicket, body.phoneCode, body.requestedRole));
+        .body(identity.bindPhone(body.loginTicket(), body.phoneCode(), body.requestedRole()));
   }
 
   @PostMapping("/auth/password/login")
   @IdentityPermission(anonymous = true)
   public LoginResult passwordLogin(@RequestBody PasswordLogin body) {
-    return identity.passwordLogin(body.phone, body.password);
+    return identity.passwordLogin(body.phone(), body.password());
   }
 
   @GetMapping("/auth/session")
@@ -62,7 +57,7 @@ public class IdentityController {
       HttpServletRequest request,
       @RequestHeader("Idempotency-Key") String key,
       @RequestBody Logout body) {
-    identity.revoke(IdentityWebConfiguration.bearer(request), body.allSessions, key);
+    identity.revoke(IdentityWebConfiguration.bearer(request), body.allSessions(), key);
     return Map.of("revoked", true);
   }
 
@@ -72,7 +67,7 @@ public class IdentityController {
       HttpServletRequest request,
       @RequestHeader("Idempotency-Key") String key,
       @RequestBody PasswordChange body) {
-    identity.setPassword(IdentityWebConfiguration.bearer(request), body.password, key);
+    identity.setPassword(IdentityWebConfiguration.bearer(request), body.password(), key);
     return Map.of("changed", true);
   }
 

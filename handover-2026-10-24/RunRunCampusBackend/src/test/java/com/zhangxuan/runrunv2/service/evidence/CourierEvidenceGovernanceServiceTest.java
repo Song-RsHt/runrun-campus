@@ -1,4 +1,4 @@
-package com.zhangxuan.runrunv2.controller.evidence;
+package com.zhangxuan.runrunv2.service.evidence;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
@@ -7,10 +7,11 @@ import static org.mockito.Mockito.*;
 import com.zhangxuan.runrunv2.dto.response.evidence.HoldResult;
 import com.zhangxuan.runrunv2.dto.response.identity.Account;
 import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
-import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
+import com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,7 +31,7 @@ class CourierEvidenceGovernanceServiceTest {
         .thenReturn(expected);
     var service =
         new CourierEvidenceGovernanceService(
-            new com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper(db),
+            new CourierEvidenceGovernanceMapper(db),
             mock(V2StudentCardStorage.class),
             identity,
             idem);
@@ -46,7 +47,7 @@ class CourierEvidenceGovernanceServiceTest {
     OrderIdempotency idem = mock(OrderIdempotency.class);
     when(identity.authorizeForWrite("t", "ADMIN", false))
         .thenReturn(new Account("9", "ADMIN", "ACTIVE", true, 0, false));
-    var hold = new java.util.HashMap<String, Object>();
+    var hold = new HashMap<String, Object>();
     hold.put("order_id", 4L);
     hold.put("certification_id", null);
     hold.put("released_at", null);
@@ -57,7 +58,7 @@ class CourierEvidenceGovernanceServiceTest {
         .thenReturn(expected);
     var service =
         new CourierEvidenceGovernanceService(
-            new com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper(db),
+            new CourierEvidenceGovernanceMapper(db),
             mock(V2StudentCardStorage.class),
             identity,
             idem);

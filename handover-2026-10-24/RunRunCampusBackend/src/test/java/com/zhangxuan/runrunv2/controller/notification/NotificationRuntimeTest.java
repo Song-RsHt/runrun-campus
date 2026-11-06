@@ -15,6 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 /** Notification assertions deliberately qualify runrun_v2; there is no public fallback. */
 @Testcontainers
 class NotificationRuntimeTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 

@@ -1,17 +1,20 @@
 package com.zhangxuan.runrunv2.service.fulfillment;
 
-import static com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.*;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentQueryMapper;
+import com.zhangxuan.runrunv2.model.fulfillment.TaskRow;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** 将数据库任务事实转换为当前参与人的可见任务及允许操作。游标签名和操作资格属于业务策略，不下放给 SQL 行映射。 */
 @Service
 public class FulfillmentQueries {
 
@@ -89,15 +92,12 @@ public class FulfillmentQueries {
     OffsetDateTime created =
         last == null
             ? null
-            : ((java.sql.Timestamp) last.get("created_at"))
-                .toInstant()
-                .atOffset(java.time.ZoneOffset.UTC);
+            : ((Timestamp) last.get("created_at")).toInstant().atOffset(java.time.ZoneOffset.UTC);
     return new Page<>(items, more ? encode(scope, created, last.get("id").toString()) : null);
   }
 
   // C01: task history is readable without eligibility; write actions require current eligibility.
-  private TaskItem taskItem(
-      com.zhangxuan.runrunv2.model.fulfillment.TaskRow row, boolean eligible) {
+  private TaskItem taskItem(TaskRow row, boolean eligible) {
     var actions = new ArrayList<String>();
     if (!row.superseded()) {
       if (row.taskStatus().equals("OFFERED") && row.orderStatus().equals("EXCEPTION")) {

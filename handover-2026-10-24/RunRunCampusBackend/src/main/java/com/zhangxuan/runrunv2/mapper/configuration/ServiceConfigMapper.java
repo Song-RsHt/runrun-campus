@@ -1,7 +1,8 @@
 package com.zhangxuan.runrunv2.mapper.configuration;
 
-import static com.zhangxuan.runrunv2.model.order.OrderModels.*;
+import static com.zhangxuan.runrunv2.dto.response.order.OrderModels.*;
 
+import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import org.springframework.stereotype.Repository;
@@ -19,17 +20,17 @@ public class ServiceConfigMapper {
     this.jdbc = jdbc;
   }
 
-  public java.util.Map<java.lang.String, java.lang.Object> settingsRowPlatformSettings(
-      boolean update) {
+  public Map<String, Object> settingsRowPlatformSettings(boolean update) {
     return jdbc.queryForMap(
         "SELECT * FROM runrun_v2.platform_settings WHERE id=1 FOR "
             + (update ? "UPDATE" : "SHARE"));
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.order.OrderModels.Zone> viewRowsDeliveryZones(
-      java.lang.String filter) {
+  public List<Zone> viewRowsDeliveryZones(boolean includeDisabled) {
     return jdbc.query(
-        "SELECT * FROM runrun_v2.delivery_zones" + filter + " ORDER BY id",
+        "SELECT * FROM runrun_v2.delivery_zones"
+            + (includeDisabled ? "" : " WHERE enabled")
+            + " ORDER BY id",
         (r, n) ->
             new Zone(
                 r.getString("id"),
@@ -41,10 +42,11 @@ public class ServiceConfigMapper {
                 r.getLong("version")));
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.order.OrderModels.ServicePoint>
-      viewRowsServicePoints(java.lang.String filter) {
+  public List<ServicePoint> viewRowsServicePoints(boolean includeDisabled) {
     return jdbc.query(
-        "SELECT * FROM runrun_v2.service_points" + filter + " ORDER BY id",
+        "SELECT * FROM runrun_v2.service_points"
+            + (includeDisabled ? "" : " WHERE enabled")
+            + " ORDER BY id",
         (r, n) ->
             new ServicePoint(
                 r.getString("id"),
@@ -58,53 +60,56 @@ public class ServiceConfigMapper {
                 r.getLong("version")));
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> enabledRowsStatement(
-      java.lang.String table, java.lang.String code) {
+  public List<Map<String, Object>> findEnabledZone(String code) {
+    return findEnabled("delivery_zones", code);
+  }
+
+  public List<Map<String, Object>> findEnabledServicePoint(String code) {
+    return findEnabled("service_points", code);
+  }
+
+  private List<Map<String, Object>> findEnabled(String table, String code) {
     return jdbc.queryForList(
         "SELECT * FROM runrun_v2." + table + " WHERE code=? AND enabled", code);
   }
 
   public int patchWriteDeliveryZones(
-      java.lang.String parameter1,
-      java.lang.String parameter2,
-      java.lang.Long parameter3,
-      java.lang.Boolean parameter4,
-      long parameter5) {
+      String code, String name, Long packageSurchargeCents, Boolean enabled, long configVersion) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.delivery_zones(code,name,package_surcharge_cents,enabled,config_version)"
             + " VALUES(?,?,?,?,?) ON CONFLICT(code) DO UPDATE SET"
             + " name=excluded.name,package_surcharge_cents=excluded.package_surcharge_cents,enabled=excluded.enabled,config_version=excluded.config_version,version=delivery_zones.version+1,updated_at=now()",
-        parameter1,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5);
+        code,
+        name,
+        packageSurchargeCents,
+        enabled,
+        configVersion);
   }
 
   public int patchWriteServicePoints(
-      java.lang.String parameter1,
-      java.lang.String parameter2,
-      java.math.BigDecimal parameter3,
-      java.math.BigDecimal parameter4,
-      java.lang.String parameter5,
-      java.lang.Boolean parameter6,
-      long parameter7) {
+      String code,
+      String name,
+      BigDecimal latitude,
+      BigDecimal longitude,
+      String coordinateSystem,
+      Boolean enabled,
+      long configVersion) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.service_points(code,name,latitude,longitude,coordinate_system,enabled,config_version)"
             + " VALUES(?,?,?,?,?,?,?) ON CONFLICT(code) DO UPDATE SET"
             + " name=excluded.name,latitude=excluded.latitude,longitude=excluded.longitude,coordinate_system=excluded.coordinate_system,enabled=excluded.enabled,config_version=excluded.config_version,version=service_points.version+1,updated_at=now()",
-        parameter1,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5,
-        parameter6,
-        parameter7);
+        code,
+        name,
+        latitude,
+        longitude,
+        coordinateSystem,
+        enabled,
+        configVersion);
   }
 
-  public int patchWritePlatformSettings(boolean enabled, java.lang.Object owner) {
+  public int patchWritePlatformSettings(boolean enabled, Object owner) {
     return jdbc.update(
         "UPDATE runrun_v2.platform_settings SET"
             + " new_order_enabled=?,review_owner_id=?,config_version=config_version+1,version=version+1,updated_at=now()"
@@ -114,21 +119,18 @@ public class ServiceConfigMapper {
   }
 
   public int patchWriteAdminAuditLogs(
-      java.lang.Long parameter1,
-      java.lang.String key,
-      java.lang.String parameter3,
-      java.lang.String parameter4) {
+      Long administratorId, String requestId, String reason, String metadata) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
             + " VALUES(?,'SERVICE_CONFIG_CHANGED','SERVICE_CONFIG',1,?,?,?::jsonb)",
-        parameter1,
-        key,
-        parameter3,
-        parameter4);
+        administratorId,
+        requestId,
+        reason,
+        metadata);
   }
 
-  public java.lang.Boolean requireOwnerValueAppUsers(java.lang.Object id) {
+  public Boolean requireOwnerValueAppUsers(Object id) {
     return jdbc.queryForObject(
         "SELECT EXISTS(SELECT 1 FROM runrun_v2.app_users WHERE id=? AND role='ADMIN' AND"
             + " status='ACTIVE' AND v2_admin_enabled AND NOT controlled_identity)",

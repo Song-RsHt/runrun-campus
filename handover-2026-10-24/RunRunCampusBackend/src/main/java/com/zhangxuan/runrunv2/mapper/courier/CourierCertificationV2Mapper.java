@@ -1,5 +1,7 @@
 package com.zhangxuan.runrunv2.mapper.courier;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -23,17 +25,16 @@ public class CourierCertificationV2Mapper {
     this.jdbc = jdbc;
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      applyRowsCourierCertifications(long courier) {
+  public List<Map<String, Object>> applyRowsCourierCertifications(long courier) {
     return jdbc.queryForList(
         "SELECT * FROM runrun_v2.courier_certifications WHERE courier_id=? FOR UPDATE", courier);
   }
 
-  public int applyWriteCourierCertifications(long courier) {
+  public int applyWriteCourierCertifications(long courierId) {
     return jdbc.update(
         "INSERT INTO runrun_v2.courier_certifications(courier_id,status,submitted_at)"
             + " VALUES(?,'PENDING',now())",
-        courier);
+        courierId);
   }
 
   public int applyWriteCourierCertifications2(long courier) {
@@ -44,13 +45,13 @@ public class CourierCertificationV2Mapper {
         courier);
   }
 
-  public java.lang.Long applyValueCourierCertifications(long courier) {
+  public Long applyValueCourierCertifications(long courier) {
     return jdbc.queryForObject(
         "SELECT id FROM runrun_v2.courier_certifications WHERE courier_id=?", Long.class, courier);
   }
 
   public int uploadWriteCourierCertifications(
-      java.lang.String resource, java.lang.String key, long id, long expectedVersion) {
+      String resource, String key, long id, long expectedVersion) {
     return jdbc.update(
         "UPDATE runrun_v2.courier_certifications SET"
             + " submitted_photo_resource_id=?,submitted_photo_storage_key=?,version=version+1,updated_at=now()"
@@ -61,11 +62,11 @@ public class CourierCertificationV2Mapper {
         expectedVersion);
   }
 
-  public int uploadWriteCourierCertifications2(long id, long parameter2) {
+  public int uploadWriteCourierCertifications2(long id, long value) {
     return jdbc.update(
         "UPDATE runrun_v2.courier_certifications SET updated_at=now() WHERE id=? AND version=?",
         id,
-        parameter2);
+        value);
   }
 
   public int decideWriteCourierCertifications(long id, long expectedVersion) {
@@ -77,8 +78,7 @@ public class CourierCertificationV2Mapper {
         expectedVersion);
   }
 
-  public int decideWriteCourierCertifications2(
-      java.lang.String reason, long id, long expectedVersion) {
+  public int decideWriteCourierCertifications2(String reason, long id, long expectedVersion) {
     return jdbc.update(
         "UPDATE runrun_v2.courier_certifications SET"
             + " status='REJECTED',rejection_reason=?,reviewed_at=now(),version=version+1,updated_at=now()"
@@ -88,7 +88,7 @@ public class CourierCertificationV2Mapper {
         expectedVersion);
   }
 
-  public java.lang.Long readValueEvidenceDeletionAudits(long id, java.lang.String actual) {
+  public Long readValueEvidenceDeletionAudits(long id, String actual) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.evidence_deletion_audits WHERE certification_id=? AND"
             + " resource_id=? AND status='DELETING'",
@@ -98,46 +98,33 @@ public class CourierCertificationV2Mapper {
   }
 
   public int readWriteAdminAuditLogs(
-      long parameter1,
-      long id,
-      java.lang.String requestId,
-      java.lang.String parameter4,
-      java.lang.String actual) {
+      long parseLong, long id, String requestId, String value, String actual) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.admin_audit_logs(administrator_id,action,target_type,target_id,request_id,reason,metadata)"
             + " VALUES(?,'COURIER_CERTIFICATION_PHOTO_READ','COURIER_CERTIFICATION',?,?,?,jsonb_build_object('photoResourceId',?))"
             + " ON CONFLICT (administrator_id,action,request_id) DO NOTHING",
-        parameter1,
+        parseLong,
         id,
         requestId,
-        parameter4,
+        value,
         actual);
   }
 
-  public java.lang.Long adminListValueAppUsers(
-      java.lang.String filter,
-      java.lang.String binding3,
-      java.lang.String q,
-      java.lang.String binding5) {
+  public Long adminListValueAppUsers(String filter, String filter2, String q, String q2) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.app_users u JOIN runrun_v2.courier_certifications c ON"
             + " c.courier_id=u.id"
             + where,
         Long.class,
         filter,
-        binding3,
+        filter2,
         q,
-        binding5);
+        q2);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> adminListRowsAppUsers(
-      java.lang.String filter,
-      java.lang.String binding2,
-      java.lang.String q,
-      java.lang.String binding4,
-      int safeSize,
-      long parameter6) {
+  public List<Map<String, Object>> adminListRowsAppUsers(
+      String filter, String filter2, String q, String q2, int safeSize, long value) {
     return jdbc.queryForList(
         "SELECT u.id AS \"courierId\",u.phone,u.created_at AS \"registeredAt\",c.id AS"
             + " \"certificationId\",c.status,c.version,c.submitted_at AS"
@@ -147,18 +134,18 @@ public class CourierCertificationV2Mapper {
             + where
             + " ORDER BY u.id LIMIT ? OFFSET ?",
         filter,
-        binding2,
+        filter2,
         q,
-        binding4,
+        q2,
         safeSize,
-        parameter6);
+        value);
   }
 
-  public java.lang.Long performanceValueStatement(long courier) {
+  public Long countDeliveredTasks(long courier) {
     return jdbc.queryForObject("SELECT count(*)" + base, Long.class, courier);
   }
 
-  public java.util.Map<java.lang.String, java.lang.Object> performanceRowStatement(long courier) {
+  public Map<String, Object> summarizeDeliveredTasks(long courier) {
     return jdbc.queryForMap(
         "SELECT count(*) FILTER (WHERE t.delivered_at>=current_date) today, count(*) FILTER (WHERE"
             + " t.delivered_at>=current_date-interval '7 days') week, count(*) FILTER (WHERE"
@@ -173,8 +160,7 @@ public class CourierCertificationV2Mapper {
         courier);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>> performanceRowsStatement(
-      long courier, int s, long parameter3) {
+  public List<Map<String, Object>> pageDeliveredTasks(long courier, int s, long value) {
     return jdbc.queryForList(
         "SELECT o.id,o.order_no,o.status,o.service_type,o.effective_fee_cents"
             + " fee_cents,t.delivered_at"
@@ -182,33 +168,26 @@ public class CourierCertificationV2Mapper {
             + " ORDER BY t.delivered_at DESC LIMIT ? OFFSET ?",
         courier,
         s,
-        parameter3);
+        value);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      getMineRowsCourierCertifications(long courier) {
+  public List<Map<String, Object>> getMineRowsCourierCertifications(long courier) {
     return jdbc.queryForList(
         "SELECT * FROM runrun_v2.courier_certifications WHERE courier_id=?", courier);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      lockedRowsCourierCertifications(long id) {
+  public List<Map<String, Object>> lockedRowsCourierCertifications(long id) {
     return jdbc.queryForList(
         "SELECT * FROM runrun_v2.courier_certifications WHERE id=? FOR UPDATE", id);
   }
 
-  public java.lang.Long lockActorValueAppUsers(long actor) {
+  public Long lockActorValueAppUsers(long actor) {
     return jdbc.queryForObject(
         "SELECT id FROM runrun_v2.app_users WHERE id=? FOR UPDATE", Long.class, actor);
   }
 
   public int eventWriteCourierCertificationEvents(
-      long id,
-      long actor,
-      java.lang.String kind,
-      java.lang.String type,
-      java.lang.String request,
-      long binding6) {
+      long id, long actor, String kind, String type, String request, long id2) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.courier_certification_events(certification_id,actor_id,actor_kind,event_type,request_id,certification_version)"
@@ -218,6 +197,6 @@ public class CourierCertificationV2Mapper {
         kind,
         type,
         request,
-        binding6);
+        id2);
   }
 }

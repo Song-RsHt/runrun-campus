@@ -1,6 +1,6 @@
 package com.zhangxuan.runrunv2.mapper.payment;
 
-import static com.zhangxuan.runrunv2.model.payment.PaymentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
 
 import java.time.*;
 import java.util.*;
@@ -20,290 +20,265 @@ public class PaymentMapper {
     this.jdbc = jdbc;
   }
 
-  public java.lang.String createValuePaymentOrders(
-      java.lang.Long parameter2, long amountCents, java.time.OffsetDateTime deadline) {
+  public String createValuePaymentOrders(Long orderId, long amountCents, OffsetDateTime deadline) {
     return jdbc.queryForObject(
         "INSERT INTO runrun_v2.payment_orders(order_id,purpose,amount_cents,deadline)"
             + " VALUES(?,'ORIGINAL',?,?) RETURNING id::text",
         String.class,
-        parameter2,
+        orderId,
         amountCents,
         deadline);
   }
 
-  public java.lang.Integer startValuePaymentAttempts(java.lang.Long parameter2) {
+  public Integer startValuePaymentAttempts(Long pId) {
     return jdbc.queryForObject(
         "SELECT coalesce(max(attempt_no),0)+1 FROM runrun_v2.payment_attempts WHERE"
             + " payment_order_id=?",
         Integer.class,
-        parameter2);
+        pId);
   }
 
-  public java.lang.String startValuePaymentAttempts2(
-      java.lang.Long parameter2, int number, java.lang.String parameter4) {
+  public String startValuePaymentAttempts2(
+      Long paymentOrderId, int attemptNo, String channelReference) {
     return jdbc.queryForObject(
         "INSERT INTO"
             + " runrun_v2.payment_attempts(payment_order_id,attempt_no,status,channel_reference)"
             + " VALUES(?,?,'PROCESSING',?) RETURNING id::text",
         String.class,
-        parameter2,
-        number,
-        parameter4);
+        paymentOrderId,
+        attemptNo,
+        channelReference);
   }
 
-  public int cancelWritePaymentAdjustments(
-      java.time.OffsetDateTime parameter1, java.lang.Long parameter2) {
+  public int cancelWritePaymentAdjustments(OffsetDateTime timestamp, Long id) {
     return jdbc.update(
         "UPDATE runrun_v2.payment_adjustments SET"
             + " status='CANCELLED',resolved_at=?,version=version+1 WHERE order_id=? AND status IN"
             + " ('PENDING_SUPPLEMENT','PENDING_REFUND')",
-        parameter1,
-        parameter2);
+        timestamp,
+        id);
   }
 
-  public int retryRefundWriteRefundOrders(java.lang.Long parameter1) {
+  public int retryRefundWriteRefundOrders(Long id) {
     return jdbc.update(
-        "UPDATE runrun_v2.refund_orders SET status='PROCESSING',version=version+1 WHERE id=?",
-        parameter1);
+        "UPDATE runrun_v2.refund_orders SET status='PROCESSING',version=version+1 WHERE id=?", id);
   }
 
-  public java.lang.Long approvedAdjustmentValuePaymentAdjustments(java.lang.Long parameter2) {
+  public Long approvedAdjustmentValuePaymentAdjustments(Long adjustmentId) {
     return jdbc.queryForObject(
-        "SELECT count(*) FROM runrun_v2.payment_adjustments WHERE id=?", Long.class, parameter2);
+        "SELECT count(*) FROM runrun_v2.payment_adjustments WHERE id=?", Long.class, adjustmentId);
   }
 
-  public java.lang.Long approvedAdjustmentValuePaymentAdjustments2(java.lang.Long parameter2) {
+  public Long approvedAdjustmentValuePaymentAdjustments2(Long orderId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.payment_adjustments WHERE order_id=? AND status IN"
             + " ('PENDING_SUPPLEMENT','PENDING_REFUND')",
         Long.class,
-        parameter2);
+        orderId);
   }
 
   public int approvedAdjustmentWritePaymentAdjustments(
-      java.lang.Long parameter1,
-      java.lang.Long parameter2,
+      Long id,
+      Long orderId,
       long deltaCents,
-      java.lang.Object parameter4,
-      java.lang.Long parameter5,
-      java.lang.String reason,
-      java.time.OffsetDateTime parameter7) {
+      Object status,
+      Long approvedBy,
+      String reason,
+      OffsetDateTime approvedAt) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.payment_adjustments(id,order_id,delta_cents,status,approved_by,reason,approved_at)"
             + " VALUES(?,?,?,?,?,?,?)",
-        parameter1,
-        parameter2,
+        id,
+        orderId,
         deltaCents,
-        parameter4,
-        parameter5,
+        status,
+        approvedBy,
         reason,
-        parameter7);
+        approvedAt);
   }
 
-  public int approvedAdjustmentWriteV(
-      long effective, java.time.OffsetDateTime parameter2, java.lang.Long parameter3) {
+  public int approvedAdjustmentWriteV(long effective, OffsetDateTime timestamp, Long orderId) {
     return jdbc.update(
         "UPDATE runrun_v2.v2_orders SET"
             + " effective_fee_cents=?,confirm_started_at=NULL,confirm_deadline=NULL,version=version+1,updated_at=?"
             + " WHERE id=?",
         effective,
-        parameter2,
-        parameter3);
+        timestamp,
+        orderId);
   }
 
-  public java.lang.String approvedAdjustmentValuePaymentOrders(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      long deltaCents,
-      java.time.OffsetDateTime parameter5) {
+  public String approvedAdjustmentValuePaymentOrders(
+      Long orderId, Long adjustmentId, long amountCents, OffsetDateTime deadline) {
     return jdbc.queryForObject(
         "INSERT INTO runrun_v2.payment_orders(order_id,adjustment_id,purpose,amount_cents,deadline)"
             + " VALUES(?,?,'SUPPLEMENT',?,?) RETURNING id::text",
         String.class,
-        parameter2,
-        parameter3,
-        deltaCents,
-        parameter5);
+        orderId,
+        adjustmentId,
+        amountCents,
+        deadline);
   }
 
-  public java.util.List<java.lang.String> closeExpiredRowsV(java.time.OffsetDateTime parameter2) {
+  public List<String> closeExpiredRowsV(OffsetDateTime timestamp) {
     return jdbc.queryForList(
         "SELECT id::text FROM runrun_v2.v2_orders WHERE status='PENDING_PAYMENT' AND"
             + " pending_payment_deadline<=? ORDER BY id LIMIT 100",
         String.class,
-        parameter2);
+        timestamp);
   }
 
-  public int closeExpiredWritePaymentOrders(
-      java.time.OffsetDateTime parameter1, java.lang.Long parameter2) {
+  public int closeExpiredWritePaymentOrders(OffsetDateTime timestamp, Long id) {
     return jdbc.update(
         "UPDATE runrun_v2.payment_orders SET status='CLOSED',version=version+1,updated_at=? WHERE"
             + " order_id=? AND purpose='ORIGINAL' AND status NOT IN ('PAID','CLOSED')",
-        parameter1,
-        parameter2);
+        timestamp,
+        id);
   }
 
-  public int applyPaymentWritePaymentAttempts(
-      java.lang.String status, java.time.OffsetDateTime parameter2, java.lang.Long parameter3) {
+  public int applyPaymentWritePaymentAttempts(String status, OffsetDateTime timestamp, Long aId) {
     return jdbc.update(
         "UPDATE runrun_v2.payment_attempts SET status=?,result_received_at=?,version=version+1"
             + " WHERE id=?",
         status,
-        parameter2,
-        parameter3);
+        timestamp,
+        aId);
   }
 
   public int applyPaymentWritePaymentOrders(
-      java.time.OffsetDateTime parameter1,
-      java.lang.Long parameter2,
-      java.time.OffsetDateTime parameter3,
-      java.lang.Long parameter4) {
+      OffsetDateTime timestamp, Long aId, OffsetDateTime timestamp2, Long pId) {
     return jdbc.update(
         "UPDATE runrun_v2.payment_orders SET"
             + " status='PAID',paid_at=?,credited_attempt_id=?,version=version+1,updated_at=? WHERE"
             + " id=?",
-        parameter1,
-        parameter2,
-        parameter3,
-        parameter4);
+        timestamp,
+        aId,
+        timestamp2,
+        pId);
   }
 
-  public int applyPaymentWriteV(java.time.OffsetDateTime parameter1, java.lang.Long parameter2) {
+  public int applyPaymentWriteV(OffsetDateTime timestamp, Long orderId) {
     return jdbc.update(
         "UPDATE runrun_v2.v2_orders SET status='PENDING_ASSIGNMENT',version=version+1,updated_at=?"
             + " WHERE id=?",
-        parameter1,
-        parameter2);
+        timestamp,
+        orderId);
   }
 
-  public int applyRefundWriteRefundOrders(
-      java.lang.String status, java.lang.Object parameter2, java.lang.Long parameter3) {
+  public int applyRefundWriteRefundOrders(String status, Object value, Long rId) {
     return jdbc.update(
         "UPDATE runrun_v2.refund_orders SET status=?,succeeded_at=?,version=version+1 WHERE id=?",
         status,
-        parameter2,
-        parameter3);
+        value,
+        rId);
   }
 
-  public java.lang.Long applyRefundValueRefundOrders(java.lang.Long parameter2) {
+  public Long applyRefundValueRefundOrders(Long adjustmentId) {
     return jdbc.queryForObject(
         "SELECT count(*) FROM runrun_v2.refund_orders WHERE adjustment_id=? AND"
             + " status<>'SUCCEEDED'",
         Long.class,
-        parameter2);
+        adjustmentId);
   }
 
-  public java.util.List<java.lang.String> createRefundRowsRefundOrders(
-      java.lang.String businessKey) {
+  public List<String> createRefundRowsRefundOrders(String businessKey) {
     return jdbc.queryForList(
         "SELECT id::text FROM runrun_v2.refund_orders WHERE business_key=?",
         String.class,
         businessKey);
   }
 
-  public java.lang.String createRefundValueRefundOrders(
-      java.lang.Long parameter2,
-      java.lang.Long parameter3,
-      java.lang.Long parameter4,
-      java.lang.Long parameter5,
-      long cents,
-      java.lang.String purpose,
-      java.lang.String reason,
-      java.lang.String businessKey,
-      java.lang.String parameter10) {
+  public String createRefundValueRefundOrders(
+      Long orderId,
+      Long paymentOrderId,
+      Long sourceAttemptId,
+      Long adjustmentId,
+      long amountCents,
+      String purpose,
+      String reason,
+      String businessKey,
+      String channelReference) {
     return jdbc.queryForObject(
         "INSERT INTO"
             + " runrun_v2.refund_orders(order_id,payment_order_id,source_attempt_id,adjustment_id,amount_cents,purpose,reason,business_key,channel_reference)"
             + " VALUES(?,?,?,?,?,?,?,?,?) RETURNING id::text",
         String.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5,
-        cents,
+        orderId,
+        paymentOrderId,
+        sourceAttemptId,
+        adjustmentId,
+        amountCents,
         purpose,
         reason,
         businessKey,
-        parameter10);
+        channelReference);
   }
 
-  public int resolveAdjustmentWritePaymentAdjustments(
-      java.time.OffsetDateTime parameter1, java.lang.Long parameter2) {
+  public int resolveAdjustmentWritePaymentAdjustments(OffsetDateTime timestamp, Long id) {
     return jdbc.update(
         "UPDATE runrun_v2.payment_adjustments SET"
             + " status='COMPLETED',resolved_at=?,version=version+1 WHERE id=? AND status IN"
             + " ('PENDING_SUPPLEMENT','PENDING_REFUND')",
-        parameter1,
-        parameter2);
+        timestamp,
+        id);
   }
 
-  public java.lang.String resolveAdjustmentValuePaymentAdjustments(java.lang.Long parameter2) {
+  public String resolveAdjustmentValuePaymentAdjustments(Long id) {
     return jdbc.queryForObject(
-        "SELECT order_id::text FROM runrun_v2.payment_adjustments WHERE id=?",
-        String.class,
-        parameter2);
+        "SELECT order_id::text FROM runrun_v2.payment_adjustments WHERE id=?", String.class, id);
   }
 
-  public java.lang.Boolean adjustmentOpenValuePaymentAdjustments(java.lang.Long parameter2) {
+  public Boolean adjustmentOpenValuePaymentAdjustments(Long id) {
     return jdbc.queryForObject(
         "SELECT status='PENDING_SUPPLEMENT' FROM runrun_v2.payment_adjustments WHERE id=?",
         Boolean.class,
-        parameter2);
+        id);
   }
 
-  public java.lang.Long availableValueRefundOrders(java.lang.Long parameter2) {
+  public Long availableValueRefundOrders(Long source) {
     return jdbc.queryForObject(
         "SELECT coalesce(sum(amount_cents),0) FROM runrun_v2.refund_orders WHERE"
             + " source_attempt_id=?",
         Long.class,
-        parameter2);
+        source);
   }
 
-  public java.lang.String creditedValuePaymentOrders(java.lang.Long parameter2) {
+  public String creditedValuePaymentOrders(Long payment) {
     return jdbc.queryForObject(
         "SELECT credited_attempt_id::text FROM runrun_v2.payment_orders WHERE id=?",
         String.class,
-        parameter2);
+        payment);
   }
 
-  public int closeOrderWriteV(
-      java.time.OffsetDateTime parameter1,
-      java.time.OffsetDateTime parameter2,
-      java.lang.Long parameter3) {
+  public int closeOrderWriteV(OffsetDateTime timestamp, OffsetDateTime timestamp2, Long id) {
     return jdbc.update(
         "UPDATE runrun_v2.v2_orders SET"
             + " status='CANCELLED',cancelled_at=?,confirm_started_at=NULL,confirm_deadline=NULL,version=version+1,updated_at=?"
             + " WHERE id=?",
-        parameter1,
-        parameter2,
-        parameter3);
+        timestamp,
+        timestamp2,
+        id);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      lockNotificationRecipientRowsAppUsers(long parameter1) {
+  public List<Map<String, Object>> lockNotificationRecipientRowsAppUsers(long orderId) {
     return jdbc.queryForList(
         "SELECT id FROM runrun_v2.app_users WHERE id=(SELECT user_id FROM runrun_v2.v2_orders WHERE"
             + " id=?) FOR KEY SHARE",
-        parameter1);
+        orderId);
   }
 
   public int paymentStatusWritePaymentOrders(
-      java.lang.String status,
-      java.time.OffsetDateTime parameter2,
-      java.lang.Long parameter3,
-      java.lang.String binding4) {
+      String status, OffsetDateTime timestamp, Long id, String status2) {
     return jdbc.update(
         "UPDATE runrun_v2.payment_orders SET status=?,version=version+1,updated_at=? WHERE id=? AND"
             + " status<>?",
         status,
-        parameter2,
-        parameter3,
-        binding4);
+        timestamp,
+        id,
+        status2);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.payment.PaymentModels.Payment>
-      paymentRowsPaymentOrders(boolean lock, long parameter2) {
+  public List<Payment> paymentRowsPaymentOrders(boolean lock, long id) {
     return jdbc.query(
         "SELECT * FROM runrun_v2.payment_orders WHERE id=?" + (lock ? " FOR UPDATE" : ""),
         (r, n) ->
@@ -317,11 +292,10 @@ public class PaymentMapper {
                 r.getObject("deadline", OffsetDateTime.class),
                 r.getObject("paid_at", OffsetDateTime.class),
                 r.getLong("version")),
-        parameter2);
+        id);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.payment.PaymentModels.Attempt>
-      attemptRowsPaymentAttempts(long parameter2) {
+  public List<Attempt> attemptRowsPaymentAttempts(long id) {
     return jdbc.query(
         "SELECT * FROM runrun_v2.payment_attempts WHERE id=?",
         (r, n) ->
@@ -331,11 +305,10 @@ public class PaymentMapper {
                 r.getInt("attempt_no"),
                 r.getString("status"),
                 r.getLong("version")),
-        parameter2);
+        id);
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.payment.PaymentModels.Refund>
-      refundRowsRefundOrders(long parameter2) {
+  public List<Refund> refundRowsRefundOrders(long id) {
     return jdbc.query(
         "SELECT * FROM runrun_v2.refund_orders WHERE id=?",
         (r, n) ->
@@ -349,78 +322,72 @@ public class PaymentMapper {
                 r.getString("status"),
                 r.getObject("succeeded_at", OffsetDateTime.class),
                 r.getLong("version")),
-        parameter2);
+        id);
   }
 
-  public java.util.List<java.lang.String> attemptsRowsPaymentAttempts(java.lang.Long parameter2) {
+  public List<String> attemptsRowsPaymentAttempts(Long id) {
     return jdbc.queryForList(
         "SELECT id::text FROM runrun_v2.payment_attempts WHERE payment_order_id=? ORDER BY"
             + " attempt_no",
         String.class,
-        parameter2);
+        id);
   }
 
-  public java.util.List<java.lang.String> paymentsForOrderRowsPaymentOrders(
-      java.lang.Long parameter2) {
+  public List<String> paymentsForOrderRowsPaymentOrders(Long id) {
     return jdbc.queryForList(
         "SELECT id::text FROM runrun_v2.payment_orders WHERE order_id=? ORDER BY id",
         String.class,
-        parameter2);
+        id);
   }
 
-  public java.util.List<java.lang.String> refundsForOrderRowsRefundOrders(
-      java.lang.Long parameter2) {
+  public List<String> refundsForOrderRowsRefundOrders(Long id) {
     return jdbc.queryForList(
         "SELECT id::text FROM runrun_v2.refund_orders WHERE order_id=? ORDER BY id",
         String.class,
-        parameter2);
+        id);
   }
 
   public int seenWritePaymentResultEvents(
-      java.lang.String eventId,
-      java.lang.String type,
-      java.lang.Long parameter3,
-      java.lang.String parameter4) {
+      String eventId, String resourceType, Long resourceId, String result) {
     return jdbc.update(
         "INSERT INTO runrun_v2.payment_result_events(event_id,resource_type,resource_id,result)"
             + " VALUES(?,?,?,?)",
         eventId,
-        type,
-        parameter3,
-        parameter4);
+        resourceType,
+        resourceId,
+        result);
   }
 
-  public java.util.List<java.lang.Object> knownEventRowsStatement(java.lang.String parameter2) {
+  public List<Object> lockResultEvent(String value) {
     return jdbc.query(
         "SELECT pg_advisory_xact_lock(hashtextextended(?,0))",
         (org.springframework.jdbc.core.RowMapper<Object>) (r, n) -> null,
-        parameter2);
+        value);
   }
 
-  public java.util.List<java.util.Map<java.lang.String, java.lang.Object>>
-      knownEventRowsPaymentResultEvents(java.lang.String eventId) {
+  public List<Map<String, Object>> knownEventRowsPaymentResultEvents(String eventId) {
     return jdbc.queryForList(
         "SELECT resource_type,resource_id,result FROM runrun_v2.payment_result_events WHERE"
             + " event_id=?",
         eventId);
   }
 
-  public java.lang.String refundFinancialValueRefundOrders(java.lang.Long parameter2) {
+  public String refundFinancialValueRefundOrders(Long rId) {
     return jdbc.queryForObject(
         "SELECT source_attempt_id::text FROM runrun_v2.refund_orders WHERE id=?",
         String.class,
-        parameter2);
+        rId);
   }
 
-  public java.lang.Long refundFinancialValueRefundOrders2(java.lang.Long parameter2) {
+  public Long refundFinancialValueRefundOrders2(Long source) {
     return jdbc.queryForObject(
         "SELECT sum(amount_cents) FROM runrun_v2.refund_orders WHERE source_attempt_id=? AND"
             + " status='SUCCEEDED'",
         Long.class,
-        parameter2);
+        source);
   }
 
-  public java.lang.Long refundFinancialValuePaymentFinancialEvents(java.lang.String source) {
+  public Long refundFinancialValuePaymentFinancialEvents(String source) {
     return jdbc.queryForObject(
         "SELECT coalesce(sum(platform_cents),0) FROM runrun_v2.payment_financial_events WHERE"
             + " payload->>'sourceAttemptId'=?",
@@ -429,87 +396,78 @@ public class PaymentMapper {
   }
 
   public int refundFinancialWritePaymentFinancialEvents(
-      java.lang.Long parameter1,
-      java.lang.String parameter2,
-      java.lang.String parameter3,
-      long parameter4,
-      long platform,
-      long parameter6,
-      java.lang.String parameter7) {
+      Long orderId,
+      String eventKey,
+      String kind,
+      long amountCents,
+      long platformCents,
+      long courierCents,
+      String payload) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.payment_financial_events(order_id,event_key,kind,amount_cents,platform_cents,courier_cents,payload)"
             + " VALUES(?,?,?,?,?,?,?::jsonb)",
-        parameter1,
-        parameter2,
-        parameter3,
-        parameter4,
-        platform,
-        parameter6,
-        parameter7);
+        orderId,
+        eventKey,
+        kind,
+        amountCents,
+        platformCents,
+        courierCents,
+        payload);
   }
 
   public int eventWriteV(
-      java.lang.Long parameter1,
-      java.lang.Long parameter2,
-      java.lang.String type,
-      java.lang.String key,
-      java.lang.String parameter5) {
+      Long orderId, Long actorId, String eventType, String requestId, String payload) {
     return jdbc.update(
         "INSERT INTO runrun_v2.v2_order_events(order_id,actor_id,event_type,request_id,payload)"
             + " VALUES(?,?,?,?,?::jsonb) ON CONFLICT DO NOTHING",
-        parameter1,
-        parameter2,
-        type,
-        key,
-        parameter5);
+        orderId,
+        actorId,
+        eventType,
+        requestId,
+        payload);
   }
 
   public int financialWritePaymentFinancialEvents(
-      java.lang.Long parameter1,
-      java.lang.String key,
-      java.lang.String kind,
-      long cents,
-      long platform,
-      long parameter6,
-      java.lang.String parameter7) {
+      Long orderId,
+      String eventKey,
+      String kind,
+      long amountCents,
+      long platformCents,
+      long courierCents,
+      String payload) {
     return jdbc.update(
         "INSERT INTO"
             + " runrun_v2.payment_financial_events(order_id,event_key,kind,amount_cents,platform_cents,courier_cents,payload)"
             + " VALUES(?,?,?,?,?,?,?::jsonb) ON CONFLICT DO NOTHING",
-        parameter1,
-        key,
+        orderId,
+        eventKey,
         kind,
-        cents,
-        platform,
-        parameter6,
-        parameter7);
+        amountCents,
+        platformCents,
+        courierCents,
+        payload);
   }
 
-  public int notifyUserWriteNotificationOutbox(
-      java.lang.String key, java.lang.String parameter2, java.lang.Long parameter3) {
+  public int notifyUserWriteNotificationOutbox(String key, String write, Long order) {
     return jdbc.update(
         "INSERT INTO runrun_v2.notification_outbox(recipient_id,event_key,channel,payload) SELECT"
             + " user_id,?,'IN_APP',?::jsonb FROM runrun_v2.v2_orders WHERE id=? ON CONFLICT DO"
             + " NOTHING",
         key,
-        parameter2,
-        parameter3);
+        write,
+        order);
   }
 
   public int auditWritePaymentAdminAudit(
-      java.lang.Long parameter1,
-      java.lang.String action,
-      java.lang.Long parameter3,
-      java.lang.String key,
-      java.lang.String reason) {
+      Long actorId, String action, Long resourceId, String requestId, String reason) {
     return jdbc.update(
         "INSERT INTO runrun_v2.payment_admin_audit(actor_id,action,resource_id,request_id,reason)"
             + " VALUES(?,?,?,?,?)",
-        parameter1,
+        actorId,
         action,
-        parameter3,
-        key,
+        resourceId,
+        requestId,
         reason);
   }
 }

@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class IdentityStartupGuard
     implements ApplicationRunner, org.springframework.beans.factory.InitializingBean {
+
   private final IdentityStartupMapper mapper;
+
   private final String environment;
 
   public IdentityStartupGuard(
@@ -30,7 +32,7 @@ public class IdentityStartupGuard
       throw new IllegalStateException(
           "Stage one identity requires an isolated local/test/staging environment");
     // Refuse a legacy database even if someone placed an empty v2 schema alongside it.
-    Boolean legacy = mapper.runValueStatement();
+    Boolean legacy = mapper.isIdentitySchemaInstalled();
     if (Boolean.TRUE.equals(legacy))
       throw new IllegalStateException(
           "Legacy public objects detected; an isolated v2 database is required");

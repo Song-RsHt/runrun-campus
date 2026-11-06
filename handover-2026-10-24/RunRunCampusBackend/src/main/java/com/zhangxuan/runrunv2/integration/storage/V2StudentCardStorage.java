@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class V2StudentCardStorage {
+
   private final Path root;
 
   public V2StudentCardStorage(

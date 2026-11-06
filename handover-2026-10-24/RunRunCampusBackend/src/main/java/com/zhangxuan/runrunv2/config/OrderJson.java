@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OrderJson {
+
   private final ObjectMapper mapper;
 
   public OrderJson(ObjectMapper mapper) {

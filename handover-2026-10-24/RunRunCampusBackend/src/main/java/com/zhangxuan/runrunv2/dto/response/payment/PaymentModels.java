@@ -1,24 +1,12 @@
-package com.zhangxuan.runrunv2.model.payment;
+package com.zhangxuan.runrunv2.dto.response.payment;
 
-import com.zhangxuan.runrunv2.model.order.OrderModels;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 public final class PaymentModels {
+
   private PaymentModels() {}
-
-  public enum Result {
-    SUCCESS,
-    PROCESSING,
-    FAILED,
-    UNKNOWN
-  }
-
-  public record VersionRequest(Long expectedVersion) {}
-
-  public record CancelRequest(Long expectedVersion, String reason) {}
-
-  public record ResultRequest(Long expectedVersion, Result result, String eventId) {}
 
   public record Payment(
       String id,

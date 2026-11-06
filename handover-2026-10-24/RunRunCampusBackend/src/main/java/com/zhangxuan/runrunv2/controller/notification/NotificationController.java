@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @IdentityPermission
 @RequestMapping("/api/v2/notifications")
 public class NotificationController {
+
   private final NotificationService service;
 
   public NotificationController(NotificationService service) {

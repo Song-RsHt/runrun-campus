@@ -1,13 +1,17 @@
 package com.zhangxuan.runrunv2.service.payment;
 
-import static com.zhangxuan.runrunv2.model.payment.PaymentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
+import com.zhangxuan.runrunv2.dto.request.payment.CancelRequest;
+import com.zhangxuan.runrunv2.dto.request.payment.ResultRequest;
+import com.zhangxuan.runrunv2.dto.request.payment.VersionRequest;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
+import com.zhangxuan.runrunv2.enums.payment.Result;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter;
 import com.zhangxuan.runrunv2.mapper.order.OrderStore;
 import com.zhangxuan.runrunv2.mapper.payment.PaymentMapper;
-import com.zhangxuan.runrunv2.model.order.OrderModels;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.time.*;
@@ -16,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
 
+/** 编排隔离支付、退款和资金事件。行锁、渠道事件幂等与并发版本共同防止重复推进；金额继续使用整数分。 渠道交互通过适配器完成，Mapper 不承担状态机。参见《支付与退款规则》。 */
 @Service
 @ConditionalOnProperty(name = "rrc.payment.mock-enabled", havingValue = "true")
 public class PaymentService implements OriginalPaymentWriter {
@@ -619,7 +624,7 @@ public class PaymentService implements OriginalPaymentWriter {
 
   private boolean knownEvent(String type, String id, Result result, String eventId) {
     // Event IDs are global, including across orders and administrator accounts.
-    mapper.knownEventRowsStatement("payment-event:" + eventId);
+    mapper.lockResultEvent("payment-event:" + eventId);
     var rows = mapper.knownEventRowsPaymentResultEvents(eventId);
     if (!rows.isEmpty()) {
       var row = rows.get(0);

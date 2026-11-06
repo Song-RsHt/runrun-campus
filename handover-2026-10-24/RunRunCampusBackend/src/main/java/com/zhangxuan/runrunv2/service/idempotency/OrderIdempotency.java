@@ -11,8 +11,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OrderIdempotency {
+
   private final OrderIdempotencyMapper mapper;
+
   private final IdentitySecrets secrets;
+
   private final OrderJson json;
 
   public OrderIdempotency(OrderIdempotencyMapper mapper, IdentitySecrets secrets, OrderJson json) {

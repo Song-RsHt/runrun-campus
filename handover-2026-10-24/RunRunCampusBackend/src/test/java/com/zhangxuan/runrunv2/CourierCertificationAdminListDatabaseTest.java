@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import com.zhangxuan.runrunv2.dto.response.identity.Account;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
+import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
 import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.nio.file.Files;
@@ -50,11 +51,7 @@ class CourierCertificationAdminListDatabaseTest {
         .thenReturn(new Account("999", "ADMIN", "ACTIVE", true, 0, false));
     var service =
         new CourierCertificationV2Service(
-            new com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper(db),
-            identity,
-            null,
-            null,
-            null);
+            new CourierCertificationV2Mapper(db), identity, null, null, null);
     assertEquals(0L, service.adminList("test-session", null, null, 0, 20).get("totalElements"));
     long first =
         db.queryForObject(

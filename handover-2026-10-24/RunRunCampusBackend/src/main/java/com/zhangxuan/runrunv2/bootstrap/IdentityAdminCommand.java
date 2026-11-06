@@ -11,6 +11,7 @@ import org.springframework.boot.WebApplicationType;
  * identity.
  */
 public class IdentityAdminCommand {
+
   public static void main(String[] args) {
     if (System.console() == null || args.length == 0)
       throw new IllegalStateException("An interactive controlled deployment console is required");

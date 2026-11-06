@@ -1,7 +1,7 @@
 package com.zhangxuan.runrunv2.config;
 
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.model.order.OrderModels;
 import com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter;
 import java.time.Clock;
 import java.time.OffsetDateTime;
@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class OrderConfiguration {
+
   @Bean
   @ConditionalOnMissingBean(Clock.class)
   public Clock orderClock() {
@@ -26,6 +27,7 @@ public class OrderConfiguration {
     // M00 assigns payment tables to M03. Until its atomic writer is integrated,
     // A08 must fail closed instead of producing an unpaid orphan order.
     return new OriginalPaymentWriter() {
+
       public boolean available() {
         return false;
       }

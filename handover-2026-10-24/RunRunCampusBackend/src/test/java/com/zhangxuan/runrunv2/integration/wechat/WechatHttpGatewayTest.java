@@ -7,13 +7,17 @@ import static org.mockito.Mockito.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.*;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 class WechatHttpGatewayTest {
+
   private HttpResponse<String> response(String body) {
     return new HttpResponse<>() {
+
       public int statusCode() {
         return 200;
       }
@@ -26,7 +30,7 @@ class WechatHttpGatewayTest {
         return null;
       }
 
-      public java.util.Optional<HttpResponse<String>> previousResponse() {
+      public Optional<HttpResponse<String>> previousResponse() {
         return java.util.Optional.empty();
       }
 
@@ -34,11 +38,11 @@ class WechatHttpGatewayTest {
         return HttpHeaders.of(java.util.Map.of(), (k, v) -> true);
       }
 
-      public java.util.Optional<javax.net.ssl.SSLSession> sslSession() {
+      public Optional<javax.net.ssl.SSLSession> sslSession() {
         return java.util.Optional.empty();
       }
 
-      public java.net.URI uri() {
+      public URI uri() {
         return java.net.URI.create("https://api.weixin.qq.com");
       }
 

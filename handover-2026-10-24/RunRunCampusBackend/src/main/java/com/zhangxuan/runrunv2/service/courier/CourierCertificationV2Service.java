@@ -10,7 +10,11 @@ import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -244,7 +248,7 @@ public class CourierCertificationV2Service {
   }
 
   @Transactional(readOnly = true)
-  public java.util.Map<String, Object> adminList(
+  public Map<String, Object> adminList(
       String token, String status, String query, int page, int size) {
     Account a = identity.requireRole(token, "ADMIN", false);
     int safePage = Math.max(0, page), safeSize = Math.max(1, Math.min(size, 100));
@@ -296,14 +300,14 @@ public class CourierCertificationV2Service {
   }
 
   @Transactional(readOnly = true)
-  public java.util.Map<String, Object> performance(String token, long courier, int page, int size) {
+  public Map<String, Object> performance(String token, long courier, int page, int size) {
     identity.requireRole(token, "ADMIN", false);
     int p = Math.max(0, page), s = Math.max(1, Math.min(size, 100));
-    long total = mapper.performanceValueStatement(courier);
+    long total = mapper.countDeliveredTasks(courier);
     // Share one FROM clause; month_count avoids the PostgreSQL MONTH keyword.
-    var counts = mapper.performanceRowStatement(courier);
-    var orders = mapper.performanceRowsStatement(courier, s, (long) p * s);
-    var result = new java.util.HashMap<String, Object>();
+    var counts = mapper.summarizeDeliveredTasks(courier);
+    var orders = mapper.pageDeliveredTasks(courier, s, (long) p * s);
+    var result = new HashMap<String, Object>();
     result.put("todayCompletedPackageOrders", counts.get("today"));
     result.put("lastSevenDaysCompletedPackageOrders", counts.get("week"));
     result.put("currentMonthCompletedPackageOrders", counts.get("month_count"));
@@ -341,13 +345,13 @@ public class CourierCertificationV2Service {
     return map(rows.get(0));
   }
 
-  private java.util.Map<String, Object> locked(long id) {
+  private Map<String, Object> locked(long id) {
     var rows = mapper.lockedRowsCourierCertifications(id);
     if (rows.isEmpty()) throw new IdentityFailure(404, "RESOURCE_NOT_FOUND");
     return rows.get(0);
   }
 
-  private Certification map(java.util.Map<String, Object> r) {
+  private Certification map(Map<String, Object> r) {
     return new Certification(
         ((Number) r.get("id")).longValue(),
         ((Number) r.get("courier_id")).longValue(),
@@ -367,8 +371,8 @@ public class CourierCertificationV2Service {
   private static Instant instant(Object value) {
     if (value == null) return null;
     if (value instanceof Instant i) return i;
-    if (value instanceof java.sql.Timestamp t) return t.toInstant();
-    if (value instanceof java.time.OffsetDateTime o) return o.toInstant();
+    if (value instanceof Timestamp t) return t.toInstant();
+    if (value instanceof OffsetDateTime o) return o.toInstant();
     return Instant.parse(value.toString());
   }
 

@@ -2,6 +2,7 @@ package com.zhangxuan.runrunv2.mapper.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runrunv2.model.notification.Delivery;
+import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 public class NotificationOutboxMapper {
 
   private final org.springframework.jdbc.core.JdbcTemplate jdbc;
+
   private final ObjectMapper json;
 
   public NotificationOutboxMapper(
@@ -21,8 +23,7 @@ public class NotificationOutboxMapper {
     this.json = json;
   }
 
-  public java.util.List<com.zhangxuan.runrunv2.model.notification.Delivery>
-      claimRowsClaimNotificationOutbox(int parameter2) {
+  public List<Delivery> claimRowsClaimNotificationOutbox(int max) {
     return jdbc.query(
         "SELECT id,recipient_id,event_key,channel,payload,attempt_count FROM"
             + " runrun_v2.claim_notification_outbox(?)",
@@ -41,24 +42,23 @@ public class NotificationOutboxMapper {
             throw new IllegalStateException("outbox payload unavailable");
           }
         },
-        parameter2);
+        max);
   }
 
-  public java.lang.Object completeValueStatement(
-      long id, boolean success, java.lang.String parameter4) {
+  public Object completeDelivery(long id, boolean success, String sanitize) {
     return jdbc.queryForObject(
         "SELECT runrun_v2.complete_notification_outbox(?,?,?)",
         Object.class,
         id,
         success,
-        parameter4);
+        sanitize);
   }
 
-  public java.lang.Integer runOnceValueStatement() {
+  public Integer runReviewTimers() {
     return jdbc.queryForObject("SELECT runrun_v2.run_notification_review_timers()", Integer.class);
   }
 
-  public java.lang.Boolean m08InstalledValueStatement() {
+  public Boolean isNotificationRuntimeInstalled() {
     return jdbc.queryForObject(
         "SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL AND"
             + " to_regprocedure('runrun_v2.run_notification_review_timers()') IS NOT NULL",

@@ -1,7 +1,8 @@
 package com.zhangxuan.runrunv2.controller.payment;
 
-import static com.zhangxuan.runrunv2.model.payment.PaymentModels.*;
+import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
 
+import com.zhangxuan.runrunv2.dto.request.payment.ResultRequest;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
 import com.zhangxuan.runrunv2.service.payment.PaymentService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
         + " '${rrc.identity.environment:}' == 'test' || '${rrc.identity.environment:}' =="
         + " 'staging')")
 public class PaymentTestController {
+
   private final PaymentService service;
 
   public PaymentTestController(PaymentService service) {

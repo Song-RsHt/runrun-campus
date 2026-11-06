@@ -21,11 +21,17 @@ import org.springframework.stereotype.Component;
     havingValue = "true",
     matchIfMissing = true)
 public class WechatHttpGateway implements WechatGateway {
+
   private final String appId;
+
   private final String appSecret;
+
   private final ObjectMapper json;
+
   private final HttpClient http;
+
   private String accessToken;
+
   private Instant tokenExpires = Instant.EPOCH;
 
   @org.springframework.beans.factory.annotation.Autowired
@@ -117,7 +123,8 @@ public class WechatHttpGateway implements WechatGateway {
       throw failure();
     } catch (Exception e) {
       throw failure();
-    } // Never retain upstream URLs, codes or response bodies in exceptions/logs.
+    }
+    // Never retain upstream URLs, codes or response bodies in exceptions/logs.
   }
 
   private static String esc(String value) {

@@ -14,6 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 编排 v2 微信身份、独立会话和账号访问规则；认证材料委托安全组件处理，数据访问委托 Mapper。 保留票据消费、会话撤销与审计的原子性，不接入 legacy
+ * 账号恢复。参见《账号与历史兼容规则》。
+ */
 @Service
 public class IdentityService {
 

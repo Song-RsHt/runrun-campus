@@ -1,52 +1,12 @@
-package com.zhangxuan.runrunv2.model.fulfillment;
+package com.zhangxuan.runrunv2.dto.response.fulfillment;
 
-import java.math.BigDecimal;
+import com.zhangxuan.runrunv2.enums.fulfillment.Kind;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 public final class FulfillmentModels {
+
   private FulfillmentModels() {}
-
-  public enum Kind {
-    PICKUP,
-    SPECIFICATION,
-    DELIVERY
-  }
-
-  public enum EventType {
-    ARRIVAL,
-    DELIVERY
-  }
-
-  public enum Decision {
-    ACCEPT,
-    DECLINE
-  }
-
-  public record Version(Long expectedVersion) {}
-
-  public record Respond(Long expectedVersion, Decision decision) {}
-
-  public record Release(Long expectedVersion, String taskId, String reason) {}
-
-  public record Pickup(Long expectedVersion, String taskId, String pickupProofId) {}
-
-  public record Deliver(
-      Long expectedVersion, String taskId, String deliveryProofId, String locationEventId) {}
-
-  public record Location(
-      Long expectedVersion,
-      String taskId,
-      EventType eventType,
-      BigDecimal latitude,
-      BigDecimal longitude,
-      String coordinateSystem,
-      String requestId) {}
-
-  public record RegisterProof(
-      Long expectedVersion, Kind kind, String taskId, String uploadTicket) {}
-
-  public record Upload(Long expectedVersion, Kind kind, String contentType, Long sizeBytes) {}
 
   public record Ticket(String uploadTicket, String uploadUrl, OffsetDateTime expiresAt) {}
 
