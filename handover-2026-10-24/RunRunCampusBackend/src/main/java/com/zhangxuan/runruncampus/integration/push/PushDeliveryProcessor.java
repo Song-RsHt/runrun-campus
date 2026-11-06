@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.integration.push;
 
-import com.zhangxuan.runruncampus.model.PushDeliveryTask;
-import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.model.message.PushDeliveryTask;
+import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

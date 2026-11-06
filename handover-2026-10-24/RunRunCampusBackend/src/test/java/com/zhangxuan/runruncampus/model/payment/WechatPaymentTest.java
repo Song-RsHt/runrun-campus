@@ -4,14 +4,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.zhangxuan.runruncampus.entity.AppUser;
-import com.zhangxuan.runruncampus.entity.CampusOrder;
-import com.zhangxuan.runruncampus.entity.WechatPayment;
-import com.zhangxuan.runruncampus.enums.MembershipPlanType;
-import com.zhangxuan.runruncampus.enums.PaymentBusinessType;
-import com.zhangxuan.runruncampus.enums.PaymentStatus;
-import com.zhangxuan.runruncampus.enums.ServiceType;
-import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.entity.order.CampusOrder;
+import com.zhangxuan.runruncampus.entity.payment.WechatPayment;
+import com.zhangxuan.runruncampus.entity.user.AppUser;
+import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
+import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;

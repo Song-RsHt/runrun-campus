@@ -1,14 +1,14 @@
 package com.zhangxuan.runruncampus.integration.push;
 
-import com.aliyun.push20160801.models.PushTask;
 import com.aliyun.push20160801.models.PushTask.PushTaskNotification;
 import com.aliyun.push20160801.models.PushTask.PushTaskNotificationAndroid;
 import com.aliyun.push20160801.models.PushTask.PushTaskNotificationAndroidOptions;
 import com.aliyun.push20160801.models.PushTask.PushTaskNotificationAndroidOptionsAccs;
 import com.aliyun.push20160801.models.PushTask.PushTaskOptions;
 import com.aliyun.push20160801.models.PushTask.PushTaskTarget;
+import com.aliyun.push20160801.models.PushTask;
 import com.aliyun.push20160801.models.PushV2Request;
-import com.zhangxuan.runruncampus.model.OrderPushRequested;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

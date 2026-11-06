@@ -1,0 +1,56 @@
+package com.zhangxuan.runruncampus.vo.order;
+
+import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
+import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.PickupStation;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.vo.payment.RefundResponse;
+
+import java.time.Instant;
+import java.util.List;
+
+/** 订单创建与状态管理响应；保持现有 JSON 字段及序列化契约。 */
+public record OrderResponse(
+        Long id,
+        String orderNo,
+        String merchant,
+        String pickupCode,
+        String pickupLocation,
+        String destination,
+        PickupStation pickupStation,
+        DeliveryZone deliveryZone,
+        ServiceType serviceType,
+        OrderStatus status,
+        int originalFeeCents,
+        int discountCents,
+        int feeCents,
+        OrderPaymentMethod paymentMethod,
+        OrderPaymentStatus paymentStatus,
+        int paidCents,
+        ManualPaymentStatus manualPaymentStatus,
+        String payerReference,
+        Instant paymentRequestedAt,
+        Instant paymentSubmittedAt,
+        Instant paymentReviewedAt,
+        String paymentReviewNote,
+        CourierSettlementStatus courierSettlementStatus,
+        Instant courierSettledAt,
+        String couponTitle,
+        boolean membershipUsed,
+        String membershipPlanTitle,
+        String courierName,
+        boolean packageSizeReviewProofUploaded,
+        boolean pickupProofUploaded,
+        boolean deliveryProofUploaded,
+        boolean packageSizeConfirmed,
+        ServiceType proposedPackageServiceType,
+        Integer ratingScore,
+        String ratingComment,
+        Instant ratedAt,
+        List<RefundResponse> refunds,
+        Instant createdAt,
+        Instant updatedAt) {}

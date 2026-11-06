@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.integration.maintenance;
 
-import com.zhangxuan.runruncampus.mapper.RiskSignalMaintenanceMapper;
-import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.mapper.credit.RiskSignalMaintenanceMapper;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

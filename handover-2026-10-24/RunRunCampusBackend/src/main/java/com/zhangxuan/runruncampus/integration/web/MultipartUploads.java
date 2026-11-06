@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.integration.web;
 
-import com.zhangxuan.runruncampus.model.UploadSource;
+import com.zhangxuan.runruncampus.model.upload.UploadSource;
 
 import org.springframework.web.multipart.MultipartFile;
 

@@ -1,0 +1,107 @@
+package com.zhangxuan.runruncampus.entity.message;
+
+import com.zhangxuan.runruncampus.entity.order.CampusOrder;
+import com.zhangxuan.runruncampus.entity.user.AppUser;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import java.time.Instant;
+
+/** 订单站内消息持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
+@Entity
+@Table(name = "order_messages")
+public class OrderMessage {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private AppUser recipient;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private CampusOrder order;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    private OrderMessageType type;
+
+    @Column(nullable = false, length = 80)
+    private String title;
+
+    @Column(nullable = false, length = 600)
+    private String content;
+
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
+
+    private Instant readAt;
+
+    protected OrderMessage() {}
+
+    public OrderMessage(
+            AppUser recipient,
+            CampusOrder order,
+            OrderMessageType type,
+            String title,
+            String content) {
+        this.recipient = recipient;
+        this.order = order;
+        this.type = type;
+        this.title = title;
+        this.content = content;
+        this.createdAt = Instant.now();
+    }
+
+    public void markRead() {
+        if (readAt == null) {
+            readAt = Instant.now();
+        }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public AppUser getRecipient() {
+        return recipient;
+    }
+
+    public CampusOrder getOrder() {
+        return order;
+    }
+
+    public OrderMessageType getType() {
+        return type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getReadAt() {
+        return readAt;
+    }
+
+    public boolean isRead() {
+        return readAt != null;
+    }
+}

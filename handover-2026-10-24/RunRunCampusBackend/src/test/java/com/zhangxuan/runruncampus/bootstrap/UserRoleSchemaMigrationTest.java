@@ -4,7 +4,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.mapper.UserRoleSchemaMigrationMapper;
+import com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

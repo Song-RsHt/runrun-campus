@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.integration.maintenance;
 
-import com.zhangxuan.runruncampus.entity.CourierCertification;
+import com.zhangxuan.runruncampus.entity.courier.CourierCertification;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.repository.CourierCertificationRepository;
+import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

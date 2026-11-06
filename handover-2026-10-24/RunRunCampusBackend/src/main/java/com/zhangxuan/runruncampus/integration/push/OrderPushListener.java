@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.integration.push;
 
-import com.zhangxuan.runruncampus.model.OrderPushRequested;
-import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
+import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;

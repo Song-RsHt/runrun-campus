@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.bootstrap;
 
-import com.zhangxuan.runruncampus.mapper.UserRoleSchemaMigrationMapper;
+import com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

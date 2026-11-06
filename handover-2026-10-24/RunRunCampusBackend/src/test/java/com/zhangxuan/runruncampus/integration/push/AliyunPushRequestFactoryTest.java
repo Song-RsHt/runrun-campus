@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.aliyun.push20160801.models.PushV2Request;
-import com.zhangxuan.runruncampus.enums.PushDestination;
-import com.zhangxuan.runruncampus.model.OrderPushRequested;
+import com.zhangxuan.runruncampus.enums.message.PushDestination;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
 
 import org.junit.jupiter.api.Test;
 

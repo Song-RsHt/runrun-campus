@@ -1,13 +1,13 @@
 package com.zhangxuan.runruncampus.integration.payment;
 
-import com.zhangxuan.runruncampus.entity.CampusOrder;
-import com.zhangxuan.runruncampus.entity.WechatRefund;
-import com.zhangxuan.runruncampus.enums.OrderStatus;
-import com.zhangxuan.runruncampus.enums.RefundStatus;
-import com.zhangxuan.runruncampus.model.RefundResult;
-import com.zhangxuan.runruncampus.repository.OrderRepository;
-import com.zhangxuan.runruncampus.repository.WechatPaymentRepository;
-import com.zhangxuan.runruncampus.repository.WechatRefundRepository;
+import com.zhangxuan.runruncampus.entity.order.CampusOrder;
+import com.zhangxuan.runruncampus.entity.payment.WechatRefund;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
+import com.zhangxuan.runruncampus.model.payment.RefundResult;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository;
+import com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

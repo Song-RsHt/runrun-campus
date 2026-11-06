@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.integration.push;
 
-import com.zhangxuan.runruncampus.model.OrderPushRequested;
+import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

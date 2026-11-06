@@ -1,0 +1,28 @@
+package com.zhangxuan.runruncampus.enums.admin;
+
+/** 管理员权限枚举；名称和取值沿用既有业务与协议定义。 */
+public enum AdminPermission {
+    DASHBOARD_VIEW,
+    ORDER_VIEW,
+    ORDER_DISPATCH,
+    ORDER_FORCE_COMPLETE,
+    ORDER_ARCHIVE,
+    PROVENANCE_VIEW,
+    PROVENANCE_RECORD,
+    PROVENANCE_VERIFY,
+    PAYMENT_REVIEW,
+    PLATFORM_SETTINGS_MANAGE,
+    PUSH_DELIVERY_VIEW,
+    ORDER_EXPORT,
+    USER_VIEW,
+    USER_MANAGE,
+    COUPON_ISSUE,
+    COURIER_VIEW,
+    COURIER_REVIEW,
+    ISSUE_VIEW,
+    ISSUE_MANAGE,
+    FEEDBACK_VIEW,
+    FEEDBACK_MANAGE,
+    AUDIT_VIEW,
+    ADMIN_MANAGE
+}

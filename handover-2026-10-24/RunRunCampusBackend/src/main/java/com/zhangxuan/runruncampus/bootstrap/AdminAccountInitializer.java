@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.bootstrap;
 
-import com.zhangxuan.runruncampus.entity.AppUser;
-import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.entity.user.AppUser;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.repository.user.UserRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

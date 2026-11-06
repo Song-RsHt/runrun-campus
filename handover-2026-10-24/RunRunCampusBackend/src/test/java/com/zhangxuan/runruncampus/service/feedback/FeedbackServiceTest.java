@@ -1,0 +1,103 @@
+package com.zhangxuan.runruncampus.service.feedback;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import com.zhangxuan.runruncampus.entity.feedback.UserFeedback;
+import com.zhangxuan.runruncampus.entity.user.AppUser;
+import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
+import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
+import com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository;
+import com.zhangxuan.runruncampus.service.impl.feedback.FeedbackServiceImpl;
+import com.zhangxuan.runruncampus.vo.feedback.FeedbackResponse;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+
+@ExtendWith(MockitoExtension.class)
+class FeedbackServiceTest {
+
+    @Mock private FeedbackRepository feedbackRepository;
+
+    private FeedbackService feedbackService;
+
+    private AppUser user;
+
+    @BeforeEach
+    void setUp() {
+        feedbackService = new FeedbackServiceImpl(feedbackRepository);
+        user = user(1L, UserRole.CUSTOMER);
+    }
+
+    @Test
+    void submitsTrimmedFeedback() {
+        when(feedbackRepository.save(any(UserFeedback.class)))
+                .thenAnswer(
+                        invocation -> {
+                            UserFeedback feedback = invocation.getArgument(0);
+                            ReflectionTestUtils.setField(feedback, "id", 11L);
+                            return feedback;
+                        });
+        FeedbackResponse response =
+                feedbackService.submit(user, FeedbackType.FUNCTION, "  希望增加深色模式  ");
+        assertEquals(11L, response.id());
+        assertEquals(FeedbackType.FUNCTION, response.type());
+        assertEquals("希望增加深色模式", response.content());
+        assertNotNull(response.createdAt());
+    }
+
+    @Test
+    void listsOnlyCurrentUsersFeedback() {
+        UserFeedback feedback = new UserFeedback(user, FeedbackType.ACCOUNT, "账号问题");
+        ReflectionTestUtils.setField(feedback, "id", 12L);
+        when(feedbackRepository.findByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(feedback));
+        List<FeedbackResponse> responses = feedbackService.list(user);
+        assertEquals(1, responses.size());
+        assertEquals(12L, responses.get(0).id());
+        verify(feedbackRepository).findByUserOrderByCreatedAtDesc(user);
+    }
+
+    @Test
+    void userCanSeeResolutionAndHandledTime() {
+        UserFeedback feedback = new UserFeedback(user, FeedbackType.FUNCTION, "支付失败");
+        AppUser admin = user(2L, UserRole.ADMIN);
+        feedback.claim(admin);
+        feedback.resolve("已核对支付记录，款项未扣除");
+        when(feedbackRepository.findByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(feedback));
+        FeedbackResponse response = feedbackService.list(user).get(0);
+        assertEquals(FeedbackHandlingStatus.RESOLVED, response.handlingStatus());
+        assertEquals("已核对支付记录，款项未扣除", response.resolution());
+        assertNotNull(response.handledAt());
+        assertNotNull(response.updatedAt());
+    }
+
+    @Test
+    void rejectsBlankFeedback() {
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () -> feedbackService.submit(user, FeedbackType.OTHER, "   "));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
+        verifyNoInteractions(feedbackRepository);
+    }
+
+    private AppUser user(Long id, UserRole role) {
+        AppUser appUser = new AppUser("1380000000" + id, "password-hash", "测试账号", role);
+        ReflectionTestUtils.setField(appUser, "id", id);
+        return appUser;
+    }
+}

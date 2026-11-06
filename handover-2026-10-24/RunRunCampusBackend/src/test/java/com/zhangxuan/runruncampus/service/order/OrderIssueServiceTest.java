@@ -1,0 +1,150 @@
+package com.zhangxuan.runruncampus.service.order;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import com.zhangxuan.runruncampus.entity.order.CampusOrder;
+import com.zhangxuan.runruncampus.entity.order.OrderIssue;
+import com.zhangxuan.runruncampus.entity.user.AppUser;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
+import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.impl.order.OrderIssueServiceImpl;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.vo.order.OrderIssueVO;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+import java.util.Optional;
+
+@ExtendWith(MockitoExtension.class)
+class OrderIssueServiceTest {
+
+    @Mock private OrderRepository orderRepository;
+
+    @Mock private OrderIssueRepository issueRepository;
+
+    @Mock private OrderMessageService messageService;
+
+    private OrderIssueService issueService;
+
+    private AppUser customer;
+
+    private CampusOrder order;
+
+    @BeforeEach
+    void setUp() {
+        issueService = new OrderIssueServiceImpl(orderRepository, issueRepository, messageService);
+        customer = user(1L, UserRole.CUSTOMER);
+        order =
+                new CampusOrder(
+                        "RP-TEST-ISSUE", customer, "测试商家", "1234", "东门", "3号楼", ServiceType.LOBBY);
+        ReflectionTestUtils.setField(order, "id", 11L);
+    }
+
+    @Test
+    void customerCanReportIssueForOwnOrder() {
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        when(issueRepository.save(any(OrderIssue.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        OrderIssueVO response =
+                issueService.create(customer, 11L, OrderIssueType.MISSING_ITEM, "少了一份米饭");
+        assertEquals(OrderIssueType.MISSING_ITEM, response.type());
+        assertEquals("少了一份米饭", response.description());
+        assertEquals(UserRole.CUSTOMER, response.reporterRole());
+    }
+
+    @Test
+    void assignedCourierCanReportIssue() {
+        AppUser courier = user(2L, UserRole.COURIER);
+        order.assignCourier(courier);
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        when(issueRepository.save(any(OrderIssue.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        OrderIssueVO response =
+                issueService.create(courier, 11L, OrderIssueType.CANNOT_CONTACT, "无法联系收餐人");
+        assertEquals(UserRole.COURIER, response.reporterRole());
+        verify(messageService)
+                .send(
+                        eq(customer),
+                        eq(order),
+                        eq(OrderMessageType.ORDER_ISSUE),
+                        anyString(),
+                        anyString());
+    }
+
+    @Test
+    void unrelatedUserCannotReadIssues() {
+        AppUser outsider = user(3L, UserRole.CUSTOMER);
+        when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
+        BusinessFailure exception =
+                assertThrows(BusinessFailure.class, () -> issueService.list(outsider, 11L));
+        assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
+        verifyNoInteractions(issueRepository);
+    }
+
+    @Test
+    void blankDescriptionIsRejected() {
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () -> issueService.create(customer, 11L, OrderIssueType.OTHER, "   "));
+        assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
+        verifyNoInteractions(issueRepository);
+    }
+
+    @Test
+    void duplicateOpenIssueFromSameReporterAndTypeIsRejected() {
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        when(issueRepository.existsByOrderAndReporterAndTypeAndHandlingStatusIn(
+                        eq(order), eq(customer), eq(OrderIssueType.CANNOT_CONTACT), any()))
+                .thenReturn(true);
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                issueService.create(
+                                        customer, 11L, OrderIssueType.CANNOT_CONTACT, "仍然联系不上对方"));
+        assertEquals(HttpStatus.CONFLICT.value(), exception.status());
+        verify(issueRepository, Mockito.never()).save(any());
+    }
+
+    @Test
+    void participantCanSeeHandlingStatusAndResolution() {
+        AppUser administrator = user(4L, UserRole.ADMIN);
+        OrderIssue issue = new OrderIssue(order, customer, OrderIssueType.OTHER, "餐品损坏");
+        issue.claim(administrator);
+        issue.resolve("已与用户联系并处理");
+        when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
+        when(issueRepository.findByOrderOrderByCreatedAtAsc(order)).thenReturn(List.of(issue));
+        var result = issueService.list(customer, 11L).get(0);
+        assertEquals(OrderIssueHandlingStatus.RESOLVED, result.handlingStatus());
+        assertEquals("已与用户联系并处理", result.resolution());
+    }
+
+    private AppUser user(Long id, UserRole role) {
+        AppUser user = new AppUser("1380000000" + id, "password-hash", "测试账号" + id, role);
+        ReflectionTestUtils.setField(user, "id", id);
+        return user;
+    }
+}
