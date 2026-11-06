@@ -1,6 +1,6 @@
 package com.zhangxuan.runrunv2.bootstrap;
 
-import com.zhangxuan.runrunv2.mapper.IdentityStartupMapper;
+import com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;

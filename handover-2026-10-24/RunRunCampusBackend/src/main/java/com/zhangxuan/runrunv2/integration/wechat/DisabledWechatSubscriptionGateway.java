@@ -1,6 +1,6 @@
 package com.zhangxuan.runrunv2.integration.wechat;
 
-import com.zhangxuan.runrunv2.model.DeliveryResult;
+import com.zhangxuan.runrunv2.model.notification.DeliveryResult;
 
 import org.springframework.stereotype.Component;
 

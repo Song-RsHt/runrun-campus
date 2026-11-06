@@ -1,9 +1,9 @@
 package com.zhangxuan.runrunv2.integration.notification;
 
 import com.zhangxuan.runrunv2.integration.wechat.WechatSubscriptionGateway;
-import com.zhangxuan.runrunv2.mapper.NotificationOutboxMapper;
-import com.zhangxuan.runrunv2.model.Delivery;
-import com.zhangxuan.runrunv2.model.DeliveryResult;
+import com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper;
+import com.zhangxuan.runrunv2.model.notification.Delivery;
+import com.zhangxuan.runrunv2.model.notification.DeliveryResult;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;

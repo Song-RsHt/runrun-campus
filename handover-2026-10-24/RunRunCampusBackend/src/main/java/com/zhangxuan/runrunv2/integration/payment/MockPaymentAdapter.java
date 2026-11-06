@@ -1,8 +1,8 @@
 package com.zhangxuan.runrunv2.integration.payment;
 
-import com.zhangxuan.runrunv2.enums.Result;
+import com.zhangxuan.runrunv2.enums.payment.Result;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.mapper.MockPaymentMapper;
+import com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

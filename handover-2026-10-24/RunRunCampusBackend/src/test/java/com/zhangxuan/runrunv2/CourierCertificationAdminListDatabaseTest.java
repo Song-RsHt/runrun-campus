@@ -13,10 +13,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.mapper.CourierCertificationV2Mapper;
-import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.service.impl.CourierCertificationV2ServiceImpl;
-import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
+import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
+import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl;
+import com.zhangxuan.runrunv2.vo.identity.IdentityAccountVO;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

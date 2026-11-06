@@ -1,8 +1,8 @@
 package com.zhangxuan.runrunv2.bootstrap;
 
-import com.zhangxuan.runrunv2.mapper.LocalTestMapper;
+import com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

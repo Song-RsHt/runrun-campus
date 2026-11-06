@@ -6,9 +6,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
 import com.zhangxuan.runrunv2.bootstrap.LocalTestBootstrap;
-import com.zhangxuan.runrunv2.mapper.LocalTestMapper;
+import com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;

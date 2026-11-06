@@ -1,9 +1,9 @@
 package com.zhangxuan.runrunv2.integration.storage;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.model.EvidenceBinding;
-import com.zhangxuan.runrunv2.model.VerifiedEvidence;
-import com.zhangxuan.runrunv2.vo.UploadTicketVO;
+import com.zhangxuan.runrunv2.model.fulfillment.EvidenceBinding;
+import com.zhangxuan.runrunv2.model.fulfillment.VerifiedEvidence;
+import com.zhangxuan.runrunv2.vo.fulfillment.UploadTicketVO;
 
 import org.springframework.stereotype.Component;
 

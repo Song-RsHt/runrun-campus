@@ -19,15 +19,14 @@ import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
+import java.net.http.HttpClient;
 import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandler;
+import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.Optional;
-
 import javax.net.ssl.SSLSession;
 
 class WechatHttpGatewayTest {

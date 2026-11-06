@@ -26,13 +26,13 @@ import com.zhangxuan.runrunv2.integration.notification.NotificationOutboxWorker;
 import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
 import com.zhangxuan.runrunv2.integration.wechat.WechatSubscriptionGateway;
-import com.zhangxuan.runrunv2.model.DeliveryResult;
-import com.zhangxuan.runrunv2.service.CourierCertificationV2Service;
-import com.zhangxuan.runrunv2.service.CourierEvidenceGovernanceService;
-import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
-import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.service.NotificationService;
-import com.zhangxuan.runrunv2.vo.IdentityLoginVO;
+import com.zhangxuan.runrunv2.model.notification.DeliveryResult;
+import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
+import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
+import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.notification.NotificationService;
+import com.zhangxuan.runrunv2.vo.identity.IdentityLoginVO;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,8 +43,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -64,7 +64,6 @@ import java.sql.DriverManager;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
-
 import javax.imageio.ImageIO;
 
 /** 使用真实控制器、服务、事务、私有文件和交付的完整建库链验证装配。 */

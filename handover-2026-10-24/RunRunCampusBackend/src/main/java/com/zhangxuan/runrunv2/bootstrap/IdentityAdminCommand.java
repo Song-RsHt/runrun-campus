@@ -2,7 +2,7 @@ package com.zhangxuan.runrunv2.bootstrap;
 
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;

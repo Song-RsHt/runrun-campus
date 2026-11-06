@@ -7,12 +7,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.mapper.CourierCertificationV2Mapper;
-import com.zhangxuan.runrunv2.mapper.CourierEvidenceGovernanceMapper;
-import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.service.impl.CourierCertificationV2ServiceImpl;
-import com.zhangxuan.runrunv2.service.impl.CourierEvidenceGovernanceServiceImpl;
-import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
+import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
+import com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper;
+import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl;
+import com.zhangxuan.runrunv2.service.impl.evidence.CourierEvidenceGovernanceServiceImpl;
+import com.zhangxuan.runrunv2.vo.identity.IdentityAccountVO;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

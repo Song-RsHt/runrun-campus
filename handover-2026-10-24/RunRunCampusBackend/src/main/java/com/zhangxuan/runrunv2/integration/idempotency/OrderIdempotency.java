@@ -2,8 +2,8 @@ package com.zhangxuan.runrunv2.integration.idempotency;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.mapper.OrderIdempotencyMapper;
-import com.zhangxuan.runrunv2.model.InputValidation;
+import com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper;
+import com.zhangxuan.runrunv2.model.identity.InputValidation;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 
 import org.springframework.stereotype.Component;

@@ -1,8 +1,8 @@
 package com.zhangxuan.runrunv2.config;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.service.OriginalPaymentWriter;
-import com.zhangxuan.runrunv2.vo.OriginalPaymentVO;
+import com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter;
+import com.zhangxuan.runrunv2.vo.order.OriginalPaymentVO;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
