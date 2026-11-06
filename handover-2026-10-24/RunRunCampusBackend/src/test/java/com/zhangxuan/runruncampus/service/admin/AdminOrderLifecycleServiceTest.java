@@ -1,5 +1,32 @@
 package com.zhangxuan.runruncampus.service.admin;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderProofType;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,31 +39,44 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminOrderLifecycleServiceTest {
@@ -70,7 +110,7 @@ class AdminOrderLifecycleServiceTest {
     order =
         new CampusOrder("RP-LIFECYCLE-1", customer, "一食堂", "1234", "东门", "三号楼", ServiceType.LOBBY);
     ReflectionTestUtils.setField(order, "id", 11L);
-    org.mockito.Mockito.lenient().when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
+    Mockito.lenient().when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
   }
 
   @Test
@@ -125,7 +165,7 @@ class AdminOrderLifecycleServiceTest {
     assertEquals(OrderStatus.COMPLETED, order.getStatus());
     verify(events)
         .save(
-            org.mockito.ArgumentMatchers.argThat(
+            ArgumentMatchers.argThat(
                 event -> event.getActor() == admin && event.getStatus() == OrderStatus.COMPLETED));
     verify(messages)
         .send(eq(customer), eq(order), eq(OrderMessageType.ORDER_COMPLETED), any(), any());

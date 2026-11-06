@@ -1,22 +1,32 @@
 package com.zhangxuan.runruncampus.controller.auth;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.Session;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.auth.Session;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.model.AdminMfaVerification;
+import com.zhangxuan.runruncampus.model.SessionMetadata;
+import com.zhangxuan.runruncampus.repository.SessionRepository;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.security.AdminMfaCrypto;
-import com.zhangxuan.runruncampus.service.auth.AdminMfaService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.AdminMfaService;
+import com.zhangxuan.runruncampus.service.AuthService;
+import com.zhangxuan.runruncampus.vo.SessionInfoVO;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
@@ -24,8 +34,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -37,9 +52,54 @@ import org.springframework.web.server.ResponseStatusException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {
       "app.proof-storage.local-directory=target/test-order-proofs",
       "app.admin-mfa.key=MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY="
@@ -171,13 +231,13 @@ class AdminMfaPostgresIntegrationTest {
         mfa.verify(
             challenge.challengeToken(),
             AdminMfaCrypto.code(first.secret(), Instant.now().getEpochSecond() / 30),
-            AuthService.SessionMetadata.of("ADMIN_WEB", "Chrome on Windows"));
+            SessionMetadata.of("ADMIN_WEB", "Chrome on Windows"));
     var active = auth.sessions("Bearer " + second.session().token());
     assertEquals(2, active.size());
     assertEquals(
         "Chrome on Windows",
         active.stream()
-            .filter(AuthService.SessionInfo::current)
+            .filter(SessionInfoVO::current)
             .findFirst()
             .orElseThrow()
             .deviceName());
@@ -463,20 +523,20 @@ class AdminMfaPostgresIntegrationTest {
     }
     // TestRestTemplate's Apache client retries 429 responses, hiding the first rejection.
     var limited =
-        java.net.http.HttpClient.newHttpClient()
+        HttpClient.newHttpClient()
             .send(
-                java.net.http.HttpRequest.newBuilder()
-                    .uri(java.net.URI.create(http.getRootUri() + "/api/v1/auth/admin/login"))
+                HttpRequest.newBuilder()
+                    .uri(URI.create(http.getRootUri() + "/api/v1/auth/admin/login"))
                     .header("Content-Type", "application/json")
                     .POST(
-                        java.net.http.HttpRequest.BodyPublishers.ofString(
+                        BodyPublishers.ofString(
                             "{\"phone\":\""
                                 + user.getPhone()
                                 + "\",\"password\":\""
                                 + PASSWORD
                                 + "\"}"))
                     .build(),
-                java.net.http.HttpResponse.BodyHandlers.ofString());
+                BodyHandlers.ofString());
     assertEquals(429, limited.statusCode());
     assertEquals("no-store", limited.headers().firstValue("Cache-Control").orElseThrow());
     assertEquals(
@@ -517,5 +577,5 @@ class AdminMfaPostgresIntegrationTest {
     assertEquals(HttpStatus.BAD_REQUEST, invalid.getStatusCode());
   }
 
-  private record Enrollment(String secret, AdminMfaService.Verification result) {}
+  private record Enrollment(String secret, AdminMfaVerification result) {}
 }

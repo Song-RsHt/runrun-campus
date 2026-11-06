@@ -1,18 +1,10 @@
 package com.zhangxuan.runruncampus.service.coupon;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
-import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository;
+import com.zhangxuan.runruncampus.service.coupon.CouponService.CouponApplication;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +15,39 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class CouponServiceTest {
@@ -50,7 +75,7 @@ class CouponServiceTest {
   void ownerCanApplyAvailableCouponOnce() {
     UserCoupon coupon = coupon(51L, customer, Instant.now().plusSeconds(3600));
     when(couponRepository.findLockedById(51L)).thenReturn(Optional.of(coupon));
-    CouponService.CouponApplication application = couponService.apply(customer, 51L, 200);
+    CouponApplication application = couponService.apply(customer, 51L, 200);
     assertEquals(100, application.discountCents());
     assertEquals("新用户立减券", application.couponTitle());
     assertEquals(51L, application.couponId());

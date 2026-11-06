@@ -1,17 +1,32 @@
 package com.zhangxuan.runruncampus.model.payment;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class WechatPaymentTest {
 

@@ -1,5 +1,54 @@
 package com.zhangxuan.runruncampus.service.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
+import com.zhangxuan.runruncampus.dto.request.order.CompleteOrderRequest;
+import com.zhangxuan.runruncampus.dto.request.order.ConfirmPackageSizeRequest;
+import com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest;
+import com.zhangxuan.runruncampus.dto.request.order.CreateRatingRequest;
+import com.zhangxuan.runruncampus.dto.response.order.CourierRatingResponse;
+import com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse;
+import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
+import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderProofType;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.PickupStation;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.coupon.CouponService;
+import com.zhangxuan.runruncampus.service.coupon.CouponService.CouponApplication;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.membership.MembershipService;
+import com.zhangxuan.runruncampus.service.membership.MembershipService.MembershipApplication;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.payment.PaymentService;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -13,51 +62,65 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
-import com.zhangxuan.runruncampus.dto.request.order.CompleteOrderRequest;
-import com.zhangxuan.runruncampus.dto.request.order.ConfirmPackageSizeRequest;
-import com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest;
-import com.zhangxuan.runruncampus.dto.request.order.CreateRatingRequest;
-import com.zhangxuan.runruncampus.dto.response.order.CourierRatingResponse;
-import com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse;
-import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.PickupStation;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.settings.Settings;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
-import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.coupon.CouponService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.service.membership.MembershipService;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import com.zhangxuan.runruncampus.service.payment.PaymentService;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -97,12 +160,12 @@ class OrderServiceTest {
             couponService,
             membershipService,
             userRepository,
-            new com.fasterxml.jackson.databind.ObjectMapper(),
+            new ObjectMapper(),
             paymentService,
             settingsService,
             certificationService,
             new ManualQrPaymentProperties(true));
-    org.mockito.Mockito.lenient()
+    Mockito.lenient()
         .when(certificationService.isEligible(any(AppUser.class)))
         .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
     customer = user(1L, "13800000001", UserRole.CUSTOMER);
@@ -238,7 +301,7 @@ class OrderServiceTest {
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(courier));
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(orderRepository.countByCourierAndStatusIn(
-            courier, java.util.List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
+            courier, List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
         .thenReturn(2L);
     when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
     ResponseStatusException failure =
@@ -711,7 +774,7 @@ class OrderServiceTest {
   @Test
   void createOrderAppliesCouponToSettlement() {
     when(couponService.apply(customer, 51L, 200))
-        .thenReturn(new CouponService.CouponApplication(100, "新用户立减券"));
+        .thenReturn(new CouponApplication(100, "新用户立减券"));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -731,7 +794,7 @@ class OrderServiceTest {
   void enabledManualQrPaymentAppliesToEveryRegisteredCustomer() {
     AppUser anotherCustomer = user(9L, "18800000009", UserRole.CUSTOMER);
     when(couponService.apply(anotherCustomer, null, 200))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -753,13 +816,13 @@ class OrderServiceTest {
             couponService,
             membershipService,
             userRepository,
-            new com.fasterxml.jackson.databind.ObjectMapper(),
+            new ObjectMapper(),
             paymentService,
             settingsService,
             certificationService,
             new ManualQrPaymentProperties(false));
     when(couponService.apply(customer, null, 200))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -773,7 +836,7 @@ class OrderServiceTest {
   @Test
   void doorOrderWithMembershipChargesOneYuan() {
     when(membershipService.apply(customer, true))
-        .thenReturn(new MembershipService.MembershipApplication(true, "学生月卡"));
+        .thenReturn(new MembershipApplication(true, "学生月卡"));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -791,7 +854,7 @@ class OrderServiceTest {
   @Test
   void expressOrderWithMembershipStillChargesThreeYuan() {
     when(membershipService.apply(customer, true))
-        .thenReturn(new MembershipService.MembershipApplication(true, "学生月卡"));
+        .thenReturn(new MembershipApplication(true, "学生月卡"));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -807,17 +870,17 @@ class OrderServiceTest {
   @Test
   void packagePickupUsesConfiguredSizePrice() {
     when(couponService.apply(customer, null, 100))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(couponService.apply(customer, null, 200))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(couponService.apply(customer, null, 300))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(couponService.apply(customer, null, 400))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(couponService.apply(customer, null, 500))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(couponService.apply(customer, null, 800))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     assertPackagePrice(ServiceType.PACKAGE_SMALL, 100);
@@ -831,7 +894,7 @@ class OrderServiceTest {
   @Test
   void meiyuanPackageAddsTwoYuanBeforeCoupon() {
     when(couponService.apply(customer, 51L, 300))
-        .thenReturn(new CouponService.CouponApplication(100, "新用户立减券"));
+        .thenReturn(new CouponApplication(100, "新用户立减券"));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -847,7 +910,7 @@ class OrderServiceTest {
   @Test
   void explicitStandardZoneDoesNotUseDestinationTextForPricing() {
     when(couponService.apply(customer, null, 100))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -871,7 +934,7 @@ class OrderServiceTest {
   @Test
   void meiyuanDoesNotAddSurchargeToTakeout() {
     when(couponService.apply(customer, null, 200))
-        .thenReturn(new CouponService.CouponApplication(0, null));
+        .thenReturn(new CouponApplication(0, null));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =
@@ -886,7 +949,7 @@ class OrderServiceTest {
   @Test
   void meiyuanPackageAddsSurchargeBeforeMembershipDiscount() {
     when(membershipService.apply(customer, true))
-        .thenReturn(new MembershipService.MembershipApplication(true, "学生月卡"));
+        .thenReturn(new MembershipApplication(true, "学生月卡"));
     when(orderRepository.save(any(CampusOrder.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
     OrderResponse response =

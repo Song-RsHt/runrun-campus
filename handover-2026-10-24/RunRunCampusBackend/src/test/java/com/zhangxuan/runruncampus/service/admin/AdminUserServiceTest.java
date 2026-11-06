@@ -1,17 +1,12 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.repository.SessionRepository;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.vo.AdminUserItem;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -20,6 +15,32 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminUserServiceTest {

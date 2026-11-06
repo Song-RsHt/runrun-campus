@@ -1,7 +1,8 @@
 package com.zhangxuan.runruncampus.controller.credit;
 
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.credit.CreditService;
+import com.zhangxuan.runruncampus.service.credit.CreditService.ProfileResponse;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.springframework.validation.annotation.Validated;
@@ -10,6 +11,18 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Validated
 @RestController
@@ -26,7 +39,7 @@ public class CreditController {
   }
 
   @GetMapping("/me")
-  public CreditService.ProfileResponse mine(
+  public ProfileResponse mine(
       @RequestHeader("Authorization") String authorization,
       @RequestParam(defaultValue = "0") @Min(0) int page,
       @RequestParam(defaultValue = "20") @Min(1) @Max(50) int size) {

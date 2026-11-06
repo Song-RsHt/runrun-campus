@@ -1,18 +1,17 @@
 package com.zhangxuan.runruncampus.controller.auth;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.auth.Session;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.Session;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.repository.SessionRepository;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.service.AuthService;
+import java.time.Instant;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,9 +25,39 @@ import org.springframework.web.server.ResponseStatusException;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = "app.proof-storage.local-directory=target/test-password-proofs")
 @ActiveProfiles("test")
 @Testcontainers
@@ -67,13 +96,13 @@ class AuthPasswordPostgresIntegrationTest {
     assertEquals(
         2,
         sessions
-            .findByUserAndExpiresAtAfterOrderByCreatedAtDesc(user, java.time.Instant.now())
+            .findByUserAndExpiresAtAfterOrderByCreatedAtDesc(user, Instant.now())
             .size());
     assertEquals(HttpStatus.NO_CONTENT, change(current, "old-password", "new-password"));
     assertEquals(
         0,
         sessions
-            .findByUserAndExpiresAtAfterOrderByCreatedAtDesc(user, java.time.Instant.now())
+            .findByUserAndExpiresAtAfterOrderByCreatedAtDesc(user, Instant.now())
             .size());
     assertThrows(
         ResponseStatusException.class, () -> auth.requireUser("Bearer " + current.getToken()));

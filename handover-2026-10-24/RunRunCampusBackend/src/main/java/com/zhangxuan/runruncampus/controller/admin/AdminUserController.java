@@ -1,13 +1,14 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
-import com.zhangxuan.runruncampus.dto.request.admin.user.ResetPasswordRequest;
-import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem;
-import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserPageResponse;
+import com.zhangxuan.runruncampus.dto.AdminUserPasswordResetRequest;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.admin.AdminCouponService;
+import com.zhangxuan.runruncampus.service.admin.AdminCouponService.GrantResponse;
 import com.zhangxuan.runruncampus.service.admin.AdminUserService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.vo.AdminUserItem;
+import com.zhangxuan.runruncampus.vo.AdminUserPageResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -21,6 +22,29 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Validated
 @RestController
@@ -78,7 +102,7 @@ public class AdminUserController {
   public AdminUserItem resetPassword(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
-      @Valid @RequestBody ResetPasswordRequest request) {
+      @Valid @RequestBody AdminUserPasswordResetRequest request) {
     return adminUserService.resetPassword(
         authService.requirePermission(authorization, AdminPermission.USER_MANAGE),
         id,
@@ -86,7 +110,7 @@ public class AdminUserController {
   }
 
   @PostMapping("/{id}/coupons/one-yuan")
-  public AdminCouponService.GrantResponse issueOneYuanCoupon(
+  public GrantResponse issueOneYuanCoupon(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return adminCouponService.issueOneYuan(
         authService.requirePermission(authorization, AdminPermission.COUPON_ISSUE), id);

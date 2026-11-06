@@ -1,22 +1,15 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.service.admin.AdminCouponService.GrantResponse;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -26,6 +19,41 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminCouponServiceTest {
@@ -51,7 +79,7 @@ class AdminCouponServiceTest {
               return coupon;
             });
     Instant before = Instant.now().plusSeconds(29L * 24 * 3600);
-    AdminCouponService.GrantResponse result = service.issueOneYuan(administrator, 2L);
+    GrantResponse result = service.issueOneYuan(administrator, 2L);
     assertEquals(51L, result.couponId());
     assertEquals(100, result.discountCents());
     assertEquals(200, result.minimumOrderCents());

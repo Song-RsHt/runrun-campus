@@ -1,6 +1,8 @@
 package com.zhangxuan.runruncampus.service.payment;
 
 import com.zhangxuan.runruncampus.config.WechatPayProperties;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
@@ -8,7 +10,6 @@ import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
 import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
@@ -18,7 +19,6 @@ import com.zhangxuan.runruncampus.model.payment.RefundResult;
 import com.zhangxuan.runruncampus.model.payment.TradeResult;
 import com.zhangxuan.runruncampus.model.payment.WechatPayment;
 import com.zhangxuan.runruncampus.model.payment.WechatRefund;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository;
 import com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository;
@@ -30,6 +30,38 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** legacy 支付与退款业务边界，使用原 JPA Repository 及支付网关。金额和幂等保持旧契约，不能作为 v2 支付兼容层。 */
 @Service

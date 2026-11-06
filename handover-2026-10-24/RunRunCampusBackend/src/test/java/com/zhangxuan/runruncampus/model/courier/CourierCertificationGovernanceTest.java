@@ -1,20 +1,37 @@
 package com.zhangxuan.runruncampus.model.courier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
-import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class CourierCertificationGovernanceTest {
 
@@ -33,7 +50,7 @@ class CourierCertificationGovernanceTest {
     c.attachSubmittedPhoto("k", "image/jpeg");
     when(repo.findLockedById(3L)).thenReturn(Optional.of(c));
     var ex =
-        org.junit.jupiter.api.Assertions.assertThrows(
+        Assertions.assertThrows(
             ResponseStatusException.class,
             () -> service.approve(admin, 3L, 99L, c.getSubmittedPhotoResourceId()));
     assertEquals(409, ex.getStatusCode().value());
@@ -52,7 +69,7 @@ class CourierCertificationGovernanceTest {
     when(repo.findLockedById(3L)).thenReturn(Optional.of(c));
     var file = new MockMultipartFile("file", "x.jpg", "image/jpeg", new byte[8 * 1024 * 1024 + 1]);
     var ex =
-        org.junit.jupiter.api.Assertions.assertThrows(
+        Assertions.assertThrows(
             ResponseStatusException.class, () -> service.uploadStudentCard(courier, 3L, file));
     assertEquals(400, ex.getStatusCode().value());
   }

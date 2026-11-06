@@ -1,10 +1,24 @@
 package com.zhangxuan.runruncampus.controller.payment;
 
 import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
+import com.zhangxuan.runruncampus.service.payment.PaymentService.PaymentResponse;
 import java.util.Map;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/payments")
@@ -20,13 +34,13 @@ public class PaymentController {
   }
 
   @PostMapping("/orders/{orderId}/wechat")
-  public PaymentService.PaymentResponse orderPayment(
+  public PaymentResponse orderPayment(
       @RequestHeader("Authorization") String authorization, @PathVariable Long orderId) {
     return paymentService.createOrderPayment(authService.requireUser(authorization), orderId);
   }
 
   @GetMapping("/{outTradeNo}")
-  public PaymentService.PaymentResponse status(
+  public PaymentResponse status(
       @RequestHeader("Authorization") String authorization, @PathVariable String outTradeNo) {
     return paymentService.status(authService.requireUser(authorization), outTradeNo);
   }

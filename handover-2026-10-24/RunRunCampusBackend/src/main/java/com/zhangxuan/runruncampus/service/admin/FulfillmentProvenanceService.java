@@ -3,12 +3,12 @@ package com.zhangxuan.runruncampus.service.admin;
 import com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest;
 import com.zhangxuan.runruncampus.dto.response.provenance.Entry;
 import com.zhangxuan.runruncampus.dto.response.provenance.Summary;
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.provenance.Channel;
 import com.zhangxuan.runruncampus.mapper.admin.FulfillmentProvenanceMapper;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -19,6 +19,27 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** 维护履约溯源及独立核验约束。金额、证据摘要及录入人与核验人关系在业务层校验，再按原事务持久化。 */
 @Service

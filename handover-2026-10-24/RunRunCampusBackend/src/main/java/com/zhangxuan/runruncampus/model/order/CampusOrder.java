@@ -1,5 +1,6 @@
 package com.zhangxuan.runruncampus.model.order;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;
@@ -8,11 +9,35 @@ import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.PickupStation;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.UUID;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Entity
 @Table(name = "campus_orders")

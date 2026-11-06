@@ -1,5 +1,30 @@
 package com.zhangxuan.runruncampus.service.auth;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.Session;
+import com.zhangxuan.runruncampus.enums.SessionClientType;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
+import com.zhangxuan.runruncampus.repository.SessionRepository;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.service.AuthService;
+import com.zhangxuan.runruncampus.service.LoginAttemptService;
+import com.zhangxuan.runruncampus.service.LoginCaptchaService;
+import com.zhangxuan.runruncampus.service.impl.AuthServiceImpl;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,25 +34,35 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.auth.SessionClientType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.auth.Session;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
-import java.time.Instant;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -47,7 +82,7 @@ class AuthServiceTest {
   @BeforeEach
   void setUp() {
     authService =
-        new AuthService(
+        new AuthServiceImpl(
             userRepository,
             sessionRepository,
             passwordEncoder,
@@ -148,7 +183,7 @@ class AuthServiceTest {
   @Test
   void riskyLoginRequiresCaptchaBeforeCheckingPassword() {
     when(loginAttemptService.requiresCaptcha("13800000007")).thenReturn(true);
-    org.mockito.Mockito.doThrow(
+    Mockito.doThrow(
             new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "请输入正确的图形验证码"))
         .when(captchaService)
         .verify(null, null);
@@ -181,7 +216,7 @@ class AuthServiceTest {
     when(sessionRepository.findByToken("current-token")).thenReturn(Optional.of(current));
     when(sessionRepository.findByUserAndExpiresAtAfterOrderByCreatedAtDesc(
             any(AppUser.class), any(Instant.class)))
-        .thenReturn(java.util.List.of(current, other));
+        .thenReturn(List.of(current, other));
     var sessions = authService.sessions("Bearer current-token");
     assertEquals(2, sessions.size());
     assertEquals("Pixel 9", sessions.get(0).deviceName());

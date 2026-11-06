@@ -1,22 +1,14 @@
 package com.zhangxuan.runruncampus.service.order;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderChatMessage;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderChatRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderChatRepository.UnreadCount;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import java.time.Instant;
@@ -26,6 +18,42 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class OrderChatServiceTest {
 
@@ -97,8 +125,8 @@ class OrderChatServiceTest {
 
   @Test
   void unreadSummaryContainsTotalAndCountsByOrder() {
-    OrderChatRepository.UnreadCount first = mock(OrderChatRepository.UnreadCount.class);
-    OrderChatRepository.UnreadCount second = mock(OrderChatRepository.UnreadCount.class);
+    UnreadCount first = mock(UnreadCount.class);
+    UnreadCount second = mock(UnreadCount.class);
     when(first.getOrderId()).thenReturn(11L);
     when(first.getUnreadCount()).thenReturn(2L);
     when(second.getOrderId()).thenReturn(12L);

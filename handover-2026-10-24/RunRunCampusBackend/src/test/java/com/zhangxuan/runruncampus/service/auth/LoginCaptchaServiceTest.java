@@ -1,24 +1,38 @@
 package com.zhangxuan.runruncampus.service.auth;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.zhangxuan.runruncampus.service.LoginCaptchaService;
+import com.zhangxuan.runruncampus.service.impl.LoginCaptchaServiceImpl;
+import com.zhangxuan.runruncampus.vo.LoginCaptchaVO;
 import java.security.SecureRandom;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
 
 class LoginCaptchaServiceTest {
 
   private final LoginCaptchaService service =
-      new LoginCaptchaService(new SecureRandom(), Clock.systemUTC());
+      new LoginCaptchaServiceImpl(new SecureRandom(), Clock.systemUTC());
 
   @Test
   void challengeContainsRenderablePngAndCanOnlyBeUsedOnce() {
-    LoginCaptchaService.Challenge challenge = service.issue("1234");
+    LoginCaptchaVO challenge = service.issue("1234");
     assertTrue(challenge.imageDataUrl().startsWith("data:image/png;base64,iVBOR"));
     assertDoesNotThrow(() -> service.verify(challenge.challengeToken(), "1234"));
     ResponseStatusException reused =
@@ -30,7 +44,7 @@ class LoginCaptchaServiceTest {
 
   @Test
   void incorrectAnswerConsumesChallenge() {
-    LoginCaptchaService.Challenge challenge = service.issue("5678");
+    LoginCaptchaVO challenge = service.issue("5678");
     assertThrows(
         ResponseStatusException.class, () -> service.verify(challenge.challengeToken(), "0000"));
     assertThrows(

@@ -1,5 +1,27 @@
 package com.zhangxuan.runruncampus.service.admin;
 
+import com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.enums.admin.AdminRole;
+import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.provenance.Channel;
+import com.zhangxuan.runruncampus.mapper.admin.FulfillmentProvenanceMapper;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import java.time.Instant;
+import java.util.Optional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,26 +30,35 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.provenance.Channel;
-import com.zhangxuan.runruncampus.mapper.admin.FulfillmentProvenanceMapper;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import java.time.Instant;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class FulfillmentProvenanceServiceTest {
@@ -87,7 +118,7 @@ class FulfillmentProvenanceServiceTest {
 
   @Test
   void cashPaymentCannotBeClassifiedAsSoftwareEndToEnd() {
-    CampusOrder order = org.mockito.Mockito.mock(CampusOrder.class);
+    CampusOrder order = Mockito.mock(CampusOrder.class);
     when(order.getStatus()).thenReturn(OrderStatus.COMPLETED);
     when(order.getPaymentMethod()).thenReturn(OrderPaymentMethod.CASH_ON_DELIVERY);
     when(orders.findById(17L)).thenReturn(Optional.of(order));
@@ -119,7 +150,7 @@ class FulfillmentProvenanceServiceTest {
   private AppUser admin(long id) {
     AppUser user =
         new AppUser(
-            "10000000000", "hash", "管理员", com.zhangxuan.runruncampus.enums.user.UserRole.ADMIN);
+            "10000000000", "hash", "管理员", UserRole.ADMIN);
     ReflectionTestUtils.setField(user, "id", id);
     return user;
   }

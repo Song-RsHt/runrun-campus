@@ -1,5 +1,26 @@
 package com.zhangxuan.runruncampus.service.courier;
 
+import com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository.CourierBusinessStats;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,25 +31,36 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.settings.Settings;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
-import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class CourierOperationsServiceTest {
@@ -50,10 +82,10 @@ class CourierOperationsServiceTest {
     service =
         new CourierOperationsService(
             userRepository, orderRepository, certificationService, settingsService);
-    org.mockito.Mockito.lenient()
+    Mockito.lenient()
         .when(certificationService.isEligible(any(AppUser.class)))
         .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
-    org.mockito.Mockito.lenient()
+    Mockito.lenient()
         .when(settingsService.get())
         .thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
     courier = new AppUser("13800000003", "hash", "骑手", UserRole.COURIER);
@@ -64,7 +96,7 @@ class CourierOperationsServiceTest {
 
   @Test
   void approvedCourierCanGoOnlineAndReadBusinessMetrics() {
-    OrderRepository.CourierBusinessStats stats = mock(OrderRepository.CourierBusinessStats.class);
+    CourierBusinessStats stats = mock(CourierBusinessStats.class);
     when(stats.getTodayCompletedOrders()).thenReturn(3L);
     when(stats.getTotalCompletedOrders()).thenReturn(21L);
     when(stats.getTodayGrossServiceFeeCents()).thenReturn(900L);

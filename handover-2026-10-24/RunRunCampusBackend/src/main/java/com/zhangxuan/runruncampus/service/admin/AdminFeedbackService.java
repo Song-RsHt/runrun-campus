@@ -2,20 +2,39 @@ package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackItem;
 import com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackPageResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
 import com.zhangxuan.runruncampus.model.feedback.UserFeedback;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class AdminFeedbackService {
@@ -35,7 +54,7 @@ public class AdminFeedbackService {
       String query, FeedbackType type, FeedbackHandlingStatus handlingStatus, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
     Page<UserFeedback> feedback =
         normalizedQuery == null
             ? feedbackRepository.filterForAdmin(type, handlingStatus, pageable)

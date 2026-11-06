@@ -1,27 +1,16 @@
 package com.zhangxuan.runruncampus.service.order;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.integration.storage.LocalOrderProofStorage;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderProof;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.order.OrderProofService.ProofResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -37,6 +26,56 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class OrderProofServiceTest {
@@ -80,7 +119,7 @@ class OrderProofServiceTest {
     when(proofRepository.existsByOrderAndType(order, OrderProofType.PICKUP)).thenReturn(false);
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    OrderProofService.ProofResponse response =
+    ProofResponse response =
         proofService.upload(courier, 11L, OrderProofType.PICKUP, image);
     assertEquals(OrderProofType.PICKUP, response.type());
     assertEquals("pickup.jpg", response.originalFileName());
@@ -95,7 +134,7 @@ class OrderProofServiceTest {
     allowPickupProofUpload();
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    OrderProofService.ProofResponse response =
+    ProofResponse response =
         proofService.upload(courier, 11L, OrderProofType.PICKUP, image);
     assertEquals("image/png", response.contentType());
     assertEquals("pickup.png", response.originalFileName());
@@ -200,7 +239,7 @@ class OrderProofServiceTest {
         .thenReturn(false);
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    OrderProofService.ProofResponse response =
+    ProofResponse response =
         proofService.upload(courier, 12L, OrderProofType.SIZE_REVIEW, image);
     assertEquals(OrderProofType.SIZE_REVIEW, response.type());
     assertEquals("size-review.jpg", response.originalFileName());

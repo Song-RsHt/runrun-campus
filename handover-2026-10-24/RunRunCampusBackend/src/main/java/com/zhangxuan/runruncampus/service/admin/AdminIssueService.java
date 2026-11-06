@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem;
 import com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssuePageResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
@@ -10,7 +11,6 @@ import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderIssue;
 import com.zhangxuan.runruncampus.model.settings.Settings;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
@@ -19,10 +19,36 @@ import java.time.Instant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class AdminIssueService {
@@ -70,7 +96,7 @@ public class AdminIssueService {
     Instant pendingCutoff = now.minusSeconds(settings.issuePendingMinutes() * 60L);
     Instant processingCutoff = now.minusSeconds(settings.issueProcessingMinutes() * 60L);
     PageRequest pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
     Page<OrderIssue> issues =
         find(
             normalizedQuery,

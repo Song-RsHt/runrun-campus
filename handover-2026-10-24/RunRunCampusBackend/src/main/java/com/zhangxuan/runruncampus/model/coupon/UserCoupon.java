@@ -1,8 +1,21 @@
 package com.zhangxuan.runruncampus.model.coupon;
 
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import jakarta.persistence.*;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import java.time.Instant;
+
+
+
+
+
 
 @Entity
 @Table(name = "user_coupons")

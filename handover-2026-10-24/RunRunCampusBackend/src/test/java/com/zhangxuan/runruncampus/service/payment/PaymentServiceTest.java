@@ -1,10 +1,8 @@
 package com.zhangxuan.runruncampus.service.payment;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import com.zhangxuan.runruncampus.config.WechatPayProperties;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
@@ -12,7 +10,6 @@ import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
 import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
@@ -21,11 +18,12 @@ import com.zhangxuan.runruncampus.model.payment.RefundNotificationResult;
 import com.zhangxuan.runruncampus.model.payment.TradeResult;
 import com.zhangxuan.runruncampus.model.payment.WechatPayment;
 import com.zhangxuan.runruncampus.model.payment.WechatRefund;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository;
 import com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository;
 import com.zhangxuan.runruncampus.service.membership.MembershipService;
+import com.zhangxuan.runruncampus.service.payment.PaymentService.PaymentResponse;
+import com.zhangxuan.runruncampus.service.payment.PaymentService.RefundResponse;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +36,57 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
@@ -92,7 +141,7 @@ class PaymentServiceTest {
     when(paymentRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
     when(gateway.prepay(anyString(), anyString(), eq(300), eq("ORDER:10"), any(Instant.class)))
         .thenReturn(parameters());
-    PaymentService.PaymentResponse response = service.createOrderPayment(customer, 10L);
+    PaymentResponse response = service.createOrderPayment(customer, 10L);
     assertEquals(300, response.amountCents());
     assertEquals(PaymentStatus.PENDING, response.status());
     assertEquals("prepay", response.payParameters().prepayId());
@@ -152,7 +201,7 @@ class PaymentServiceTest {
     when(paymentRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
     when(gateway.prepay(anyString(), anyString(), eq(2900), anyString(), any(Instant.class)))
         .thenReturn(parameters());
-    PaymentService.PaymentResponse response =
+    PaymentResponse response =
         service.createMembershipPayment(customer, MembershipPlanType.STUDENT);
     verify(membershipService).validateCanPurchase(customer);
     verify(membershipService, never()).activatePaidPurchase(any(), any());
@@ -220,7 +269,7 @@ class PaymentServiceTest {
         WechatPayment.forOrder(customer, order, 300, Instant.now().plusSeconds(1800));
     WechatRefund refund = new WechatRefund(payment, 200, "订单取消");
     when(refundRepository.findByOrder(order)).thenReturn(List.of(refund));
-    PaymentService.RefundResponse response = service.refundsForOrder(order).get(0);
+    RefundResponse response = service.refundsForOrder(order).get(0);
     assertEquals(200, response.amountCents());
     assertEquals("订单取消", response.reason());
     assertEquals(RefundStatus.PENDING, response.status());

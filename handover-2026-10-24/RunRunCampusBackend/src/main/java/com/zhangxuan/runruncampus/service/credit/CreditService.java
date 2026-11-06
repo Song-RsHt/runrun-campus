@@ -1,20 +1,20 @@
 package com.zhangxuan.runruncampus.service.credit;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.credit.CreditEventType;
 import com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel;
 import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
 import com.zhangxuan.runruncampus.enums.credit.RiskSignalType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.credit.CreditEvent;
 import com.zhangxuan.runruncampus.model.credit.CreditProfile;
 import com.zhangxuan.runruncampus.model.credit.RiskSignal;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.credit.CreditEventRepository;
 import com.zhangxuan.runruncampus.repository.credit.CreditProfileRepository;
 import com.zhangxuan.runruncampus.repository.credit.RiskSignalRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import java.time.Instant;
 import java.util.List;
@@ -24,6 +24,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class CreditService {

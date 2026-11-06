@@ -4,15 +4,38 @@ import com.zhangxuan.runruncampus.dto.request.courier.couriercertification.Certi
 import com.zhangxuan.runruncampus.dto.request.courier.couriercertification.DecisionRequest;
 import com.zhangxuan.runruncampus.dto.request.courier.couriercertification.RejectionRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService.CertificationResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v2/courier/certification")
@@ -29,20 +52,20 @@ public class CourierCertificationController {
   }
 
   @GetMapping("/me")
-  public CourierCertificationService.CertificationResponse overview(
+  public CertificationResponse overview(
       @RequestHeader("Authorization") String authorization) {
     return certificationService.overview(authService.requireUser(authorization));
   }
 
   @PostMapping("/apply")
-  public CourierCertificationService.CertificationResponse submit(
+  public CertificationResponse submit(
       @RequestHeader("Authorization") String authorization,
       @RequestBody(required = false) CertificationRequest request) {
     return certificationService.submit(authService.requireUser(authorization));
   }
 
   @PostMapping(value = "/{id}/student-card", consumes = "multipart/form-data")
-  public CourierCertificationService.CertificationResponse uploadStudentCard(
+  public CertificationResponse uploadStudentCard(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @RequestPart("file") MultipartFile file,
@@ -64,21 +87,21 @@ public class CourierCertificationController {
   }
 
   @GetMapping("/pending")
-  public List<CourierCertificationService.CertificationResponse> pending(
+  public List<CertificationResponse> pending(
       @RequestHeader("Authorization") String authorization) {
     return certificationService.pending(
         authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW));
   }
 
   @PostMapping("/{id}/approve")
-  public CourierCertificationService.CertificationResponse approve(
+  public CertificationResponse approve(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return certificationService.approve(
         authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW), id);
   }
 
   @PostMapping("/{id}/decision")
-  public CourierCertificationService.CertificationResponse decision(
+  public CertificationResponse decision(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody DecisionRequest request) {
@@ -91,7 +114,7 @@ public class CourierCertificationController {
   }
 
   @PostMapping("/{id}/reject")
-  public CourierCertificationService.CertificationResponse reject(
+  public CertificationResponse reject(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody RejectionRequest request) {

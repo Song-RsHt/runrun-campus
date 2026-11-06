@@ -1,10 +1,5 @@
 package com.zhangxuan.runruncampus.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
 import com.zhangxuan.runruncampus.controller.admin.AdminAccountController;
 import com.zhangxuan.runruncampus.controller.admin.AdminAuditController;
 import com.zhangxuan.runruncampus.controller.admin.AdminCommandCenterController;
@@ -13,13 +8,14 @@ import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
 import com.zhangxuan.runruncampus.controller.admin.AdminOrderController;
 import com.zhangxuan.runruncampus.controller.admin.AdminOrderLifecycleController;
 import com.zhangxuan.runruncampus.controller.admin.AdminUserController;
+import com.zhangxuan.runruncampus.dto.AdminUserPasswordResetRequest;
 import com.zhangxuan.runruncampus.dto.request.admin.account.CreateAdminRequest;
 import com.zhangxuan.runruncampus.dto.request.admin.dispatch.DispatchRequest;
 import com.zhangxuan.runruncampus.dto.request.admin.orderlifecycle.ReasonRequest;
-import com.zhangxuan.runruncampus.dto.request.admin.user.ResetPasswordRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.enums.commandcenter.Queue;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.admin.AdminAccountService;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
@@ -29,7 +25,6 @@ import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.admin.AdminUserService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +32,49 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminAuthorizationControllerTest {
@@ -165,7 +203,7 @@ class AdminAuthorizationControllerTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> controller.resetPassword(TOKEN, 11L, new ResetPasswordRequest("new-password")));
+            () -> controller.resetPassword(TOKEN, 11L, new AdminUserPasswordResetRequest("new-password")));
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     verifyNoInteractions(userService);
   }

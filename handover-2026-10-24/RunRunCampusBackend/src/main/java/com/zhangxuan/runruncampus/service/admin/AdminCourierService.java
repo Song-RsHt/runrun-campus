@@ -5,14 +5,16 @@ import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderIt
 import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderPage;
 import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPageResponse;
 import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.courier.CourierCertification;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository.CourierCompletedOrderStats;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository.CourierPackagePerformanceStats;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -22,10 +24,39 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class AdminCourierService {
@@ -52,7 +83,7 @@ public class AdminCourierService {
       String query, CourierCertificationStatus status, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
     Page<AppUser> couriers =
         normalizedQuery == null
             ? userRepository.filterCouriersForAdmin(status, pageable)
@@ -62,7 +93,7 @@ public class AdminCourierService {
             ? Map.of()
             : certificationRepository.findByCourierIn(couriers.getContent()).stream()
                 .collect(Collectors.toMap(item -> item.getCourier().getId(), Function.identity()));
-    Map<Long, OrderRepository.CourierCompletedOrderStats> completedOrderStats =
+    Map<Long, CourierCompletedOrderStats> completedOrderStats =
         couriers.isEmpty()
             ? Map.of()
             : orderRepository
@@ -71,13 +102,13 @@ public class AdminCourierService {
                 .stream()
                 .collect(
                     Collectors.toMap(
-                        OrderRepository.CourierCompletedOrderStats::getCourierId,
+                        CourierCompletedOrderStats::getCourierId,
                         Function.identity()));
     return new AdminCourierPageResponse(
         couriers.getContent().stream()
             .map(
                 courier -> {
-                  OrderRepository.CourierCompletedOrderStats stats =
+                  CourierCompletedOrderStats stats =
                       completedOrderStats.get(courier.getId());
                   return item(
                       courier,
@@ -103,13 +134,13 @@ public class AdminCourierService {
     Instant todayStart = today.atStartOfDay(CAMPUS_ZONE).toInstant();
     Instant lastSevenDaysStart = today.minusDays(6).atStartOfDay(CAMPUS_ZONE).toInstant();
     Instant currentMonthStart = today.withDayOfMonth(1).atStartOfDay(CAMPUS_ZONE).toInstant();
-    OrderRepository.CourierPackagePerformanceStats stats =
+    CourierPackagePerformanceStats stats =
         orderRepository.packagePerformanceForCourier(
             courier.getId(), todayStart, lastSevenDaysStart, currentMonthStart);
     Page<CampusOrder> orders =
         orderRepository.findPackageOrdersForCourier(
             courier.getId(),
-            PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id")));
+            PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id")));
     return new AdminCourierPerformanceResponse(
         value(stats == null ? null : stats.getTodayCompletedPackageOrders()),
         value(stats == null ? null : stats.getLastSevenDaysCompletedPackageOrders()),

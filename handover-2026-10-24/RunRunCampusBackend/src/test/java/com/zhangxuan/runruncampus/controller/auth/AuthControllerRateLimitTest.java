@@ -1,5 +1,18 @@
 package com.zhangxuan.runruncampus.controller.auth;
 
+import com.zhangxuan.runruncampus.controller.AuthController;
+import com.zhangxuan.runruncampus.dto.ChangePasswordRequest;
+import com.zhangxuan.runruncampus.dto.LoginRequest;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.model.SessionMetadata;
+import com.zhangxuan.runruncampus.security.ApiRateLimitService;
+import com.zhangxuan.runruncampus.service.AuthService;
+import com.zhangxuan.runruncampus.service.LoginCaptchaService;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
@@ -8,17 +21,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.dto.request.auth.ChangePasswordRequest;
-import com.zhangxuan.runruncampus.dto.request.auth.LoginRequest;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.security.ApiRateLimitService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.service.auth.LoginCaptchaService;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class AuthControllerRateLimitTest {
 
@@ -30,7 +52,7 @@ class AuthControllerRateLimitTest {
         new AuthController(authService, rateLimitService, mock(LoginCaptchaService.class));
     LoginRequest request = new LoginRequest("13800000001", "wrong-password");
     when(authService.login(
-            request.phone(), request.password(), null, null, AuthService.SessionMetadata.unknown()))
+            request.phone(), request.password(), null, null, SessionMetadata.unknown()))
         .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "手机号或密码错误"));
     for (int attempt = 0; attempt < 10; attempt++) {
       ResponseStatusException exception =
@@ -42,7 +64,7 @@ class AuthControllerRateLimitTest {
     assertEquals(HttpStatus.TOO_MANY_REQUESTS, blocked.getStatusCode());
     verify(authService, times(10))
         .login(
-            request.phone(), request.password(), null, null, AuthService.SessionMetadata.unknown());
+            request.phone(), request.password(), null, null, SessionMetadata.unknown());
   }
 
   @Test

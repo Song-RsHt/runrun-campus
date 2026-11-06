@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.model.admin;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +14,22 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Entity
 @Table(name = "admin_audit_logs")

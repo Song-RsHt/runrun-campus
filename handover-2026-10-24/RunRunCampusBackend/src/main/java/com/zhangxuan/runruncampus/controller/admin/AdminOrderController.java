@@ -5,12 +5,15 @@ import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailRespo
 import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.admin.AdminOrderService.OrderExport;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
+import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService.ManualPaymentResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.nio.charset.StandardCharsets;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +26,31 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Validated
 @RestController
@@ -63,9 +91,9 @@ public class AdminOrderController {
       @RequestParam(required = false) OrderStatus status,
       @RequestParam(defaultValue = "false") boolean archived) {
     authService.requirePermission(authorization, AdminPermission.ORDER_EXPORT);
-    AdminOrderService.OrderExport export = adminOrderService.exportCsv(query, status, archived);
+    OrderExport export = adminOrderService.exportCsv(query, status, archived);
     return ResponseEntity.ok()
-        .contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
+        .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=orders.csv")
         .header("X-Export-Limit", String.valueOf(AdminOrderService.EXPORT_LIMIT))
         .header("X-Export-Truncated", String.valueOf(export.truncated()))
@@ -80,14 +108,14 @@ public class AdminOrderController {
   }
 
   @PostMapping("/{id}/manual-payment/confirm")
-  public ManualQrPaymentService.ManualPaymentResponse confirmManualPayment(
+  public ManualPaymentResponse confirmManualPayment(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return manualQrPaymentService.confirmPayment(
         authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id);
   }
 
   @PostMapping("/{id}/manual-payment/reject")
-  public ManualQrPaymentService.ManualPaymentResponse rejectManualPayment(
+  public ManualPaymentResponse rejectManualPayment(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody RejectManualPaymentRequest request) {
@@ -98,7 +126,7 @@ public class AdminOrderController {
   }
 
   @PostMapping("/{id}/courier-settlement/confirm")
-  public ManualQrPaymentService.ManualPaymentResponse confirmCourierSettlement(
+  public ManualPaymentResponse confirmCourierSettlement(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return manualQrPaymentService.confirmCourierSettlement(
         authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id);

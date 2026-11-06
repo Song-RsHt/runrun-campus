@@ -1,11 +1,25 @@
 package com.zhangxuan.runruncampus.controller.feedback;
 
 import com.zhangxuan.runruncampus.dto.request.feedback.CreateFeedbackRequest;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.feedback.FeedbackService;
+import com.zhangxuan.runruncampus.service.feedback.FeedbackService.FeedbackResponse;
 import jakarta.validation.Valid;
 import java.util.List;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/feedback")
@@ -21,13 +35,13 @@ public class FeedbackController {
   }
 
   @GetMapping
-  public List<FeedbackService.FeedbackResponse> list(
+  public List<FeedbackResponse> list(
       @RequestHeader("Authorization") String authorization) {
     return feedbackService.list(authService.requireUser(authorization));
   }
 
   @PostMapping
-  public FeedbackService.FeedbackResponse submit(
+  public FeedbackResponse submit(
       @RequestHeader("Authorization") String authorization,
       @Valid @RequestBody CreateFeedbackRequest request) {
     return feedbackService.submit(

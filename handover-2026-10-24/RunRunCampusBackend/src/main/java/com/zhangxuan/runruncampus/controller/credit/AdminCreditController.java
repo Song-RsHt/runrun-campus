@@ -4,8 +4,12 @@ import com.zhangxuan.runruncampus.dto.request.credit.AdjustmentRequest;
 import com.zhangxuan.runruncampus.dto.request.credit.ReasonRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.credit.CreditService;
+import com.zhangxuan.runruncampus.service.credit.CreditService.ChangeResponse;
+import com.zhangxuan.runruncampus.service.credit.CreditService.ProfileResponse;
+import com.zhangxuan.runruncampus.service.credit.CreditService.SignalItem;
+import com.zhangxuan.runruncampus.service.credit.CreditService.SignalPage;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -18,6 +22,26 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Validated
 @RestController
@@ -34,7 +58,7 @@ public class AdminCreditController {
   }
 
   @GetMapping("/users/{id}/credit")
-  public CreditService.ProfileResponse profile(
+  public ProfileResponse profile(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -44,7 +68,7 @@ public class AdminCreditController {
   }
 
   @PostMapping("/users/{id}/credit/adjustments")
-  public CreditService.ChangeResponse adjust(
+  public ChangeResponse adjust(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody AdjustmentRequest request) {
@@ -56,7 +80,7 @@ public class AdminCreditController {
   }
 
   @PostMapping("/users/{id}/credit/events/{eventId}/reversal")
-  public CreditService.ChangeResponse reverse(
+  public ChangeResponse reverse(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @PathVariable Long eventId,
@@ -69,7 +93,7 @@ public class AdminCreditController {
   }
 
   @GetMapping("/risk-signals")
-  public CreditService.SignalPage signals(
+  public SignalPage signals(
       @RequestHeader("Authorization") String authorization,
       @RequestParam(required = false) RiskSignalStatus status,
       @RequestParam(defaultValue = "0") @Min(0) int page,
@@ -79,7 +103,7 @@ public class AdminCreditController {
   }
 
   @PostMapping("/risk-signals/{id}/confirm")
-  public CreditService.ChangeResponse confirm(
+  public ChangeResponse confirm(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody AdjustmentRequest request) {
@@ -91,7 +115,7 @@ public class AdminCreditController {
   }
 
   @PostMapping("/risk-signals/{id}/dismiss")
-  public CreditService.SignalItem dismiss(
+  public SignalItem dismiss(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody ReasonRequest request) {

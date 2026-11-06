@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.repository.order;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.LockModeType;
 import java.time.Instant;
 import java.util.List;
@@ -14,6 +14,22 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public interface OrderRepository extends JpaRepository<CampusOrder, Long> {
 

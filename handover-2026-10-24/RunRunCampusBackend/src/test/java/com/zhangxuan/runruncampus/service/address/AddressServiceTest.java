@@ -1,17 +1,11 @@
 package com.zhangxuan.runruncampus.service.address;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.address.UserAddress;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.address.AddressRepository;
+import com.zhangxuan.runruncampus.service.address.AddressService.AddressResponse;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +16,36 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AddressServiceTest {
@@ -44,7 +68,7 @@ class AddressServiceTest {
         .thenReturn(List.of());
     when(addressRepository.save(any(UserAddress.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    AddressService.AddressResponse response =
+    AddressResponse response =
         addressService.create(customer, "宿舍", "3号楼 205", false);
     assertTrue(response.defaultAddress());
   }
@@ -55,7 +79,7 @@ class AddressServiceTest {
         .thenReturn(List.of());
     when(addressRepository.save(any(UserAddress.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    AddressService.AddressResponse response =
+    AddressResponse response =
         addressService.create(customer, "宿舍", "梅园字样但属于其他区域", DeliveryZone.STANDARD, false);
     assertEquals(DeliveryZone.STANDARD, response.deliveryZone());
   }
@@ -69,7 +93,7 @@ class AddressServiceTest {
         .thenReturn(List.of(previous, next));
     when(addressRepository.save(any(UserAddress.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    AddressService.AddressResponse response = addressService.setDefault(customer, 12L);
+    AddressResponse response = addressService.setDefault(customer, 12L);
     assertFalse(previous.isDefaultAddress());
     assertTrue(response.defaultAddress());
   }

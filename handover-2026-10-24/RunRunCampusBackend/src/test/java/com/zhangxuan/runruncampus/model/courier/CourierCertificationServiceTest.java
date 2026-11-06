@@ -1,21 +1,16 @@
 package com.zhangxuan.runruncampus.model.courier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService.CertificationResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +21,40 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class CourierCertificationServiceTest {
@@ -54,7 +83,7 @@ class CourierCertificationServiceTest {
   @Test
   void newCourierStartsNotApplied() {
     when(certificationRepository.findByCourier(courier)).thenReturn(Optional.empty());
-    CourierCertificationService.CertificationResponse response =
+    CertificationResponse response =
         certificationService.overview(courier);
     assertEquals(CourierCertificationStatus.NOT_APPLIED, response.status());
     assertFalse(response.approved());
@@ -70,7 +99,7 @@ class CourierCertificationServiceTest {
               ReflectionTestUtils.setField(application, "id", 11L);
               return application;
             });
-    CourierCertificationService.CertificationResponse response =
+    CertificationResponse response =
         certificationService.submit(courier);
     assertEquals(11L, response.id());
     assertEquals(null, response.realName());
@@ -86,7 +115,7 @@ class CourierCertificationServiceTest {
     CourierCertification application = application(11L);
     application.attachSubmittedPhoto("card-test.jpg", "image/jpeg");
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-    CourierCertificationService.CertificationResponse response =
+    CertificationResponse response =
         certificationService.approve(admin, 11L);
     assertEquals(CourierCertificationStatus.APPROVED, response.status());
     assertTrue(response.approved());
@@ -107,10 +136,10 @@ class CourierCertificationServiceTest {
   @Test
   void legacyExpiryDoesNotBlockPhotoOnlyApproval() {
     CourierCertification application = application(11L);
-    application.declareValidity(LocalDate.now(java.time.ZoneId.of("Asia/Shanghai")).minusDays(1));
+    application.declareValidity(LocalDate.now(ZoneId.of("Asia/Shanghai")).minusDays(1));
     application.attachSubmittedPhoto("card-test.jpg", "image/jpeg");
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-    CourierCertificationService.CertificationResponse response =
+    CertificationResponse response =
         certificationService.approve(admin, 11L);
     assertEquals(CourierCertificationStatus.APPROVED, response.status());
     assertEquals(null, response.approvedValidUntil());
@@ -145,7 +174,7 @@ class CourierCertificationServiceTest {
   @Test
   void legacyExpiryNoLongerRevokesEligibility() {
     CourierCertification application = application(11L);
-    application.declareValidity(LocalDate.now(java.time.ZoneId.of("Asia/Shanghai")).minusDays(1));
+    application.declareValidity(LocalDate.now(ZoneId.of("Asia/Shanghai")).minusDays(1));
     application.attachSubmittedPhoto("expired-card.jpg", "image/jpeg");
     application.approve(admin);
     when(certificationRepository.findByCourier(courier)).thenReturn(Optional.of(application));
@@ -174,7 +203,7 @@ class CourierCertificationServiceTest {
   void adminCanRejectPendingApplication() {
     CourierCertification application = application(11L);
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-    CourierCertificationService.CertificationResponse response =
+    CertificationResponse response =
         certificationService.reject(admin, 11L, "  学号信息不完整  ");
     assertEquals(CourierCertificationStatus.REJECTED, response.status());
     assertEquals("学号信息不完整", response.rejectionReason());
@@ -187,7 +216,7 @@ class CourierCertificationServiceTest {
     application.attachSubmittedPhoto("rejected-card.jpg", "image/jpeg");
     application.reject(admin, "资料不完整");
     when(certificationRepository.findLockedByCourier(courier)).thenReturn(Optional.of(application));
-    CourierCertificationService.CertificationResponse response =
+    CertificationResponse response =
         certificationService.submit(courier);
     assertEquals(CourierCertificationStatus.PENDING, response.status());
     assertEquals(null, response.realName());

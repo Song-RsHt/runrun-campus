@@ -2,8 +2,10 @@ package com.zhangxuan.runruncampus.controller.admin;
 
 import com.zhangxuan.runruncampus.dto.request.admin.dispatch.DispatchRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.admin.AdminDispatchService.Candidates;
+import com.zhangxuan.runruncampus.service.admin.AdminDispatchService.DispatchResult;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,21 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/admin/orders")
@@ -28,7 +45,7 @@ public class AdminDispatchController {
   }
 
   @GetMapping("/{id}/dispatch-candidates")
-  public AdminDispatchService.Candidates candidates(
+  public Candidates candidates(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @RequestParam(defaultValue = "0") int page) {
@@ -37,7 +54,7 @@ public class AdminDispatchController {
   }
 
   @PostMapping("/{id}/dispatch")
-  public AdminDispatchService.DispatchResult dispatch(
+  public DispatchResult dispatch(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody DispatchRequest request) {

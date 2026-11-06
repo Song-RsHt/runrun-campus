@@ -1,17 +1,17 @@
 package com.zhangxuan.runruncampus.service.admin;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.mapper.admin.AdminDispatchMapper;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderEvent;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
@@ -20,10 +20,37 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** 保留 legacy 派单资格、推荐排名及审计规则。Mapper 返回骑手原始事实，在线时长及推荐策略在本层计算。 */
 @Service
@@ -120,7 +147,7 @@ public class AdminDispatchService {
                           averageRating,
                           ratingCount));
                 })
-            .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+            .collect(Collectors.toCollection(ArrayList::new));
     ranked.sort(
         Comparator.comparingInt(Candidate::recommendationScore)
             .reversed()

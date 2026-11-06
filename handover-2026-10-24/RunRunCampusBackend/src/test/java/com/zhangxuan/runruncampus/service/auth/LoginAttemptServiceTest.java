@@ -1,20 +1,39 @@
 package com.zhangxuan.runruncampus.service.auth;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.when;
-
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.service.LoginAttemptService;
+import com.zhangxuan.runruncampus.service.impl.LoginAttemptServiceImpl;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class LoginAttemptServiceTest {
@@ -27,10 +46,10 @@ class LoginAttemptServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new LoginAttemptService(userRepository, 5, 15);
+    service = new LoginAttemptServiceImpl(userRepository, 5, 15);
     user = new AppUser("13800000001", "hash", "测试用户", UserRole.CUSTOMER);
     ReflectionTestUtils.setField(user, "id", 1L);
-    org.mockito.Mockito.lenient()
+    Mockito.lenient()
         .when(userRepository.findLockedById(1L))
         .thenReturn(Optional.of(user));
   }

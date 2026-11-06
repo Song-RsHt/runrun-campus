@@ -4,8 +4,8 @@ import com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest;
 import com.zhangxuan.runruncampus.dto.response.provenance.Entry;
 import com.zhangxuan.runruncampus.dto.response.provenance.Summary;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.admin.FulfillmentProvenanceService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +15,23 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/admin/fulfillment-provenance")

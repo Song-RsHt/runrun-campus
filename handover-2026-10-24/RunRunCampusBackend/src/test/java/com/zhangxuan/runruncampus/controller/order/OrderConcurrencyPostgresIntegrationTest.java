@@ -1,48 +1,106 @@
 package com.zhangxuan.runruncampus.controller.order;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.Session;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.auth.Session;
 import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
 import com.zhangxuan.runruncampus.model.membership.UserMembership;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderEvent;
 import com.zhangxuan.runruncampus.model.payment.WechatPayment;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
+import com.zhangxuan.runruncampus.repository.SessionRepository;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository;
 import com.zhangxuan.runruncampus.repository.membership.UserMembershipRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository.CourierBusinessStats;
 import com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.IntFunction;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+    webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = "app.proof-storage.local-directory=target/test-order-proofs")
 @ActiveProfiles("test")
 @Testcontainers
@@ -382,7 +440,7 @@ class OrderConcurrencyPostgresIntegrationTest {
             + " 'COMPLETED', ?, ?)",
         id,
         courier.user().getId());
-    OrderRepository.CourierBusinessStats stats =
+    CourierBusinessStats stats =
         orders.businessStatsForCourier(courier.user(), Instant.now().minusSeconds(60));
     assertEquals(1L, stats.getTodayCompletedOrders());
     assertEquals(1L, stats.getTotalCompletedOrders());
@@ -597,7 +655,7 @@ class OrderConcurrencyPostgresIntegrationTest {
     String token = UUID.randomUUID().toString();
     Session session = new Session(token, user, Instant.now().plusSeconds(3600));
     if (role == UserRole.ADMIN) {
-      org.springframework.test.util.ReflectionTestUtils.setField(session, "adminMfaVerified", true);
+      ReflectionTestUtils.setField(session, "adminMfaVerified", true);
     }
     sessions.saveAndFlush(session);
     return new Account(user, token);

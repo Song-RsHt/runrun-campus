@@ -1,5 +1,28 @@
 package com.zhangxuan.runruncampus.service.order;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
+import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.order.OrderIssue;
+import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.order.OrderIssueService.IssueResponse;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,26 +32,36 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.order.OrderIssue;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class OrderIssueServiceTest {
@@ -59,7 +92,7 @@ class OrderIssueServiceTest {
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(issueRepository.save(any(OrderIssue.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    OrderIssueService.IssueResponse response =
+    IssueResponse response =
         issueService.create(customer, 11L, OrderIssueType.MISSING_ITEM, "少了一份米饭");
     assertEquals(OrderIssueType.MISSING_ITEM, response.type());
     assertEquals("少了一份米饭", response.description());
@@ -73,7 +106,7 @@ class OrderIssueServiceTest {
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(issueRepository.save(any(OrderIssue.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    OrderIssueService.IssueResponse response =
+    IssueResponse response =
         issueService.create(courier, 11L, OrderIssueType.CANNOT_CONTACT, "无法联系收餐人");
     assertEquals(UserRole.COURIER, response.reporterRole());
     verify(messageService)
@@ -112,7 +145,7 @@ class OrderIssueServiceTest {
             ResponseStatusException.class,
             () -> issueService.create(customer, 11L, OrderIssueType.CANNOT_CONTACT, "仍然联系不上对方"));
     assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
-    verify(issueRepository, org.mockito.Mockito.never()).save(any());
+    verify(issueRepository, Mockito.never()).save(any());
   }
 
   @Test
@@ -123,7 +156,7 @@ class OrderIssueServiceTest {
     issue.resolve("已与用户联系并处理");
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
     when(issueRepository.findByOrderOrderByCreatedAtAsc(order))
-        .thenReturn(java.util.List.of(issue));
+        .thenReturn(List.of(issue));
     var result = issueService.list(customer, 11L).get(0);
     assertEquals(OrderIssueHandlingStatus.RESOLVED, result.handlingStatus());
     assertEquals("已与用户联系并处理", result.resolution());

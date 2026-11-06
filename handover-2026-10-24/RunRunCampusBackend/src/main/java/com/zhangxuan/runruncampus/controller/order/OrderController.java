@@ -17,20 +17,68 @@ import com.zhangxuan.runruncampus.dto.response.order.OrderEventResponse;
 import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
 import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.order.CourierReassignmentService;
+import com.zhangxuan.runruncampus.service.order.CourierReassignmentService.ReleaseResponse;
 import com.zhangxuan.runruncampus.service.order.OrderChatService;
+import com.zhangxuan.runruncampus.service.order.OrderChatService.ChatResponse;
+import com.zhangxuan.runruncampus.service.order.OrderChatService.UnreadSummaryResponse;
 import com.zhangxuan.runruncampus.service.order.OrderIssueService;
+import com.zhangxuan.runruncampus.service.order.OrderIssueService.IssueResponse;
 import com.zhangxuan.runruncampus.service.order.OrderProofService;
+import com.zhangxuan.runruncampus.service.order.OrderProofService.ProofResponse;
 import com.zhangxuan.runruncampus.service.order.OrderService;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
+import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService.ManualPaymentResponse;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -91,9 +139,9 @@ public class OrderController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false) OrderStatus status,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE)
           LocalDate startDate,
-      @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+      @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE)
           LocalDate endDate) {
     return orderService.mineHistory(
         authService.requireUser(authorization), page, size, status, startDate, endDate);
@@ -137,7 +185,7 @@ public class OrderController {
   }
 
   @PostMapping("/{id}/unable")
-  public CourierReassignmentService.ReleaseResponse reportUnable(
+  public ReleaseResponse reportUnable(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody UnableRequest request) {
@@ -152,7 +200,7 @@ public class OrderController {
   }
 
   @PostMapping(value = "/{id}/proofs/{type}", consumes = "multipart/form-data")
-  public OrderProofService.ProofResponse uploadProof(
+  public ProofResponse uploadProof(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @PathVariable OrderProofType type,
@@ -187,13 +235,13 @@ public class OrderController {
   }
 
   @PostMapping("/{id}/manual-payment/request")
-  public ManualQrPaymentService.ManualPaymentResponse requestManualPayment(
+  public ManualPaymentResponse requestManualPayment(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return manualQrPaymentService.requestPayment(authService.requireUser(authorization), id);
   }
 
   @PostMapping("/{id}/manual-payment/submit")
-  public ManualQrPaymentService.ManualPaymentResponse submitManualPayment(
+  public ManualPaymentResponse submitManualPayment(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody SubmitManualPaymentRequest request) {
@@ -202,7 +250,7 @@ public class OrderController {
   }
 
   @GetMapping("/{id}/manual-payment")
-  public ManualQrPaymentService.ManualPaymentResponse manualPaymentStatus(
+  public ManualPaymentResponse manualPaymentStatus(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return manualQrPaymentService.status(authService.requireUser(authorization), id);
   }
@@ -235,25 +283,25 @@ public class OrderController {
   }
 
   @GetMapping("/{id}/issues")
-  public List<OrderIssueService.IssueResponse> issues(
+  public List<IssueResponse> issues(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return issueService.list(authService.requireUser(authorization), id);
   }
 
   @GetMapping("/{id}/chat")
-  public List<OrderChatService.ChatResponse> chat(
+  public List<ChatResponse> chat(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return chatService.list(authService.requireUser(authorization), id);
   }
 
   @GetMapping("/chat/unread")
-  public OrderChatService.UnreadSummaryResponse unreadChat(
+  public UnreadSummaryResponse unreadChat(
       @RequestHeader("Authorization") String authorization) {
     return chatService.unread(authService.requireUser(authorization));
   }
 
   @PostMapping("/{id}/chat")
-  public OrderChatService.ChatResponse sendChat(
+  public ChatResponse sendChat(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody ChatRequest request) {
@@ -261,7 +309,7 @@ public class OrderController {
   }
 
   @PostMapping("/{id}/issues")
-  public OrderIssueService.IssueResponse createIssue(
+  public IssueResponse createIssue(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody CreateIssueRequest request) {

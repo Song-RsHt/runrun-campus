@@ -1,20 +1,13 @@
 package com.zhangxuan.runruncampus.service.membership;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.membership.UserMembership;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.membership.UserMembershipRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.service.membership.MembershipService.ActiveMembershipResponse;
+import com.zhangxuan.runruncampus.service.membership.MembershipService.MembershipApplication;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +18,41 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class MembershipServiceTest {
@@ -50,7 +78,7 @@ class MembershipServiceTest {
         .thenReturn(Optional.empty());
     when(membershipRepository.save(any(UserMembership.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    MembershipService.ActiveMembershipResponse response =
+    ActiveMembershipResponse response =
         membershipService.purchase(customer, MembershipPlanType.STUDENT);
     assertEquals("学生月卡", response.planTitle());
     assertEquals(20, response.totalTrips());
@@ -77,7 +105,7 @@ class MembershipServiceTest {
     ReflectionTestUtils.setField(active, "id", 41L);
     when(membershipRepository.findActiveLocked(eq(customer), any(Instant.class)))
         .thenReturn(Optional.of(active));
-    MembershipService.MembershipApplication application = membershipService.apply(customer, true);
+    MembershipApplication application = membershipService.apply(customer, true);
     assertTrue(application.used());
     assertEquals(41L, application.membershipId());
     assertEquals("学生月卡", application.planTitle());
@@ -107,7 +135,7 @@ class MembershipServiceTest {
 
   @Test
   void orderWithoutMembershipDoesNotAccessRepository() {
-    MembershipService.MembershipApplication application = membershipService.apply(customer, false);
+    MembershipApplication application = membershipService.apply(customer, false);
     assertFalse(application.used());
     verifyNoInteractions(membershipRepository, userRepository);
   }

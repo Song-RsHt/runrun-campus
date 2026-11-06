@@ -1,5 +1,34 @@
 package com.zhangxuan.runruncampus.service.admin;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
+import com.zhangxuan.runruncampus.enums.order.OrderStatus;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.mapper.admin.AdminDispatchMapper;
+import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,32 +39,43 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.mapper.admin.AdminDispatchMapper;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.settings.Settings;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
-import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import java.util.Optional;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminDispatchServiceTest {
@@ -76,11 +116,11 @@ class AdminDispatchServiceTest {
             audit,
             settings,
             certifications);
-    org.mockito.Mockito.lenient()
+    Mockito.lenient()
         .when(settings.get())
         .thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
-    org.mockito.Mockito.lenient()
-        .when(certifications.isEligible(org.mockito.ArgumentMatchers.any(AppUser.class)))
+    Mockito.lenient()
+        .when(certifications.isEligible(ArgumentMatchers.any(AppUser.class)))
         .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
     administrator = user(1L, UserRole.ADMIN, "运营一号");
     customer = user(2L, UserRole.CUSTOMER, "用户一号");
@@ -156,7 +196,7 @@ class AdminDispatchServiceTest {
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
     when(users.findLockedById(3L)).thenReturn(Optional.of(courier));
     when(orders.countByCourierAndStatusIn(
-            courier, java.util.List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
+            courier, List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
         .thenReturn(2L);
     when(settings.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
     ResponseStatusException failure =

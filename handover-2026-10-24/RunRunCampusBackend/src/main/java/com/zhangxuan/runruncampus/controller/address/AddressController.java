@@ -1,12 +1,31 @@
 package com.zhangxuan.runruncampus.controller.address;
 
 import com.zhangxuan.runruncampus.dto.request.address.AddressRequest;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.address.AddressService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.service.address.AddressService.AddressResponse;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/addresses")
@@ -22,13 +41,13 @@ public class AddressController {
   }
 
   @GetMapping
-  public List<AddressService.AddressResponse> list(
+  public List<AddressResponse> list(
       @RequestHeader("Authorization") String authorization) {
     return addressService.list(authService.requireUser(authorization));
   }
 
   @PostMapping
-  public AddressService.AddressResponse create(
+  public AddressResponse create(
       @RequestHeader("Authorization") String authorization,
       @Valid @RequestBody AddressRequest request) {
     return addressService.create(
@@ -40,7 +59,7 @@ public class AddressController {
   }
 
   @PutMapping("/{id}")
-  public AddressService.AddressResponse update(
+  public AddressResponse update(
       @RequestHeader("Authorization") String authorization,
       @PathVariable Long id,
       @Valid @RequestBody AddressRequest request) {
@@ -54,7 +73,7 @@ public class AddressController {
   }
 
   @PostMapping("/{id}/default")
-  public AddressService.AddressResponse setDefault(
+  public AddressResponse setDefault(
       @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     return addressService.setDefault(authService.requireUser(authorization), id);
   }

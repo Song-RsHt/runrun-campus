@@ -1,19 +1,12 @@
 package com.zhangxuan.runruncampus.service.feedback;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.feedback.UserFeedback;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository;
+import com.zhangxuan.runruncampus.service.feedback.FeedbackService.FeedbackResponse;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +16,38 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
@@ -48,7 +73,7 @@ class FeedbackServiceTest {
               ReflectionTestUtils.setField(feedback, "id", 11L);
               return feedback;
             });
-    FeedbackService.FeedbackResponse response =
+    FeedbackResponse response =
         feedbackService.submit(user, FeedbackType.FUNCTION, "  希望增加深色模式  ");
     assertEquals(11L, response.id());
     assertEquals(FeedbackType.FUNCTION, response.type());
@@ -61,7 +86,7 @@ class FeedbackServiceTest {
     UserFeedback feedback = new UserFeedback(user, FeedbackType.ACCOUNT, "账号问题");
     ReflectionTestUtils.setField(feedback, "id", 12L);
     when(feedbackRepository.findByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(feedback));
-    List<FeedbackService.FeedbackResponse> responses = feedbackService.list(user);
+    List<FeedbackResponse> responses = feedbackService.list(user);
     assertEquals(1, responses.size());
     assertEquals(12L, responses.get(0).id());
     verify(feedbackRepository).findByUserOrderByCreatedAtDesc(user);
@@ -74,7 +99,7 @@ class FeedbackServiceTest {
     feedback.claim(admin);
     feedback.resolve("已核对支付记录，款项未扣除");
     when(feedbackRepository.findByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(feedback));
-    FeedbackService.FeedbackResponse response = feedbackService.list(user).get(0);
+    FeedbackResponse response = feedbackService.list(user).get(0);
     assertEquals(FeedbackHandlingStatus.RESOLVED, response.handlingStatus());
     assertEquals("已核对支付记录，款项未扣除", response.resolution());
     assertNotNull(response.handledAt());

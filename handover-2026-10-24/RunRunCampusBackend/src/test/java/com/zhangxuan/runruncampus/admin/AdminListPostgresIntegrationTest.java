@@ -1,27 +1,22 @@
 package com.zhangxuan.runruncampus.admin;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderItem;
 import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPageResponse;
 import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderEvent;
 import com.zhangxuan.runruncampus.model.order.OrderProof;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.admin.AdminAuditLogRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.admin.AdminCourierService;
 import com.zhangxuan.runruncampus.service.admin.AdminFeedbackService;
@@ -31,10 +26,13 @@ import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.admin.AdminUserService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -42,9 +40,57 @@ import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.NONE,
+    webEnvironment = WebEnvironment.NONE,
     properties = "app.proof-storage.local-directory=target/test-order-proofs")
 @ActiveProfiles("test")
 @Testcontainers
@@ -126,7 +172,7 @@ class AdminListPostgresIntegrationTest {
     CampusOrder accepted =
         order("COUNT-TEST-4", customer, courier, ServiceType.PACKAGE_MEDIUM_LARGE);
     orderRepository.saveAllAndFlush(
-        java.util.List.of(firstCompleted, secondCompleted, thirdCompleted, accepted));
+        List.of(firstCompleted, secondCompleted, thirdCompleted, accepted));
     orderEventRepository.saveAndFlush(
         new OrderEvent(secondCompleted, courier, OrderStatus.COMPLETED));
     orderEventRepository.saveAndFlush(
@@ -152,7 +198,7 @@ class AdminListPostgresIntegrationTest {
         Set.of("COUNT-TEST-2", "COUNT-TEST-3", "COUNT-TEST-4"),
         performance.orders().items().stream()
             .map(AdminCourierOrderItem::orderNo)
-            .collect(java.util.stream.Collectors.toSet()));
+            .collect(Collectors.toSet()));
   }
 
   @Test

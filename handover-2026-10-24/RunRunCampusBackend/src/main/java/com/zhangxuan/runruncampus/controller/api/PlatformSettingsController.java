@@ -3,10 +3,24 @@ package com.zhangxuan.runruncampus.controller.api;
 import com.zhangxuan.runruncampus.dto.request.api.platformsettings.UpdateRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/api/v1/admin/platform-settings")

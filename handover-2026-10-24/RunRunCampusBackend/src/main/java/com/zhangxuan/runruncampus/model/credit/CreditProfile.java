@@ -1,13 +1,23 @@
 package com.zhangxuan.runruncampus.model.credit;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import java.time.Instant;
+
+
+
+
+
+
+
+
+
+
 
 @Entity
 @Table(name = "credit_profiles")

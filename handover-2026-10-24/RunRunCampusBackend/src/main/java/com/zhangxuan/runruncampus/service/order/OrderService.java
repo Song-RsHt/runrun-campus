@@ -13,6 +13,8 @@ import com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse;
 import com.zhangxuan.runruncampus.dto.response.order.MineOrderPage;
 import com.zhangxuan.runruncampus.dto.response.order.OrderEventResponse;
 import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
@@ -21,18 +23,18 @@ import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.PickupStation;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderEvent;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.coupon.CouponService;
+import com.zhangxuan.runruncampus.service.coupon.CouponService.CouponApplication;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.membership.MembershipService;
+import com.zhangxuan.runruncampus.service.membership.MembershipService.MembershipApplication;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import java.nio.charset.StandardCharsets;
@@ -43,14 +45,70 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** legacy 订单业务边界，保留原 JPA 事务和锁顺序，请求与响应通过独立 DTO 表达。 保留旧行为仅避免重构回归，不表示授权 v2 使用旧接口。 */
 @Service
@@ -158,13 +216,13 @@ public class OrderService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "取件点不支持当前服务方式");
     }
     int originalFeeCents = request.serviceType().getFeeCents(deliveryZone);
-    MembershipService.MembershipApplication membership =
+    MembershipApplication membership =
         request.useMembership()
             ? membershipService.apply(customer, true)
-            : new MembershipService.MembershipApplication(false, null);
-    CouponService.CouponApplication coupon =
+            : new MembershipApplication(false, null);
+    CouponApplication coupon =
         membership.used()
-            ? new CouponService.CouponApplication(0, null)
+            ? new CouponApplication(0, null)
             : couponService.apply(customer, request.couponId(), originalFeeCents);
     int discountCents =
         membership.used() ? Math.min(originalFeeCents, 200) : coupon.discountCents();
@@ -223,7 +281,7 @@ public class OrderService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "历史订单页码或每页数量超出范围");
     }
     PageRequest pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id")));
+        PageRequest.of(page, size, Sort.by(Order.desc("createdAt"), Order.desc("id")));
     Page<CampusOrder> orders =
         user.getRole() == UserRole.COURIER
             ? orderRepository.findByCourierAndStatusIn(user, HISTORY_STATUSES, pageable)
@@ -265,7 +323,7 @@ public class OrderService {
         hasEnd ? endDate.plusDays(1).atStartOfDay(zone).toInstant() : Instant.EPOCH;
     List<OrderStatus> statuses = status == null ? HISTORY_STATUSES : List.of(status);
     PageRequest pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Order.desc("createdAt"), Sort.Order.desc("id")));
+        PageRequest.of(page, size, Sort.by(Order.desc("createdAt"), Order.desc("id")));
     Page<CampusOrder> orders =
         user.getRole() == UserRole.COURIER
             ? orderRepository.findHistoryByCourier(
@@ -646,7 +704,7 @@ public class OrderService {
   }
 
   private String nextOrderNo() {
-    return "RP-" + String.format(java.util.Locale.ROOT, "%020d", orderRepository.nextOrderNumber());
+    return "RP-" + String.format(Locale.ROOT, "%020d", orderRepository.nextOrderNumber());
   }
 
   private String requestFingerprint(CreateOrderRequest request) {
@@ -710,7 +768,7 @@ public class OrderService {
         order.getRatingScore(),
         order.getRatingComment(),
         order.getRatedAt(),
-        java.util.Optional.ofNullable(paymentService.refundsForOrder(order)).orElse(List.of()),
+        Optional.ofNullable(paymentService.refundsForOrder(order)).orElse(List.of()),
         order.getCreatedAt(),
         order.getUpdatedAt());
   }

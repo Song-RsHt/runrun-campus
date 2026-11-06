@@ -1,27 +1,21 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailResponse;
 import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.admin.AdminOrderService.OrderExport;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,9 +26,54 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminOrderServiceTest {
@@ -58,7 +97,7 @@ class AdminOrderServiceTest {
   @Test
   void listsOrdersWithTrimmedQueryAndStablePagination() {
     CampusOrder order = order();
-    PageRequest request = PageRequest.of(1, 10, Sort.by(Sort.Direction.DESC, "createdAt"));
+    PageRequest request = PageRequest.of(1, 10, Sort.by(Direction.DESC, "createdAt"));
     when(orderRepository.searchForAdmin(
             eq("RP-001"), eq(OrderStatus.PENDING_ASSIGNMENT), eq(false), any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(order), request, 11));
@@ -75,7 +114,7 @@ class AdminOrderServiceTest {
         .searchForAdmin(
             eq("RP-001"), eq(OrderStatus.PENDING_ASSIGNMENT), eq(false), pageable.capture());
     assertEquals(
-        Sort.Direction.DESC, pageable.getValue().getSort().getOrderFor("createdAt").getDirection());
+        Direction.DESC, pageable.getValue().getSort().getOrderFor("createdAt").getDirection());
   }
 
   @Test
@@ -116,18 +155,18 @@ class AdminOrderServiceTest {
     ReflectionTestUtils.setField(order, "merchant", "=SUM(1,1)");
     PageRequest request =
         PageRequest.of(
-            0, AdminOrderService.EXPORT_LIMIT, Sort.by(Sort.Direction.DESC, "createdAt"));
+            0, AdminOrderService.EXPORT_LIMIT, Sort.by(Direction.DESC, "createdAt"));
     when(orderRepository.filterForAdmin(eq(null), eq(false), any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(order), request, 1));
-    AdminOrderService.OrderExport export = service.exportCsv(null, null, false);
+    OrderExport export = service.exportCsv(null, null, false);
     byte[] content = export.content();
     String csv = new String(content, 3, content.length - 3, StandardCharsets.UTF_8);
     assertEquals((byte) 0xEF, content[0]);
     assertEquals((byte) 0xBB, content[1]);
     assertEquals((byte) 0xBF, content[2]);
     assertEquals(false, export.truncated());
-    org.junit.jupiter.api.Assertions.assertTrue(csv.contains("\"'=SUM(1,1)\""));
-    org.junit.jupiter.api.Assertions.assertTrue(csv.startsWith("订单号,状态,服务类型"));
+    Assertions.assertTrue(csv.contains("\"'=SUM(1,1)\""));
+    Assertions.assertTrue(csv.startsWith("订单号,状态,服务类型"));
   }
 
   private CampusOrder order() {

@@ -1,25 +1,20 @@
 package com.zhangxuan.runruncampus.controller.order;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
 import com.zhangxuan.runruncampus.dto.request.order.LocationUpdateRequest;
 import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.coupon.CouponService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
@@ -33,12 +28,60 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class OrderAuthorizationTest {
@@ -79,14 +122,14 @@ class OrderAuthorizationTest {
             messageService,
             couponService,
             membershipService,
-            org.mockito.Mockito.mock(UserRepository.class),
-            new com.fasterxml.jackson.databind.ObjectMapper(),
+            Mockito.mock(UserRepository.class),
+            new ObjectMapper(),
             paymentService,
-            org.mockito.Mockito.mock(PlatformSettingsService.class),
+            Mockito.mock(PlatformSettingsService.class),
             certificationService,
             new ManualQrPaymentProperties(false));
-    org.mockito.Mockito.lenient()
-        .when(certificationService.isEligible(org.mockito.ArgumentMatchers.any(AppUser.class)))
+    Mockito.lenient()
+        .when(certificationService.isEligible(ArgumentMatchers.any(AppUser.class)))
         .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
     customer = user(1L, UserRole.CUSTOMER);
     courier = user(2L, UserRole.COURIER);

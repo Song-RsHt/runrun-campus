@@ -1,10 +1,10 @@
 package com.zhangxuan.runruncampus.repository.payment;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.payment.WechatPayment;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +12,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public interface WechatPaymentRepository extends JpaRepository<WechatPayment, Long> {
 

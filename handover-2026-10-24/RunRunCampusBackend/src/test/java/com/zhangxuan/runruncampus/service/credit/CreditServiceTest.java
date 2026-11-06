@@ -1,27 +1,18 @@
 package com.zhangxuan.runruncampus.service.credit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.credit.CreditEventType;
 import com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel;
 import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
 import com.zhangxuan.runruncampus.enums.credit.RiskSignalType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.credit.CreditEvent;
 import com.zhangxuan.runruncampus.model.credit.CreditProfile;
 import com.zhangxuan.runruncampus.model.credit.RiskSignal;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.credit.CreditEventRepository;
 import com.zhangxuan.runruncampus.repository.credit.CreditProfileRepository;
 import com.zhangxuan.runruncampus.repository.credit.RiskSignalRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +24,49 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class CreditServiceTest {

@@ -1,9 +1,9 @@
 package com.zhangxuan.runruncampus.repository.feedback;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
 import com.zhangxuan.runruncampus.model.feedback.UserFeedback;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +13,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public interface FeedbackRepository extends JpaRepository<UserFeedback, Long> {
 

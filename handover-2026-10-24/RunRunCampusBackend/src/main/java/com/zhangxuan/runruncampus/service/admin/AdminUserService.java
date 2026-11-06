@@ -1,21 +1,40 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem;
-import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserPageResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.repository.SessionRepository;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.vo.AdminUserItem;
+import com.zhangxuan.runruncampus.vo.AdminUserPageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class AdminUserService {
@@ -112,7 +131,7 @@ public class AdminUserService {
   public AdminUserPageResponse list(String query, UserRole role, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
     Page<AppUser> users =
         normalizedQuery == null
             ? userRepository.filterForAdmin(role, pageable)

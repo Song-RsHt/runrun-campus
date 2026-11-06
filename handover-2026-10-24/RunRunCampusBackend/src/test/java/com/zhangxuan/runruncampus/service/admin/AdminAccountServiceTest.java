@@ -1,21 +1,14 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.zhangxuan.runruncampus.dto.response.admin.account.AdminAccountItem;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
-import com.zhangxuan.runruncampus.model.user.AppUser;
-import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.repository.SessionRepository;
+import com.zhangxuan.runruncampus.repository.UserRepository;
+import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,6 +18,41 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.server.ResponseStatusException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminAccountServiceTest {
@@ -83,7 +111,7 @@ class AdminAccountServiceTest {
   @Test
   void cannotChangeOwnRole() {
     assertThrows(
-        org.springframework.web.server.ResponseStatusException.class,
+        ResponseStatusException.class,
         () -> service.changeRole(operator, 1L, AdminRole.SUPPORT));
   }
 
@@ -106,7 +134,7 @@ class AdminAccountServiceTest {
   @Test
   void cannotSuspendOwnAccount() {
     assertThrows(
-        org.springframework.web.server.ResponseStatusException.class,
+        ResponseStatusException.class,
         () -> service.suspend(operator, 1L));
   }
 
@@ -150,7 +178,7 @@ class AdminAccountServiceTest {
     when(userRepository.findLockedById(1L)).thenReturn(Optional.of(operator));
     when(passwordEncoder.matches("wrong-password", "hash")).thenReturn(false);
     assertThrows(
-        org.springframework.web.server.ResponseStatusException.class,
+        ResponseStatusException.class,
         () -> service.changeOwnPassword(operator, "wrong-password", "new-password88"));
   }
 
@@ -181,7 +209,7 @@ class AdminAccountServiceTest {
   @Test
   void unlocksOtherAdministratorAndWritesAuditLog() {
     AppUser target = admin(2L, "锁定管理员");
-    target.recordLoginFailure(1, java.time.Instant.now().plusSeconds(900));
+    target.recordLoginFailure(1, Instant.now().plusSeconds(900));
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(target));
     AdminAccountItem unlocked = service.unlockLogin(operator, 2L);
     assertEquals(0, unlocked.failedLoginAttempts());

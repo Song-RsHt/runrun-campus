@@ -2,16 +2,31 @@ package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditItem;
 import com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditPageResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.model.admin.AdminAuditLog;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.admin.AdminAuditLogRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class AdminAuditService {
@@ -37,7 +52,7 @@ public class AdminAuditService {
   public AdminAuditPageResponse list(String query, AdminAuditAction action, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
-        PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
+        PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
     Page<AdminAuditLog> logs =
         normalizedQuery == null
             ? auditLogRepository.filter(action, pageable)

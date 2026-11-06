@@ -1,20 +1,15 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository.CourierPackagePerformanceStats;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +19,37 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class AdminCourierServiceTest {
@@ -39,8 +65,8 @@ class AdminCourierServiceTest {
     AppUser courier = mock(AppUser.class);
     AppUser customer = mock(AppUser.class);
     CampusOrder order = mock(CampusOrder.class);
-    OrderRepository.CourierPackagePerformanceStats stats =
-        mock(OrderRepository.CourierPackagePerformanceStats.class);
+    CourierPackagePerformanceStats stats =
+        mock(CourierPackagePerformanceStats.class);
     Instant createdAt = Instant.parse("2026-09-01T01:00:00Z");
     when(courier.getId()).thenReturn(9L);
     when(courier.getRole()).thenReturn(UserRole.COURIER);

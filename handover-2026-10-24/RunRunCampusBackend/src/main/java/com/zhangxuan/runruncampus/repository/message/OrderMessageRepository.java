@@ -1,9 +1,15 @@
 package com.zhangxuan.runruncampus.repository.message;
 
+import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.model.message.OrderMessage;
-import com.zhangxuan.runruncampus.model.user.AppUser;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+
+
+
+
+
 
 public interface OrderMessageRepository extends JpaRepository<OrderMessage, Long> {
 

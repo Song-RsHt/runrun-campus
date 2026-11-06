@@ -1,25 +1,24 @@
 package com.zhangxuan.runruncampus.controller.privacy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import com.zhangxuan.runruncampus.enums.auth.SessionClientType;
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.SessionClientType;
+import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.model.SessionMetadata;
 import com.zhangxuan.runruncampus.model.address.UserAddress;
 import com.zhangxuan.runruncampus.model.courier.CourierCertification;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.user.AppUser;
+import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.address.AddressRepository;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.user.UserRepository;
-import com.zhangxuan.runruncampus.service.auth.AuthService;
-import com.zhangxuan.runruncampus.service.privacy.PrivacyService;
+import com.zhangxuan.runruncampus.service.AuthService;
+import com.zhangxuan.runruncampus.service.PrivacyService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -27,9 +26,40 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @SpringBootTest(
-    webEnvironment = SpringBootTest.WebEnvironment.NONE,
+    webEnvironment = WebEnvironment.NONE,
     properties = "app.proof-storage.local-directory=target/test-privacy-proofs")
 @ActiveProfiles("test")
 @Testcontainers
@@ -67,7 +97,7 @@ class PrivacyPostgresIntegrationTest {
                 "password",
                 "下单用户",
                 UserRole.CUSTOMER,
-                new AuthService.SessionMetadata(SessionClientType.ANDROID, "test"))
+                new SessionMetadata(SessionClientType.ANDROID, "test"))
             .getUser();
     AppUser courier =
         auth.register(
@@ -75,7 +105,7 @@ class PrivacyPostgresIntegrationTest {
                 "password",
                 "注销骑手",
                 UserRole.COURIER,
-                new AuthService.SessionMetadata(SessionClientType.ANDROID, "test"))
+                new SessionMetadata(SessionClientType.ANDROID, "test"))
             .getUser();
     addresses.save(new UserAddress(courier, "宿舍", "梅园1号楼", true));
     certifications.save(new CourierCertification(courier, "真实姓名", "20260001", "无锡学院"));
@@ -114,7 +144,7 @@ class PrivacyPostgresIntegrationTest {
                 "new-password",
                 "新账号",
                 UserRole.CUSTOMER,
-                new AuthService.SessionMetadata(SessionClientType.ANDROID, "replacement"))
+                new SessionMetadata(SessionClientType.ANDROID, "replacement"))
             .getUser();
     assertEquals("13800138002", replacement.getPhone());
   }
