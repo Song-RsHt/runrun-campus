@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.OrderProofType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,26 +14,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 订单私有图片凭证持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
-@Table(name = "order_proofs", uniqueConstraints = @UniqueConstraint(name = "uk_order_proof_order_type", columnNames = { "order_id", "type" }))
+@Table(
+        name = "order_proofs",
+        uniqueConstraints =
+                @UniqueConstraint(
+                        name = "uk_order_proof_order_type",
+                        columnNames = {"order_id", "type"}))
 public class OrderProof {
 
     @Id
@@ -65,10 +57,16 @@ public class OrderProof {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    protected OrderProof() {
-    }
+    protected OrderProof() {}
 
-    public OrderProof(CampusOrder order, AppUser uploader, OrderProofType type, String storedFileName, String originalFileName, String contentType, long sizeBytes) {
+    public OrderProof(
+            CampusOrder order,
+            AppUser uploader,
+            OrderProofType type,
+            String storedFileName,
+            String originalFileName,
+            String contentType,
+            long sizeBytes) {
         this.order = order;
         this.uploader = uploader;
         this.type = type;

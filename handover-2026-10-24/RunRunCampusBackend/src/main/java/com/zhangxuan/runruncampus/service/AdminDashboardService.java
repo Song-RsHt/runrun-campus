@@ -2,25 +2,13 @@ package com.zhangxuan.runruncampus.service;
 
 import com.zhangxuan.runruncampus.vo.AdminDashboardResponse;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 业务服务契约；由实现类维护事务与并发边界。
- */
+/** 后台业务概览业务契约；实现类负责原有事务、锁与持久化协作。 */
 public interface AdminDashboardService {
 
+    /**
+     * 查询后台业务概览概览。
+     *
+     * @return 后台业务概览
+     */
     AdminDashboardResponse overview();
 }

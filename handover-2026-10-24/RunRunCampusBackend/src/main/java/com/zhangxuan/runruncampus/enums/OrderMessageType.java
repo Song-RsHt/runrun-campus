@@ -1,9 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
-
-
+/** 订单站内消息类型枚举；名称和取值沿用既有业务与协议定义。 */
 public enum OrderMessageType {
-
     ORDER_ACCEPTED,
     ORDER_PICKED_UP,
     ORDER_COMPLETED,

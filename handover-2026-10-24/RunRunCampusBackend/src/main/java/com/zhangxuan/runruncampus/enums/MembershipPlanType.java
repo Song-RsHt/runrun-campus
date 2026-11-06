@@ -1,17 +1,14 @@
 package com.zhangxuan.runruncampus.enums;
 
-
-
+/** 用户会员套餐套餐类型枚举；名称和取值沿用既有业务与协议定义。 */
 public enum MembershipPlanType {
-
-    LIGHT("轻享卡", 10, 1600, "适合偶尔点餐"), STUDENT("学生月卡", 20, 2900, "最受欢迎"), ROOMMATE("宿舍搭子", 30, 3900, "30 次大额套餐");
+    LIGHT("轻享卡", 10, 1600, "适合偶尔点餐"),
+    STUDENT("学生月卡", 20, 2900, "最受欢迎"),
+    ROOMMATE("宿舍搭子", 30, 3900, "30 次大额套餐");
 
     private final String title;
-
     private final int trips;
-
     private final int priceCents;
-
     private final String note;
 
     MembershipPlanType(String title, int trips, int priceCents, String note) {

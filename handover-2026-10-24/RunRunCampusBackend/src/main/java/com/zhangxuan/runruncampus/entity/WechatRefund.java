@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.RefundStatus;
 import com.zhangxuan.runruncampus.model.RefundResult;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,26 +14,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
 import java.time.Instant;
 import java.util.UUID;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 微信退款持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "wechat_refunds")
 public class WechatRefund {
@@ -41,8 +27,7 @@ public class WechatRefund {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version
-    private Long version;
+    @Version private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
     private String outRefundNo;
@@ -69,8 +54,7 @@ public class WechatRefund {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    protected WechatRefund() {
-    }
+    protected WechatRefund() {}
 
     public WechatRefund(WechatPayment payment, int amountCents, String reason) {
         this.outRefundNo = "RF" + UUID.randomUUID().toString().replace("-", "").substring(0, 30);

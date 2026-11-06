@@ -9,20 +9,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
+/** 用户优惠券持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "user_coupons")
 public class UserCoupon {
@@ -31,8 +21,7 @@ public class UserCoupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version
-    private Long version;
+    @Version private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private AppUser user;
@@ -54,10 +43,14 @@ public class UserCoupon {
 
     private Instant usedAt;
 
-    protected UserCoupon() {
-    }
+    protected UserCoupon() {}
 
-    public UserCoupon(AppUser user, String title, int discountCents, int minimumOrderCents, Instant expiresAt) {
+    public UserCoupon(
+            AppUser user,
+            String title,
+            int discountCents,
+            int minimumOrderCents,
+            Instant expiresAt) {
         this.user = user;
         this.title = title;
         this.discountCents = discountCents;
@@ -67,13 +60,15 @@ public class UserCoupon {
     }
 
     public void markUsed() {
-        if (usedAt == null)
+        if (usedAt == null) {
             usedAt = Instant.now();
+        }
     }
 
     public void restore() {
-        if (usedAt == null)
+        if (usedAt == null) {
             throw new IllegalStateException("优惠券无需返还");
+        }
         usedAt = null;
     }
 

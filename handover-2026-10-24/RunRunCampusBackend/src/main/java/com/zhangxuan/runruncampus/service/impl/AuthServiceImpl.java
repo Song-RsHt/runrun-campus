@@ -14,84 +14,36 @@ import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.LoginAttemptService;
 import com.zhangxuan.runruncampus.service.LoginCaptchaService;
 import com.zhangxuan.runruncampus.vo.SessionInfoVO;
-import java.security.SecureRandom;
-import java.time.Instant;
-import java.util.Base64;
-import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 旧系统账号与会话业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-
     private final SessionRepository sessionRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final LoginAttemptService loginAttemptService;
-
     private final LoginCaptchaService captchaService;
-
     private final int sessionHours;
-
     private final SecureRandom secureRandom = new SecureRandom();
 
-    public AuthServiceImpl(UserRepository userRepository, SessionRepository sessionRepository, PasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService, LoginCaptchaService captchaService, @Value("${app.session-hours}") int sessionHours) {
+    public AuthServiceImpl(
+            UserRepository userRepository,
+            SessionRepository sessionRepository,
+            PasswordEncoder passwordEncoder,
+            LoginAttemptService loginAttemptService,
+            LoginCaptchaService captchaService,
+            @Value("${app.session-hours}") int sessionHours) {
         this.userRepository = userRepository;
         this.sessionRepository = sessionRepository;
         this.passwordEncoder = passwordEncoder;
@@ -106,12 +58,24 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Session register(String phone, String password, String displayName, UserRole role, SessionMetadata metadata) {
-        return register(phone, password, displayName, role, metadata, PrivacyConstants.CURRENT_VERSION);
+    public Session register(
+            String phone,
+            String password,
+            String displayName,
+            UserRole role,
+            SessionMetadata metadata) {
+        return register(
+                phone, password, displayName, role, metadata, PrivacyConstants.CURRENT_VERSION);
     }
 
     @Override
-    public Session register(String phone, String password, String displayName, UserRole role, SessionMetadata metadata, String privacyPolicyVersion) {
+    public Session register(
+            String phone,
+            String password,
+            String displayName,
+            UserRole role,
+            SessionMetadata metadata,
+            String privacyPolicyVersion) {
         PrivacyPolicyValidation.requireCurrentVersion(privacyPolicyVersion);
         if (role == UserRole.ADMIN) {
             throw new BusinessFailure(403, "管理员账号不能公开注册");
@@ -121,8 +85,9 @@ public class AuthServiceImpl implements AuthService {
         }
         AppUser user = new AppUser(phone, passwordEncoder.encode(password), displayName, role);
         user.recordPrivacyConsent(privacyPolicyVersion);
-        if (role == UserRole.COURIER)
+        if (role == UserRole.COURIER) {
             user.markNewCourierUnapproved();
+        }
         userRepository.save(user);
         return createSession(user, metadata);
     }
@@ -133,9 +98,15 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Session login(String phone, String password, String captchaToken, String captchaCode, SessionMetadata metadata) {
-        if (loginAttemptService.requiresCaptcha(phone))
+    public Session login(
+            String phone,
+            String password,
+            String captchaToken,
+            String captchaCode,
+            SessionMetadata metadata) {
+        if (loginAttemptService.requiresCaptcha(phone)) {
             captchaService.verify(captchaToken, captchaCode);
+        }
         AppUser user = userRepository.findByPhone(phone).orElse(null);
         if (user == null) {
             loginAttemptService.recordUnknownFailure(phone);
@@ -191,7 +162,19 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public List<SessionInfoVO> sessions(String authorization) {
         Session current = requireSession(authorization);
-        return sessionRepository.findByUserAndExpiresAtAfterOrderByCreatedAtDesc(current.getUser(), Instant.now()).stream().map(session -> new SessionInfoVO(session.getId(), session.getDeviceName(), session.getClientType(), session.getCreatedAt(), session.getExpiresAt(), session.getId().equals(current.getId()))).toList();
+        return sessionRepository
+                .findByUserAndExpiresAtAfterOrderByCreatedAtDesc(current.getUser(), Instant.now())
+                .stream()
+                .map(
+                        session ->
+                                new SessionInfoVO(
+                                        session.getId(),
+                                        session.getDeviceName(),
+                                        session.getClientType(),
+                                        session.getCreatedAt(),
+                                        session.getExpiresAt(),
+                                        session.getId().equals(current.getId())))
+                .toList();
     }
 
     @Transactional
@@ -201,7 +184,10 @@ public class AuthServiceImpl implements AuthService {
         if (current.getId().equals(sessionId)) {
             throw new BusinessFailure(409, "当前设备请使用退出登录");
         }
-        Session target = sessionRepository.findByIdAndUser(sessionId, current.getUser()).orElseThrow(() -> new BusinessFailure(404, "登录设备不存在"));
+        Session target =
+                sessionRepository
+                        .findByIdAndUser(sessionId, current.getUser())
+                        .orElseThrow(() -> new BusinessFailure(404, "登录设备不存在"));
         sessionRepository.delete(target);
     }
 
@@ -220,9 +206,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void changeOwnPassword(String authorization, String currentPassword, String newPassword) {
+    public void changeOwnPassword(
+            String authorization, String currentPassword, String newPassword) {
         AppUser user = requireSession(authorization).getUser();
-        user = userRepository.findLockedById(user.getId()).orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
+        user =
+                userRepository
+                        .findLockedById(user.getId())
+                        .orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
         if (user.getRole() == UserRole.ADMIN) {
             throw new BusinessFailure(403, "管理员请在运营后台修改密码");
         }
@@ -241,14 +231,20 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessFailure(401, "请先登录");
         }
         String token = authorization.substring("Bearer ".length());
-        Session session = sessionRepository.findByToken(token).orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
+        Session session =
+                sessionRepository
+                        .findByToken(token)
+                        .orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
         if (session.getExpiresAt().isBefore(Instant.now())) {
             throw new BusinessFailure(401, "登录已失效");
         }
         if (!session.getUser().isEnabled()) {
             throw new BusinessFailure(403, "账号已停用，请联系平台管理员");
         }
-        if (session.getUser().getRole() == UserRole.ADMIN && (!session.isAdminMfaVerified() || session.getSecurityVersion() != session.getUser().getSecurityVersion())) {
+        if (session.getUser().getRole() == UserRole.ADMIN
+                && (!session.isAdminMfaVerified()
+                        || session.getSecurityVersion()
+                                != session.getUser().getSecurityVersion())) {
             throw new BusinessFailure(401, "请重新完成管理员双因素登录");
         }
         return session;
@@ -262,6 +258,12 @@ public class AuthServiceImpl implements AuthService {
         byte[] bytes = new byte[32];
         secureRandom.nextBytes(bytes);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
-        return sessionRepository.save(new Session(token, user, Instant.now().plusSeconds(sessionHours * 3600L), metadata.clientType(), metadata.deviceName()));
+        return sessionRepository.save(
+                new Session(
+                        token,
+                        user,
+                        Instant.now().plusSeconds(sessionHours * 3600L),
+                        metadata.clientType(),
+                        metadata.deviceName()));
     }
 }

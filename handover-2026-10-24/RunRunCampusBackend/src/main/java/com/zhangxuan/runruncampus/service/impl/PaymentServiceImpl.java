@@ -28,50 +28,18 @@ import com.zhangxuan.runruncampus.service.PaymentService;
 import com.zhangxuan.runruncampus.vo.AppPaymentParameters;
 import com.zhangxuan.runruncampus.vo.PaymentResponse;
 import com.zhangxuan.runruncampus.vo.RefundResponse;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import java.time.Duration;
+import java.time.Instant;
+import java.util.List;
 
 /**
- * legacy 支付与退款业务边界，使用原 JPA Repository 及支付网关。金额和幂等保持旧契约，不能作为 v2 支付兼容层。
+ * 支付回执及退款业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。
+ *
+ * <p>legacy 支付与退款业务边界，使用原 JPA Repository 及支付网关。金额和幂等保持旧契约，不能作为 v2 支付兼容层。
  */
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -79,18 +47,19 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Duration PAYMENT_WINDOW = Duration.ofMinutes(30);
 
     private final WechatPaymentRepository paymentRepository;
-
     private final WechatRefundRepository refundRepository;
-
     private final OrderRepository orderRepository;
-
     private final MembershipService membershipService;
-
     private final WechatPayGateway gateway;
-
     private final WechatPayProperties properties;
 
-    public PaymentServiceImpl(WechatPaymentRepository paymentRepository, WechatRefundRepository refundRepository, OrderRepository orderRepository, MembershipService membershipService, WechatPayGateway gateway, WechatPayProperties properties) {
+    public PaymentServiceImpl(
+            WechatPaymentRepository paymentRepository,
+            WechatRefundRepository refundRepository,
+            OrderRepository orderRepository,
+            MembershipService membershipService,
+            WechatPayGateway gateway,
+            WechatPayProperties properties) {
         this.paymentRepository = paymentRepository;
         this.refundRepository = refundRepository;
         this.orderRepository = orderRepository;
@@ -103,11 +72,15 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse createOrderPayment(AppUser customer, Long orderId) {
         requireCustomer(customer);
-        CampusOrder order = orderRepository.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
+        CampusOrder order =
+                orderRepository
+                        .findLockedById(orderId)
+                        .orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         if (!order.getCustomer().getId().equals(customer.getId())) {
             throw new BusinessFailure(403, "只能支付自己的订单");
         }
-        if (order.getStatus() != OrderStatus.PENDING_ASSIGNMENT && order.getStatus() != OrderStatus.ACCEPTED) {
+        if (order.getStatus() != OrderStatus.PENDING_ASSIGNMENT
+                && order.getStatus() != OrderStatus.ACCEPTED) {
             throw new BusinessFailure(409, "订单当前状态不能支付");
         }
         if (order.getPaymentMethod() == OrderPaymentMethod.CASH_ON_DELIVERY) {
@@ -117,17 +90,32 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BusinessFailure(409, "该订单无需发起微信 APP 支付");
         }
         int dueCents = order.getFeeCents() - order.getPaidCents();
-        if (dueCents <= 0)
+        if (dueCents <= 0) {
             return paidResponse(order);
-        WechatPayment pending = paymentRepository.findFirstByOrderAndStatusOrderByCreatedAtDesc(order, PaymentStatus.PENDING).orElse(null);
-        if (pending != null && !pending.isExpired(Instant.now()) && pending.getAmountCents() == dueCents) {
+        }
+        WechatPayment pending =
+                paymentRepository
+                        .findFirstByOrderAndStatusOrderByCreatedAtDesc(order, PaymentStatus.PENDING)
+                        .orElse(null);
+        if (pending != null
+                && !pending.isExpired(Instant.now())
+                && pending.getAmountCents() == dueCents) {
             return response(pending);
         }
-        if (pending != null)
+        if (pending != null) {
             close(pending);
+        }
         Instant expiresAt = Instant.now().plus(PAYMENT_WINDOW);
-        WechatPayment payment = paymentRepository.save(WechatPayment.forOrder(customer, order, dueCents, expiresAt));
-        AppPayParameters parameters = gateway.prepay(payment.getOutTradeNo(), "跑跑代取服务-" + order.getOrderNo(), dueCents, "ORDER:" + order.getId(), expiresAt);
+        WechatPayment payment =
+                paymentRepository.save(
+                        WechatPayment.forOrder(customer, order, dueCents, expiresAt));
+        AppPayParameters parameters =
+                gateway.prepay(
+                        payment.getOutTradeNo(),
+                        "跑跑代取服务-" + order.getOrderNo(),
+                        dueCents,
+                        "ORDER:" + order.getId(),
+                        expiresAt);
         payment.recordPrepay(parameters);
         return response(payment);
     }
@@ -137,18 +125,30 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse createMembershipPayment(AppUser customer, MembershipPlanType plan) {
         requireCustomer(customer);
         membershipService.validateCanPurchase(customer);
-        WechatPayment pending = paymentRepository.findFirstByUserAndBusinessTypeAndStatusOrderByCreatedAtDesc(customer, PaymentBusinessType.MEMBERSHIP, PaymentStatus.PENDING).orElse(null);
+        WechatPayment pending =
+                paymentRepository
+                        .findFirstByUserAndBusinessTypeAndStatusOrderByCreatedAtDesc(
+                                customer, PaymentBusinessType.MEMBERSHIP, PaymentStatus.PENDING)
+                        .orElse(null);
         if (pending != null && !pending.isExpired(Instant.now())) {
             if (pending.getMembershipPlan() != plan) {
                 throw new BusinessFailure(409, "已有待支付月卡，请先完成或等待其过期");
             }
             return response(pending);
         }
-        if (pending != null)
+        if (pending != null) {
             close(pending);
+        }
         Instant expiresAt = Instant.now().plus(PAYMENT_WINDOW);
-        WechatPayment payment = paymentRepository.save(WechatPayment.forMembership(customer, plan, expiresAt));
-        AppPayParameters parameters = gateway.prepay(payment.getOutTradeNo(), "跑跑代取-" + plan.getTitle(), plan.getPriceCents(), "MEMBERSHIP:" + plan.name(), expiresAt);
+        WechatPayment payment =
+                paymentRepository.save(WechatPayment.forMembership(customer, plan, expiresAt));
+        AppPayParameters parameters =
+                gateway.prepay(
+                        payment.getOutTradeNo(),
+                        "跑跑代取-" + plan.getTitle(),
+                        plan.getPriceCents(),
+                        "MEMBERSHIP:" + plan.name(),
+                        expiresAt);
         payment.recordPrepay(parameters);
         return response(payment);
     }
@@ -157,14 +157,18 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse status(AppUser customer, String outTradeNo) {
         requireCustomer(customer);
-        WechatPayment payment = paymentRepository.findLockedByOutTradeNo(outTradeNo).orElseThrow(() -> new BusinessFailure(404, "支付单不存在"));
+        WechatPayment payment =
+                paymentRepository
+                        .findLockedByOutTradeNo(outTradeNo)
+                        .orElseThrow(() -> new BusinessFailure(404, "支付单不存在"));
         if (!payment.belongsTo(customer)) {
             throw new BusinessFailure(403, "无权查看此支付单");
         }
         if (payment.getStatus() == PaymentStatus.PENDING && payment.hasPayParameters()) {
             TradeResult result = gateway.query(outTradeNo);
-            if (result.paid())
+            if (result.paid()) {
                 confirmPaid(payment, result);
+            }
         }
         return response(payment);
     }
@@ -173,9 +177,13 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void acceptPaymentNotification(NotificationHeaders headers, String body) {
         TradeResult result = gateway.parsePaymentNotification(headers, body);
-        if (!result.paid())
+        if (!result.paid()) {
             return;
-        WechatPayment payment = paymentRepository.findLockedByOutTradeNo(result.outTradeNo()).orElseThrow(() -> new BusinessFailure(404, "支付单不存在"));
+        }
+        WechatPayment payment =
+                paymentRepository
+                        .findLockedByOutTradeNo(result.outTradeNo())
+                        .orElseThrow(() -> new BusinessFailure(404, "支付单不存在"));
         confirmPaid(payment, result);
     }
 
@@ -183,13 +191,18 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void acceptRefundNotification(NotificationHeaders headers, String body) {
         RefundNotificationResult result = gateway.parseRefundNotification(headers, body);
-        WechatRefund refund = refundRepository.findLockedByOutRefundNo(result.outRefundNo()).orElseThrow(() -> new BusinessFailure(404, "退款单不存在"));
-        if (!refund.getPayment().getOutTradeNo().equals(result.outTradeNo()) || refund.getAmountCents() != result.refundCents()) {
+        WechatRefund refund =
+                refundRepository
+                        .findLockedByOutRefundNo(result.outRefundNo())
+                        .orElseThrow(() -> new BusinessFailure(404, "退款单不存在"));
+        if (!refund.getPayment().getOutTradeNo().equals(result.outTradeNo())
+                || refund.getAmountCents() != result.refundCents()) {
             throw new BusinessFailure(400, "退款通知与本地退款单不一致");
         }
         refund.record(new RefundResult(result.refundId(), result.status()));
-        if (result.status() == RefundStatus.SUCCESS)
+        if (result.status() == RefundStatus.SUCCESS) {
             finishOrderRefund(refund.getPayment().getOrder());
+        }
     }
 
     @Transactional
@@ -201,9 +214,12 @@ public class PaymentServiceImpl implements PaymentService {
             }
             return;
         }
-        paymentRepository.findByOrderAndStatusOrderByCreatedAtAsc(order, PaymentStatus.PENDING).forEach(this::close);
-        if (order.getPaidCents() > 0)
+        paymentRepository
+                .findByOrderAndStatusOrderByCreatedAtAsc(order, PaymentStatus.PENDING)
+                .forEach(this::close);
+        if (order.getPaidCents() > 0) {
             scheduleRefund(order, order.getPaidCents(), "订单取消", true);
+        }
     }
 
     @Transactional
@@ -215,20 +231,34 @@ public class PaymentServiceImpl implements PaymentService {
             }
             return;
         }
-        if (refundCents > 0)
+        if (refundCents > 0) {
             scheduleRefund(order, refundCents, "包裹规格降档退差价", false);
+        }
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<RefundResponse> refundsForOrder(CampusOrder order) {
-        return refundRepository.findByOrder(order).stream().map(refund -> new RefundResponse(refund.getAmountCents(), refund.getReason(), refund.getStatus(), refund.getCreatedAt(), refund.getUpdatedAt())).toList();
+        return refundRepository.findByOrder(order).stream()
+                .map(
+                        refund ->
+                                new RefundResponse(
+                                        refund.getAmountCents(),
+                                        refund.getReason(),
+                                        refund.getStatus(),
+                                        refund.getCreatedAt(),
+                                        refund.getUpdatedAt()))
+                .toList();
     }
 
     private void confirmPaid(WechatPayment payment, TradeResult result) {
-        if (payment.getStatus() == PaymentStatus.PAID)
+        if (payment.getStatus() == PaymentStatus.PAID) {
             return;
-        if (!payment.getOutTradeNo().equals(result.outTradeNo()) || !properties.appId().equals(result.appId()) || !properties.merchantId().equals(result.merchantId()) || payment.getAmountCents() != result.amountCents()) {
+        }
+        if (!payment.getOutTradeNo().equals(result.outTradeNo())
+                || !properties.appId().equals(result.appId())
+                || !properties.merchantId().equals(result.merchantId())
+                || payment.getAmountCents() != result.amountCents()) {
             throw new BusinessFailure(400, "支付通知与本地支付单不一致");
         }
         payment.markPaid(result.transactionId());
@@ -236,7 +266,10 @@ public class PaymentServiceImpl implements PaymentService {
             membershipService.activatePaidPurchase(payment.getUser(), payment.getMembershipPlan());
             return;
         }
-        CampusOrder order = orderRepository.findLockedById(payment.getOrder().getId()).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
+        CampusOrder order =
+                orderRepository
+                        .findLockedById(payment.getOrder().getId())
+                        .orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         order.recordPayment(payment.getAmountCents());
         if (order.getStatus() == OrderStatus.CANCELLED) {
             scheduleRefund(order, payment.getAmountCents(), "已取消订单的迟到支付", true);
@@ -244,46 +277,82 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private void finishOrderRefund(CampusOrder order) {
-        if (order == null || order.getStatus() != OrderStatus.CANCELLED)
+        if (order == null || order.getStatus() != OrderStatus.CANCELLED) {
             return;
+        }
         long paid = paymentRepository.sumPaidForOrder(order);
         long refunded = refundRepository.sumSucceededForOrder(order);
-        if (paid > 0 && refunded >= paid)
+        if (paid > 0 && refunded >= paid) {
             order.markRefunded();
+        }
     }
 
-    private void scheduleRefund(CampusOrder order, int refundCents, String reason, boolean cancellation) {
+    private void scheduleRefund(
+            CampusOrder order, int refundCents, String reason, boolean cancellation) {
         int remaining = refundCents;
-        List<WechatPayment> paidPayments = paymentRepository.findByOrderAndStatusOrderByCreatedAtAsc(order, PaymentStatus.PAID);
+        List<WechatPayment> paidPayments =
+                paymentRepository.findByOrderAndStatusOrderByCreatedAtAsc(
+                        order, PaymentStatus.PAID);
         for (WechatPayment payment : paidPayments) {
-            int requested = refundRepository.findByPaymentOrderByCreatedAtAsc(payment).stream().mapToInt(WechatRefund::getAmountCents).sum();
+            int requested =
+                    refundRepository.findByPaymentOrderByCreatedAtAsc(payment).stream()
+                            .mapToInt(WechatRefund::getAmountCents)
+                            .sum();
             int amount = Math.min(remaining, payment.getAmountCents() - requested);
             if (amount > 0) {
                 refundRepository.save(new WechatRefund(payment, amount, reason));
                 remaining -= amount;
             }
-            if (remaining == 0)
+            if (remaining == 0) {
                 break;
+            }
         }
-        if (remaining != 0)
+        if (remaining != 0) {
             throw new IllegalStateException("订单可退款金额不足");
+        }
         order.recordRefundScheduled(refundCents, cancellation);
     }
 
     private void close(WechatPayment payment) {
-        if (payment.hasPayParameters())
+        if (payment.hasPayParameters()) {
             gateway.close(payment.getOutTradeNo());
+        }
         payment.close();
     }
 
     private PaymentResponse paidResponse(CampusOrder order) {
-        return new PaymentResponse(null, PaymentBusinessType.ORDER, PaymentStatus.PAID, 0, order.getPaymentStatus(), null, null);
+        return new PaymentResponse(
+                null,
+                PaymentBusinessType.ORDER,
+                PaymentStatus.PAID,
+                0,
+                order.getPaymentStatus(),
+                null,
+                null);
     }
 
     private PaymentResponse response(WechatPayment payment) {
-        AppPaymentParameters parameters = payment.getStatus() == PaymentStatus.PENDING && payment.hasPayParameters() ? new AppPaymentParameters(payment.getAppId(), payment.getPartnerId(), payment.getPrepayId(), payment.getPackageValue(), payment.getNonceStr(), payment.getPayTimestamp(), payment.getPaySignature()) : null;
-        OrderPaymentStatus orderPaymentStatus = payment.getOrder() == null ? null : payment.getOrder().getPaymentStatus();
-        return new PaymentResponse(payment.getOutTradeNo(), payment.getBusinessType(), payment.getStatus(), payment.getAmountCents(), orderPaymentStatus, payment.getExpiresAt(), parameters);
+        AppPaymentParameters parameters =
+                payment.getStatus() == PaymentStatus.PENDING && payment.hasPayParameters()
+                        ? new AppPaymentParameters(
+                                payment.getAppId(),
+                                payment.getPartnerId(),
+                                payment.getPrepayId(),
+                                payment.getPackageValue(),
+                                payment.getNonceStr(),
+                                payment.getPayTimestamp(),
+                                payment.getPaySignature())
+                        : null;
+        OrderPaymentStatus orderPaymentStatus =
+                payment.getOrder() == null ? null : payment.getOrder().getPaymentStatus();
+        return new PaymentResponse(
+                payment.getOutTradeNo(),
+                payment.getBusinessType(),
+                payment.getStatus(),
+                payment.getAmountCents(),
+                orderPaymentStatus,
+                payment.getExpiresAt(),
+                parameters);
     }
 
     private void requireCustomer(AppUser user) {

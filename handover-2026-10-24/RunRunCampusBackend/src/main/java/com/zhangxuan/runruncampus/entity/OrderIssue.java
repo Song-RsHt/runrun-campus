@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.enums.OrderIssueType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,23 +13,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 订单异常上报持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "order_issues")
 public class OrderIssue {
@@ -68,10 +56,10 @@ public class OrderIssue {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    protected OrderIssue() {
-    }
+    protected OrderIssue() {}
 
-    public OrderIssue(CampusOrder order, AppUser reporter, OrderIssueType type, String description) {
+    public OrderIssue(
+            CampusOrder order, AppUser reporter, OrderIssueType type, String description) {
         this.order = order;
         this.reporter = reporter;
         this.type = type;

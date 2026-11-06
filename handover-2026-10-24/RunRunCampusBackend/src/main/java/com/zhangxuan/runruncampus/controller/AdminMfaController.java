@@ -12,7 +12,9 @@ import com.zhangxuan.runruncampus.service.AdminMfaService;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.vo.AdminMfaChallengeVO;
 import com.zhangxuan.runruncampus.vo.ResetResponse;
+
 import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,83 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 管理员双因素认证 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v1")
 public class AdminMfaController {
 
     private final AdminMfaService mfa;
-
     private final AuthService auth;
-
     private final ApiRateLimitService limits;
 
     public AdminMfaController(AdminMfaService mfa, AuthService auth, ApiRateLimitService limits) {
@@ -116,18 +48,26 @@ public class AdminMfaController {
     @PostMapping("/auth/admin/verify")
     public AdminMfaVerification verify(@Valid @RequestBody AdminMfaVerifyRequest request) {
         limit("admin-mfa-challenge", request.challengeToken());
-        return mfa.verify(request.challengeToken(), request.code().trim(), SessionMetadata.of(request.clientType(), request.deviceName()));
+        return mfa.verify(
+                request.challengeToken(),
+                request.code().trim(),
+                SessionMetadata.of(request.clientType(), request.deviceName()));
     }
 
     @PostMapping("/admin/accounts/me/mfa/replace")
-    public AdminMfaChallengeVO replace(@RequestHeader("Authorization") String authorization, @Valid @RequestBody AdminMfaReplaceRequest request) {
+    public AdminMfaChallengeVO replace(
+            @RequestHeader("Authorization") String authorization,
+            @Valid @RequestBody AdminMfaReplaceRequest request) {
         var user = auth.requireAdmin(authorization);
         limit("admin-mfa-replace-account", user.getId().toString());
         return mfa.replace(user, request.password(), request.code().trim());
     }
 
     @PostMapping("/admin/accounts/{id}/mfa/reset")
-    public ResetResponse reset(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody AdminMfaResetRequest request) {
+    public ResetResponse reset(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable Long id,
+            @Valid @RequestBody AdminMfaResetRequest request) {
         var user = auth.requirePermission(authorization, AdminPermission.ADMIN_MANAGE);
         limit("admin-mfa-reset-account", user.getId().toString());
         return new ResetResponse(mfa.reset(user, id, request.reason()));

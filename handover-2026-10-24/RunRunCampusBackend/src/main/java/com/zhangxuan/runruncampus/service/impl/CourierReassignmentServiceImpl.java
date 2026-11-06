@@ -17,67 +17,26 @@ import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.CourierReassignmentService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.TaskReleaseVO;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 骑手无法履约上报业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class CourierReassignmentServiceImpl implements CourierReassignmentService {
 
     private final OrderRepository orders;
-
     private final OrderProofRepository proofs;
-
     private final OrderIssueRepository issues;
-
     private final OrderEventRepository events;
-
     private final OrderMessageService messages;
 
-    public CourierReassignmentServiceImpl(OrderRepository orders, OrderProofRepository proofs, OrderIssueRepository issues, OrderEventRepository events, OrderMessageService messages) {
+    public CourierReassignmentServiceImpl(
+            OrderRepository orders,
+            OrderProofRepository proofs,
+            OrderIssueRepository issues,
+            OrderEventRepository events,
+            OrderMessageService messages) {
         this.orders = orders;
         this.proofs = proofs;
         this.issues = issues;
@@ -92,17 +51,28 @@ public class CourierReassignmentServiceImpl implements CourierReassignmentServic
         if (explanation.isEmpty() || explanation.length() > 300) {
             throw new BusinessFailure(400, "请输入不超过300字的无法履约原因");
         }
-        CampusOrder order = orders.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
-        if (courier.getRole() != UserRole.COURIER || order.getCourier() == null || !order.getCourier().getId().equals(courier.getId())) {
+        CampusOrder order =
+                orders.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
+        if (courier.getRole() != UserRole.COURIER
+                || order.getCourier() == null
+                || !order.getCourier().getId().equals(courier.getId())) {
             throw new BusinessFailure(403, "仅当前接单骑手可申请改派");
         }
-        if (order.getStatus() != OrderStatus.ACCEPTED || proofs.existsByOrderAndType(order, OrderProofType.PICKUP) || proofs.existsByOrderAndType(order, OrderProofType.SIZE_REVIEW)) {
+        if (order.getStatus() != OrderStatus.ACCEPTED
+                || proofs.existsByOrderAndType(order, OrderProofType.PICKUP)
+                || proofs.existsByOrderAndType(order, OrderProofType.SIZE_REVIEW)) {
             throw new BusinessFailure(409, "已有取件凭证或订单状态已变化，请联系运营处理");
         }
-        issues.save(new OrderIssue(order, courier, OrderIssueType.OTHER, "骑手无法履约（待改派）：" + explanation));
+        issues.save(
+                new OrderIssue(order, courier, OrderIssueType.OTHER, "骑手无法履约（待改派）：" + explanation));
         order.requestReassignment();
         events.save(new OrderEvent(order, courier, OrderStatus.PENDING_REASSIGNMENT));
-        messages.send(order.getCustomer(), order, OrderMessageType.ORDER_ISSUE, "骑手无法履约，等待运营改派", "运营正在安排新的骑手，请留意订单进度");
+        messages.send(
+                order.getCustomer(),
+                order,
+                OrderMessageType.ORDER_ISSUE,
+                "骑手无法履约，等待运营改派",
+                "运营正在安排新的骑手，请留意订单进度");
         return new TaskReleaseVO(order.getId(), order.getOrderNo(), order.getStatus());
     }
 }

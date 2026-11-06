@@ -12,6 +12,7 @@ import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.AdminFeedbackService;
 import com.zhangxuan.runruncampus.vo.FeedbackItem;
 import com.zhangxuan.runruncampus.vo.FeedbackPageResponse;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,46 +20,41 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 管理员反馈处理业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class AdminFeedbackServiceImpl implements AdminFeedbackService {
 
     private final FeedbackRepository feedbackRepository;
-
     private final AdminAuditService auditService;
 
-    public AdminFeedbackServiceImpl(FeedbackRepository feedbackRepository, AdminAuditService auditService) {
+    public AdminFeedbackServiceImpl(
+            FeedbackRepository feedbackRepository, AdminAuditService auditService) {
         this.feedbackRepository = feedbackRepository;
         this.auditService = auditService;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public FeedbackPageResponse list(String query, FeedbackType type, FeedbackHandlingStatus handlingStatus, int page, int size) {
+    public FeedbackPageResponse list(
+            String query,
+            FeedbackType type,
+            FeedbackHandlingStatus handlingStatus,
+            int page,
+            int size) {
         String normalizedQuery = normalize(query);
-        PageRequest pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
-        Page<UserFeedback> feedback = normalizedQuery == null ? feedbackRepository.filterForAdmin(type, handlingStatus, pageable) : feedbackRepository.searchForAdmin(normalizedQuery, type, handlingStatus, pageable);
-        return new FeedbackPageResponse(feedback.getContent().stream().map(this::item).toList(), feedback.getNumber(), feedback.getSize(), feedback.getTotalElements(), feedback.getTotalPages());
+        PageRequest pageable =
+                PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
+        Page<UserFeedback> feedback =
+                normalizedQuery == null
+                        ? feedbackRepository.filterForAdmin(type, handlingStatus, pageable)
+                        : feedbackRepository.searchForAdmin(
+                                normalizedQuery, type, handlingStatus, pageable);
+        return new FeedbackPageResponse(
+                feedback.getContent().stream().map(this::item).toList(),
+                feedback.getNumber(),
+                feedback.getSize(),
+                feedback.getTotalElements(),
+                feedback.getTotalPages());
     }
 
     @Transactional
@@ -69,12 +65,19 @@ public class AdminFeedbackServiceImpl implements AdminFeedbackService {
             throw new BusinessFailure(409, "已解决的反馈不能重新领取");
         }
         if (feedback.getHandlingStatus() == FeedbackHandlingStatus.PROCESSING) {
-            if (feedback.getAssignee().getId().equals(administrator.getId()))
+            if (feedback.getAssignee().getId().equals(administrator.getId())) {
                 return item(feedback);
-            throw new BusinessFailure(409, "该反馈已由" + feedback.getAssignee().getDisplayName() + "领取");
+            }
+            throw new BusinessFailure(
+                    409, "该反馈已由" + feedback.getAssignee().getDisplayName() + "领取");
         }
         feedback.claim(administrator);
-        auditService.record(administrator, AdminAuditAction.FEEDBACK_CLAIMED, AdminAuditTargetType.FEEDBACK, feedback.getId(), "领取用户反馈：#" + feedback.getId());
+        auditService.record(
+                administrator,
+                AdminAuditAction.FEEDBACK_CLAIMED,
+                AdminAuditTargetType.FEEDBACK,
+                feedback.getId(),
+                "领取用户反馈：#" + feedback.getId());
         return item(feedback);
     }
 
@@ -82,23 +85,45 @@ public class AdminFeedbackServiceImpl implements AdminFeedbackService {
     @Override
     public FeedbackItem resolve(AppUser administrator, Long id, String resolution) {
         UserFeedback feedback = requireFeedback(id);
-        if (feedback.getHandlingStatus() != FeedbackHandlingStatus.PROCESSING || feedback.getAssignee() == null || !feedback.getAssignee().getId().equals(administrator.getId())) {
+        if (feedback.getHandlingStatus() != FeedbackHandlingStatus.PROCESSING
+                || feedback.getAssignee() == null
+                || !feedback.getAssignee().getId().equals(administrator.getId())) {
             throw new BusinessFailure(409, "请先领取该反馈再处理");
         }
         String normalized = requireText(resolution);
         feedback.resolve(normalized);
-        auditService.record(administrator, AdminAuditAction.FEEDBACK_RESOLVED, AdminAuditTargetType.FEEDBACK, feedback.getId(), "解决用户反馈：#" + feedback.getId());
+        auditService.record(
+                administrator,
+                AdminAuditAction.FEEDBACK_RESOLVED,
+                AdminAuditTargetType.FEEDBACK,
+                feedback.getId(),
+                "解决用户反馈：#" + feedback.getId());
         return item(feedback);
     }
 
     private FeedbackItem item(UserFeedback feedback) {
         AppUser user = feedback.getUser();
         AppUser assignee = feedback.getAssignee();
-        return new FeedbackItem(feedback.getId(), feedback.getType(), feedback.getContent(), feedback.getCreatedAt(), user.getId(), user.getDisplayName(), user.getPhone(), feedback.getHandlingStatus(), assignee == null ? null : assignee.getId(), assignee == null ? null : assignee.getDisplayName(), feedback.getResolution(), feedback.getHandledAt(), feedback.getUpdatedAt());
+        return new FeedbackItem(
+                feedback.getId(),
+                feedback.getType(),
+                feedback.getContent(),
+                feedback.getCreatedAt(),
+                user.getId(),
+                user.getDisplayName(),
+                user.getPhone(),
+                feedback.getHandlingStatus(),
+                assignee == null ? null : assignee.getId(),
+                assignee == null ? null : assignee.getDisplayName(),
+                feedback.getResolution(),
+                feedback.getHandledAt(),
+                feedback.getUpdatedAt());
     }
 
     private UserFeedback requireFeedback(Long id) {
-        return feedbackRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "反馈不存在"));
+        return feedbackRepository
+                .findLockedById(id)
+                .orElseThrow(() -> new BusinessFailure(404, "反馈不存在"));
     }
 
     private String requireText(String value) {

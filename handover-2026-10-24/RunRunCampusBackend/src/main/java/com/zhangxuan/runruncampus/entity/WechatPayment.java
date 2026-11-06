@@ -4,6 +4,7 @@ import com.zhangxuan.runruncampus.enums.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.PaymentStatus;
 import com.zhangxuan.runruncampus.model.AppPayParameters;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,28 +16,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
 import java.time.Instant;
 import java.util.UUID;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 微信支付持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "wechat_payments")
 public class WechatPayment {
@@ -45,8 +29,7 @@ public class WechatPayment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version
-    private Long version;
+    @Version private Long version;
 
     @Column(nullable = false, unique = true, length = 32)
     private String outTradeNo;
@@ -107,12 +90,17 @@ public class WechatPayment {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    protected WechatPayment() {
-    }
+    protected WechatPayment() {}
 
-    private WechatPayment(AppUser user, CampusOrder order, MembershipPlanType plan, int amountCents, Instant expiresAt) {
+    private WechatPayment(
+            AppUser user,
+            CampusOrder order,
+            MembershipPlanType plan,
+            int amountCents,
+            Instant expiresAt) {
         this.outTradeNo = "RR" + UUID.randomUUID().toString().replace("-", "").substring(0, 30);
-        this.businessType = order == null ? PaymentBusinessType.MEMBERSHIP : PaymentBusinessType.ORDER;
+        this.businessType =
+                order == null ? PaymentBusinessType.MEMBERSHIP : PaymentBusinessType.ORDER;
         this.status = PaymentStatus.PENDING;
         this.amountCents = amountCents;
         this.user = user;
@@ -123,11 +111,13 @@ public class WechatPayment {
         this.updatedAt = createdAt;
     }
 
-    public static WechatPayment forOrder(AppUser user, CampusOrder order, int amountCents, Instant expiresAt) {
+    public static WechatPayment forOrder(
+            AppUser user, CampusOrder order, int amountCents, Instant expiresAt) {
         return new WechatPayment(user, order, null, amountCents, expiresAt);
     }
 
-    public static WechatPayment forMembership(AppUser user, MembershipPlanType plan, Instant expiresAt) {
+    public static WechatPayment forMembership(
+            AppUser user, MembershipPlanType plan, Instant expiresAt) {
         return new WechatPayment(user, null, plan, plan.getPriceCents(), expiresAt);
     }
 
@@ -143,10 +133,12 @@ public class WechatPayment {
     }
 
     public void markPaid(String transactionId) {
-        if (status == PaymentStatus.PAID)
+        if (status == PaymentStatus.PAID) {
             return;
-        if (status == PaymentStatus.CLOSED)
+        }
+        if (status == PaymentStatus.CLOSED) {
             throw new IllegalStateException("已关闭的支付单不能入账");
+        }
         this.status = PaymentStatus.PAID;
         this.transactionId = transactionId;
         this.paidAt = Instant.now();
@@ -154,8 +146,9 @@ public class WechatPayment {
     }
 
     public void close() {
-        if (status == PaymentStatus.PAID)
+        if (status == PaymentStatus.PAID) {
             throw new IllegalStateException("已支付的支付单不能关闭");
+        }
         status = PaymentStatus.CLOSED;
         updatedAt = Instant.now();
     }

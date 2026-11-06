@@ -1,9 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
-
-
+/** 管理员操作审计操作枚举；名称和取值沿用既有业务与协议定义。 */
 public enum AdminAuditAction {
-
     COURIER_CERTIFICATION_APPROVED,
     COURIER_CERTIFICATION_REJECTED,
     COURIER_CERTIFICATION_SUBMITTED,

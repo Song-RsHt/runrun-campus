@@ -1,13 +1,5 @@
 package com.zhangxuan.runruncampus.service.message;
 
-import com.zhangxuan.runruncampus.integration.push.PushDeliveryProcessor;
-import com.zhangxuan.runruncampus.integration.push.PushNotificationGateway;
-import com.zhangxuan.runruncampus.model.OrderPushRequested;
-import com.zhangxuan.runruncampus.model.PushDeliveryTask;
-import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
-import java.time.Instant;
-import java.util.Optional;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -21,89 +13,74 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.zhangxuan.runruncampus.integration.push.PushDeliveryProcessor;
+import com.zhangxuan.runruncampus.integration.push.PushNotificationGateway;
+import com.zhangxuan.runruncampus.model.OrderPushRequested;
+import com.zhangxuan.runruncampus.model.PushDeliveryTask;
+import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
 
+import org.junit.jupiter.api.Test;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import java.time.Instant;
+import java.util.Optional;
 
 class PushDeliveryProcessorTest {
 
-  private final PushDeliveryRepository deliveries = mock(PushDeliveryRepository.class);
+    private final PushDeliveryRepository deliveries = mock(PushDeliveryRepository.class);
+    private final PushNotificationGateway gateway = mock(PushNotificationGateway.class);
+    private final PushDeliveryProcessor processor = new PushDeliveryProcessor(deliveries, gateway);
 
-  private final PushNotificationGateway gateway = mock(PushNotificationGateway.class);
+    @Test
+    void successfulDeliveryIsMarkedSent() throws Exception {
+        var task = task(0);
+        when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
+        processor.process();
+        verify(gateway).send(task.notification());
+        verify(deliveries).markSent(task.id());
+        verify(deliveries, never())
+                .markFailure(anyLong(), anyInt(), anyString(), any(), anyBoolean());
+    }
 
-  private final PushDeliveryProcessor processor = new PushDeliveryProcessor(deliveries, gateway);
+    @Test
+    void firstFailureSchedulesRetryWithoutLosingIdempotencyToken() throws Exception {
+        var task = task(0);
+        when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
+        doThrow(new IllegalStateException("provider unavailable"))
+                .when(gateway)
+                .send(task.notification());
+        processor.process();
+        verify(deliveries)
+                .markFailure(
+                        eq(task.id()),
+                        eq(1),
+                        eq("provider unavailable"),
+                        any(Instant.class),
+                        eq(false));
+        assertEquals("push-token", task.notification().idempotentToken());
+    }
 
-  @Test
-  void successfulDeliveryIsMarkedSent() throws Exception {
-    var task = task(0);
-    when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
-    processor.process();
-    verify(gateway).send(task.notification());
-    verify(deliveries).markSent(task.id());
-    verify(deliveries, never()).markFailure(anyLong(), anyInt(), anyString(), any(), anyBoolean());
-  }
+    @Test
+    void fifthFailureBecomesDeadLetter() throws Exception {
+        var task = task(4);
+        when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
+        doThrow(new IllegalStateException("still unavailable"))
+                .when(gateway)
+                .send(task.notification());
+        processor.process();
+        verify(deliveries)
+                .markFailure(
+                        eq(task.id()),
+                        eq(5),
+                        eq("still unavailable"),
+                        any(Instant.class),
+                        eq(true));
+    }
 
-  @Test
-  void firstFailureSchedulesRetryWithoutLosingIdempotencyToken() throws Exception {
-    var task = task(0);
-    when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
-    doThrow(new IllegalStateException("provider unavailable"))
-        .when(gateway)
-        .send(task.notification());
-    processor.process();
-    verify(deliveries)
-        .markFailure(
-            eq(task.id()), eq(1), eq("provider unavailable"), any(Instant.class), eq(false));
-    assertEquals("push-token", task.notification().idempotentToken());
-  }
-
-  @Test
-  void fifthFailureBecomesDeadLetter() throws Exception {
-    var task = task(4);
-    when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
-    doThrow(new IllegalStateException("still unavailable")).when(gateway).send(task.notification());
-    processor.process();
-    verify(deliveries)
-        .markFailure(eq(task.id()), eq(5), eq("still unavailable"), any(Instant.class), eq(true));
-  }
-
-  private PushDeliveryTask task(int attempts) {
-    return new PushDeliveryTask(
-        7L,
-        new OrderPushRequested(2L, 9L, "订单更新", "请查看订单", "push-token"),
-        attempts,
-        Instant.parse("2026-09-16T00:00:00Z"));
-  }
+    private PushDeliveryTask task(int attempts) {
+        return new PushDeliveryTask(
+                7L,
+                new OrderPushRequested(2L, 9L, "订单更新", "请查看订单", "push-token"),
+                attempts,
+                Instant.parse("2026-09-16T00:00:00Z"));
+    }
 }

@@ -11,8 +11,9 @@ import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
 import com.zhangxuan.runrunv2.vo.IdentityLoginVO;
+
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,54 +24,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 新系统身份与会话 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v2")
 public class IdentityController {
@@ -90,7 +46,10 @@ public class IdentityController {
     @PostMapping("/auth/wechat/bind-phone")
     @IdentityPermission(anonymous = true)
     public ResponseEntity<IdentityLoginVO> bind(@RequestBody BindPhoneRequest body) {
-        return ResponseEntity.status(201).body(identity.bindPhone(body.loginTicket(), body.phoneCode(), body.requestedRole()));
+        return ResponseEntity.status(201)
+                .body(
+                        identity.bindPhone(
+                                body.loginTicket(), body.phoneCode(), body.requestedRole()));
     }
 
     @PostMapping("/auth/password/login")
@@ -107,14 +66,20 @@ public class IdentityController {
 
     @PostMapping("/auth/logout")
     @IdentityPermission
-    public Map<String, Boolean> logout(HttpServletRequest request, @RequestHeader("Idempotency-Key") String key, @RequestBody LogoutRequest body) {
+    public Map<String, Boolean> logout(
+            HttpServletRequest request,
+            @RequestHeader("Idempotency-Key") String key,
+            @RequestBody LogoutRequest body) {
         identity.revoke(IdentityWebConfiguration.bearer(request), body.allSessions(), key);
         return Map.of("revoked", true);
     }
 
     @PutMapping("/auth/password")
     @IdentityPermission
-    public Map<String, Boolean> password(HttpServletRequest request, @RequestHeader("Idempotency-Key") String key, @RequestBody PasswordChangeRequest body) {
+    public Map<String, Boolean> password(
+            HttpServletRequest request,
+            @RequestHeader("Idempotency-Key") String key,
+            @RequestBody PasswordChangeRequest body) {
         identity.setPassword(IdentityWebConfiguration.bearer(request), body.password(), key);
         return Map.of("changed", true);
     }
@@ -122,8 +87,7 @@ public class IdentityController {
     @PatchMapping("/admin/access/{userId}")
     @IdentityPermission
     public void manageAccess() {
-        // Stage one uses only the controlled host command; an ordinary ADMIN bearer never grants
-        // eligibility.
+        // 阶段一仅通过受控主机命令开通管理员，普通 ADMIN 凭证不能授予管理员资格。
         throw new IdentityFailure(403, "ADMIN_ACCESS_MANAGEMENT_FORBIDDEN");
     }
 }

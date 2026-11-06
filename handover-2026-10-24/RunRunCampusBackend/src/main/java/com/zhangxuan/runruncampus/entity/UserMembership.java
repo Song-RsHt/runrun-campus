@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.MembershipPlanType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,23 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 用户会员持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "user_memberships")
 public class UserMembership {
@@ -37,8 +25,7 @@ public class UserMembership {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version
-    private Long version;
+    @Version private Long version;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private AppUser user;
@@ -62,8 +49,7 @@ public class UserMembership {
     @Column(nullable = false)
     private Instant expiresAt;
 
-    protected UserMembership() {
-    }
+    protected UserMembership() {}
 
     public UserMembership(AppUser user, MembershipPlanType plan, Instant expiresAt) {
         this.user = user;
@@ -76,14 +62,16 @@ public class UserMembership {
     }
 
     public void consumeTrip() {
-        if (remainingTrips <= 0)
+        if (remainingTrips <= 0) {
             throw new IllegalStateException("月卡次数已用完");
+        }
         remainingTrips--;
     }
 
     public void refundTrip() {
-        if (remainingTrips >= totalTrips)
+        if (remainingTrips >= totalTrips) {
             throw new IllegalStateException("月卡次数无需返还");
+        }
         remainingTrips++;
     }
 

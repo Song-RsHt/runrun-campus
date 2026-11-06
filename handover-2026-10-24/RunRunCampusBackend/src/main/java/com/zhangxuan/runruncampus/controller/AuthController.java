@@ -14,9 +14,9 @@ import com.zhangxuan.runruncampus.vo.LoginCaptchaVO;
 import com.zhangxuan.runruncampus.vo.RevokeResponse;
 import com.zhangxuan.runruncampus.vo.SessionInfoVO;
 import com.zhangxuan.runruncampus.vo.UserResponse;
+
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Set;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -29,47 +29,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.Set;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 旧系统账号与会话 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
-
     private final ApiRateLimitService rateLimitService;
-
     private final LoginCaptchaService captchaService;
 
-    public AuthController(AuthService authService, ApiRateLimitService rateLimitService, LoginCaptchaService captchaService) {
+    public AuthController(
+            AuthService authService,
+            ApiRateLimitService rateLimitService,
+            LoginCaptchaService captchaService) {
         this.authService = authService;
         this.rateLimitService = rateLimitService;
         this.captchaService = captchaService;
@@ -77,7 +52,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
-        return response(authService.register(request.phone(), request.password(), request.displayName(), request.role(), SessionMetadata.of(request.clientType(), request.deviceName()), request.privacyPolicyVersion()));
+        return response(
+                authService.register(
+                        request.phone(),
+                        request.password(),
+                        request.displayName(),
+                        request.role(),
+                        SessionMetadata.of(request.clientType(), request.deviceName()),
+                        request.privacyPolicyVersion()));
     }
 
     @PostMapping("/login")
@@ -85,7 +67,13 @@ public class AuthController {
         if (!rateLimitService.tryAcquire("auth-login-account", request.phone(), 10)) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后再试");
         }
-        return response(authService.login(request.phone(), request.password(), request.captchaToken(), request.captchaCode(), SessionMetadata.of(request.clientType(), request.deviceName())));
+        return response(
+                authService.login(
+                        request.phone(),
+                        request.password(),
+                        request.captchaToken(),
+                        request.captchaCode(),
+                        SessionMetadata.of(request.clientType(), request.deviceName())));
     }
 
     @PostMapping("/captcha")
@@ -104,7 +92,8 @@ public class AuthController {
     }
 
     @DeleteMapping("/sessions/{id}")
-    public RevokeResponse revoke(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+    public RevokeResponse revoke(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         authService.revokeSession(authorization, id);
         return new RevokeResponse(1);
     }
@@ -121,12 +110,15 @@ public class AuthController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity<Void> changePassword(@RequestHeader("Authorization") String authorization, @Valid @RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<Void> changePassword(
+            @RequestHeader("Authorization") String authorization,
+            @Valid @RequestBody ChangePasswordRequest request) {
         AppUser user = authService.requireUser(authorization);
         if (!rateLimitService.tryAcquire("auth-change-password", user.getId().toString(), 5)) {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后再试");
         }
-        authService.changeOwnPassword(authorization, request.currentPassword(), request.newPassword());
+        authService.changeOwnPassword(
+                authorization, request.currentPassword(), request.newPassword());
         return ResponseEntity.noContent().build();
     }
 
@@ -135,6 +127,14 @@ public class AuthController {
     }
 
     private UserResponse userResponse(AppUser user) {
-        return new UserResponse(user.getId(), user.getPhone(), user.getDisplayName(), user.getRole(), user.getAdminRole(), user.getAdminRole() == null ? Set.of() : user.getAdminRole().getPermissions(), user.getPrivacyPolicyVersion(), user.getPrivacyConsentAt());
+        return new UserResponse(
+                user.getId(),
+                user.getPhone(),
+                user.getDisplayName(),
+                user.getRole(),
+                user.getAdminRole(),
+                user.getAdminRole() == null ? Set.of() : user.getAdminRole().getPermissions(),
+                user.getPrivacyPolicyVersion(),
+                user.getPrivacyConsentAt());
     }
 }

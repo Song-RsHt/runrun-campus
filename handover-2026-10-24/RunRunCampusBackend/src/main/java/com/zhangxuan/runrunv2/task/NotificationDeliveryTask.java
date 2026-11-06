@@ -1,17 +1,11 @@
 package com.zhangxuan.runrunv2.task;
 
 import com.zhangxuan.runrunv2.integration.notification.NotificationOutboxWorker;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-
-
-
-
-
-/**
- * Schedules the existing worker; claim, lease and completion transactions stay in the service.
- */
+/** 触发现有通知工作器；领取、租约和完成回写事务仍由工作器管理。 */
 @Component
 public class NotificationDeliveryTask {
 
@@ -23,7 +17,7 @@ public class NotificationDeliveryTask {
 
     @Scheduled(fixedDelayString = "${rrc.notifications.worker-delay-ms:15000}")
     public void deliver() {
-        // The service checks M08 functions before claiming; no second scheduler is registered there.
+        // 工作器领取前检查 M08 开关，不能在工作器内重复注册调度。
         worker.runOnce();
     }
 }

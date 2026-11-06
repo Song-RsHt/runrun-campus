@@ -7,25 +7,13 @@ import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.repository.FeedbackRepository;
 import com.zhangxuan.runruncampus.service.FeedbackService;
 import com.zhangxuan.runruncampus.vo.FeedbackResponse;
-import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 用户反馈业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class FeedbackServiceImpl implements FeedbackService {
 
@@ -38,7 +26,9 @@ public class FeedbackServiceImpl implements FeedbackService {
     @Transactional(readOnly = true)
     @Override
     public List<FeedbackResponse> list(AppUser user) {
-        return feedbackRepository.findByUserOrderByCreatedAtDesc(user).stream().map(this::response).toList();
+        return feedbackRepository.findByUserOrderByCreatedAtDesc(user).stream()
+                .map(this::response)
+                .toList();
     }
 
     @Transactional
@@ -52,6 +42,14 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     private FeedbackResponse response(UserFeedback feedback) {
-        return new FeedbackResponse(feedback.getId(), feedback.getType(), feedback.getContent(), feedback.getCreatedAt(), feedback.getHandlingStatus(), feedback.getResolution(), feedback.getHandledAt(), feedback.getUpdatedAt());
+        return new FeedbackResponse(
+                feedback.getId(),
+                feedback.getType(),
+                feedback.getContent(),
+                feedback.getCreatedAt(),
+                feedback.getHandlingStatus(),
+                feedback.getResolution(),
+                feedback.getHandledAt(),
+                feedback.getUpdatedAt());
     }
 }

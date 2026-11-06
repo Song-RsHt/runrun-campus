@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.SessionClientType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,22 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 会话持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "user_sessions")
 public class Session {
@@ -60,14 +49,18 @@ public class Session {
     @Column(nullable = false, length = 16)
     private SessionClientType clientType;
 
-    protected Session() {
-    }
+    protected Session() {}
 
     public Session(String token, AppUser user, Instant expiresAt) {
         this(token, user, expiresAt, SessionClientType.UNKNOWN, "未知设备");
     }
 
-    public Session(String token, AppUser user, Instant expiresAt, SessionClientType clientType, String deviceName) {
+    public Session(
+            String token,
+            AppUser user,
+            Instant expiresAt,
+            SessionClientType clientType,
+            String deviceName) {
         this.token = token;
         this.user = user;
         this.expiresAt = expiresAt;
@@ -75,7 +68,10 @@ public class Session {
         this.createdAt = Instant.now();
         this.clientType = clientType == null ? SessionClientType.UNKNOWN : clientType;
         String normalizedName = deviceName == null ? "" : deviceName.trim();
-        this.deviceName = normalizedName.isEmpty() ? defaultDeviceName(this.clientType) : normalizedName.substring(0, Math.min(normalizedName.length(), 80));
+        this.deviceName =
+                normalizedName.isEmpty()
+                        ? defaultDeviceName(this.clientType)
+                        : normalizedName.substring(0, Math.min(normalizedName.length(), 80));
     }
 
     public Long getId() {
@@ -119,6 +115,8 @@ public class Session {
     }
 
     private static String defaultDeviceName(SessionClientType type) {
-        return type == SessionClientType.ANDROID ? "Android 设备" : type == SessionClientType.ADMIN_WEB ? "运营后台浏览器" : "未知设备";
+        return type == SessionClientType.ANDROID
+                ? "Android 设备"
+                : type == SessionClientType.ADMIN_WEB ? "运营后台浏览器" : "未知设备";
     }
 }

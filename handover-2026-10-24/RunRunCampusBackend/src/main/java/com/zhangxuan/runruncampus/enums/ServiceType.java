@@ -1,9 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
-
-
+/** 服务类型枚举；名称和取值沿用既有业务与协议定义。 */
 public enum ServiceType {
-
     LOBBY(200),
     DOOR(300),
     EXPRESS(500),
@@ -29,6 +27,11 @@ public enum ServiceType {
     }
 
     public boolean isPackageDelivery() {
-        return this == PACKAGE_SMALL || this == PACKAGE_MEDIUM || this == PACKAGE_MEDIUM_LARGE || this == PACKAGE_LARGE || this == PACKAGE_EXTRA_LARGE || this == PACKAGE_XL;
+        return this == PACKAGE_SMALL
+                || this == PACKAGE_MEDIUM
+                || this == PACKAGE_MEDIUM_LARGE
+                || this == PACKAGE_LARGE
+                || this == PACKAGE_EXTRA_LARGE
+                || this == PACKAGE_XL;
     }
 }

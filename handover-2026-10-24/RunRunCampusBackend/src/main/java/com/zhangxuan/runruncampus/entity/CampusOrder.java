@@ -8,6 +8,7 @@ import com.zhangxuan.runruncampus.enums.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.PickupStation;
 import com.zhangxuan.runruncampus.enums.ServiceType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,34 +20,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.UUID;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 校园订单持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "campus_orders")
 public class CampusOrder {
@@ -57,8 +36,7 @@ public class CampusOrder {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Version
-    private Long version;
+    @Version private Long version;
 
     @Column(nullable = false, unique = true, length = 24)
     private String orderNo;
@@ -153,7 +131,8 @@ public class CampusOrder {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 24)
-    private CourierSettlementStatus courierSettlementStatus = CourierSettlementStatus.NOT_APPLICABLE;
+    private CourierSettlementStatus courierSettlementStatus =
+            CourierSettlementStatus.NOT_APPLICABLE;
 
     private Instant courierSettledAt;
 
@@ -195,8 +174,7 @@ public class CampusOrder {
 
     private Instant courierLocationUpdatedAt;
 
-    protected CampusOrder() {
-    }
+    protected CampusOrder() {}
 
     public void identifyRequest(UUID requestKey, String requestFingerprint) {
         this.requestKey = requestKey;
@@ -207,27 +185,164 @@ public class CampusOrder {
         return requestFingerprint;
     }
 
-    public CampusOrder(String orderNo, AppUser customer, String merchant, String pickupCode, String pickupLocation, String destination, ServiceType serviceType) {
-        this(orderNo, customer, merchant, pickupCode, pickupLocation, destination, serviceType, serviceType.getFeeCents(DeliveryZone.fromLegacy(destination)), 0, null);
+    public CampusOrder(
+            String orderNo,
+            AppUser customer,
+            String merchant,
+            String pickupCode,
+            String pickupLocation,
+            String destination,
+            ServiceType serviceType) {
+        this(
+                orderNo,
+                customer,
+                merchant,
+                pickupCode,
+                pickupLocation,
+                destination,
+                serviceType,
+                serviceType.getFeeCents(DeliveryZone.fromLegacy(destination)),
+                0,
+                null);
     }
 
-    public CampusOrder(String orderNo, AppUser customer, String merchant, String pickupCode, String pickupLocation, String destination, ServiceType serviceType, int originalFeeCents, int discountCents, String couponTitle) {
-        this(orderNo, customer, merchant, pickupCode, pickupLocation, destination, serviceType, originalFeeCents, discountCents, couponTitle, false, null);
+    public CampusOrder(
+            String orderNo,
+            AppUser customer,
+            String merchant,
+            String pickupCode,
+            String pickupLocation,
+            String destination,
+            ServiceType serviceType,
+            int originalFeeCents,
+            int discountCents,
+            String couponTitle) {
+        this(
+                orderNo,
+                customer,
+                merchant,
+                pickupCode,
+                pickupLocation,
+                destination,
+                serviceType,
+                originalFeeCents,
+                discountCents,
+                couponTitle,
+                false,
+                null);
     }
 
-    public CampusOrder(String orderNo, AppUser customer, String merchant, String pickupCode, String pickupLocation, String destination, ServiceType serviceType, int originalFeeCents, int discountCents, String couponTitle, boolean membershipUsed, String membershipPlanTitle) {
-        this(orderNo, customer, merchant, pickupCode, pickupLocation, destination, serviceType, originalFeeCents, discountCents, couponTitle, membershipUsed, membershipPlanTitle, null);
+    public CampusOrder(
+            String orderNo,
+            AppUser customer,
+            String merchant,
+            String pickupCode,
+            String pickupLocation,
+            String destination,
+            ServiceType serviceType,
+            int originalFeeCents,
+            int discountCents,
+            String couponTitle,
+            boolean membershipUsed,
+            String membershipPlanTitle) {
+        this(
+                orderNo,
+                customer,
+                merchant,
+                pickupCode,
+                pickupLocation,
+                destination,
+                serviceType,
+                originalFeeCents,
+                discountCents,
+                couponTitle,
+                membershipUsed,
+                membershipPlanTitle,
+                null);
     }
 
-    public CampusOrder(String orderNo, AppUser customer, String merchant, String pickupCode, String pickupLocation, String destination, ServiceType serviceType, int originalFeeCents, int discountCents, String couponTitle, boolean membershipUsed, String membershipPlanTitle, Long membershipId) {
-        this(orderNo, customer, merchant, pickupCode, pickupLocation, destination, serviceType, originalFeeCents, discountCents, couponTitle, null, membershipUsed, membershipPlanTitle, membershipId);
+    public CampusOrder(
+            String orderNo,
+            AppUser customer,
+            String merchant,
+            String pickupCode,
+            String pickupLocation,
+            String destination,
+            ServiceType serviceType,
+            int originalFeeCents,
+            int discountCents,
+            String couponTitle,
+            boolean membershipUsed,
+            String membershipPlanTitle,
+            Long membershipId) {
+        this(
+                orderNo,
+                customer,
+                merchant,
+                pickupCode,
+                pickupLocation,
+                destination,
+                serviceType,
+                originalFeeCents,
+                discountCents,
+                couponTitle,
+                null,
+                membershipUsed,
+                membershipPlanTitle,
+                membershipId);
     }
 
-    public CampusOrder(String orderNo, AppUser customer, String merchant, String pickupCode, String pickupLocation, String destination, ServiceType serviceType, int originalFeeCents, int discountCents, String couponTitle, Long couponId, boolean membershipUsed, String membershipPlanTitle, Long membershipId) {
-        this(orderNo, customer, merchant, pickupCode, pickupLocation, destination, serviceType, originalFeeCents, discountCents, couponTitle, couponId, membershipUsed, membershipPlanTitle, membershipId, PickupStation.fromLegacy(serviceType), DeliveryZone.fromLegacy(destination));
+    public CampusOrder(
+            String orderNo,
+            AppUser customer,
+            String merchant,
+            String pickupCode,
+            String pickupLocation,
+            String destination,
+            ServiceType serviceType,
+            int originalFeeCents,
+            int discountCents,
+            String couponTitle,
+            Long couponId,
+            boolean membershipUsed,
+            String membershipPlanTitle,
+            Long membershipId) {
+        this(
+                orderNo,
+                customer,
+                merchant,
+                pickupCode,
+                pickupLocation,
+                destination,
+                serviceType,
+                originalFeeCents,
+                discountCents,
+                couponTitle,
+                couponId,
+                membershipUsed,
+                membershipPlanTitle,
+                membershipId,
+                PickupStation.fromLegacy(serviceType),
+                DeliveryZone.fromLegacy(destination));
     }
 
-    public CampusOrder(String orderNo, AppUser customer, String merchant, String pickupCode, String pickupLocation, String destination, ServiceType serviceType, int originalFeeCents, int discountCents, String couponTitle, Long couponId, boolean membershipUsed, String membershipPlanTitle, Long membershipId, PickupStation pickupStation, DeliveryZone deliveryZone) {
+    public CampusOrder(
+            String orderNo,
+            AppUser customer,
+            String merchant,
+            String pickupCode,
+            String pickupLocation,
+            String destination,
+            ServiceType serviceType,
+            int originalFeeCents,
+            int discountCents,
+            String couponTitle,
+            Long couponId,
+            boolean membershipUsed,
+            String membershipPlanTitle,
+            Long membershipId,
+            PickupStation pickupStation,
+            DeliveryZone deliveryZone) {
         this.orderNo = orderNo;
         this.customer = customer;
         this.merchant = merchant;
@@ -314,9 +429,13 @@ public class CampusOrder {
         }
         this.serviceType = confirmedServiceType;
         this.originalFeeCents = confirmedServiceType.getFeeCents(deliveryZone);
-        this.discountCents = isMembershipUsed() ? Math.min(originalFeeCents, 200) : Math.min(getDiscountCents(), originalFeeCents);
+        this.discountCents =
+                isMembershipUsed()
+                        ? Math.min(originalFeeCents, 200)
+                        : Math.min(getDiscountCents(), originalFeeCents);
         this.feeCents = Math.max(0, originalFeeCents - discountCents);
-        this.paymentStatus = paidCents >= feeCents ? OrderPaymentStatus.PAID : OrderPaymentStatus.UNPAID;
+        this.paymentStatus =
+                paidCents >= feeCents ? OrderPaymentStatus.PAID : OrderPaymentStatus.UNPAID;
         this.packageSizeConfirmed = true;
         this.proposedPackageServiceType = null;
         this.updatedAt = Instant.now();
@@ -349,12 +468,15 @@ public class CampusOrder {
     }
 
     public boolean canStartFulfillment() {
-        return paymentMethod == OrderPaymentMethod.CASH_ON_DELIVERY || paymentMethod == OrderPaymentMethod.PERSONAL_QR_MANUAL || paymentStatus == OrderPaymentStatus.PAID;
+        return paymentMethod == OrderPaymentMethod.CASH_ON_DELIVERY
+                || paymentMethod == OrderPaymentMethod.PERSONAL_QR_MANUAL
+                || paymentStatus == OrderPaymentStatus.PAID;
     }
 
     public void settleCashOnDelivery() {
-        if (paymentMethod != OrderPaymentMethod.CASH_ON_DELIVERY)
+        if (paymentMethod != OrderPaymentMethod.CASH_ON_DELIVERY) {
             return;
+        }
         this.paidCents = feeCents;
         this.paymentStatus = OrderPaymentStatus.PAID;
         this.updatedAt = Instant.now();
@@ -396,7 +518,8 @@ public class CampusOrder {
     }
 
     public void markCourierSettlementPending() {
-        if (paymentMethod == OrderPaymentMethod.PERSONAL_QR_MANUAL && paymentStatus == OrderPaymentStatus.PAID) {
+        if (paymentMethod == OrderPaymentMethod.PERSONAL_QR_MANUAL
+                && paymentStatus == OrderPaymentStatus.PAID) {
             this.courierSettlementStatus = CourierSettlementStatus.PENDING;
             this.updatedAt = Instant.now();
         }
@@ -410,25 +533,30 @@ public class CampusOrder {
     }
 
     public void recordPayment(int amountCents) {
-        if (amountCents <= 0)
+        if (amountCents <= 0) {
             throw new IllegalArgumentException("支付金额必须大于 0");
+        }
         this.paidCents += amountCents;
-        this.paymentStatus = paidCents >= feeCents ? OrderPaymentStatus.PAID : OrderPaymentStatus.UNPAID;
+        this.paymentStatus =
+                paidCents >= feeCents ? OrderPaymentStatus.PAID : OrderPaymentStatus.UNPAID;
         this.updatedAt = Instant.now();
     }
 
     public void recordRefundScheduled(int amountCents, boolean cancellation) {
-        if (amountCents <= 0 || amountCents > paidCents)
+        if (amountCents <= 0 || amountCents > paidCents) {
             throw new IllegalArgumentException("退款金额不正确");
+        }
         this.paidCents -= amountCents;
-        if (cancellation)
+        if (cancellation) {
             this.paymentStatus = OrderPaymentStatus.REFUNDING;
+        }
         this.updatedAt = Instant.now();
     }
 
     public void markRefunded() {
-        if (status == OrderStatus.CANCELLED && paidCents == 0)
+        if (status == OrderStatus.CANCELLED && paidCents == 0) {
             paymentStatus = OrderPaymentStatus.REFUNDED;
+        }
         updatedAt = Instant.now();
     }
 

@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.RiskSignalStatus;
 import com.zhangxuan.runruncampus.enums.RiskSignalType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,24 +14,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 风险信号持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "risk_signals")
 public class RiskSignal {
@@ -73,10 +60,14 @@ public class RiskSignal {
     @Column(length = 300)
     private String reviewNote;
 
-    protected RiskSignal() {
-    }
+    protected RiskSignal() {}
 
-    public RiskSignal(AppUser subject, RiskSignalType type, String sourceKey, CampusOrder order, String details) {
+    public RiskSignal(
+            AppUser subject,
+            RiskSignalType type,
+            String sourceKey,
+            CampusOrder order,
+            String details) {
         this.subject = subject;
         this.type = type;
         this.sourceKey = sourceKey;
@@ -87,10 +78,12 @@ public class RiskSignal {
     }
 
     public void review(RiskSignalStatus status, AppUser reviewer, String note) {
-        if (this.status != RiskSignalStatus.PENDING)
+        if (this.status != RiskSignalStatus.PENDING) {
             throw new IllegalStateException("风险信号已经处理");
-        if (status == RiskSignalStatus.PENDING)
+        }
+        if (status == RiskSignalStatus.PENDING) {
             throw new IllegalArgumentException("处理状态无效");
+        }
         this.status = status;
         this.reviewedBy = reviewer;
         this.reviewNote = note;

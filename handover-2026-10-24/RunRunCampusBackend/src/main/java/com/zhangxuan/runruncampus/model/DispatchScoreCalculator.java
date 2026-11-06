@@ -1,44 +1,17 @@
 package com.zhangxuan.runruncampus.model;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 派单评分计算；仅承载内部协作所需的数据或校验逻辑。 */
 public final class DispatchScoreCalculator {
 
-    private DispatchScoreCalculator() {
-    }
+    private DispatchScoreCalculator() {}
 
-    public static int recommendationScore(long activeOrders, long onlineMinutes, long completedOrders, long matchedCompletedOrders, Double averageRating, long ratingCount) {
+    public static int recommendationScore(
+            long activeOrders,
+            long onlineMinutes,
+            long completedOrders,
+            long matchedCompletedOrders,
+            Double averageRating,
+            long ratingCount) {
         long score = 60;
         score -= Math.min(Math.max(activeOrders, 0), 2) * 45;
         score += Math.min(Math.max(onlineMinutes, 0) / 12, 10);

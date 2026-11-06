@@ -1,33 +1,17 @@
 package com.zhangxuan.runruncampus.vo;
 
 import com.zhangxuan.runruncampus.enums.CreditEventType;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-public record CreditEventVO(Long id, CreditEventType type, int delta, int balanceAfter, String reason, String operatorName, Long riskSignalId, Long originalEventId, Instant createdAt) {
-}
+/** 信用分及风险信号事件响应；保持现有 JSON 字段及序列化契约。 */
+public record CreditEventVO(
+        Long id,
+        CreditEventType type,
+        int delta,
+        int balanceAfter,
+        String reason,
+        String operatorName,
+        Long riskSignalId,
+        Long originalEventId,
+        Instant createdAt) {}

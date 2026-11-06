@@ -4,25 +4,17 @@ import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.model.EvidenceBinding;
 import com.zhangxuan.runrunv2.model.VerifiedEvidence;
 import com.zhangxuan.runrunv2.vo.UploadTicketVO;
-import java.time.OffsetDateTime;
+
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 
-
-
-
-
-
-
-
-/**
- * Evidence lifecycle is not yet accepted: fail closed instead of silently using the legacy public
- * upload service. M07 replaces this adapter after lifecycle QA.
- */
+/** 证据生命周期尚未验收时保持拒绝，不能默用 legacy 公开上传服务；M07 在生命周期 QA 通过后替换此适配器。 */
 @Component
 public class PendingFulfillmentEvidence implements FulfillmentEvidence {
 
-    public UploadTicketVO issue(EvidenceBinding binding, String type, long size, OffsetDateTime now) {
+    public UploadTicketVO issue(
+            EvidenceBinding binding, String type, long size, OffsetDateTime now) {
         throw new IdentityFailure(409, "PROOF_NOT_READY");
     }
 

@@ -4,21 +4,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
+/** 管理员双因素认证凭据持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "admin_mfa_credentials")
 public class AdminMfaCredential {
 
-    @Id
-    public Long userId;
+    @Id public Long userId;
 
     @Column(columnDefinition = "text")
     public String secretCiphertext;
@@ -51,8 +45,7 @@ public class AdminMfaCredential {
     @Column(columnDefinition = "text")
     public String pendingSecretCiphertext;
 
-    protected AdminMfaCredential() {
-    }
+    protected AdminMfaCredential() {}
 
     public AdminMfaCredential(Long userId) {
         this.userId = userId;

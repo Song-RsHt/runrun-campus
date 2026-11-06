@@ -3,27 +3,15 @@ package com.zhangxuan.runruncampus.service;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.vo.CouponGrantResponse;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * 业务服务契约；由实现类维护事务与并发边界。
- */
+/** 管理员优惠券发放业务契约；实现类负责原有事务、锁与持久化协作。 */
 public interface AdminCouponService {
 
+    /**
+     * 向符合条件的用户发放既有一元优惠券，并记录审计。
+     *
+     * @param administrator 已通过权限校验的管理员
+     * @param userId 目标用户标识
+     * @return 用户优惠券授权
+     */
     CouponGrantResponse issueOneYuan(AppUser administrator, Long userId);
 }

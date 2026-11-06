@@ -11,49 +11,33 @@ import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.CourierOperationsService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
 import com.zhangxuan.runruncampus.vo.OperationsResponse;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 骑手接单开关业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class CourierOperationsServiceImpl implements CourierOperationsService {
 
     private static final ZoneId CAMPUS_ZONE = ZoneId.of("Asia/Shanghai");
-
-    private static final List<OrderStatus> ACTIVE_STATUSES = List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP);
+    private static final List<OrderStatus> ACTIVE_STATUSES =
+            List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP);
 
     private final UserRepository userRepository;
-
     private final OrderRepository orderRepository;
-
     private final CourierCertificationService certificationService;
-
     private final PlatformSettingsService settingsService;
 
-    public CourierOperationsServiceImpl(UserRepository userRepository, OrderRepository orderRepository, CourierCertificationService certificationService, PlatformSettingsService settingsService) {
+    public CourierOperationsServiceImpl(
+            UserRepository userRepository,
+            OrderRepository orderRepository,
+            CourierCertificationService certificationService,
+            PlatformSettingsService settingsService) {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.certificationService = certificationService;
@@ -71,7 +55,10 @@ public class CourierOperationsServiceImpl implements CourierOperationsService {
     @Override
     public OperationsResponse updateAvailability(AppUser courier, boolean acceptingOrders) {
         requireCourier(courier);
-        AppUser locked = userRepository.findLockedById(courier.getId()).orElseThrow(() -> new BusinessFailure(404, "骑手不存在"));
+        AppUser locked =
+                userRepository
+                        .findLockedById(courier.getId())
+                        .orElseThrow(() -> new BusinessFailure(404, "骑手不存在"));
         if (acceptingOrders && !certificationService.isEligible(locked)) {
             throw new BusinessFailure(403, "骑手认证有效后才能上线接单");
         }
@@ -85,7 +72,20 @@ public class CourierOperationsServiceImpl implements CourierOperationsService {
         CourierBusinessStats stats = orderRepository.businessStatsForCourier(courier, todayStart);
         Double average = orderRepository.averageRatingForCourier(courier);
         double averageRating = average == null ? 0 : Math.round(average * 10.0) / 10.0;
-        return new OperationsResponse(approved, approved && courier.isCourierAcceptingOrders(), courier.getCourierAvailabilityUpdatedAt(), orderRepository.countFulfillablePendingOrders(), orderRepository.countByCourierAndStatusIn(courier, ACTIVE_STATUSES), settingsService.get().maxActiveOrders(), value(stats == null ? null : stats.getTodayCompletedOrders()), value(stats == null ? null : stats.getTotalCompletedOrders()), value(stats == null ? null : stats.getTodayGrossServiceFeeCents()), value(stats == null ? null : stats.getTotalGrossServiceFeeCents()), averageRating, orderRepository.countByCourierAndRatingScoreIsNotNull(courier), Instant.now());
+        return new OperationsResponse(
+                approved,
+                approved && courier.isCourierAcceptingOrders(),
+                courier.getCourierAvailabilityUpdatedAt(),
+                orderRepository.countFulfillablePendingOrders(),
+                orderRepository.countByCourierAndStatusIn(courier, ACTIVE_STATUSES),
+                settingsService.get().maxActiveOrders(),
+                value(stats == null ? null : stats.getTodayCompletedOrders()),
+                value(stats == null ? null : stats.getTotalCompletedOrders()),
+                value(stats == null ? null : stats.getTodayGrossServiceFeeCents()),
+                value(stats == null ? null : stats.getTotalGrossServiceFeeCents()),
+                averageRating,
+                orderRepository.countByCourierAndRatingScoreIsNotNull(courier),
+                Instant.now());
     }
 
     private long value(Long number) {

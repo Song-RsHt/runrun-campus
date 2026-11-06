@@ -1,7 +1,4 @@
 package com.zhangxuan.runruncampus.model;
 
-/**
- * Internal binary response payload; never exposes a storage path.
- */
-public record ProofContent(String contentType, byte[] bytes) {
-}
+/** 私有图片的二进制响应载荷；不向调用方暴露存储路径。 */
+public record ProofContent(String contentType, byte[] bytes) {}

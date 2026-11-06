@@ -1,9 +1,7 @@
 package com.zhangxuan.runrunv2.enums;
 
-
-
+/** 服务类型枚举；名称和取值沿用既有业务与协议定义。 */
 public enum ServiceType {
-
     LOBBY("楼下取餐", 200, false),
     DOOR("送到门口", 300, false),
     EXPRESS("加急配送", 500, false),

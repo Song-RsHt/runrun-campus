@@ -2,8 +2,5 @@ package com.zhangxuan.runrunv2.dto;
 
 import java.time.Instant;
 
-
-
-
-public record HoldRequest(Long orderId, Long certificationId, String reason, Instant reviewDueAt) {
-}
+/** 保全请求参数；保留入口的字段、构造器及校验契约。 */
+public record HoldRequest(Long orderId, Long certificationId, String reason, Instant reviewDueAt) {}

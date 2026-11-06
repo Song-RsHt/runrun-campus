@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.AdminRole;
 import com.zhangxuan.runruncampus.enums.UserRole;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,37 +11,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 import java.util.Objects;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 应用用户持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "app_users")
 public class AppUser {
@@ -93,8 +68,7 @@ public class AppUser {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    protected AppUser() {
-    }
+    protected AppUser() {}
 
     public AppUser(String phone, String passwordHash, String displayName, UserRole role) {
         this.phone = phone;
@@ -115,8 +89,9 @@ public class AppUser {
     }
 
     public void approveCourier() {
-        if (role == UserRole.COURIER)
+        if (role == UserRole.COURIER) {
             courierApproved = true;
+        }
     }
 
     public void revokeCourierApproval() {
@@ -170,8 +145,9 @@ public class AppUser {
     }
 
     public void anonymize(String deletedPasswordHash) {
-        if (id == null)
+        if (id == null) {
             throw new IllegalStateException("未保存的账号不能注销");
+        }
         phone = "deleted-" + id;
         displayName = "已注销用户";
         passwordHash = Objects.requireNonNull(deletedPasswordHash);
@@ -195,8 +171,9 @@ public class AppUser {
     }
 
     public void changeAdminRole(AdminRole adminRole) {
-        if (role != UserRole.ADMIN)
+        if (role != UserRole.ADMIN) {
             throw new IllegalStateException("非管理员不能分配管理员岗位");
+        }
         this.adminRole = Objects.requireNonNull(adminRole);
         invalidateAdminAuthentication();
     }
@@ -227,8 +204,9 @@ public class AppUser {
     }
 
     public void invalidateAdminAuthentication() {
-        if (role == UserRole.ADMIN)
+        if (role == UserRole.ADMIN) {
             securityVersion++;
+        }
     }
 
     public Instant getLoginLockedUntil() {
@@ -240,11 +218,13 @@ public class AppUser {
     }
 
     public void recordLoginFailure(int maximumAttempts, Instant lockUntil) {
-        if (loginLockedUntil != null && !loginLockedUntil.isAfter(Instant.now()))
+        if (loginLockedUntil != null && !loginLockedUntil.isAfter(Instant.now())) {
             clearLoginFailures();
+        }
         failedLoginAttempts++;
-        if (failedLoginAttempts >= maximumAttempts)
+        if (failedLoginAttempts >= maximumAttempts) {
             loginLockedUntil = lockUntil;
+        }
     }
 
     public void clearLoginFailures() {
@@ -261,8 +241,9 @@ public class AppUser {
     }
 
     public void setCourierAcceptingOrders(boolean acceptingOrders) {
-        if (role != UserRole.COURIER)
+        if (role != UserRole.COURIER) {
             throw new IllegalStateException("只有骑手可以设置接单状态");
+        }
         this.courierAcceptingOrders = acceptingOrders;
         this.courierAvailabilityUpdatedAt = Instant.now();
     }

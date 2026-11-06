@@ -1,31 +1,27 @@
 package com.zhangxuan.runruncampus.controller;
 
 import com.zhangxuan.runruncampus.vo.AndroidVersion;
-import java.net.URI;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
 
-
-
-
-
-
-
-
+/** 应用版本 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v1/app-version")
 public class AppVersionController {
 
     private final int versionCode;
-
     private final String versionName;
-
     private final String downloadUrl;
 
-    public AppVersionController(@Value("${app.android-update.version-code:0}") int versionCode, @Value("${app.android-update.version-name:}") String versionName, @Value("${app.android-update.download-url:}") String downloadUrl) {
+    public AppVersionController(
+            @Value("${app.android-update.version-code:0}") int versionCode,
+            @Value("${app.android-update.version-name:}") String versionName,
+            @Value("${app.android-update.download-url:}") String downloadUrl) {
         this.versionCode = versionCode;
         this.versionName = versionName.trim();
         this.downloadUrl = downloadUrl.trim();

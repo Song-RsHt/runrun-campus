@@ -4,8 +4,9 @@ import com.zhangxuan.runruncampus.dto.AddressRequest;
 import com.zhangxuan.runruncampus.service.AddressService;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.vo.AddressResponse;
+
 import jakarta.validation.Valid;
-import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,31 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 收件地址 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v1/addresses")
 public class AddressController {
 
     private final AuthService authService;
-
     private final AddressService addressService;
 
     public AddressController(AuthService authService, AddressService addressService) {
@@ -56,23 +40,41 @@ public class AddressController {
     }
 
     @PostMapping
-    public AddressResponse create(@RequestHeader("Authorization") String authorization, @Valid @RequestBody AddressRequest request) {
-        return addressService.create(authService.requireUser(authorization), request.label(), request.address(), request.deliveryZone(), request.defaultAddress());
+    public AddressResponse create(
+            @RequestHeader("Authorization") String authorization,
+            @Valid @RequestBody AddressRequest request) {
+        return addressService.create(
+                authService.requireUser(authorization),
+                request.label(),
+                request.address(),
+                request.deliveryZone(),
+                request.defaultAddress());
     }
 
     @PutMapping("/{id}")
-    public AddressResponse update(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody AddressRequest request) {
-        return addressService.update(authService.requireUser(authorization), id, request.label(), request.address(), request.deliveryZone(), request.defaultAddress());
+    public AddressResponse update(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable Long id,
+            @Valid @RequestBody AddressRequest request) {
+        return addressService.update(
+                authService.requireUser(authorization),
+                id,
+                request.label(),
+                request.address(),
+                request.deliveryZone(),
+                request.defaultAddress());
     }
 
     @PostMapping("/{id}/default")
-    public AddressResponse setDefault(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+    public AddressResponse setDefault(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         return addressService.setDefault(authService.requireUser(authorization), id);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+    public void delete(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         addressService.delete(authService.requireUser(authorization), id);
     }
 }

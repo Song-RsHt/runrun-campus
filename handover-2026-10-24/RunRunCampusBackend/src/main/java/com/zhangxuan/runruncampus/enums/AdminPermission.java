@@ -1,9 +1,7 @@
 package com.zhangxuan.runruncampus.enums;
 
-
-
+/** 管理员权限枚举；名称和取值沿用既有业务与协议定义。 */
 public enum AdminPermission {
-
     DASHBOARD_VIEW,
     ORDER_VIEW,
     ORDER_DISPATCH,

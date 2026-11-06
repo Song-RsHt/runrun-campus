@@ -8,19 +8,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
+/** 订单参与者聊天消息持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "order_chat_messages")
 public class OrderChatMessage {
@@ -46,8 +37,7 @@ public class OrderChatMessage {
 
     private Instant readAt;
 
-    protected OrderChatMessage() {
-    }
+    protected OrderChatMessage() {}
 
     public OrderChatMessage(CampusOrder order, AppUser sender, AppUser recipient, String content) {
         this.order = order;

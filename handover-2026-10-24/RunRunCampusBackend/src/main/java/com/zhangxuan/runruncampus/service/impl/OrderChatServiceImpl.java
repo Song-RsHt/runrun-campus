@@ -13,61 +13,23 @@ import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.OrderChatVO;
 import com.zhangxuan.runruncampus.vo.OrderUnreadVO;
 import com.zhangxuan.runruncampus.vo.UnreadChatSummaryVO;
-import java.time.Instant;
-import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 订单参与者聊天业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class OrderChatServiceImpl implements OrderChatService {
 
     private final OrderRepository orders;
-
     private final OrderChatRepository chats;
-
     private final OrderMessageService notifications;
 
-    public OrderChatServiceImpl(OrderRepository orders, OrderChatRepository chats, OrderMessageService notifications) {
+    public OrderChatServiceImpl(
+            OrderRepository orders, OrderChatRepository chats, OrderMessageService notifications) {
         this.orders = orders;
         this.chats = chats;
         this.notifications = notifications;
@@ -76,17 +38,28 @@ public class OrderChatServiceImpl implements OrderChatService {
     @Transactional
     @Override
     public List<OrderChatVO> list(AppUser user, Long orderId) {
-        CampusOrder order = orders.findById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
+        CampusOrder order =
+                orders.findById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireParticipant(user, order);
         chats.markRead(orderId, user.getId(), Instant.now());
         boolean customer = user.getId().equals(order.getCustomer().getId());
-        return chats.findByOrderOrderByCreatedAtAsc(order).stream().filter(chat -> customer || chat.getSender().getId().equals(user.getId()) || chat.getRecipient().getId().equals(user.getId())).map(this::response).toList();
+        return chats.findByOrderOrderByCreatedAtAsc(order).stream()
+                .filter(
+                        chat ->
+                                customer
+                                        || chat.getSender().getId().equals(user.getId())
+                                        || chat.getRecipient().getId().equals(user.getId()))
+                .map(this::response)
+                .toList();
     }
 
     @Transactional(readOnly = true)
     @Override
     public UnreadChatSummaryVO unread(AppUser user) {
-        List<OrderUnreadVO> orderCounts = chats.findUnreadCounts(user.getId()).stream().map(count -> new OrderUnreadVO(count.getOrderId(), count.getUnreadCount())).toList();
+        List<OrderUnreadVO> orderCounts =
+                chats.findUnreadCounts(user.getId()).stream()
+                        .map(count -> new OrderUnreadVO(count.getOrderId(), count.getUnreadCount()))
+                        .toList();
         long total = orderCounts.stream().mapToLong(OrderUnreadVO::unreadCount).sum();
         return new UnreadChatSummaryVO(total, orderCounts);
     }
@@ -98,24 +71,37 @@ public class OrderChatServiceImpl implements OrderChatService {
         if (text.isBlank() || text.length() > 500) {
             throw new BusinessFailure(400, "请输入不超过500字的消息");
         }
-        CampusOrder order = orders.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
+        CampusOrder order =
+                orders.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireParticipant(sender, order);
-        if (order.getStatus() != OrderStatus.ACCEPTED && order.getStatus() != OrderStatus.PICKED_UP) {
+        if (order.getStatus() != OrderStatus.ACCEPTED
+                && order.getStatus() != OrderStatus.PICKED_UP) {
             throw new BusinessFailure(409, "当前订单不能发送消息");
         }
-        AppUser recipient = sender.getId().equals(order.getCustomer().getId()) ? order.getCourier() : order.getCustomer();
+        AppUser recipient =
+                sender.getId().equals(order.getCustomer().getId())
+                        ? order.getCourier()
+                        : order.getCustomer();
         OrderChatMessage chat = chats.save(new OrderChatMessage(order, sender, recipient, text));
         notifications.send(recipient, order, OrderMessageType.ORDER_CHAT, "订单有新消息", "请进入订单查看消息");
         return response(chat);
     }
 
     private void requireParticipant(AppUser user, CampusOrder order) {
-        if (!user.getId().equals(order.getCustomer().getId()) && (order.getCourier() == null || !user.getId().equals(order.getCourier().getId()))) {
+        if (!user.getId().equals(order.getCustomer().getId())
+                && (order.getCourier() == null
+                        || !user.getId().equals(order.getCourier().getId()))) {
             throw new BusinessFailure(403, "仅订单当前参与者可查看或发送消息");
         }
     }
 
     private OrderChatVO response(OrderChatMessage chat) {
-        return new OrderChatVO(chat.getId(), chat.getSender().getId(), chat.getSender().getDisplayName(), chat.getRecipient().getId(), chat.getContent(), chat.getCreatedAt());
+        return new OrderChatVO(
+                chat.getId(),
+                chat.getSender().getId(),
+                chat.getSender().getDisplayName(),
+                chat.getRecipient().getId(),
+                chat.getContent(),
+                chat.getCreatedAt());
     }
 }

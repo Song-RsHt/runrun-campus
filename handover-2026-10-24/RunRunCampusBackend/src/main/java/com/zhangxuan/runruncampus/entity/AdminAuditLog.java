@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,23 +13,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 管理员操作审计日志持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "admin_audit_logs")
 public class AdminAuditLog {
@@ -57,10 +45,14 @@ public class AdminAuditLog {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    protected AdminAuditLog() {
-    }
+    protected AdminAuditLog() {}
 
-    public AdminAuditLog(AppUser administrator, AdminAuditAction action, AdminAuditTargetType targetType, Long targetId, String summary) {
+    public AdminAuditLog(
+            AppUser administrator,
+            AdminAuditAction action,
+            AdminAuditTargetType targetType,
+            Long targetId,
+            String summary) {
         this.administrator = administrator;
         this.action = action;
         this.targetType = targetType;

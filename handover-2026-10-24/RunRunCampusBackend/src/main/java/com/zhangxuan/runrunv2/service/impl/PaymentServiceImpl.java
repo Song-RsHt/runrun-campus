@@ -23,6 +23,12 @@ import com.zhangxuan.runrunv2.vo.PaymentOrderVO;
 import com.zhangxuan.runrunv2.vo.PaymentSummaryVO;
 import com.zhangxuan.runrunv2.vo.RefundOrderVO;
 import com.zhangxuan.runrunv2.vo.StartedPaymentVO;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigInteger;
 import java.time.Clock;
 import java.time.OffsetDateTime;
@@ -32,110 +38,32 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /**
- * 编排隔离支付、退款和资金事件。行锁、渠道事件幂等与并发版本共同防止重复推进；金额继续使用整数分。 渠道交互通过适配器完成，Mapper 不承担状态机。参见《支付与退款规则》。
+ * 支付回执及退款业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。
+ *
+ * <p>编排隔离支付、退款和资金事件。行锁、渠道事件幂等与并发版本共同防止重复推进；金额继续使用整数分。 渠道交互通过适配器完成，Mapper 不承担状态机。参见《支付与退款规则》。
  */
 @Service
 @ConditionalOnProperty(name = "rrc.payment.mock-enabled", havingValue = "true")
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentMapper mapper;
-
     private final IdentityService identity;
-
     private final OrderStore orders;
-
     private final OrderIdempotency requests;
-
     private final OrderJson json;
-
     private final MockPaymentAdapter channel;
-
     private final Clock clock;
 
-    public PaymentServiceImpl(PaymentMapper mapper, IdentityService identity, OrderStore orders, OrderIdempotency requests, OrderJson json, MockPaymentAdapter channel, Clock clock) {
+    public PaymentServiceImpl(
+            PaymentMapper mapper,
+            IdentityService identity,
+            OrderStore orders,
+            OrderIdempotency requests,
+            OrderJson json,
+            MockPaymentAdapter channel,
+            Clock clock) {
         this.mapper = mapper;
         this.identity = identity;
         this.orders = orders;
@@ -154,8 +82,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public OriginalPaymentVO create(String orderId, long amountCents, OffsetDateTime deadline) {
         var order = orders.read(orderId, true);
-        if (!order.status().equals("PENDING_PAYMENT") || amountCents != order.originalFeeCents() || !deadline.toInstant().equals(order.pendingPaymentDeadline().toInstant()))
+        if (!order.status().equals("PENDING_PAYMENT")
+                || amountCents != order.originalFeeCents()
+                || !deadline.toInstant().equals(order.pendingPaymentDeadline().toInstant())) {
             throw conflict();
+        }
         String id = mapper.insertOriginalPayment(Long.valueOf(orderId), amountCents, deadline);
         return new OriginalPaymentVO(id, orderId, "ORIGINAL", amountCents, "UNPAID", deadline, 0);
     }
@@ -171,43 +102,78 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public StartedPaymentVO start(String token, String paymentId, String key, PaymentVersionRequest body) {
+    public StartedPaymentVO start(
+            String token, String paymentId, String key, PaymentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "USER", false);
-        PaymentOrderVO p = lockPayment(paymentId, actor.id());
+        PaymentOrderVO paymentOrder = lockPayment(paymentId, actor.id());
         var content = List.of(paymentId, required(body));
-        StartedPaymentVO replay = requests.replay(actor.id(), "payments:attempt", key, content, StartedPaymentVO.class);
-        if (replay != null)
+        StartedPaymentVO replay =
+                requests.replay(
+                        actor.id(), "payments:attempt", key, content, StartedPaymentVO.class);
+        if (replay != null) {
             return replay;
-        version(p.version(), body.expectedVersion());
-        if (p.status().equals("CLOSED") || originalExpired(p))
+        }
+        version(paymentOrder.version(), body.expectedVersion());
+        if (paymentOrder.status().equals("CLOSED") || originalExpired(paymentOrder)) {
             throw new IdentityFailure(409, "PAYMENT_CLOSED");
-        if (p.status().equals("PAID"))
+        }
+        if (paymentOrder.status().equals("PAID")) {
             throw conflict();
-        // UNKNOWN includes transport timeout: only reconciliation can clear the old attempt.
-        if (!active(p.id()).isEmpty())
+        }
+        // UNKNOWN 包括网络超时；只能经对账确认后解除原尝试的阻塞。
+        if (!active(paymentOrder.id()).isEmpty()) {
             throw new IdentityFailure(409, "PAYMENT_RESULT_PENDING");
-        int number = mapper.findNextAttemptNumber(Long.valueOf(p.id()));
-        String id = mapper.insertPaymentAttempt(Long.valueOf(p.id()), number, "mock-payment-" + UUID.randomUUID());
+        }
+        int number = mapper.findNextAttemptNumber(Long.valueOf(paymentOrder.id()));
+        String id =
+                mapper.insertPaymentAttempt(
+                        Long.valueOf(paymentOrder.id()),
+                        number,
+                        "mock-payment-" + UUID.randomUUID());
         channel.submit("PAYMENT", id);
-        paymentStatus(p.id(), "PROCESSING");
-        StartedPaymentVO response = new StartedPaymentVO(payment(p.id(), false), attempt(id));
-        event(p.orderId(), actor.id(), "PAYMENT_ATTEMPT_STARTED", id, Map.of("paymentId", p.id(), "attemptId", id));
+        paymentStatus(paymentOrder.id(), "PROCESSING");
+        StartedPaymentVO response =
+                new StartedPaymentVO(payment(paymentOrder.id(), false), attempt(id));
+        event(
+                paymentOrder.orderId(),
+                actor.id(),
+                "PAYMENT_ATTEMPT_STARTED",
+                id,
+                Map.of("paymentId", paymentOrder.id(), "attemptId", id));
         requests.finish(actor.id(), "payments:attempt", key, "PAYMENT_ATTEMPT", id, response);
         return response;
     }
 
     @Transactional
     @Override
-    public PaymentSummaryVO queryPayment(String token, String id, String key, PaymentVersionRequest body) {
+    public PaymentSummaryVO queryPayment(
+            String token, String id, String key, PaymentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "USER", false);
-        PaymentOrderVO p = lockPayment(id, actor.id());
-        PaymentSummaryVO replay = requests.replay(actor.id(), "payments:query", key, List.of(id, required(body)), PaymentSummaryVO.class);
-        if (replay != null)
+        PaymentOrderVO paymentOrder = lockPayment(id, actor.id());
+        PaymentSummaryVO replay =
+                requests.replay(
+                        actor.id(),
+                        "payments:query",
+                        key,
+                        List.of(id, required(body)),
+                        PaymentSummaryVO.class);
+        if (replay != null) {
             return replay;
-        version(p.version(), body.expectedVersion());
-        // Query even after close: a lost late receipt must still be compensated.
-        for (PaymentAttemptVO a : attempts(id)) if (!a.status().equals("SUCCESS"))
-            applyPayment(p, a, channel.query("PAYMENT", a.id()), "query:payment:" + a.id() + ":" + channel.revision("PAYMENT", a.id()));
+        }
+        version(paymentOrder.version(), body.expectedVersion());
+        // 支付关闭后仍须查询，以便补偿丢失的迟到回执。
+        for (PaymentAttemptVO paymentAttempt : attempts(id)) {
+            if (!paymentAttempt.status().equals("SUCCESS")) {
+                applyPayment(
+                        paymentOrder,
+                        paymentAttempt,
+                        channel.query("PAYMENT", paymentAttempt.id()),
+                        "query:payment:"
+                                + paymentAttempt.id()
+                                + ":"
+                                + channel.revision("PAYMENT", paymentAttempt.id()));
+            }
+        }
         PaymentSummaryVO result = summary(payment(id, false));
         requests.finish(actor.id(), "payments:query", key, "PAYMENT_ORDER", id, result);
         return result;
@@ -215,19 +181,27 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public PaymentAttemptVO paymentResult(String token, String id, String key, PaymentResultRequest body) {
+    public PaymentAttemptVO paymentResult(
+            String token, String id, String key, PaymentResultRequest body) {
         var actor = identity.authorizeForWrite(token, "ADMIN", false);
-        PaymentAttemptVO a = attempt(id);
-        PaymentOrderVO p = lockPayment(a.paymentOrderId(), null);
-        a = attempt(id);
+        PaymentAttemptVO paymentAttempt = attempt(id);
+        PaymentOrderVO paymentOrder = lockPayment(paymentAttempt.paymentOrderId(), null);
+        paymentAttempt = attempt(id);
         validateResult(body);
-        PaymentAttemptVO replay = requests.replay(actor.id(), "payments:result", key, List.of(id, body), PaymentAttemptVO.class);
-        if (replay != null)
+        PaymentAttemptVO replay =
+                requests.replay(
+                        actor.id(),
+                        "payments:result",
+                        key,
+                        List.of(id, body),
+                        PaymentAttemptVO.class);
+        if (replay != null) {
             return replay;
+        }
         if (!knownEvent("PAYMENT", id, body.result(), body.eventId())) {
-            version(a.version(), body.expectedVersion());
+            version(paymentAttempt.version(), body.expectedVersion());
             channel.record("PAYMENT", id, body.result());
-            applyPayment(p, a, body.result(), body.eventId());
+            applyPayment(paymentOrder, paymentAttempt, body.result(), body.eventId());
         }
         audit(actor.id(), "PAYMENT_RESULT", id, key, "isolated simulated channel result");
         PaymentAttemptVO result = attempt(id);
@@ -237,19 +211,23 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public RefundOrderVO refundResult(String token, String id, String key, PaymentResultRequest body) {
+    public RefundOrderVO refundResult(
+            String token, String id, String key, PaymentResultRequest body) {
         var actor = identity.authorizeForWrite(token, "ADMIN", false);
-        RefundOrderVO r = refund(id);
-        lockPayment(r.paymentOrderId(), null);
-        r = refund(id);
+        RefundOrderVO refundOrder = refund(id);
+        lockPayment(refundOrder.paymentOrderId(), null);
+        refundOrder = refund(id);
         validateResult(body);
-        RefundOrderVO replay = requests.replay(actor.id(), "refunds:result", key, List.of(id, body), RefundOrderVO.class);
-        if (replay != null)
+        RefundOrderVO replay =
+                requests.replay(
+                        actor.id(), "refunds:result", key, List.of(id, body), RefundOrderVO.class);
+        if (replay != null) {
             return replay;
+        }
         if (!knownEvent("REFUND", id, body.result(), body.eventId())) {
-            version(r.version(), body.expectedVersion());
+            version(refundOrder.version(), body.expectedVersion());
             channel.record("REFUND", id, body.result());
-            applyRefund(r, body.result(), body.eventId());
+            applyRefund(refundOrder, body.result(), body.eventId());
         }
         audit(actor.id(), "REFUND_RESULT", id, key, "isolated simulated channel result");
         RefundOrderVO result = refund(id);
@@ -259,16 +237,27 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public RefundOrderVO queryRefund(String token, String id, String key, PaymentVersionRequest body) {
+    public RefundOrderVO queryRefund(
+            String token, String id, String key, PaymentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "USER", false);
-        RefundOrderVO r = refund(id);
-        lockPayment(r.paymentOrderId(), actor.id());
-        r = refund(id);
-        RefundOrderVO replay = requests.replay(actor.id(), "refunds:query", key, List.of(id, required(body)), RefundOrderVO.class);
-        if (replay != null)
+        RefundOrderVO refundOrder = refund(id);
+        lockPayment(refundOrder.paymentOrderId(), actor.id());
+        refundOrder = refund(id);
+        RefundOrderVO replay =
+                requests.replay(
+                        actor.id(),
+                        "refunds:query",
+                        key,
+                        List.of(id, required(body)),
+                        RefundOrderVO.class);
+        if (replay != null) {
             return replay;
-        version(r.version(), body.expectedVersion());
-        applyRefund(r, channel.query("REFUND", id), "query:refund:" + id + ":" + channel.revision("REFUND", id));
+        }
+        version(refundOrder.version(), body.expectedVersion());
+        applyRefund(
+                refundOrder,
+                channel.query("REFUND", id),
+                "query:refund:" + id + ":" + channel.revision("REFUND", id));
         RefundOrderVO result = refund(id);
         requests.finish(actor.id(), "refunds:query", key, "REFUND_ORDER", id, result);
         return result;
@@ -280,28 +269,48 @@ public class PaymentServiceImpl implements PaymentService {
         var actor = identity.authorizeForWrite(token, "USER", false);
         var order = orders.read(id, true);
         own(actor.id(), order);
-        if (body == null)
+        if (body == null) {
             throw IdentityFailure.invalid();
+        }
         InputValidation.text(body.reason(), 500);
         String reason = body.reason();
-        CancelledOrderVO replay = requests.replay(actor.id(), "payments:cancel", key, List.of(id, body), CancelledOrderVO.class);
-        if (replay != null)
+        CancelledOrderVO replay =
+                requests.replay(
+                        actor.id(),
+                        "payments:cancel",
+                        key,
+                        List.of(id, body),
+                        CancelledOrderVO.class);
+        if (replay != null) {
             return replay;
+        }
         version(order.version(), body.expectedVersion());
-        if (!Set.of("PENDING_PAYMENT", "PENDING_ASSIGNMENT", "ACCEPTED").contains(order.status()))
+        if (!Set.of("PENDING_PAYMENT", "PENDING_ASSIGNMENT", "ACCEPTED").contains(order.status())) {
             throw conflict();
+        }
         closeOrder(id);
-        // Cancel all financial obligations, retaining their evidence and every receipt.
+        // 取消全部资金义务时仍保留凭证和每一条渠道回执。
         mapper.cancelPendingAdjustments(now(), Long.valueOf(id));
-        for (PaymentOrderVO p : paymentsForOrder(id)) {
-            payment(p.id(), true);
-            for (PaymentAttemptVO a : attempts(p.id())) if (a.status().equals("SUCCESS")) {
-                long available = available(a.id(), p.amountCents());
-                if (available > 0)
-                    createRefund(p, a.id(), null, available, "CANCELLATION", "cancel:" + id + ":" + a.id(), reason);
+        for (PaymentOrderVO paymentOrder : paymentsForOrder(id)) {
+            payment(paymentOrder.id(), true);
+            for (PaymentAttemptVO paymentAttempt : attempts(paymentOrder.id())) {
+                if (paymentAttempt.status().equals("SUCCESS")) {
+                    long available = available(paymentAttempt.id(), paymentOrder.amountCents());
+                    if (available > 0) {
+                        createRefund(
+                                paymentOrder,
+                                paymentAttempt.id(),
+                                null,
+                                available,
+                                "CANCELLATION",
+                                "cancel:" + id + ":" + paymentAttempt.id(),
+                                reason);
+                    }
+                }
             }
-            if (!p.status().equals("PAID") && !p.status().equals("CLOSED"))
-                paymentStatus(p.id(), "CLOSED");
+            if (!paymentOrder.status().equals("PAID") && !paymentOrder.status().equals("CLOSED")) {
+                paymentStatus(paymentOrder.id(), "CLOSED");
+            }
         }
         event(id, actor.id(), "ORDER_CANCELLED", key, Map.of("reason", reason));
         notifyUser(id, "cancel:" + id, "ORDER_CANCELLED");
@@ -310,97 +319,166 @@ public class PaymentServiceImpl implements PaymentService {
         return result;
     }
 
-    /**
-     * Trusted refund worker/admin-action port; callers enforce their confirmation/MFA policy. FAILED
-     * retries reuse the reserved row/channel identity, UNKNOWN queries.
-     */
+    /** 可信退款任务或管理员操作入口；调用方执行确认与双因素策略。FAILED 重试复用已预留记录和渠道身份，UNKNOWN 只查询。 */
     @Transactional(propagation = Propagation.MANDATORY)
     @Override
-    public RefundOrderVO retryRefund(String token, String id, long expectedVersion, String reason, String key) {
+    public RefundOrderVO retryRefund(
+            String token, String id, long expectedVersion, String reason, String key) {
         var actor = identity.authorizeForWrite(token, "ADMIN", false);
         InputValidation.text(reason, 500);
-        RefundOrderVO r = refund(id);
-        lockPayment(r.paymentOrderId(), null);
-        r = refund(id);
-        RefundOrderVO replay = requests.replay(actor.id(), "refunds:retry", key, List.of(id, expectedVersion, reason), RefundOrderVO.class);
-        if (replay != null)
+        RefundOrderVO refundOrder = refund(id);
+        lockPayment(refundOrder.paymentOrderId(), null);
+        refundOrder = refund(id);
+        RefundOrderVO replay =
+                requests.replay(
+                        actor.id(),
+                        "refunds:retry",
+                        key,
+                        List.of(id, expectedVersion, reason),
+                        RefundOrderVO.class);
+        if (replay != null) {
             return replay;
-        version(r.version(), expectedVersion);
+        }
+        version(refundOrder.version(), expectedVersion);
         Result actual = channel.query("REFUND", id);
-        if (!r.status().equals("SUCCEEDED") && actual == Result.FAILED) {
+        if (!refundOrder.status().equals("SUCCEEDED") && actual == Result.FAILED) {
             channel.retryRefund(id);
             mapper.markRefundProcessing(Long.valueOf(id));
-            event(r.orderId(), actor.id(), "REFUND_RETRIED", key, Map.of("refundId", id, "reason", reason));
-        } else
-            applyRefund(r, actual, "query:refund:" + id + ":" + channel.revision("REFUND", id));
+            event(
+                    refundOrder.orderId(),
+                    actor.id(),
+                    "REFUND_RETRIED",
+                    key,
+                    Map.of("refundId", id, "reason", reason));
+        } else {
+            applyRefund(
+                    refundOrder,
+                    actual,
+                    "query:refund:" + id + ":" + channel.revision("REFUND", id));
+        }
         audit(actor.id(), "REFUND_RETRY", id, key, reason);
         RefundOrderVO result = refund(id);
         requests.finish(actor.id(), "refunds:retry", key, "REFUND_ORDER", id, result);
         return result;
     }
 
-    /**
-     * M05 approval port. Caller derives delta from approved server pricing/evidence, holds its review
-     * lock, and calls this in the SAME transaction. No HTTP mapping.
-     */
+    /** M05 审批端口；调用方从服务端已审核计价及证据推导差额，持有审核锁并在同一事务调用，不提供 HTTP 映射。 */
     @Transactional(propagation = Propagation.MANDATORY)
     @Override
-    public AdjustmentFundsVO approvedAdjustment(String token, String orderId, String adjustmentId, long deltaCents, long expectedOrderVersion, String reason, String key) {
+    public AdjustmentFundsVO approvedAdjustment(
+            String token,
+            String orderId,
+            String adjustmentId,
+            long deltaCents,
+            long expectedOrderVersion,
+            String reason,
+            String key) {
         var actor = identity.authorizeForWrite(token, "ADMIN", false);
         lockNotificationRecipient(orderId);
         var order = orders.read(orderId, true);
         InputValidation.text(reason, 500);
         ResourceIds.parse(adjustmentId);
-        if (deltaCents == 0 || deltaCents == Long.MIN_VALUE)
+        if (deltaCents == 0 || deltaCents == Long.MIN_VALUE) {
             throw IdentityFailure.invalid();
+        }
         var content = List.of(orderId, adjustmentId, deltaCents, expectedOrderVersion, reason);
-        AdjustmentFundsVO replay = requests.replay(actor.id(), "payments:adjustment", key, content, AdjustmentFundsVO.class);
-        if (replay != null)
+        AdjustmentFundsVO replay =
+                requests.replay(
+                        actor.id(), "payments:adjustment", key, content, AdjustmentFundsVO.class);
+        if (replay != null) {
             return replay;
+        }
         version(order.version(), expectedOrderVersion);
-        if (mapper.countAdjustmentById(Long.valueOf(adjustmentId)) > 0)
+        if (mapper.countAdjustmentById(Long.valueOf(adjustmentId)) > 0) {
             throw conflict();
-        if (!Set.of("PENDING_ASSIGNMENT", "ACCEPTED", "PICKED_UP", "DELIVERED_PENDING_CONFIRMATION").contains(order.status()))
+        }
+        if (!Set.of("PENDING_ASSIGNMENT", "ACCEPTED", "PICKED_UP", "DELIVERED_PENDING_CONFIRMATION")
+                .contains(order.status())) {
             throw conflict();
-        if (mapper.countPendingAdjustments(Long.valueOf(orderId)) > 0)
+        }
+        if (mapper.countPendingAdjustments(Long.valueOf(orderId)) > 0) {
             throw new IdentityFailure(409, "ADJUSTMENT_ALREADY_OPEN");
+        }
         long effective;
         try {
             effective = Math.addExact(order.effectiveFeeCents(), deltaCents);
         } catch (ArithmeticException overflow) {
             throw IdentityFailure.invalid();
         }
-        if (effective <= 0)
+        if (effective <= 0) {
             throw IdentityFailure.invalid();
-        PaymentOrderVO original = paymentsForOrder(orderId).stream().filter(p -> p.purpose().equals("ORIGINAL")).findFirst().orElseThrow(PaymentServiceImpl::conflict);
-        if (!original.status().equals("PAID"))
+        }
+        PaymentOrderVO original =
+                paymentsForOrder(orderId).stream()
+                        .filter(paymentOrder -> paymentOrder.purpose().equals("ORIGINAL"))
+                        .findFirst()
+                        .orElseThrow(PaymentServiceImpl::conflict);
+        if (!original.status().equals("PAID")) {
             throw conflict();
-        mapper.insertApprovedAdjustment(Long.valueOf(adjustmentId), Long.valueOf(orderId), deltaCents, deltaCents > 0 ? "PENDING_SUPPLEMENT" : "PENDING_REFUND", Long.valueOf(actor.id()), reason, now());
+        }
+        mapper.insertApprovedAdjustment(
+                Long.valueOf(adjustmentId),
+                Long.valueOf(orderId),
+                deltaCents,
+                deltaCents > 0 ? "PENDING_SUPPLEMENT" : "PENDING_REFUND",
+                Long.valueOf(actor.id()),
+                reason,
+                now());
         mapper.updateEffectiveFeeAndClearConfirmation(effective, now(), Long.valueOf(orderId));
         PaymentOrderVO supplement = null;
         if (deltaCents > 0) {
-            String id = mapper.insertSupplementPayment(Long.valueOf(orderId), Long.valueOf(adjustmentId), deltaCents, now().plusMinutes(15));
+            String id =
+                    mapper.insertSupplementPayment(
+                            Long.valueOf(orderId),
+                            Long.valueOf(adjustmentId),
+                            deltaCents,
+                            now().plusMinutes(15));
             supplement = payment(id, false);
         } else {
             long remaining = -deltaCents;
-            // Refund each actual receipt; no invented balance when earlier supplements exist.
-            for (PaymentOrderVO p : paymentsForOrder(orderId)) if (p.status().equals("PAID")) {
-                payment(p.id(), true);
-                String source = credited(p.id());
-                long amount = Math.min(remaining, available(source, p.amountCents()));
-                if (amount > 0) {
-                    createRefund(p, source, adjustmentId, amount, "DOWNGRADE", "downgrade:" + adjustmentId + ":" + source, reason);
-                    remaining -= amount;
+            // 按实际收到的每笔款项退款；已有补款时不能凭空构造余额。
+            for (PaymentOrderVO paymentOrder : paymentsForOrder(orderId)) {
+                if (paymentOrder.status().equals("PAID")) {
+                    payment(paymentOrder.id(), true);
+                    String source = credited(paymentOrder.id());
+                    long amount =
+                            Math.min(remaining, available(source, paymentOrder.amountCents()));
+                    if (amount > 0) {
+                        createRefund(
+                                paymentOrder,
+                                source,
+                                adjustmentId,
+                                amount,
+                                "DOWNGRADE",
+                                "downgrade:" + adjustmentId + ":" + source,
+                                reason);
+                        remaining -= amount;
+                    }
                 }
             }
-            if (remaining != 0)
+            if (remaining != 0) {
                 throw new IdentityFailure(409, "AMOUNT_EXCEEDS_AVAILABLE");
+            }
         }
         audit(actor.id(), "ADJUSTMENT_FUNDS", adjustmentId, key, reason);
-        event(orderId, actor.id(), "ADJUSTMENT_FUNDS_CREATED", adjustmentId, Map.of("deltaCents", deltaCents));
+        event(
+                orderId,
+                actor.id(),
+                "ADJUSTMENT_FUNDS_CREATED",
+                adjustmentId,
+                Map.of("deltaCents", deltaCents));
         notifyUser(orderId, "adjustment:" + adjustmentId, "ADJUSTMENT_FUNDS_CREATED");
-        AdjustmentFundsVO result = new AdjustmentFundsVO(adjustmentId, supplement, refundsForOrder(orderId).stream().filter(r -> adjustmentId.equals(r.adjustmentId())).toList());
-        requests.finish(actor.id(), "payments:adjustment", key, "PAYMENT_ADJUSTMENT", adjustmentId, result);
+        AdjustmentFundsVO result =
+                new AdjustmentFundsVO(
+                        adjustmentId,
+                        supplement,
+                        refundsForOrder(orderId).stream()
+                                .filter(
+                                        refundOrder ->
+                                                adjustmentId.equals(refundOrder.adjustmentId()))
+                                .toList());
+        requests.finish(
+                actor.id(), "payments:adjustment", key, "PAYMENT_ADJUSTMENT", adjustmentId, result);
         return result;
     }
 
@@ -411,7 +489,8 @@ public class PaymentServiceImpl implements PaymentService {
         int closed = 0;
         for (String id : ids) {
             var order = orders.read(id, true);
-            if (order.status().equals("PENDING_PAYMENT") && !now().isBefore(order.pendingPaymentDeadline())) {
+            if (order.status().equals("PENDING_PAYMENT")
+                    && !now().isBefore(order.pendingPaymentDeadline())) {
                 closeOrder(id);
                 mapper.closeUnpaidOriginalPayments(now(), Long.valueOf(id));
                 event(id, null, "PAYMENT_EXPIRED", id, Map.of());
@@ -421,84 +500,163 @@ public class PaymentServiceImpl implements PaymentService {
         return closed;
     }
 
-    // All paths (callback, query, and timeout recovery) converge here under order/payment locks.
-    private void applyPayment(PaymentOrderVO stale, PaymentAttemptVO a, Result result, String eventId) {
-        if (seen("PAYMENT", a.id(), result, eventId) || a.status().equals("SUCCESS"))
+    // 回调、查询和超时恢复均在订单及支付锁保护下汇入此处。
+    private void applyPayment(
+            PaymentOrderVO stale, PaymentAttemptVO paymentAttempt, Result result, String eventId) {
+        if (seen("PAYMENT", paymentAttempt.id(), result, eventId)
+                || paymentAttempt.status().equals("SUCCESS")) {
             return;
-        PaymentOrderVO p = payment(stale.id(), false);
+        }
+        PaymentOrderVO paymentOrder = payment(stale.id(), false);
         String status = result.name();
-        if (a.status().equals("FAILED") && result != Result.SUCCESS)
+        if (paymentAttempt.status().equals("FAILED") && result != Result.SUCCESS) {
             return;
-        if (!a.status().equals(status))
-            mapper.updateAttemptResult(status, now(), Long.valueOf(a.id()));
+        }
+        if (!paymentAttempt.status().equals(status)) {
+            mapper.updateAttemptResult(status, now(), Long.valueOf(paymentAttempt.id()));
+        }
         if (result != Result.SUCCESS) {
-            if (!Set.of("PAID", "CLOSED").contains(p.status()))
-                paymentStatus(p.id(), result == Result.PROCESSING ? "PROCESSING" : status);
+            if (!Set.of("PAID", "CLOSED").contains(paymentOrder.status())) {
+                paymentStatus(
+                        paymentOrder.id(), result == Result.PROCESSING ? "PROCESSING" : status);
+            }
             return;
         }
-        var order = orders.read(p.orderId(), true);
-        boolean closed = order.status().equals("CANCELLED") || p.status().equals("CLOSED");
-        if (originalExpired(p) && order.status().equals("PENDING_PAYMENT")) {
-            closeOrder(p.orderId());
-            paymentStatus(p.id(), "CLOSED");
+        var order = orders.read(paymentOrder.orderId(), true);
+        boolean closed =
+                order.status().equals("CANCELLED") || paymentOrder.status().equals("CLOSED");
+        if (originalExpired(paymentOrder) && order.status().equals("PENDING_PAYMENT")) {
+            closeOrder(paymentOrder.orderId());
+            paymentStatus(paymentOrder.id(), "CLOSED");
             closed = true;
-            event(p.orderId(), null, "PAYMENT_EXPIRED", p.orderId(), Map.of());
+            event(
+                    paymentOrder.orderId(),
+                    null,
+                    "PAYMENT_EXPIRED",
+                    paymentOrder.orderId(),
+                    Map.of());
         }
-        if (p.purpose().equals("SUPPLEMENT") && !adjustmentOpen(p.adjustmentId()))
+        if (paymentOrder.purpose().equals("SUPPLEMENT")
+                && !adjustmentOpen(paymentOrder.adjustmentId())) {
             closed = true;
-        if (closed || p.status().equals("PAID")) {
-            createRefund(p, a.id(), null, p.amountCents(), closed ? "LATE_PAYMENT" : "EXTRA_RECEIPT", "receipt:" + a.id(), "late or additional simulated receipt");
-            event(p.orderId(), null, "PAYMENT_COMPENSATION_REQUIRED", a.id(), Map.of("attemptId", a.id()));
+        }
+        if (closed || paymentOrder.status().equals("PAID")) {
+            createRefund(
+                    paymentOrder,
+                    paymentAttempt.id(),
+                    null,
+                    paymentOrder.amountCents(),
+                    closed ? "LATE_PAYMENT" : "EXTRA_RECEIPT",
+                    "receipt:" + paymentAttempt.id(),
+                    "late or additional simulated receipt");
+            event(
+                    paymentOrder.orderId(),
+                    null,
+                    "PAYMENT_COMPENSATION_REQUIRED",
+                    paymentAttempt.id(),
+                    Map.of("attemptId", paymentAttempt.id()));
             return;
         }
-        if (p.purpose().equals("ORIGINAL") && !order.status().equals("PENDING_PAYMENT"))
+        if (paymentOrder.purpose().equals("ORIGINAL")
+                && !order.status().equals("PENDING_PAYMENT")) {
             throw conflict();
-        mapper.markPaymentPaid(now(), Long.valueOf(a.id()), now(), Long.valueOf(p.id()));
-        if (p.purpose().equals("ORIGINAL")) {
-            // Payment receipt and task-pool admission are committed atomically (payment rules §2).
-            mapper.markOrderPendingAssignment(now(), Long.valueOf(p.orderId()));
-        } else
-            resolveAdjustment(p.adjustmentId());
-        financial(p.orderId(), "receipt:" + a.id(), p.purpose() + "_RECEIPT", p.amountCents(), Map.of("paymentId", p.id(), "attemptId", a.id()));
-        event(p.orderId(), null, "PAYMENT_SUCCEEDED", a.id(), Map.of("paymentId", p.id()));
-        notifyUser(p.orderId(), "payment:" + a.id(), "PAYMENT_SUCCEEDED");
+        }
+        mapper.markPaymentPaid(
+                now(), Long.valueOf(paymentAttempt.id()), now(), Long.valueOf(paymentOrder.id()));
+        if (paymentOrder.purpose().equals("ORIGINAL")) {
+            // 支付回执与订单进入任务池原子提交（支付规则第 2 节）。
+            mapper.markOrderPendingAssignment(now(), Long.valueOf(paymentOrder.orderId()));
+        } else {
+            resolveAdjustment(paymentOrder.adjustmentId());
+        }
+        financial(
+                paymentOrder.orderId(),
+                "receipt:" + paymentAttempt.id(),
+                paymentOrder.purpose() + "_RECEIPT",
+                paymentOrder.amountCents(),
+                Map.of("paymentId", paymentOrder.id(), "attemptId", paymentAttempt.id()));
+        event(
+                paymentOrder.orderId(),
+                null,
+                "PAYMENT_SUCCEEDED",
+                paymentAttempt.id(),
+                Map.of("paymentId", paymentOrder.id()));
+        notifyUser(paymentOrder.orderId(), "payment:" + paymentAttempt.id(), "PAYMENT_SUCCEEDED");
     }
 
-    private void applyRefund(RefundOrderVO r, Result result, String eventId) {
-        if (seen("REFUND", r.id(), result, eventId) || r.status().equals("SUCCEEDED"))
+    private void applyRefund(RefundOrderVO refundOrder, Result result, String eventId) {
+        if (seen("REFUND", refundOrder.id(), result, eventId)
+                || refundOrder.status().equals("SUCCEEDED")) {
             return;
+        }
         String status = result == Result.SUCCESS ? "SUCCEEDED" : result.name();
-        // Failed refunds retain their balance reservation: a late receipt must never
-        // over-refund after another request reused that money. Retry/query the SAME row.
-        if (!r.status().equals(status))
-            mapper.updateRefundResult(status, result == Result.SUCCESS ? now() : null, Long.valueOf(r.id()));
+        // 退款失败仍保留余额预留，避免其他请求复用该金额后迟到回执造成超退；重试和查询沿用同一记录。
+        if (!refundOrder.status().equals(status)) {
+            mapper.updateRefundResult(
+                    status,
+                    result == Result.SUCCESS ? now() : null,
+                    Long.valueOf(refundOrder.id()));
+        }
         if (result == Result.SUCCESS) {
-            if (r.adjustmentId() != null && mapper.countUnfinishedAdjustmentRefunds(Long.valueOf(r.adjustmentId())) == 0)
-                resolveAdjustment(r.adjustmentId());
-            refundFinancial(r);
-            event(r.orderId(), null, "REFUND_SUCCEEDED", r.id(), Map.of("refundId", r.id()));
-            notifyUser(r.orderId(), "refund:" + r.id(), "REFUND_SUCCEEDED");
+            if (refundOrder.adjustmentId() != null
+                    && mapper.countUnfinishedAdjustmentRefunds(
+                                    Long.valueOf(refundOrder.adjustmentId()))
+                            == 0) {
+                resolveAdjustment(refundOrder.adjustmentId());
+            }
+            refundFinancial(refundOrder);
+            event(
+                    refundOrder.orderId(),
+                    null,
+                    "REFUND_SUCCEEDED",
+                    refundOrder.id(),
+                    Map.of("refundId", refundOrder.id()));
+            notifyUser(refundOrder.orderId(), "refund:" + refundOrder.id(), "REFUND_SUCCEEDED");
         }
     }
 
-    private RefundOrderVO createRefund(PaymentOrderVO p, String source, String adjustment, long cents, String purpose, String businessKey, String reason) {
+    private RefundOrderVO createRefund(
+            PaymentOrderVO paymentOrder,
+            String source,
+            String adjustment,
+            long cents,
+            String purpose,
+            String businessKey,
+            String reason) {
         var existing = mapper.findRefundIdsByBusinessKey(businessKey);
-        if (!existing.isEmpty())
+        if (!existing.isEmpty()) {
             return refund(existing.get(0));
-        if (cents <= 0 || cents > available(source, p.amountCents()))
+        }
+        if (cents <= 0 || cents > available(source, paymentOrder.amountCents())) {
             throw new IdentityFailure(409, "AMOUNT_EXCEEDS_AVAILABLE");
-        if (!attempt(source).status().equals("SUCCESS"))
+        }
+        if (!attempt(source).status().equals("SUCCESS")) {
             throw conflict();
-        String id = mapper.insertRefund(Long.valueOf(p.orderId()), Long.valueOf(p.id()), Long.valueOf(source), adjustment == null ? null : Long.valueOf(adjustment), cents, purpose, reason, businessKey, "mock-refund-" + UUID.randomUUID());
+        }
+        String id =
+                mapper.insertRefund(
+                        Long.valueOf(paymentOrder.orderId()),
+                        Long.valueOf(paymentOrder.id()),
+                        Long.valueOf(source),
+                        adjustment == null ? null : Long.valueOf(adjustment),
+                        cents,
+                        purpose,
+                        reason,
+                        businessKey,
+                        "mock-refund-" + UUID.randomUUID());
         channel.submit("REFUND", id);
-        event(p.orderId(), null, "REFUND_REQUESTED", id, Map.of("refundId", id, "amountCents", cents));
-        notifyUser(p.orderId(), "refund-request:" + id, "REFUND_REQUESTED");
+        event(
+                paymentOrder.orderId(),
+                null,
+                "REFUND_REQUESTED",
+                id,
+                Map.of("refundId", id, "amountCents", cents));
+        notifyUser(paymentOrder.orderId(), "refund-request:" + id, "REFUND_REQUESTED");
         return refund(id);
     }
 
     private void resolveAdjustment(String id) {
-        // M05 consumes this event before starting its full ten-minute window; M03
-        // cannot decide whether another review/after-sales case still blocks completion.
+        // M05 消费此事件后才开启完整十分钟窗口；M03 不能代替 M05 判断其他审核或售后是否仍阻止完成。
         if (mapper.completePendingAdjustment(now(), Long.valueOf(id)) > 0) {
             String orderId = mapper.findAdjustmentOrderId(Long.valueOf(id));
             event(orderId, null, "ADJUSTMENT_FUNDS_RESOLVED", id, Map.of("adjustmentId", id));
@@ -521,18 +679,19 @@ public class PaymentServiceImpl implements PaymentService {
         mapper.cancelOrderAndClearConfirmation(now(), now(), Long.valueOf(id));
     }
 
-    private boolean originalExpired(PaymentOrderVO p) {
-        return p.purpose().equals("ORIGINAL") && !now().isBefore(p.deadline());
+    private boolean originalExpired(PaymentOrderVO paymentOrder) {
+        return paymentOrder.purpose().equals("ORIGINAL")
+                && !now().isBefore(paymentOrder.deadline());
     }
 
     private PaymentOrderVO lockPayment(String id, String owner) {
-        PaymentOrderVO p = payment(id, false);
-        // Identity writes lock the user's account first. Acquire the outbox FK lock
-        // before the order as well, so a callback cannot deadlock a user cancellation.
-        lockNotificationRecipient(p.orderId());
-        var order = orders.read(p.orderId(), true);
-        if (owner != null)
+        PaymentOrderVO paymentOrder = payment(id, false);
+        // 身份写入先锁用户账号；回调也应先获得 outbox 外键锁再锁订单，避免与用户取消死锁。
+        lockNotificationRecipient(paymentOrder.orderId());
+        var order = orders.read(paymentOrder.orderId(), true);
+        if (owner != null) {
             own(owner, order);
+        }
         return payment(id, true);
     }
 
@@ -546,22 +705,25 @@ public class PaymentServiceImpl implements PaymentService {
 
     private PaymentOrderVO payment(String id, boolean lock) {
         var rows = mapper.findPayment(lock, ResourceIds.parse(id));
-        if (rows.isEmpty())
+        if (rows.isEmpty()) {
             throw missing();
+        }
         return rows.get(0);
     }
 
     private PaymentAttemptVO attempt(String id) {
         var rows = mapper.findAttempt(ResourceIds.parse(id));
-        if (rows.isEmpty())
+        if (rows.isEmpty()) {
             throw missing();
+        }
         return rows.get(0);
     }
 
     private RefundOrderVO refund(String id) {
         var rows = mapper.findRefund(ResourceIds.parse(id));
-        if (rows.isEmpty())
+        if (rows.isEmpty()) {
             throw missing();
+        }
         return rows.get(0);
     }
 
@@ -570,24 +732,38 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private List<PaymentAttemptVO> active(String id) {
-        return attempts(id).stream().filter(a -> Set.of("PROCESSING", "UNKNOWN").contains(a.status())).toList();
+        return attempts(id).stream()
+                .filter(
+                        paymentAttempt ->
+                                Set.of("PROCESSING", "UNKNOWN").contains(paymentAttempt.status()))
+                .toList();
     }
 
     private List<PaymentOrderVO> paymentsForOrder(String id) {
-        return mapper.findPaymentIdsByOrder(Long.valueOf(id)).stream().map(p -> payment(p, false)).toList();
+        return mapper.findPaymentIdsByOrder(Long.valueOf(id)).stream()
+                .map(p -> payment(p, false))
+                .toList();
     }
 
     private List<RefundOrderVO> refundsForOrder(String id) {
         return mapper.findRefundIdsByOrder(Long.valueOf(id)).stream().map(this::refund).toList();
     }
 
-    private PaymentSummaryVO summary(PaymentOrderVO p) {
-        return new PaymentSummaryVO(p, attempts(p.id()), refundsForOrder(p.orderId()).stream().filter(r -> r.paymentOrderId().equals(p.id())).toList());
+    private PaymentSummaryVO summary(PaymentOrderVO paymentOrder) {
+        return new PaymentSummaryVO(
+                paymentOrder,
+                attempts(paymentOrder.id()),
+                refundsForOrder(paymentOrder.orderId()).stream()
+                        .filter(
+                                refundOrder ->
+                                        refundOrder.paymentOrderId().equals(paymentOrder.id()))
+                        .toList());
     }
 
     private void own(String actor, OrderVO order) {
-        if (!actor.equals(order.userId()))
+        if (!actor.equals(order.userId())) {
             throw missing();
+        }
     }
 
     private OffsetDateTime now() {
@@ -603,66 +779,108 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private static void version(long actual, Long expected) {
-        if (expected == null || expected < 0)
+        if (expected == null || expected < 0) {
             throw IdentityFailure.invalid();
-        if (actual != expected)
+        }
+        if (actual != expected) {
             throw conflict();
+        }
     }
 
     private static PaymentVersionRequest required(PaymentVersionRequest body) {
-        if (body == null || body.expectedVersion() == null)
+        if (body == null || body.expectedVersion() == null) {
             throw IdentityFailure.invalid();
+        }
         return body;
     }
 
     private void validateResult(PaymentResultRequest body) {
-        if (body == null || body.result() == null || body.expectedVersion() == null || body.expectedVersion() < 0)
+        if (body == null
+                || body.result() == null
+                || body.expectedVersion() == null
+                || body.expectedVersion() < 0) {
             throw IdentityFailure.invalid();
+        }
         InputValidation.text(body.eventId(), 128);
     }
 
     private boolean seen(String type, String id, Result result, String eventId) {
-        if (knownEvent(type, id, result, eventId))
+        if (knownEvent(type, id, result, eventId)) {
             return true;
+        }
         mapper.insertResultEvent(eventId, type, Long.valueOf(id), result.name());
         return false;
     }
 
     private boolean knownEvent(String type, String id, Result result, String eventId) {
-        // Event IDs are global, including across orders and administrator accounts.
+        // 事件标识在不同订单和管理员之间也必须保持全局唯一。
         mapper.lockResultEvent("payment-event:" + eventId);
         var rows = mapper.findResultEvent(eventId);
         if (!rows.isEmpty()) {
             var row = rows.get(0);
-            if (!type.equals(row.get("resource_type")) || !id.equals(row.get("resource_id").toString()) || !result.name().equals(row.get("result")))
+            if (!type.equals(row.get("resource_type"))
+                    || !id.equals(row.get("resource_id").toString())
+                    || !result.name().equals(row.get("result"))) {
                 throw new IdentityFailure(409, "IDEMPOTENCY_KEY_CONFLICT");
+            }
             return true;
         }
         return false;
     }
 
-    private void refundFinancial(RefundOrderVO r) {
-        String source = mapper.findRefundSourceAttemptId(Long.valueOf(r.id()));
-        long received = payment(r.paymentOrderId(), false).amountCents();
+    private void refundFinancial(RefundOrderVO refundOrder) {
+        String source = mapper.findRefundSourceAttemptId(Long.valueOf(refundOrder.id()));
+        long received = payment(refundOrder.paymentOrderId(), false).amountCents();
         long total = mapper.sumSucceededRefundCents(Long.valueOf(source));
         long originalPlatform = received / 100 * 30 + (received % 100) * 30 / 100;
-        long target = BigInteger.valueOf(total).multiply(BigInteger.valueOf(originalPlatform)).divide(BigInteger.valueOf(received)).longValueExact();
+        long target =
+                BigInteger.valueOf(total)
+                        .multiply(BigInteger.valueOf(originalPlatform))
+                        .divide(BigInteger.valueOf(received))
+                        .longValueExact();
         long previous = mapper.sumRecordedPlatformRefundCents(source);
         long platform = target - previous;
-        mapper.insertRefundFinancialEvent(Long.valueOf(r.orderId()), "refund:" + r.id(), r.purpose() + "_REFUND", r.amountCents(), platform, r.amountCents() - platform, json.write(Map.of("refundId", r.id(), "paymentId", r.paymentOrderId(), "sourceAttemptId", source)));
+        mapper.insertRefundFinancialEvent(
+                Long.valueOf(refundOrder.orderId()),
+                "refund:" + refundOrder.id(),
+                refundOrder.purpose() + "_REFUND",
+                refundOrder.amountCents(),
+                platform,
+                refundOrder.amountCents() - platform,
+                json.write(
+                        Map.of(
+                                "refundId",
+                                refundOrder.id(),
+                                "paymentId",
+                                refundOrder.paymentOrderId(),
+                                "sourceAttemptId",
+                                source)));
     }
 
     private void event(String order, String actor, String type, String key, Object payload) {
-        mapper.insertOrderEventIfAbsent(Long.valueOf(order), actor == null ? null : Long.valueOf(actor), type, key, json.write(payload));
+        mapper.insertOrderEventIfAbsent(
+                Long.valueOf(order),
+                actor == null ? null : Long.valueOf(actor),
+                type,
+                key,
+                json.write(payload));
     }
 
     private void financial(String order, String key, String kind, long cents, Object payload) {
         long platform = cents / 100 * 30 + (cents % 100) * 30 / 100;
-        mapper.insertFinancialEventIfAbsent(Long.valueOf(order), key, kind, cents, platform, cents - platform, json.write(payload));
+        mapper.insertFinancialEventIfAbsent(
+                Long.valueOf(order),
+                key,
+                kind,
+                cents,
+                platform,
+                cents - platform,
+                json.write(payload));
     }
 
     private void notifyUser(String order, String key, String type) {
-        mapper.insertOrderNotificationIfAbsent(key, json.write(Map.of("orderId", order, "kind", type)), Long.valueOf(order));
+        mapper.insertOrderNotificationIfAbsent(
+                key, json.write(Map.of("orderId", order, "kind", type)), Long.valueOf(order));
     }
 
     private void audit(String actor, String action, String id, String key, String reason) {

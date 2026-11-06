@@ -2,31 +2,6 @@ package com.zhangxuan.runruncampus.vo;
 
 import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-public record RiskSignalPageVO(List<RiskSignalVO> items, int page, int size, long totalElements, int totalPages) {
-}
+/** 风险信号分页响应；保持现有 JSON 字段及序列化契约。 */
+public record RiskSignalPageVO(
+        List<RiskSignalVO> items, int page, int size, long totalElements, int totalPages) {}

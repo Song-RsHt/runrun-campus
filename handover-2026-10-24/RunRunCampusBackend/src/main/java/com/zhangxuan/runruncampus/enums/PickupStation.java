@@ -1,13 +1,11 @@
 package com.zhangxuan.runruncampus.enums;
 
-
-
+/** 取件站点枚举；名称和取值沿用既有业务与协议定义。 */
 public enum PickupStation {
-
-    EAST_GATE_TAKEOUT("东门外卖集中取餐点", false), CAMPUS_PACKAGE_STATION("校内快递驿站", true);
+    EAST_GATE_TAKEOUT("东门外卖集中取餐点", false),
+    CAMPUS_PACKAGE_STATION("校内快递驿站", true);
 
     private final String displayName;
-
     private final boolean packageStation;
 
     PickupStation(String displayName, boolean packageStation) {

@@ -8,25 +8,13 @@ import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.repository.AddressRepository;
 import com.zhangxuan.runruncampus.service.AddressService;
 import com.zhangxuan.runruncampus.vo.AddressResponse;
-import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 收件地址业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class AddressServiceImpl implements AddressService {
 
@@ -45,31 +33,49 @@ public class AddressServiceImpl implements AddressService {
 
     @Transactional
     @Override
-    public AddressResponse create(AppUser user, String label, String address, boolean defaultAddress) {
+    public AddressResponse create(
+            AppUser user, String label, String address, boolean defaultAddress) {
         return create(user, label, address, DeliveryZone.fromLegacy(address), defaultAddress);
     }
 
     @Override
-    public AddressResponse create(AppUser user, String label, String address, DeliveryZone deliveryZone, boolean defaultAddress) {
+    public AddressResponse create(
+            AppUser user,
+            String label,
+            String address,
+            DeliveryZone deliveryZone,
+            boolean defaultAddress) {
         requireCustomer(user);
         List<UserAddress> existing = addresses(user);
         boolean makeDefault = defaultAddress || existing.isEmpty();
-        if (makeDefault)
+        if (makeDefault) {
             clearDefaults(existing);
+        }
         DeliveryZone zone = deliveryZone == null ? DeliveryZone.fromLegacy(address) : deliveryZone;
-        return response(addressRepository.save(new UserAddress(user, label, address, zone, makeDefault)));
+        return response(
+                addressRepository.save(new UserAddress(user, label, address, zone, makeDefault)));
     }
 
     @Transactional
     @Override
-    public AddressResponse update(AppUser user, Long id, String label, String address, boolean defaultAddress) {
+    public AddressResponse update(
+            AppUser user, Long id, String label, String address, boolean defaultAddress) {
         return update(user, id, label, address, DeliveryZone.fromLegacy(address), defaultAddress);
     }
 
     @Override
-    public AddressResponse update(AppUser user, Long id, String label, String address, DeliveryZone deliveryZone, boolean defaultAddress) {
+    public AddressResponse update(
+            AppUser user,
+            Long id,
+            String label,
+            String address,
+            DeliveryZone deliveryZone,
+            boolean defaultAddress) {
         UserAddress target = requireOwned(user, id);
-        target.update(label, address, deliveryZone == null ? DeliveryZone.fromLegacy(address) : deliveryZone);
+        target.update(
+                label,
+                address,
+                deliveryZone == null ? DeliveryZone.fromLegacy(address) : deliveryZone);
         if (defaultAddress && !target.isDefaultAddress()) {
             clearDefaults(addresses(user));
             target.makeDefault();
@@ -90,7 +96,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public void delete(AppUser user, Long id) {
         UserAddress target = requireOwned(user, id);
-        List<UserAddress> remaining = addresses(user).stream().filter(address -> !address.getId().equals(target.getId())).toList();
+        List<UserAddress> remaining =
+                addresses(user).stream()
+                        .filter(address -> !address.getId().equals(target.getId()))
+                        .toList();
         addressRepository.delete(target);
         if (target.isDefaultAddress() && !remaining.isEmpty()) {
             remaining.get(0).makeDefault();
@@ -99,7 +108,8 @@ public class AddressServiceImpl implements AddressService {
 
     private UserAddress requireOwned(AppUser user, Long id) {
         requireCustomer(user);
-        UserAddress address = addressRepository.findById(id).orElseThrow(() -> new BusinessFailure(404, "地址不存在"));
+        UserAddress address =
+                addressRepository.findById(id).orElseThrow(() -> new BusinessFailure(404, "地址不存在"));
         if (!user.getId().equals(address.getUser().getId())) {
             throw new BusinessFailure(403, "无权操作此地址");
         }
@@ -121,6 +131,13 @@ public class AddressServiceImpl implements AddressService {
     }
 
     private AddressResponse response(UserAddress address) {
-        return new AddressResponse(address.getId(), address.getLabel(), address.getAddress(), address.getDeliveryZone(), address.isDefaultAddress(), address.getCreatedAt(), address.getUpdatedAt());
+        return new AddressResponse(
+                address.getId(),
+                address.getLabel(),
+                address.getAddress(),
+                address.getDeliveryZone(),
+                address.isDefaultAddress(),
+                address.getCreatedAt(),
+                address.getUpdatedAt());
     }
 }

@@ -1,18 +1,11 @@
 package com.zhangxuan.runruncampus.task;
 
 import com.zhangxuan.runruncampus.integration.maintenance.RiskSignalMaintenance;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-
-
-
-
-
-/**
- * Schedules RiskSignalMaintenance through its Spring service proxy; transactions and retry policy
- * remain in that service.
- */
+/** 通过 Spring 代理执行风险信号维护；事务和重试留在维护组件，任务仅负责定时触发。 */
 @Component()
 public class RiskSignalMaintenanceTask {
 

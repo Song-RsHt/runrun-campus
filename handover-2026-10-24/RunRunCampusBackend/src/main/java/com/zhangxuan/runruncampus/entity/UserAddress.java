@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.DeliveryZone;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,22 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 用户地址持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "user_addresses")
 public class UserAddress {
@@ -57,14 +46,18 @@ public class UserAddress {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    protected UserAddress() {
-    }
+    protected UserAddress() {}
 
     public UserAddress(AppUser user, String label, String address, boolean defaultAddress) {
         this(user, label, address, DeliveryZone.fromLegacy(address), defaultAddress);
     }
 
-    public UserAddress(AppUser user, String label, String address, DeliveryZone deliveryZone, boolean defaultAddress) {
+    public UserAddress(
+            AppUser user,
+            String label,
+            String address,
+            DeliveryZone deliveryZone,
+            boolean defaultAddress) {
         this.user = user;
         this.label = label;
         this.address = address;

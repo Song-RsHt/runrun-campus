@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.OrderStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,22 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 订单创建与状态管理事件持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "order_events")
 public class OrderEvent {
@@ -48,8 +37,7 @@ public class OrderEvent {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    protected OrderEvent() {
-    }
+    protected OrderEvent() {}
 
     public OrderEvent(CampusOrder order, AppUser actor, OrderStatus status) {
         this.order = order;

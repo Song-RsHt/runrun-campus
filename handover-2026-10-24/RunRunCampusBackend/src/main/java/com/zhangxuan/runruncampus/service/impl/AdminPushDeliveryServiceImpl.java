@@ -4,17 +4,13 @@ import com.zhangxuan.runruncampus.enums.PushDeliveryStatus;
 import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
 import com.zhangxuan.runruncampus.service.AdminPushDeliveryService;
 import com.zhangxuan.runruncampus.vo.PushDeliveryOverview;
+
 import org.springframework.stereotype.Service;
 
-
-
-
-
-
-
-
 /**
- * Preserves independent status counts and the repository's existing paging semantics.
+ * 管理员推送投递监控业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。
+ *
+ * <p>各状态独立计数，分页沿用原有仓储查询语义。
  */
 @Service
 public class AdminPushDeliveryServiceImpl implements AdminPushDeliveryService {
@@ -27,6 +23,10 @@ public class AdminPushDeliveryServiceImpl implements AdminPushDeliveryService {
 
     @Override
     public PushDeliveryOverview overview(PushDeliveryStatus status, int page, int size) {
-        return new PushDeliveryOverview(deliveries.count(PushDeliveryStatus.DEAD), deliveries.count(PushDeliveryStatus.PENDING), deliveries.count(PushDeliveryStatus.PROCESSING), deliveries.page(status, page, size));
+        return new PushDeliveryOverview(
+                deliveries.count(PushDeliveryStatus.DEAD),
+                deliveries.count(PushDeliveryStatus.PENDING),
+                deliveries.count(PushDeliveryStatus.PROCESSING),
+                deliveries.page(status, page, size));
     }
 }

@@ -1,44 +1,36 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.CreditRiskLevel;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
+/** 信用分及风险信号资料持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "credit_profiles")
 public class CreditProfile {
 
-    @Id
-    private Long userId;
+    @Id private Long userId;
 
     @Column(nullable = false)
     private int score;
 
-    @Version
-    private Long version;
+    @Version private Long version;
 
     @Column(nullable = false)
     private Instant updatedAt;
 
-    protected CreditProfile() {
-    }
+    protected CreditProfile() {}
 
     public CreditProfile(AppUser user) {
-        if (user.getId() == null)
+        if (user.getId() == null) {
             throw new IllegalArgumentException("用户必须先保存");
+        }
         this.userId = user.getId();
         this.score = 100;
         this.updatedAt = Instant.now();

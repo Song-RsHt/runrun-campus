@@ -7,49 +7,19 @@ import com.zhangxuan.runrunv2.model.OrderAddress;
 import com.zhangxuan.runrunv2.model.OrderPricing;
 import com.zhangxuan.runrunv2.model.ResourceIds;
 import com.zhangxuan.runrunv2.vo.OrderVO;
-import java.time.OffsetDateTime;
-import java.util.Map;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.time.OffsetDateTime;
+import java.util.Map;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * Shared order lock for later payment/fulfillment modules; never expose arbitrary state writes as
- * HTTP.
- */
+/** 订单共享锁入口，供支付和履约协作使用；不能向 HTTP 暴露任意状态写入。 */
 @Component
 public class OrderStore {
 
     private final JdbcTemplate db;
-
     private final OrderJson json;
 
     public OrderStore(JdbcTemplate db, OrderJson json) {
@@ -58,26 +28,64 @@ public class OrderStore {
     }
 
     public OrderVO lock(String orderId, long expectedVersion) {
-        if (!TransactionSynchronizationManager.isActualTransactionActive())
+        if (!TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new IllegalStateException("Order lock requires a transaction");
-        if (expectedVersion < 0)
+        }
+        if (expectedVersion < 0) {
             throw IdentityFailure.invalid();
+        }
         OrderVO order = read(orderId, true);
-        if (order.version() != expectedVersion)
+        if (order.version() != expectedVersion) {
             throw new IdentityFailure(409, "ORDER_STATE_CONFLICT");
+        }
         return order;
     }
 
+    /** 读取并锁定 runrun_v2.v2_orders 的匹配行；锁持有至调用方事务结束。 */
     public OrderVO read(String orderId, boolean locked) {
-        var rows = db.query("""
-            SELECT *
-            FROM runrun_v2.v2_orders
-            WHERE id = ?
-            """ + (locked ? """
-            FOR UPDATE
-            """ : ""), (r, n) -> new OrderVO(r.getString("id"), r.getString("order_no"), r.getInt("order_flow_version"), r.getString("user_id"), r.getString("status"), ServiceType.valueOf(r.getString("service_type")), r.getString("zone_id"), r.getString("service_point_id"), json.read(r.getString("address_snapshot"), OrderAddress.class), json.read(r.getString("pricing_snapshot"), OrderPricing.class), policy(r.getString("policy_snapshot")), r.getLong("original_fee_cents"), r.getLong("effective_fee_cents"), r.getObject("pending_payment_deadline", OffsetDateTime.class), r.getLong("version"), r.getObject("created_at", OffsetDateTime.class), r.getObject("updated_at", OffsetDateTime.class), r.getObject("delivered_at", OffsetDateTime.class), r.getObject("confirm_started_at", OffsetDateTime.class), r.getObject("confirm_deadline", OffsetDateTime.class)), ResourceIds.parse(orderId));
-        if (rows.isEmpty())
+        var rows =
+                db.query(
+                        """
+                        SELECT *
+                        FROM runrun_v2.v2_orders
+                        WHERE id = ?
+                        """
+                                + (locked
+                                        ? """
+                                          FOR UPDATE
+                                          """
+                                        : ""),
+                        (r, n) ->
+                                new OrderVO(
+                                        r.getString("id"),
+                                        r.getString("order_no"),
+                                        r.getInt("order_flow_version"),
+                                        r.getString("user_id"),
+                                        r.getString("status"),
+                                        ServiceType.valueOf(r.getString("service_type")),
+                                        r.getString("zone_id"),
+                                        r.getString("service_point_id"),
+                                        json.read(
+                                                r.getString("address_snapshot"),
+                                                OrderAddress.class),
+                                        json.read(
+                                                r.getString("pricing_snapshot"),
+                                                OrderPricing.class),
+                                        policy(r.getString("policy_snapshot")),
+                                        r.getLong("original_fee_cents"),
+                                        r.getLong("effective_fee_cents"),
+                                        r.getObject(
+                                                "pending_payment_deadline", OffsetDateTime.class),
+                                        r.getLong("version"),
+                                        r.getObject("created_at", OffsetDateTime.class),
+                                        r.getObject("updated_at", OffsetDateTime.class),
+                                        r.getObject("delivered_at", OffsetDateTime.class),
+                                        r.getObject("confirm_started_at", OffsetDateTime.class),
+                                        r.getObject("confirm_deadline", OffsetDateTime.class)),
+                        ResourceIds.parse(orderId));
+        if (rows.isEmpty()) {
             throw new IdentityFailure(404, "RESOURCE_NOT_FOUND");
+        }
         return rows.get(0);
     }
 

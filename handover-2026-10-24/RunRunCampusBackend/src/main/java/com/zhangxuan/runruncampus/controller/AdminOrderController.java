@@ -11,10 +11,11 @@ import com.zhangxuan.runruncampus.service.ManualQrPaymentService;
 import com.zhangxuan.runruncampus.vo.AdminOrderDetailResponse;
 import com.zhangxuan.runruncampus.vo.AdminOrderPageResponse;
 import com.zhangxuan.runruncampus.vo.ManualPaymentResponse;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import java.nio.charset.StandardCharsets;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,83 +29,84 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.nio.charset.StandardCharsets;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 管理员订单查询与导出 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @Validated
 @RestController
 @RequestMapping("/api/v1/admin/orders")
 public class AdminOrderController {
 
     private final AuthService authService;
-
     private final AdminOrderService adminOrderService;
-
     private final ManualQrPaymentService manualQrPaymentService;
 
-    public AdminOrderController(AuthService authService, AdminOrderService adminOrderService, ManualQrPaymentService manualQrPaymentService) {
+    public AdminOrderController(
+            AuthService authService,
+            AdminOrderService adminOrderService,
+            ManualQrPaymentService manualQrPaymentService) {
         this.authService = authService;
         this.adminOrderService = adminOrderService;
         this.manualQrPaymentService = manualQrPaymentService;
     }
 
     @GetMapping
-    public AdminOrderPageResponse list(@RequestHeader("Authorization") String authorization, @RequestParam(required = false) String query, @RequestParam(required = false) OrderStatus status, @RequestParam(defaultValue = "false") boolean archived, @RequestParam(defaultValue = "0") @Min(0) int page, @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
+    public AdminOrderPageResponse list(
+            @RequestHeader("Authorization") String authorization,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(defaultValue = "false") boolean archived,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         authService.requirePermission(authorization, AdminPermission.ORDER_VIEW);
         return adminOrderService.list(query, status, archived, page, size);
     }
 
     @GetMapping(value = "/export", produces = "text/csv;charset=UTF-8")
-    public ResponseEntity<byte[]> export(@RequestHeader("Authorization") String authorization, @RequestParam(required = false) String query, @RequestParam(required = false) OrderStatus status, @RequestParam(defaultValue = "false") boolean archived) {
+    public ResponseEntity<byte[]> export(
+            @RequestHeader("Authorization") String authorization,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) OrderStatus status,
+            @RequestParam(defaultValue = "false") boolean archived) {
         authService.requirePermission(authorization, AdminPermission.ORDER_EXPORT);
         OrderExport export = adminOrderService.exportCsv(query, status, archived);
-        return ResponseEntity.ok().contentType(new MediaType("text", "csv", StandardCharsets.UTF_8)).header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=orders.csv").header("X-Export-Limit", String.valueOf(AdminOrderConstants.EXPORT_LIMIT)).header("X-Export-Truncated", String.valueOf(export.truncated())).body(export.content());
+        return ResponseEntity.ok()
+                .contentType(new MediaType("text", "csv", StandardCharsets.UTF_8))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=orders.csv")
+                .header("X-Export-Limit", String.valueOf(AdminOrderConstants.EXPORT_LIMIT))
+                .header("X-Export-Truncated", String.valueOf(export.truncated()))
+                .body(export.content());
     }
 
     @GetMapping("/{id}")
-    public AdminOrderDetailResponse detail(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+    public AdminOrderDetailResponse detail(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         authService.requirePermission(authorization, AdminPermission.ORDER_VIEW);
         return adminOrderService.detail(id);
     }
 
     @PostMapping("/{id}/manual-payment/confirm")
-    public ManualPaymentResponse confirmManualPayment(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
-        return manualQrPaymentService.confirmPayment(authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id);
+    public ManualPaymentResponse confirmManualPayment(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+        return manualQrPaymentService.confirmPayment(
+                authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id);
     }
 
     @PostMapping("/{id}/manual-payment/reject")
-    public ManualPaymentResponse rejectManualPayment(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody RejectManualPaymentRequest request) {
-        return manualQrPaymentService.rejectPayment(authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id, request.reason());
+    public ManualPaymentResponse rejectManualPayment(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable Long id,
+            @Valid @RequestBody RejectManualPaymentRequest request) {
+        return manualQrPaymentService.rejectPayment(
+                authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW),
+                id,
+                request.reason());
     }
 
     @PostMapping("/{id}/courier-settlement/confirm")
-    public ManualPaymentResponse confirmCourierSettlement(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
-        return manualQrPaymentService.confirmCourierSettlement(authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id);
+    public ManualPaymentResponse confirmCourierSettlement(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+        return manualQrPaymentService.confirmCourierSettlement(
+                authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id);
     }
 }

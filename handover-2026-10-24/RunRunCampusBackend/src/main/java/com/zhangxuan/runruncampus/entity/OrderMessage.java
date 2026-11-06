@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.OrderMessageType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,22 +12,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 订单站内消息持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "order_messages")
 public class OrderMessage {
@@ -56,10 +45,14 @@ public class OrderMessage {
 
     private Instant readAt;
 
-    protected OrderMessage() {
-    }
+    protected OrderMessage() {}
 
-    public OrderMessage(AppUser recipient, CampusOrder order, OrderMessageType type, String title, String content) {
+    public OrderMessage(
+            AppUser recipient,
+            CampusOrder order,
+            OrderMessageType type,
+            String title,
+            String content) {
         this.recipient = recipient;
         this.order = order;
         this.type = type;
@@ -69,8 +62,9 @@ public class OrderMessage {
     }
 
     public void markRead() {
-        if (readAt == null)
+        if (readAt == null) {
             readAt = Instant.now();
+        }
     }
 
     public Long getId() {

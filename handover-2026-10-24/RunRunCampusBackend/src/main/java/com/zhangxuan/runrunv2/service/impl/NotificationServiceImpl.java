@@ -3,25 +3,18 @@ package com.zhangxuan.runrunv2.service.impl;
 import com.zhangxuan.runrunv2.mapper.NotificationMapper;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.NotificationService;
-import java.util.List;
-import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 
-
-
-
-
-
-
-
-
+/** 站内通知及订阅投递业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationMapper mapper;
-
     private final IdentityService identity;
 
     public NotificationServiceImpl(NotificationMapper mapper, IdentityService identity) {

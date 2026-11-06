@@ -3,7 +3,7 @@ package com.zhangxuan.runruncampus.controller;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.OrderMessageVO;
-import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,26 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 订单站内消息 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v1/messages")
 public class OrderMessageController {
 
     private final AuthService authService;
-
     private final OrderMessageService messageService;
 
     public OrderMessageController(AuthService authService, OrderMessageService messageService) {
@@ -46,7 +34,8 @@ public class OrderMessageController {
     }
 
     @PostMapping("/{id}/read")
-    public OrderMessageVO markRead(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+    public OrderMessageVO markRead(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         return messageService.markRead(authService.requireUser(authorization), id);
     }
 

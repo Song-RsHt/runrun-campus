@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.CourierCertificationStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,28 +14,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 旧系统骑手资质持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "courier_certifications")
 public class CourierCertification {
@@ -43,8 +28,7 @@ public class CourierCertification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Transient
-    private long version;
+    @Transient private long version;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
@@ -71,51 +55,46 @@ public class CourierCertification {
     @Column(name = "reviewed_at")
     private Instant reviewedAt;
 
-    @Transient
-    private AppUser reviewer;
+    @Transient private AppUser reviewer;
 
-    @Transient
-    private LocalDate requestedValidUntil;
+    @Transient private LocalDate requestedValidUntil;
 
-    @Transient
-    private LocalDate approvedValidUntil;
+    @Transient private LocalDate approvedValidUntil;
 
     @Column(name = "submitted_photo_key", length = 160)
     private String submittedPhotoKey;
 
-    @Transient
-    private String submittedPhotoContentType;
+    @Transient private String submittedPhotoContentType;
 
-    @Transient
-    private Instant submittedPhotoAt;
+    @Transient private Instant submittedPhotoAt;
 
     @Column(name = "approved_photo_key", length = 160)
     private String approvedPhotoKey;
 
-    @Transient
-    private String approvedPhotoContentType;
+    @Transient private String approvedPhotoContentType;
 
-    @Transient
-    private String submittedPhotoResourceId;
+    @Transient private String submittedPhotoResourceId;
 
-    @Transient
-    private String approvedPhotoResourceId;
+    @Transient private String approvedPhotoResourceId;
 
-    @Transient
-    private Instant approvedPhotoAt;
+    @Transient private Instant approvedPhotoAt;
 
-    @Transient
-    private boolean approvalRetained;
+    @Transient private boolean approvalRetained;
 
-    protected CourierCertification() {
-    }
+    protected CourierCertification() {}
 
     public CourierCertification(AppUser courier, String realName, String studentId, String campus) {
         this.courier = courier;
         resubmit(realName, studentId, campus);
     }
 
-    public CourierCertification(AppUser courier, String realName, String studentId, String campus, LocalDate validUntil, boolean retainApproval) {
+    public CourierCertification(
+            AppUser courier,
+            String realName,
+            String studentId,
+            String campus,
+            LocalDate validUntil,
+            boolean retainApproval) {
         this.courier = courier;
         resubmit(realName, studentId, campus, validUntil, retainApproval);
     }
@@ -124,7 +103,12 @@ public class CourierCertification {
         resubmit(realName, studentId, campus, null, false);
     }
 
-    public void resubmit(String realName, String studentId, String campus, LocalDate validUntil, boolean retainApproval) {
+    public void resubmit(
+            String realName,
+            String studentId,
+            String campus,
+            LocalDate validUntil,
+            boolean retainApproval) {
         this.realName = realName;
         this.studentId = studentId;
         this.campus = campus;
@@ -135,8 +119,9 @@ public class CourierCertification {
         this.reviewer = null;
         this.requestedValidUntil = validUntil;
         this.approvalRetained = retainApproval;
-        if (!retainApproval)
+        if (!retainApproval) {
             courier.revokeCourierApproval();
+        }
     }
 
     public void declareValidity(LocalDate validUntil) {
@@ -153,7 +138,11 @@ public class CourierCertification {
     }
 
     public boolean hasCurrentPhoto() {
-        return status == CourierCertificationStatus.APPROVED ? approvedPhotoKey != null : submittedPhotoKey != null && submittedPhotoAt != null && !submittedPhotoAt.isBefore(submittedAt);
+        return status == CourierCertificationStatus.APPROVED
+                ? approvedPhotoKey != null
+                : submittedPhotoKey != null
+                        && submittedPhotoAt != null
+                        && !submittedPhotoAt.isBefore(submittedAt);
     }
 
     public void approve(AppUser reviewer) {
@@ -178,8 +167,9 @@ public class CourierCertification {
         this.rejectionReason = reason;
         this.reviewedAt = Instant.now();
         this.reviewer = reviewer;
-        if (!approvalRetained)
+        if (!approvalRetained) {
             courier.revokeCourierApproval();
+        }
     }
 
     public Long getId() {

@@ -2,6 +2,7 @@ package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.enums.FeedbackType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,23 +13,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 用户反馈持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "user_feedback")
 public class UserFeedback {
@@ -65,8 +53,7 @@ public class UserFeedback {
     @Column(nullable = false)
     private Instant updatedAt;
 
-    protected UserFeedback() {
-    }
+    protected UserFeedback() {}
 
     public UserFeedback(AppUser user, FeedbackType type, String content) {
         this.user = user;

@@ -8,9 +8,11 @@ import com.zhangxuan.runruncampus.service.AdminIssueService;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.vo.AdminIssueItem;
 import com.zhangxuan.runruncampus.vo.AdminIssuePageResponse;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,35 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 管理员异常工单 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @Validated
 @RestController
 @RequestMapping("/api/v1/admin/issues")
 public class AdminIssueController {
 
     private final AuthService authService;
-
     private final AdminIssueService adminIssueService;
 
     public AdminIssueController(AuthService authService, AdminIssueService adminIssueService) {
@@ -58,18 +38,33 @@ public class AdminIssueController {
     }
 
     @GetMapping
-    public AdminIssuePageResponse list(@RequestHeader("Authorization") String authorization, @RequestParam(required = false) String query, @RequestParam(required = false) OrderIssueType type, @RequestParam(required = false) OrderIssueHandlingStatus handlingStatus, @RequestParam(defaultValue = "false") boolean overdueOnly, @RequestParam(defaultValue = "0") @Min(0) int page, @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
+    public AdminIssuePageResponse list(
+            @RequestHeader("Authorization") String authorization,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) OrderIssueType type,
+            @RequestParam(required = false) OrderIssueHandlingStatus handlingStatus,
+            @RequestParam(defaultValue = "false") boolean overdueOnly,
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "20") @Min(1) @Max(100) int size) {
         authService.requirePermission(authorization, AdminPermission.ISSUE_VIEW);
         return adminIssueService.list(query, type, handlingStatus, overdueOnly, page, size);
     }
 
     @PostMapping("/{id}/claim")
-    public AdminIssueItem claim(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
-        return adminIssueService.claim(authService.requirePermission(authorization, AdminPermission.ISSUE_MANAGE), id);
+    public AdminIssueItem claim(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+        return adminIssueService.claim(
+                authService.requirePermission(authorization, AdminPermission.ISSUE_MANAGE), id);
     }
 
     @PostMapping("/{id}/resolve")
-    public AdminIssueItem resolve(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody ResolveIssueRequest request) {
-        return adminIssueService.resolve(authService.requirePermission(authorization, AdminPermission.ISSUE_MANAGE), id, request.resolution());
+    public AdminIssueItem resolve(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable Long id,
+            @Valid @RequestBody ResolveIssueRequest request) {
+        return adminIssueService.resolve(
+                authService.requirePermission(authorization, AdminPermission.ISSUE_MANAGE),
+                id,
+                request.resolution());
     }
 }

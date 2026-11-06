@@ -1,27 +1,9 @@
 package com.zhangxuan.runruncampus.constant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 管理员优惠券发放常量；集中保存既有业务常量。 */
 public final class AdminCouponConstants {
 
-    private AdminCouponConstants() {
-    }
+    private AdminCouponConstants() {}
 
     public static final String TITLE = "管理员赠送1元券";
 

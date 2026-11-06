@@ -3,6 +3,9 @@ package com.zhangxuan.runruncampus.service.impl;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.LoginCaptchaService;
 import com.zhangxuan.runruncampus.vo.LoginCaptchaVO;
+
+import org.springframework.stereotype.Service;
+
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -15,44 +18,31 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.imageio.ImageIO;
-import org.springframework.stereotype.Service;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 登录图形验证码业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
 @Service
 public class LoginCaptchaServiceImpl implements LoginCaptchaService {
 
     private static final int WIDTH = 160;
-
     private static final int HEIGHT = 56;
-
     private static final int MAX_ACTIVE_CHALLENGES = 10_000;
-
-    private static final String[][] DIGITS = { { "11111", "10001", "10011", "10101", "11001", "10001", "11111" }, { "00100", "01100", "00100", "00100", "00100", "00100", "01110" }, { "11110", "00001", "00001", "11110", "10000", "10000", "11111" }, { "11110", "00001", "00001", "01110", "00001", "00001", "11110" }, { "10010", "10010", "10010", "11111", "00010", "00010", "00010" }, { "11111", "10000", "10000", "11110", "00001", "00001", "11110" }, { "01111", "10000", "10000", "11110", "10001", "10001", "01110" }, { "11111", "00001", "00010", "00100", "01000", "01000", "01000" }, { "01110", "10001", "10001", "01110", "10001", "10001", "01110" }, { "01110", "10001", "10001", "01111", "00001", "00001", "11110" } };
+    private static final String[][] DIGITS = {
+        {"11111", "10001", "10011", "10101", "11001", "10001", "11111"},
+        {"00100", "01100", "00100", "00100", "00100", "00100", "01110"},
+        {"11110", "00001", "00001", "11110", "10000", "10000", "11111"},
+        {"11110", "00001", "00001", "01110", "00001", "00001", "11110"},
+        {"10010", "10010", "10010", "11111", "00010", "00010", "00010"},
+        {"11111", "10000", "10000", "11110", "00001", "00001", "11110"},
+        {"01111", "10000", "10000", "11110", "10001", "10001", "01110"},
+        {"11111", "00001", "00010", "00100", "01000", "01000", "01000"},
+        {"01110", "10001", "10001", "01110", "10001", "10001", "01110"},
+        {"01110", "10001", "10001", "01111", "00001", "00001", "11110"}
+    };
 
     private final SecureRandom random;
-
     private final Clock clock;
-
     private final Map<String, State> challenges = new ConcurrentHashMap<>();
 
     public LoginCaptchaServiceImpl() {
@@ -73,8 +63,9 @@ public class LoginCaptchaServiceImpl implements LoginCaptchaService {
     public LoginCaptchaVO issue(String answer) {
         Instant now = clock.instant();
         challenges.entrySet().removeIf(entry -> !entry.getValue().expiresAt().isAfter(now));
-        if (challenges.size() >= MAX_ACTIVE_CHALLENGES)
+        if (challenges.size() >= MAX_ACTIVE_CHALLENGES) {
             challenges.clear();
+        }
         byte[] tokenBytes = new byte[24];
         random.nextBytes(tokenBytes);
         String token = Base64.getUrlEncoder().withoutPadding().encodeToString(tokenBytes);
@@ -85,10 +76,13 @@ public class LoginCaptchaServiceImpl implements LoginCaptchaService {
 
     @Override
     public void verify(String token, String answer) {
-        if (token == null || answer == null)
+        if (token == null || answer == null) {
             throw rejected();
+        }
         State state = challenges.remove(token);
-        if (state == null || !state.expiresAt().isAfter(clock.instant()) || !MessageDigest.isEqual(state.answerHash(), hash(answer.trim()))) {
+        if (state == null
+                || !state.expiresAt().isAfter(clock.instant())
+                || !MessageDigest.isEqual(state.answerHash(), hash(answer.trim()))) {
             throw rejected();
         }
     }
@@ -100,14 +94,26 @@ public class LoginCaptchaServiceImpl implements LoginCaptchaService {
             graphics.setColor(new Color(244, 248, 241));
             graphics.fillRect(0, 0, WIDTH, HEIGHT);
             for (int line = 0; line < 12; line++) {
-                graphics.setColor(new Color(110 + random.nextInt(90), 120 + random.nextInt(80), 100 + random.nextInt(90)));
-                graphics.drawLine(random.nextInt(WIDTH), random.nextInt(HEIGHT), random.nextInt(WIDTH), random.nextInt(HEIGHT));
+                graphics.setColor(
+                        new Color(
+                                110 + random.nextInt(90),
+                                120 + random.nextInt(80),
+                                100 + random.nextInt(90)));
+                graphics.drawLine(
+                        random.nextInt(WIDTH),
+                        random.nextInt(HEIGHT),
+                        random.nextInt(WIDTH),
+                        random.nextInt(HEIGHT));
             }
             int scale = 5;
             int startX = 15;
             for (int digitIndex = 0; digitIndex < answer.length(); digitIndex++) {
                 String[] glyph = DIGITS[answer.charAt(digitIndex) - '0'];
-                graphics.setColor(new Color(22 + random.nextInt(30), 70 + random.nextInt(45), 40 + random.nextInt(35)));
+                graphics.setColor(
+                        new Color(
+                                22 + random.nextInt(30),
+                                70 + random.nextInt(45),
+                                40 + random.nextInt(35)));
                 int x = startX + digitIndex * 34;
                 int y = 10 + random.nextInt(4);
                 for (int row = 0; row < glyph.length; row++) {
@@ -130,7 +136,8 @@ public class LoginCaptchaServiceImpl implements LoginCaptchaService {
 
     private static byte[] hash(String value) {
         try {
-            return MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+            return MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(StandardCharsets.UTF_8));
         } catch (Exception exception) {
             throw new IllegalStateException(exception);
         }
@@ -140,6 +147,5 @@ public class LoginCaptchaServiceImpl implements LoginCaptchaService {
         return new BusinessFailure(428, "请输入正确的图形验证码");
     }
 
-    private record State(byte[] answerHash, Instant expiresAt) {
-    }
+    private record State(byte[] answerHash, Instant expiresAt) {}
 }

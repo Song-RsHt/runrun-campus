@@ -1,13 +1,11 @@
 package com.zhangxuan.runruncampus.enums;
 
-
-
+/** 投递区域枚举；名称和取值沿用既有业务与协议定义。 */
 public enum DeliveryZone {
-
-    STANDARD("其他区域", 0), MEIYUAN("梅园", 200);
+    STANDARD("其他区域", 0),
+    MEIYUAN("梅园", 200);
 
     private final String displayName;
-
     private final int packageSurchargeCents;
 
     DeliveryZone(String displayName, int packageSurchargeCents) {

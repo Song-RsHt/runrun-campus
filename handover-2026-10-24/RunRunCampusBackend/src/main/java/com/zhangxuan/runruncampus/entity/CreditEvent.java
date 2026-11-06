@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
 import com.zhangxuan.runruncampus.enums.CreditEventType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,23 +13,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.Instant;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 信用分及风险信号事件持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "credit_events")
 public class CreditEvent {
@@ -65,10 +53,17 @@ public class CreditEvent {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    protected CreditEvent() {
-    }
+    protected CreditEvent() {}
 
-    public CreditEvent(AppUser user, AppUser operator, CreditEventType eventType, int delta, int balanceAfter, String reason, Long riskSignalId, Long originalEventId) {
+    public CreditEvent(
+            AppUser user,
+            AppUser operator,
+            CreditEventType eventType,
+            int delta,
+            int balanceAfter,
+            String reason,
+            Long riskSignalId,
+            Long originalEventId) {
         this.user = user;
         this.operator = operator;
         this.eventType = eventType;

@@ -8,8 +8,9 @@ import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.vo.CertificationResponse;
+
 import jakarta.validation.Valid;
-import java.util.List;
+
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,62 +24,18 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/** 旧系统骑手资质 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v2/courier/certification")
 public class CourierCertificationController {
 
     private final AuthService authService;
-
     private final CourierCertificationService certificationService;
 
-    public CourierCertificationController(AuthService authService, CourierCertificationService certificationService) {
+    public CourierCertificationController(
+            AuthService authService, CourierCertificationService certificationService) {
         this.authService = authService;
         this.certificationService = certificationService;
     }
@@ -89,43 +46,72 @@ public class CourierCertificationController {
     }
 
     @PostMapping("/apply")
-    public CertificationResponse submit(@RequestHeader("Authorization") String authorization, @RequestBody(required = false) CourierCertificationRequest request) {
+    public CertificationResponse submit(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody(required = false) CourierCertificationRequest request) {
         return certificationService.submit(authService.requireUser(authorization));
     }
 
     @PostMapping(value = "/{id}/student-card", consumes = "multipart/form-data")
-    public CertificationResponse uploadStudentCard(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @RequestPart("file") MultipartFile file, @RequestPart(value = "expectedVersion", required = false) Long expectedVersion) {
-        return certificationService.uploadStudentCard(authService.requireUser(authorization), id, MultipartUploads.adapt(file), expectedVersion);
+    public CertificationResponse uploadStudentCard(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable Long id,
+            @RequestPart("file") MultipartFile file,
+            @RequestPart(value = "expectedVersion", required = false) Long expectedVersion) {
+        return certificationService.uploadStudentCard(
+                authService.requireUser(authorization),
+                id,
+                MultipartUploads.adapt(file),
+                expectedVersion);
     }
 
     @GetMapping("/{id}/student-card")
-    public ResponseEntity<byte[]> studentCardPhoto(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+    public ResponseEntity<byte[]> studentCardPhoto(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
         var admin = authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW);
         var photo = certificationService.studentCardPhoto(admin, id);
-        return ResponseEntity.ok().contentType(MediaType.parseMediaType(photo.contentType())).cacheControl(CacheControl.noStore()).header("X-Content-Type-Options", "nosniff").body(photo.bytes());
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(photo.contentType()))
+                .cacheControl(CacheControl.noStore())
+                .header("X-Content-Type-Options", "nosniff")
+                .body(photo.bytes());
     }
 
     @GetMapping("/pending")
-    public List<CertificationResponse> pending(@RequestHeader("Authorization") String authorization) {
-        return certificationService.pending(authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW));
+    public List<CertificationResponse> pending(
+            @RequestHeader("Authorization") String authorization) {
+        return certificationService.pending(
+                authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW));
     }
 
     @PostMapping("/{id}/approve")
-    public CertificationResponse approve(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
-        return certificationService.approve(authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW), id);
+    public CertificationResponse approve(
+            @RequestHeader("Authorization") String authorization, @PathVariable Long id) {
+        return certificationService.approve(
+                authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW), id);
     }
 
     @PostMapping("/{id}/decision")
-    public CertificationResponse decision(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody CreditSignalDecisionRequest request) {
+    public CertificationResponse decision(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable Long id,
+            @Valid @RequestBody CreditSignalDecisionRequest request) {
         var admin = authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW);
         if ("APPROVE".equals(request.decision())) {
-            return certificationService.approve(admin, id, request.expectedVersion(), request.photoResourceId());
+            return certificationService.approve(
+                    admin, id, request.expectedVersion(), request.photoResourceId());
         }
         return certificationService.reject(admin, id, request.reason());
     }
 
     @PostMapping("/{id}/reject")
-    public CertificationResponse reject(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody CertificationRejectionRequest request) {
-        return certificationService.reject(authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW), id, request.reason());
+    public CertificationResponse reject(
+            @RequestHeader("Authorization") String authorization,
+            @PathVariable Long id,
+            @Valid @RequestBody CertificationRejectionRequest request) {
+        return certificationService.reject(
+                authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW),
+                id,
+                request.reason());
     }
 }
