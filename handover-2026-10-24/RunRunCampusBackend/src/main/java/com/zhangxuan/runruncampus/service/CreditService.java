@@ -16,7 +16,7 @@ public interface CreditService {
      * @param user 当前已识别账号
      * @param page 从零开始的分页页码
      * @param size 每页记录数量
-     * @return 信用分及风险信号资料
+     * @return 用户信用分及信用事件分页
      */
     CreditProfileVO profile(AppUser user, int page, int size);
 
@@ -26,7 +26,7 @@ public interface CreditService {
      * @param userId 目标用户标识
      * @param page 从零开始的分页页码
      * @param size 每页记录数量
-     * @return 信用分及风险信号资料
+     * @return 用户信用分及信用事件分页
      */
     CreditProfileVO profileForAdmin(Long userId, int page, int size);
 
@@ -37,7 +37,7 @@ public interface CreditService {
      * @param userId 目标用户标识
      * @param delta 信用分调整值
      * @param reason 业务操作理由，按原有长度和必填规则校验
-     * @return 信用分及风险信号变更
+     * @return 信用分变更记录
      */
     CreditChangeVO adjust(AppUser administrator, Long userId, int delta, String reason);
 
@@ -48,7 +48,7 @@ public interface CreditService {
      * @param userId 目标用户标识
      * @param eventId 待冲销信用事件标识
      * @param reason 业务操作理由，按原有长度和必填规则校验
-     * @return 信用分及风险信号变更
+     * @return 信用分变更记录
      */
     CreditChangeVO reverse(AppUser administrator, Long userId, Long eventId, String reason);
 
@@ -59,7 +59,7 @@ public interface CreditService {
      * @param signalId 风险信号标识
      * @param delta 信用分调整值
      * @param reason 业务操作理由，按原有长度和必填规则校验
-     * @return 信用分及风险信号变更
+     * @return 信用分变更记录
      */
     CreditChangeVO confirmSignal(AppUser administrator, Long signalId, int delta, String reason);
 

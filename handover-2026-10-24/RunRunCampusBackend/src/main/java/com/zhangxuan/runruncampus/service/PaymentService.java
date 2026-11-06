@@ -17,7 +17,7 @@ public interface PaymentService {
      *
      * @param customer 当前用户账号
      * @param orderId 订单标识
-     * @return 支付回执及退款
+     * @return 支付记录、当前状态及客户端支付参数
      */
     PaymentResponse createOrderPayment(AppUser customer, Long orderId);
 
@@ -26,7 +26,7 @@ public interface PaymentService {
      *
      * @param customer 当前用户账号
      * @param plan 会员套餐类型
-     * @return 支付回执及退款
+     * @return 支付记录、当前状态及客户端支付参数
      */
     PaymentResponse createMembershipPayment(AppUser customer, MembershipPlanType plan);
 
@@ -35,7 +35,7 @@ public interface PaymentService {
      *
      * @param customer 当前用户账号
      * @param outTradeNo 服务端生成的渠道交易单号
-     * @return 支付回执及退款
+     * @return 支付记录、当前状态及客户端支付参数
      */
     PaymentResponse status(AppUser customer, String outTradeNo);
 

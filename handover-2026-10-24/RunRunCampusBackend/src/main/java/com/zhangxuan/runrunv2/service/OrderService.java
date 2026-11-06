@@ -14,17 +14,17 @@ public interface OrderService {
      *
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param request 创建订单
+     * @param request 下单地址、服务规格及计价校验参数
      * @return 已创建订单
      */
     CreatedOrderVO create(String token, String key, CreateOrderRequest request);
 
     /**
-     * 读取订单创建与状态管理详情。
+     * 读取当前账号有权访问的订单详情。
      *
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderVO get(String token, String id);
 }

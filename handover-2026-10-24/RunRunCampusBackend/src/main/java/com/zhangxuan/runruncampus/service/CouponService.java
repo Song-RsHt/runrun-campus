@@ -18,12 +18,12 @@ public interface CouponService {
     List<CouponResponse> list(AppUser customer);
 
     /**
-     * 校验并应用用户优惠券业务条件。
+     * 下单时校验优惠券归属、有效期及使用状态，并按订单费用计算抵扣。
      *
      * @param customer 当前用户账号
      * @param couponId 用户优惠券标识
      * @param originalFeeCents 使用优惠前的原始费用，单位分
-     * @return 用户优惠券启动
+     * @return 实际抵扣金额及所用优惠券标识
      */
     CouponApplication apply(AppUser customer, Long couponId, int originalFeeCents);
 

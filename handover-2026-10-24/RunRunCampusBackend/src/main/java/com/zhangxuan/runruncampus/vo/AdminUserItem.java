@@ -4,7 +4,7 @@ import com.zhangxuan.runruncampus.enums.UserRole;
 
 import java.time.Instant;
 
-/** 管理员用户维护条目响应；保持现有 JSON 字段及序列化契约。 */
+/** 用户账号及管理状态响应；保持现有 JSON 字段及序列化契约。 */
 public record AdminUserItem(
         Long id,
         String displayName,

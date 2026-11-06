@@ -14,7 +14,7 @@ public interface AdminCourierService {
      * @param status 可选业务状态筛选
      * @param page 从零开始的分页页码
      * @param size 每页记录数量
-     * @return 管理员骑手查询分页
+     * @return 骑手分页及账号状态
      */
     AdminCourierPageResponse list(
             String query, CourierCertificationStatus status, int page, int size);
@@ -25,7 +25,7 @@ public interface AdminCourierService {
      * @param courierId 目标骑手标识
      * @param page 从零开始的分页页码
      * @param size 每页记录数量
-     * @return 管理员骑手查询履约统计
+     * @return 骑手履约统计
      */
     AdminCourierPerformanceResponse performance(Long courierId, int page, int size);
 }

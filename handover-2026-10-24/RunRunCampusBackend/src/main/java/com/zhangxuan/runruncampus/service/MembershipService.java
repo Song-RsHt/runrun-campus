@@ -43,11 +43,11 @@ public interface MembershipService {
     ActiveMembershipResponse activatePaidPurchase(AppUser customer, MembershipPlanType plan);
 
     /**
-     * 校验并应用用户会员套餐业务条件。
+     * 下单时校验用户有效月卡并扣减一次可用次数。
      *
      * @param customer 当前用户账号
-     * @param useMembership 是否申请使用会员权益
-     * @return 用户会员套餐启动
+     * @param useMembership 是否使用会员权益；为 false 时不扣减次数
+     * @return 本次是否使用会员权益、套餐名称及权益记录标识
      */
     MembershipApplication apply(AppUser customer, boolean useMembership);
 

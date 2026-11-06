@@ -10,15 +10,15 @@ public interface PrivacyService {
     /**
      * 读取当前生效的隐私政策或服务策略。
      *
-     * @return 隐私同意及账号注销策略
+     * @return 当前隐私政策的版本、生效日期及正文
      */
     PrivacyPolicyVO policy();
 
     /**
-     * 查询隐私同意及账号注销当前状态。
+     * 查询用户是否已同意当前版本隐私政策。
      *
      * @param user 当前已识别账号
-     * @return 隐私同意及账号注销同意
+     * @return 当前政策版本、用户已同意版本及同意状态
      */
     PrivacyConsentVO status(AppUser user);
 
@@ -27,7 +27,7 @@ public interface PrivacyService {
      *
      * @param user 当前已识别账号
      * @param version 用户已阅读并同意的隐私政策版本
-     * @return 隐私同意及账号注销同意
+     * @return 当前政策版本、用户已同意版本及同意状态
      */
     PrivacyConsentVO consent(AppUser user, String version);
 

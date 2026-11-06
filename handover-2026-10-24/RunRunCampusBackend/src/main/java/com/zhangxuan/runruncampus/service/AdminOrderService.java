@@ -16,7 +16,7 @@ public interface AdminOrderService {
      * @param archived 是否筛选归档订单
      * @param page 从零开始的分页页码
      * @param size 每页记录数量
-     * @return 管理员订单查询与导出分页
+     * @return 管理员可见的订单分页
      */
     AdminOrderPageResponse list(
             String query, OrderStatus status, boolean archived, int page, int size);
@@ -25,7 +25,7 @@ public interface AdminOrderService {
      * 读取管理员订单详情及事件、凭证信息。
      *
      * @param id 目标业务记录标识
-     * @return 管理员订单查询与导出详情
+     * @return 管理员可见的订单详情
      */
     AdminOrderDetailResponse detail(Long id);
 

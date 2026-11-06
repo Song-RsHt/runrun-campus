@@ -26,7 +26,7 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param orderId 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约版本
+     * @param body 调用方持有的订单或任务并发版本
      * @return 订单履约结果
      */
     FulfillmentResultVO accept(
@@ -61,7 +61,7 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param taskId 履约任务标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约邀请
+     * @param body 接受或拒绝邀请的决定及预期版本
      * @return 订单履约结果
      */
     FulfillmentResultVO respond(
@@ -75,7 +75,7 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param orderId 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约释放
+     * @param body 释放原因及预期版本
      * @return 订单履约结果
      */
     FulfillmentResultVO release(
@@ -87,7 +87,7 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param orderId 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约上传
+     * @param body 上传用途、文件元数据及预期版本
      * @return 上传票据
      */
     UploadTicketVO upload(String token, String orderId, String key, FulfillmentUploadRequest body);
@@ -110,7 +110,7 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param orderId 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约位置
+     * @param body 位置事件类型、坐标、任务标识及预期版本
      * @return 位置事件
      */
     LocationEventVO location(
@@ -122,7 +122,7 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param orderId 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约取件
+     * @param body 取件凭证标识及预期版本
      * @return 订单履约结果
      */
     FulfillmentResultVO pickup(
@@ -136,7 +136,7 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param orderId 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约送达
+     * @param body 送达凭证标识及预期版本
      * @return 订单履约结果
      */
     FulfillmentResultVO deliver(
@@ -148,8 +148,8 @@ public interface FulfillmentService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param orderId 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 订单履约版本
-     * @return 订单履约订单
+     * @param body 调用方持有的订单或任务并发版本
+     * @return 履约订单状态
      */
     FulfillmentOrderVO confirm(
             String token, String orderId, String key, FulfillmentVersionRequest body);

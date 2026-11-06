@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-/** 支付回执及退款到期调度；仅注册定时触发，业务事务和重试由注入的协作者执行。 */
+/** 模拟支付启用时检查到期支付；由支付业务服务在原事务和锁路径内关闭，不处理网络回执。 */
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = "rrc.payment.mock-enabled", havingValue = "true")

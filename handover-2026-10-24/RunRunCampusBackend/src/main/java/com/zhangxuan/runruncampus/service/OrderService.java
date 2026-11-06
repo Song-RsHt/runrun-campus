@@ -22,25 +22,25 @@ import java.util.UUID;
 public interface OrderService {
 
     /**
-     * 校验账号、地址、报价及幂等键后创建订单，保持原支付义务与通知原子提交。
+     * 校验用户角色、取送区域及优惠条件后创建 legacy 订单。
      *
-     * <p>按原幂等作用域重放成功结果；后续配置或营业状态改变不能改变原结果或延长截止时间。
+     * <p>本入口不提供请求去重；订单与创建事件、优惠权益变更使用原有事务边界。
      *
      * @param customer 当前用户账号
-     * @param request 创建订单
-     * @return 订单创建与状态管理
+     * @param request 下单地址、服务规格及计价校验参数
+     * @return 订单详情及当前状态
      */
     OrderResponse create(AppUser customer, CreateOrderRequest request);
 
     /**
-     * 校验账号、地址、报价及幂等键后创建订单，保持原支付义务与通知原子提交。
+     * 使用可选请求标识创建 legacy 订单，并在用户锁内校验重复请求内容。
      *
-     * <p>按原幂等作用域重放成功结果；后续配置或营业状态改变不能改变原结果或延长截止时间。
+     * <p>同一标识和相同内容返回已创建订单；标识被其他下单内容占用时拒绝。
      *
      * @param customer 当前用户账号
-     * @param request 创建订单
+     * @param request 下单地址、服务规格及计价校验参数
      * @param requestKey 创建订单的幂等标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse create(AppUser customer, CreateOrderRequest request, UUID requestKey);
 
@@ -48,7 +48,7 @@ public interface OrderService {
      * 查询当前账号参与的全部订单。
      *
      * @param user 当前已识别账号
-     * @return 订单创建与状态管理列表，顺序和筛选沿用原查询
+     * @return 订单列表，顺序和筛选沿用原查询
      */
     List<OrderResponse> mine(AppUser user);
 
@@ -56,7 +56,7 @@ public interface OrderService {
      * 查询当前账号参与的进行中订单。
      *
      * @param user 当前已识别账号
-     * @return 订单创建与状态管理列表，顺序和筛选沿用原查询
+     * @return 订单列表，顺序和筛选沿用原查询
      */
     List<OrderResponse> mineActive(AppUser user);
 
@@ -93,16 +93,16 @@ public interface OrderService {
      * 查询当前骑手可领取的订单。
      *
      * @param courier 当前骑手账号或标识
-     * @return 订单创建与状态管理列表，顺序和筛选沿用原查询
+     * @return 订单列表，顺序和筛选沿用原查询
      */
     List<OrderResponse> available(AppUser courier);
 
     /**
-     * 读取订单创建与状态管理详情。
+     * 读取当前账号有权访问的订单详情。
      *
      * @param user 当前已识别账号
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse get(AppUser user, Long id);
 
@@ -111,7 +111,7 @@ public interface OrderService {
      *
      * @param user 当前已识别账号
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理事件列表，顺序和筛选沿用原查询
+     * @return 订单状态事件列表，顺序和筛选沿用原查询
      */
     List<OrderEventResponse> events(AppUser user, Long id);
 
@@ -139,7 +139,7 @@ public interface OrderService {
      *
      * @param courier 当前骑手账号或标识
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse accept(AppUser courier, Long id);
 
@@ -148,7 +148,7 @@ public interface OrderService {
      *
      * @param customer 当前用户账号
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse cancel(AppUser customer, Long id);
 
@@ -158,7 +158,7 @@ public interface OrderService {
      * @param courier 当前骑手账号或标识
      * @param id 目标业务记录标识
      * @param request 确认包裹规格
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse confirmPackageSize(AppUser courier, Long id, ConfirmPackageSizeRequest request);
 
@@ -167,7 +167,7 @@ public interface OrderService {
      *
      * @param customer 当前用户账号
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse approvePackageSize(AppUser customer, Long id);
 
@@ -176,7 +176,7 @@ public interface OrderService {
      *
      * @param customer 当前用户账号
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse rejectPackageSize(AppUser customer, Long id);
 
@@ -185,7 +185,7 @@ public interface OrderService {
      *
      * @param courier 当前骑手账号或标识
      * @param id 目标业务记录标识
-     * @return 订单创建与状态管理
+     * @return 订单详情及当前状态
      */
     OrderResponse markPickedUp(AppUser courier, Long id);
 
@@ -203,8 +203,8 @@ public interface OrderService {
      *
      * @param courier 当前骑手账号或标识
      * @param id 目标业务记录标识
-     * @param request 完成订单
-     * @return 订单创建与状态管理
+     * @param request 用户提供的交付验证码
+     * @return 订单详情及当前状态
      */
     OrderResponse complete(AppUser courier, Long id, CompleteOrderRequest request);
 
@@ -213,8 +213,8 @@ public interface OrderService {
      *
      * @param customer 当前用户账号
      * @param id 目标业务记录标识
-     * @param request 创建评价
-     * @return 订单创建与状态管理
+     * @param request 评价分值及评价内容
+     * @return 订单详情及当前状态
      */
     OrderResponse rate(AppUser customer, Long id, CreateRatingRequest request);
 

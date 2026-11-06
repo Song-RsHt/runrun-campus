@@ -11,7 +11,7 @@ public interface AdminCouponService {
      *
      * @param administrator 已通过权限校验的管理员
      * @param userId 目标用户标识
-     * @return 用户优惠券授权
+     * @return 发放后的优惠券记录
      */
     CouponGrantResponse issueOneYuan(AppUser administrator, Long userId);
 }

@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
-/** 旧系统骑手资质 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
+/** 新系统骑手资质 HTTP 入口；绑定请求并委托业务服务，不直接访问数据库。 */
 @RestController
 @RequestMapping("/api/v2/courier/certification")
 public class CourierCertificationV2Controller {

@@ -4,7 +4,7 @@ import com.zhangxuan.runruncampus.enums.CreditRiskLevel;
 
 import java.util.List;
 
-/** 信用分及风险信号资料响应；保持现有 JSON 字段及序列化契约。 */
+/** 用户信用分及信用事件分页响应；保持现有 JSON 字段及序列化契约。 */
 public record CreditProfileVO(
         Long userId,
         String displayName,

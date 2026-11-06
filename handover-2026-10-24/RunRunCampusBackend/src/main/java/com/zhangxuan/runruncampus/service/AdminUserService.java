@@ -13,7 +13,7 @@ public interface AdminUserService {
      *
      * @param administrator 已通过权限校验的管理员
      * @param id 目标业务记录标识
-     * @return 管理员用户维护条目
+     * @return 用户账号及管理状态
      */
     AdminUserItem suspend(AppUser administrator, Long id);
 
@@ -22,7 +22,7 @@ public interface AdminUserService {
      *
      * @param administrator 已通过权限校验的管理员
      * @param id 目标业务记录标识
-     * @return 管理员用户维护条目
+     * @return 用户账号及管理状态
      */
     AdminUserItem restore(AppUser administrator, Long id);
 
@@ -31,7 +31,7 @@ public interface AdminUserService {
      *
      * @param administrator 已通过权限校验的管理员
      * @param id 目标业务记录标识
-     * @return 管理员用户维护条目
+     * @return 用户账号及管理状态
      */
     AdminUserItem unlockLogin(AppUser administrator, Long id);
 
@@ -41,7 +41,7 @@ public interface AdminUserService {
      * @param administrator 已通过权限校验的管理员
      * @param id 目标业务记录标识
      * @param password 本次密码校验或设置所需的原文，不得记录
-     * @return 管理员用户维护条目
+     * @return 用户账号及管理状态
      */
     AdminUserItem resetPassword(AppUser administrator, Long id, String password);
 
@@ -52,7 +52,7 @@ public interface AdminUserService {
      * @param role 业务角色或管理员岗位
      * @param page 从零开始的分页页码
      * @param size 每页记录数量
-     * @return 管理员用户维护分页
+     * @return 用户分页及账号状态
      */
     AdminUserPageResponse list(String query, UserRole role, int page, int size);
 }

@@ -5,7 +5,7 @@ import com.zhangxuan.runrunv2.vo.CourierCertificationVO;
 
 import java.util.Map;
 
-/** 旧系统骑手资质业务契约；实现类负责原有事务、锁与持久化协作。 */
+/** 新系统骑手资质业务契约；实现类负责原有事务、锁与持久化协作。 */
 public interface CourierCertificationV2Service {
 
     /**
@@ -14,7 +14,7 @@ public interface CourierCertificationV2Service {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param identity 现有身份服务协作者，沿用调用链的鉴权策略
      * @param requestId 本次操作的幂等请求标识
-     * @return 旧系统骑手资质
+     * @return 新系统骑手资质
      */
     CourierCertificationVO apply(String token, IdentityService identity, String requestId);
 
@@ -29,7 +29,7 @@ public interface CourierCertificationV2Service {
      * @param expectedVersion 调用方看到的并发版本，更新必须与当前版本一致
      * @param requestId 本次操作的幂等请求标识
      * @param file 延迟读取的上传文件；业务校验后才读取内容
-     * @return 旧系统骑手资质
+     * @return 新系统骑手资质
      */
     CourierCertificationVO upload(
             String token,
@@ -50,7 +50,7 @@ public interface CourierCertificationV2Service {
      * @param decision 管理员资质审核决定
      * @param reason 业务操作理由，按原有长度和必填规则校验
      * @param requestId 本次操作的幂等请求标识
-     * @return 旧系统骑手资质
+     * @return 新系统骑手资质
      */
     CourierCertificationVO decide(
             String token,
@@ -102,7 +102,7 @@ public interface CourierCertificationV2Service {
      *
      * @param subject 资质所属骑手标识
      * @param id 目标业务记录标识
-     * @return 旧系统骑手资质
+     * @return 新系统骑手资质
      */
     CourierCertificationVO get(long subject, long id);
 
@@ -110,7 +110,7 @@ public interface CourierCertificationV2Service {
      * 读取当前骑手最新资质。
      *
      * @param courier 当前骑手账号或标识
-     * @return 旧系统骑手资质
+     * @return 新系统骑手资质
      */
     CourierCertificationVO getMine(long courier);
 }

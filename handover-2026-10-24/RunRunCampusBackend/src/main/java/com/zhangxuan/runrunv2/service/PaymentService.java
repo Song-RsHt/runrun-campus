@@ -36,7 +36,7 @@ public interface PaymentService extends OriginalPaymentWriter {
     OriginalPaymentVO create(String orderId, long amountCents, OffsetDateTime deadline);
 
     /**
-     * 读取支付回执及退款详情。
+     * 读取当前用户订单的支付义务、尝试及退款记录。
      *
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param paymentId 支付义务标识
@@ -52,7 +52,7 @@ public interface PaymentService extends OriginalPaymentWriter {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param paymentId 支付义务标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 支付回执及退款版本
+     * @param body 支付或退款的预期并发版本
      * @return 本次发起结果及对应的支付尝试
      */
     StartedPaymentVO start(String token, String paymentId, String key, PaymentVersionRequest body);
@@ -63,7 +63,7 @@ public interface PaymentService extends OriginalPaymentWriter {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param id 支付义务标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 支付回执及退款版本
+     * @param body 支付或退款的预期并发版本
      * @return 支付义务、历次支付尝试和退款记录
      */
     PaymentSummaryVO queryPayment(String token, String id, String key, PaymentVersionRequest body);
@@ -74,8 +74,8 @@ public interface PaymentService extends OriginalPaymentWriter {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param id 支付尝试标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 支付回执及退款结果
-     * @return 支付回执及退款尝试
+     * @param body 模拟渠道结果及预期版本
+     * @return 支付尝试及渠道处理状态
      */
     PaymentAttemptVO paymentResult(String token, String id, String key, PaymentResultRequest body);
 
@@ -85,7 +85,7 @@ public interface PaymentService extends OriginalPaymentWriter {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param id 退款记录标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 支付回执及退款结果
+     * @param body 模拟渠道结果及预期版本
      * @return 退款订单
      */
     RefundOrderVO refundResult(String token, String id, String key, PaymentResultRequest body);
@@ -96,7 +96,7 @@ public interface PaymentService extends OriginalPaymentWriter {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param id 退款记录标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 支付回执及退款版本
+     * @param body 支付或退款的预期并发版本
      * @return 退款订单
      */
     RefundOrderVO queryRefund(String token, String id, String key, PaymentVersionRequest body);
@@ -107,7 +107,7 @@ public interface PaymentService extends OriginalPaymentWriter {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param id 订单标识
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param body 取消
+     * @param body 取消原因及预期订单版本
      * @return 已取消订单
      */
     CancelledOrderVO cancel(String token, String id, String key, CancelRequest body);

@@ -199,9 +199,7 @@ class BackendLayeringTest {
                             Arrays.stream(type.getDeclaredConstructors())
                                     .filter(
                                             constructor ->
-                                                    constructor.isAnnotationPresent(
-                                                            org.springframework.beans.factory
-                                                                    .annotation.Autowired.class))
+                                                    constructor.isAnnotationPresent(Autowired.class))
                                     .count(),
                             type.getName());
                 }

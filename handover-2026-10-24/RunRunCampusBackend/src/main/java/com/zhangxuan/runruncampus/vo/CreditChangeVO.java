@@ -5,7 +5,7 @@ import com.zhangxuan.runruncampus.enums.CreditRiskLevel;
 
 import java.time.Instant;
 
-/** 信用分及风险信号变更响应；保持现有 JSON 字段及序列化契约。 */
+/** 信用分变更记录响应；保持现有 JSON 字段及序列化契约。 */
 public record CreditChangeVO(
         Long id,
         CreditEventType type,

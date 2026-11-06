@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 
 import java.time.Instant;
 
-/** 订单创建与状态管理事件持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
+/** 订单状态事件持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "order_events")
 public class OrderEvent {

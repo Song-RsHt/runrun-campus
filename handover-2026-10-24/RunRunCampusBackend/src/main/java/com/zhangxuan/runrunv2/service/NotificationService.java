@@ -7,10 +7,10 @@ import java.util.Map;
 public interface NotificationService {
 
     /**
-     * 查询站内通知及订阅投递列表，保留现有筛选和分页口径。
+     * 查询当前会话所属账号的站内通知；不暴露其他账号的消息。
      *
      * @param token 当前访问凭证；仅用于校验，不得记录原值
-     * @return 站内通知及订阅投递列表，顺序和筛选沿用原查询
+     * @return 按创建时间倒序的最近 100 条站内通知
      */
     List<Map<String, Object>> list(String token);
 
@@ -25,10 +25,10 @@ public interface NotificationService {
     /**
      * 领取到期订阅投递，保持原 claim、租约及重试范围。
      *
-     * <p>领取时受原 M08 开关和租约条件约束；网络发送在领取与完成回写事务之外。
+     * <p>由受 M08 开关控制的投递工作器调用；数据库负责领取及租约，网络发送在事务之外。
      *
-     * @param limit 本批领取记录数量上限
-     * @return 站内通知及订阅投递列表，顺序和筛选沿用原查询
+     * @param limit 本批领取数量，约束为 1 至 100
+     * @return 已领取的 outbox 投递记录，包含工作器发送所需字段
      */
     List<Map<String, Object>> claim(int limit);
 

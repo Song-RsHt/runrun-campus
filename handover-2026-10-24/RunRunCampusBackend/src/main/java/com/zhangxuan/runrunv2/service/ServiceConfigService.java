@@ -23,7 +23,7 @@ public interface ServiceConfigService {
      * 读取当前服务配置及其并发版本。
      *
      * @param token 当前访问凭证；仅用于校验，不得记录原值
-     * @return 新系统服务配置及计价
+     * @return 配送区域、服务点、计价策略及配置版本
      */
     ServiceConfigVO config(String token);
 
@@ -31,15 +31,15 @@ public interface ServiceConfigService {
      * 按服务配置、地址、时间和规格计算报价，不创建订单。
      *
      * @param token 当前访问凭证；仅用于校验，不得记录原值
-     * @param request 订单创建与状态管理报价
-     * @return 订单创建与状态管理报价
+     * @param request 订单报价
+     * @return 订单报价
      */
     OrderQuoteVO quote(String token, OrderQuoteRequest request);
 
     /**
      * 使用给定配置计算金额，保持原有整数计价与舍入。
      *
-     * @param request 订单创建与状态管理报价
+     * @param request 订单报价
      * @param settings 当前业务使用的服务配置快照
      * @return 订单计价快照
      */
@@ -81,8 +81,8 @@ public interface ServiceConfigService {
      *
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @param key 本次操作的幂等键，作用域由现有业务规则决定
-     * @param change 新系统服务配置及计价变更
-     * @return 新系统服务配置及计价
+     * @param change 服务配置变更内容及预期版本
+     * @return 配送区域、服务点、计价策略及配置版本
      */
     ServiceConfigVO patch(String token, String key, ServiceConfigChangeRequest change);
 }

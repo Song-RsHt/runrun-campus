@@ -10,7 +10,7 @@ import jakarta.persistence.Version;
 
 import java.time.Instant;
 
-/** 信用分及风险信号资料持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
+/** 用户信用分及信用事件分页持久化实体；映射既有表和关联，不定义 HTTP 请求字段。 */
 @Entity
 @Table(name = "credit_profiles")
 public class CreditProfile {
