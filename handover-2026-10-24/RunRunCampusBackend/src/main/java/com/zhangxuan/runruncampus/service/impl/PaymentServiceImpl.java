@@ -29,10 +29,10 @@ import com.zhangxuan.runruncampus.vo.RefundResponse;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.PaymentService;
 
 /**
@@ -68,18 +68,18 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse createOrderPayment(AppUser customer, Long orderId) {
         requireCustomer(customer);
-        CampusOrder order = orderRepository.findLockedById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         if (!order.getCustomer().getId().equals(customer.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只能支付自己的订单");
+            throw new BusinessFailure(403, "只能支付自己的订单");
         }
         if (order.getStatus() != OrderStatus.PENDING_ASSIGNMENT && order.getStatus() != OrderStatus.ACCEPTED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "订单当前状态不能支付");
+            throw new BusinessFailure(409, "订单当前状态不能支付");
         }
         if (order.getPaymentMethod() == OrderPaymentMethod.CASH_ON_DELIVERY) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该订单为货到付款，无需发起线上支付");
+            throw new BusinessFailure(409, "该订单为货到付款，无需发起线上支付");
         }
         if (order.getPaymentMethod() != OrderPaymentMethod.WECHAT_APP) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该订单无需发起微信 APP 支付");
+            throw new BusinessFailure(409, "该订单无需发起微信 APP 支付");
         }
         int dueCents = order.getFeeCents() - order.getPaidCents();
         if (dueCents <= 0)
@@ -105,7 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
         WechatPayment pending = paymentRepository.findFirstByUserAndBusinessTypeAndStatusOrderByCreatedAtDesc(customer, PaymentBusinessType.MEMBERSHIP, PaymentStatus.PENDING).orElse(null);
         if (pending != null && !pending.isExpired(Instant.now())) {
             if (pending.getMembershipPlan() != plan) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "已有待支付月卡，请先完成或等待其过期");
+                throw new BusinessFailure(409, "已有待支付月卡，请先完成或等待其过期");
             }
             return response(pending);
         }
@@ -122,9 +122,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponse status(AppUser customer, String outTradeNo) {
         requireCustomer(customer);
-        WechatPayment payment = paymentRepository.findLockedByOutTradeNo(outTradeNo).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "支付单不存在"));
+        WechatPayment payment = paymentRepository.findLockedByOutTradeNo(outTradeNo).orElseThrow(() -> new BusinessFailure(404, "支付单不存在"));
         if (!payment.belongsTo(customer)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权查看此支付单");
+            throw new BusinessFailure(403, "无权查看此支付单");
         }
         if (payment.getStatus() == PaymentStatus.PENDING && payment.hasPayParameters()) {
             TradeResult result = gateway.query(outTradeNo);
@@ -140,7 +140,7 @@ public class PaymentServiceImpl implements PaymentService {
         TradeResult result = gateway.parsePaymentNotification(headers, body);
         if (!result.paid())
             return;
-        WechatPayment payment = paymentRepository.findLockedByOutTradeNo(result.outTradeNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "支付单不存在"));
+        WechatPayment payment = paymentRepository.findLockedByOutTradeNo(result.outTradeNo()).orElseThrow(() -> new BusinessFailure(404, "支付单不存在"));
         confirmPaid(payment, result);
     }
 
@@ -148,9 +148,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public void acceptRefundNotification(NotificationHeaders headers, String body) {
         RefundNotificationResult result = gateway.parseRefundNotification(headers, body);
-        WechatRefund refund = refundRepository.findLockedByOutRefundNo(result.outRefundNo()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "退款单不存在"));
+        WechatRefund refund = refundRepository.findLockedByOutRefundNo(result.outRefundNo()).orElseThrow(() -> new BusinessFailure(404, "退款单不存在"));
         if (!refund.getPayment().getOutTradeNo().equals(result.outTradeNo()) || refund.getAmountCents() != result.refundCents()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "退款通知与本地退款单不一致");
+            throw new BusinessFailure(400, "退款通知与本地退款单不一致");
         }
         refund.record(new RefundResult(result.refundId(), result.status()));
         if (result.status() == RefundStatus.SUCCESS)
@@ -162,7 +162,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void closeAndRefundForCancellation(CampusOrder order) {
         if (order.getPaymentMethod() == OrderPaymentMethod.PERSONAL_QR_MANUAL) {
             if (order.getPaidCents() > 0) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "已人工确认到账，请联系管理员线下退款");
+                throw new BusinessFailure(409, "已人工确认到账，请联系管理员线下退款");
             }
             return;
         }
@@ -176,7 +176,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void refundPriceDifference(CampusOrder order, int refundCents) {
         if (order.getPaymentMethod() == OrderPaymentMethod.PERSONAL_QR_MANUAL) {
             if (refundCents > 0) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "人工扫码付款差额请由管理员线下处理");
+                throw new BusinessFailure(409, "人工扫码付款差额请由管理员线下处理");
             }
             return;
         }
@@ -194,14 +194,14 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment.getStatus() == PaymentStatus.PAID)
             return;
         if (!payment.getOutTradeNo().equals(result.outTradeNo()) || !properties.appId().equals(result.appId()) || !properties.merchantId().equals(result.merchantId()) || payment.getAmountCents() != result.amountCents()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "支付通知与本地支付单不一致");
+            throw new BusinessFailure(400, "支付通知与本地支付单不一致");
         }
         payment.markPaid(result.transactionId());
         if (payment.getBusinessType() == PaymentBusinessType.MEMBERSHIP) {
             membershipService.activatePaidPurchase(payment.getUser(), payment.getMembershipPlan());
             return;
         }
-        CampusOrder order = orderRepository.findLockedById(payment.getOrder().getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findLockedById(payment.getOrder().getId()).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         order.recordPayment(payment.getAmountCents());
         if (order.getStatus() == OrderStatus.CANCELLED) {
             scheduleRefund(order, payment.getAmountCents(), "已取消订单的迟到支付", true);
@@ -253,7 +253,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     private void requireCustomer(AppUser user) {
         if (user.getRole() != UserRole.CUSTOMER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有用户账号可以发起支付");
+            throw new BusinessFailure(403, "只有用户账号可以发起支付");
         }
     }
 }

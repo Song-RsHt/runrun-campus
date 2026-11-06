@@ -50,7 +50,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -367,18 +367,18 @@ class OrderServiceTest {
 
   @Test
   void historyRejectsActiveStatusAndReversedDates() {
-    ResponseStatusException activeStatus =
+    BusinessFailure activeStatus =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.mineHistory(customer, 0, 20, OrderStatus.ACCEPTED, null, null));
-    ResponseStatusException reversedDates =
+    BusinessFailure reversedDates =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.mineHistory(
                     customer, 0, 20, null, LocalDate.of(2026, 9, 3), LocalDate.of(2026, 9, 1)));
-    assertEquals(HttpStatus.BAD_REQUEST, activeStatus.getStatusCode());
-    assertEquals(HttpStatus.BAD_REQUEST, reversedDates.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), activeStatus.status());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), reversedDates.status());
     verifyNoInteractions(orderRepository);
   }
 
@@ -416,10 +416,10 @@ class OrderServiceTest {
 
   @Test
   void historyRejectsOversizedPage() {
-    ResponseStatusException failure =
+    BusinessFailure failure =
         assertThrows(
-            ResponseStatusException.class, () -> orderService.mineHistory(customer, 0, 51));
-    assertEquals(HttpStatus.BAD_REQUEST, failure.getStatusCode());
+            BusinessFailure.class, () -> orderService.mineHistory(customer, 0, 51));
+    assertEquals(HttpStatus.BAD_REQUEST.value(), failure.status());
     verifyNoInteractions(orderRepository);
   }
 
@@ -434,9 +434,9 @@ class OrderServiceTest {
             courier, List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
         .thenReturn(2L);
     when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> orderService.accept(courier, 11L));
-    assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), failure.status());
     assertEquals(OrderStatus.PENDING_ASSIGNMENT, order.getStatus());
     verifyNoInteractions(eventRepository, messageService);
   }
@@ -462,9 +462,9 @@ class OrderServiceTest {
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(orderRepository.countByCourierAndStatusIn(eq(courier), any())).thenReturn(10L);
     when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 10, 30, 120));
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> orderService.accept(courier, 11L));
-    assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), failure.status());
     assertEquals(OrderStatus.PENDING_ASSIGNMENT, order.getStatus());
   }
 
@@ -477,9 +477,9 @@ class OrderServiceTest {
     CampusOrder order = order(customer);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(lockedCourier));
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> orderService.accept(staleCourier, 11L));
-    assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> orderService.accept(staleCourier, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), failure.status());
     assertEquals(OrderStatus.PENDING_ASSIGNMENT, order.getStatus());
     verifyNoInteractions(eventRepository, messageService);
   }
@@ -488,9 +488,9 @@ class OrderServiceTest {
   void expiredCertificationCannotAcceptOrderDespiteOldApprovalFlag() {
     AppUser courier = user(2L, "13800000002", UserRole.COURIER);
     when(certificationService.isEligible(courier)).thenReturn(false);
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> orderService.accept(courier, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), failure.status());
     verifyNoInteractions(orderRepository);
   }
 
@@ -543,9 +543,9 @@ class OrderServiceTest {
     CampusOrder order = order(customer);
     AppUser otherCustomer = user(2L, "13800000002", UserRole.CUSTOMER);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.cancel(otherCustomer, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.cancel(otherCustomer, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     assertEquals(OrderStatus.PENDING_ASSIGNMENT, order.getStatus());
     verifyNoInteractions(eventRepository);
   }
@@ -555,9 +555,9 @@ class OrderServiceTest {
     CampusOrder order = order(customer);
     order.assignCourier(user(3L, "13800000003", UserRole.COURIER));
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.cancel(customer, 11L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.cancel(customer, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals(OrderStatus.ACCEPTED, order.getStatus());
     verifyNoInteractions(eventRepository);
   }
@@ -568,9 +568,9 @@ class OrderServiceTest {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.markPickedUp(courier, 11L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.markPickedUp(courier, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals(OrderStatus.ACCEPTED, order.getStatus());
   }
 
@@ -580,9 +580,9 @@ class OrderServiceTest {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.markPickedUp(courier, 11L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.markPickedUp(courier, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals(OrderStatus.ACCEPTED, order.getStatus());
   }
 
@@ -655,13 +655,13 @@ class OrderServiceTest {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.confirmPackageSize(
                     courier, 11L, new ConfirmPackageSizeRequest(ServiceType.PACKAGE_SMALL)));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     assertEquals("月卡订单不能调整为小件，请用户取消后重新下单", exception.getReason());
     assertNull(order.getProposedPackageServiceType());
   }
@@ -709,13 +709,13 @@ class OrderServiceTest {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.confirmPackageSize(
                     courier, 11L, new ConfirmPackageSizeRequest(ServiceType.PACKAGE_MEDIUM)));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals("提高包裹规格前请先上传规格核验照片", exception.getReason());
     assertNull(order.getProposedPackageServiceType());
   }
@@ -739,13 +739,13 @@ class OrderServiceTest {
     order.assignCourier(courier);
     order.updateStatus(OrderStatus.PICKED_UP);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.complete(
                     courier, 11L, new CompleteOrderRequest(order.getDeliveryCode())));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals(OrderStatus.PICKED_UP, order.getStatus());
   }
 
@@ -758,11 +758,11 @@ class OrderServiceTest {
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(proofRepository.existsByOrderAndType(order, OrderProofType.DELIVERY)).thenReturn(true);
     String wrongCode = order.getDeliveryCode().equals("000000") ? "000001" : "000000";
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.complete(courier, 11L, new CompleteOrderRequest(wrongCode)));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     assertEquals(OrderStatus.PICKED_UP, order.getStatus());
   }
 
@@ -783,9 +783,9 @@ class OrderServiceTest {
     order.assignCourier(user(3L, "13800000003", UserRole.COURIER));
     order.updateStatus(OrderStatus.PICKED_UP);
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.deliveryCode(customer, 11L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.deliveryCode(customer, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals("管理员确认到账后才能查看收货码", exception.getReason());
   }
 
@@ -808,9 +808,9 @@ class OrderServiceTest {
     order.requirePayment();
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.accept(courier, 11L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals("订单尚未完成支付", exception.getReason());
     verifyNoInteractions(messageService);
   }
@@ -819,9 +819,9 @@ class OrderServiceTest {
   void unapprovedCourierCannotAcceptOrder() {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     courier.markNewCourierUnapproved();
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.accept(courier, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(orderRepository);
   }
 
@@ -829,9 +829,9 @@ class OrderServiceTest {
   void offlineCourierCannotAcceptOrder() {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     courier.setCourierAcceptingOrders(false);
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> orderService.accept(courier, 11L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals("请先在骑手工作台上线接单", exception.getReason());
     verifyNoInteractions(orderRepository);
   }
@@ -1125,22 +1125,22 @@ class OrderServiceTest {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.confirmPackageSize(
                     courier, 11L, new ConfirmPackageSizeRequest(ServiceType.PACKAGE_XL)));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals("提高包裹规格前请先上传规格核验照片", exception.getReason());
     assertNull(order.getProposedPackageServiceType());
   }
 
   @Test
   void smallPackageCannotUseMembershipEvenWithMeiyuanSurcharge() {
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.create(
                     customer,
@@ -1152,22 +1152,22 @@ class OrderServiceTest {
                         ServiceType.PACKAGE_SMALL,
                         null,
                         true)));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     assertEquals("小件快递不支持使用月卡", exception.getReason());
     verifyNoInteractions(membershipService, couponService);
   }
 
   @Test
   void couponAndMembershipCannotBeCombined() {
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.create(
                     customer,
                     new CreateOrderRequest(
                         "测试商家", "1234", "东门", "3号楼", ServiceType.LOBBY, 51L, true)));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     verifyNoInteractions(couponService, membershipService);
   }
 
@@ -1186,11 +1186,11 @@ class OrderServiceTest {
     CampusOrder order = order(customer);
     order.assignCourier(user(3L, "13800000003", UserRole.COURIER));
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.rate(customer, 11L, new CreateRatingRequest(5, null)));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test
@@ -1198,11 +1198,11 @@ class OrderServiceTest {
     CampusOrder order = completedOrder(customer);
     AppUser otherCustomer = user(2L, "13800000002", UserRole.CUSTOMER);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.rate(otherCustomer, 11L, new CreateRatingRequest(5, null)));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   @Test
@@ -1210,11 +1210,11 @@ class OrderServiceTest {
     CampusOrder order = completedOrder(customer);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     orderService.rate(customer, 11L, new CreateRatingRequest(5, null));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.rate(customer, 11L, new CreateRatingRequest(4, null)));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test

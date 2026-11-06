@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -135,11 +135,11 @@ class FeedbackServiceTest {
 
   @Test
   void rejectsBlankFeedback() {
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> feedbackService.submit(user, FeedbackType.OTHER, "   "));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     verifyNoInteractions(feedbackRepository);
   }
 

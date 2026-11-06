@@ -18,10 +18,10 @@ import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminOrderLifecycleService;
 
 @Service
@@ -51,13 +51,13 @@ public class AdminOrderLifecycleServiceImpl implements AdminOrderLifecycleServic
         String note = requireReason(reason);
         CampusOrder order = findLocked(administrator, id);
         if (order.getArchivedAt() != null || order.getStatus() != OrderStatus.PICKED_UP || order.getCourier() == null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "仅未归档且已取件的订单可人工完成");
+            throw new BusinessFailure(409, "仅未归档且已取件的订单可人工完成");
         }
         if (!proofs.existsByOrderAndType(order, OrderProofType.DELIVERY)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "缺少送达凭证，不能人工完成");
+            throw new BusinessFailure(409, "缺少送达凭证，不能人工完成");
         }
         if (order.getPaymentStatus() != OrderPaymentStatus.PAID || order.getPaidCents() < order.getFeeCents() || (order.getPaymentMethod() == OrderPaymentMethod.PERSONAL_QR_MANUAL && order.getFeeCents() > 0 && order.getManualPaymentStatus() != ManualPaymentStatus.CONFIRMED)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "收款尚未确认，不能人工完成");
+            throw new BusinessFailure(409, "收款尚未确认，不能人工完成");
         }
         order.updateStatus(OrderStatus.COMPLETED);
         order.markCourierSettlementPending();
@@ -73,10 +73,10 @@ public class AdminOrderLifecycleServiceImpl implements AdminOrderLifecycleServic
         String note = requireReason(reason);
         CampusOrder order = findLocked(administrator, id);
         if (order.getArchivedAt() != null || (order.getStatus() != OrderStatus.COMPLETED && order.getStatus() != OrderStatus.CANCELLED)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "仅未归档的已结束订单可归档");
+            throw new BusinessFailure(409, "仅未归档的已结束订单可归档");
         }
         if (order.getPaymentStatus() == OrderPaymentStatus.REFUNDING || order.getCourierSettlementStatus() == CourierSettlementStatus.PENDING || (order.getStatus() == OrderStatus.COMPLETED && order.getPaymentStatus() != OrderPaymentStatus.PAID)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "订单仍有待处理的收款、退款或骑手结算");
+            throw new BusinessFailure(409, "订单仍有待处理的收款、退款或骑手结算");
         }
         order.archive(administrator);
         audit.record(administrator, AdminAuditAction.ORDER_ARCHIVED, AdminAuditTargetType.ORDER, order.getId(), "归档订单 %s；原因：%s".formatted(order.getOrderNo(), note));
@@ -87,7 +87,7 @@ public class AdminOrderLifecycleServiceImpl implements AdminOrderLifecycleServic
     public void unarchive(AppUser administrator, Long id) {
         CampusOrder order = findLocked(administrator, id);
         if (order.getArchivedAt() == null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "订单未归档");
+            throw new BusinessFailure(409, "订单未归档");
         }
         order.unarchive();
         audit.record(administrator, AdminAuditAction.ORDER_UNARCHIVED, AdminAuditTargetType.ORDER, order.getId(), "恢复归档订单 " + order.getOrderNo());
@@ -95,15 +95,15 @@ public class AdminOrderLifecycleServiceImpl implements AdminOrderLifecycleServic
 
     private CampusOrder findLocked(AppUser administrator, Long id) {
         if (administrator == null || administrator.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "仅管理员可操作");
+            throw new BusinessFailure(403, "仅管理员可操作");
         }
-        return orders.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        return orders.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
     }
 
     private String requireReason(String reason) {
         String note = reason == null ? "" : reason.trim();
         if (note.length() < 5 || note.length() > 200) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入5至200字的操作原因");
+            throw new BusinessFailure(400, "请输入5至200字的操作原因");
         }
         return note;
     }

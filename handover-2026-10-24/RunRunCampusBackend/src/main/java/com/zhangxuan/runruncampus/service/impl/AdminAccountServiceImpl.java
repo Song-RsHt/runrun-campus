@@ -10,11 +10,11 @@ import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.vo.AdminAccountItem;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminAccountService;
 
 @Service
@@ -45,7 +45,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     @Override
     public AdminAccountItem create(AppUser creator, String phone, String password, String displayName, AdminRole role) {
         if (userRepository.findByPhone(phone).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该手机号已注册");
+            throw new BusinessFailure(409, "该手机号已注册");
         }
         AppUser administrator = new AppUser(phone, passwordEncoder.encode(password), displayName.trim(), UserRole.ADMIN);
         administrator.changeAdminRole(role);
@@ -112,12 +112,12 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     @Transactional
     @Override
     public void changeOwnPassword(AppUser administrator, String currentPassword, String newPassword) {
-        administrator = userRepository.findLockedById(administrator.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "管理员不存在"));
+        administrator = userRepository.findLockedById(administrator.getId()).orElseThrow(() -> new BusinessFailure(404, "管理员不存在"));
         if (!passwordEncoder.matches(currentPassword, administrator.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "当前密码错误");
+            throw new BusinessFailure(400, "当前密码错误");
         }
         if (passwordEncoder.matches(newPassword, administrator.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "新密码不能与当前密码相同");
+            throw new BusinessFailure(400, "新密码不能与当前密码相同");
         }
         administrator.changePasswordHash(passwordEncoder.encode(newPassword));
         sessionRepository.deleteByUser(administrator);
@@ -126,9 +126,9 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 
     private AppUser requireOtherAdministrator(AppUser operator, Long id, String selfMessage) {
         if (operator.getId().equals(id)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, selfMessage);
+            throw new BusinessFailure(409, selfMessage);
         }
-        return userRepository.findLockedById(id).filter(user -> user.getRole() == UserRole.ADMIN).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "管理员不存在"));
+        return userRepository.findLockedById(id).filter(user -> user.getRole() == UserRole.ADMIN).orElseThrow(() -> new BusinessFailure(404, "管理员不存在"));
     }
 
     private AdminAccountItem item(AppUser user) {

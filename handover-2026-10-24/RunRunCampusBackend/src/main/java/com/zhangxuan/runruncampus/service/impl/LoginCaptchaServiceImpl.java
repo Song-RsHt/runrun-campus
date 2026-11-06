@@ -14,9 +14,9 @@ import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.imageio.ImageIO;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.LoginCaptchaService;
 
 @Service
@@ -117,8 +117,8 @@ public class LoginCaptchaServiceImpl implements LoginCaptchaService {
         }
     }
 
-    private static ResponseStatusException rejected() {
-        return new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "请输入正确的图形验证码");
+    private static BusinessFailure rejected() {
+        return new BusinessFailure(428, "请输入正确的图形验证码");
     }
 
     private record State(byte[] answerHash, Instant expiresAt) {

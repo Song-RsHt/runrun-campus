@@ -14,11 +14,11 @@ import com.zhangxuan.runruncampus.vo.Snapshot;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminCommandCenterService;
 
 /**
@@ -40,7 +40,7 @@ public class AdminCommandCenterServiceImpl implements AdminCommandCenterService 
     @Override
     public Snapshot snapshot(AdminRole role, Queue queue, int orderPage, int courierPage) {
         if (orderPage < 0 || courierPage < 0 || orderPage > 100000 || courierPage > 100000) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "页码超出范围");
+            throw new BusinessFailure(400, "页码超出范围");
         }
         Instant now = Instant.now();
         var settings = settingsService.get();

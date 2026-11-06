@@ -14,10 +14,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminFeedbackService;
 
 @Service
@@ -46,12 +46,12 @@ public class AdminFeedbackServiceImpl implements AdminFeedbackService {
     public FeedbackItem claim(AppUser administrator, Long id) {
         UserFeedback feedback = requireFeedback(id);
         if (feedback.getHandlingStatus() == FeedbackHandlingStatus.RESOLVED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "已解决的反馈不能重新领取");
+            throw new BusinessFailure(409, "已解决的反馈不能重新领取");
         }
         if (feedback.getHandlingStatus() == FeedbackHandlingStatus.PROCESSING) {
             if (feedback.getAssignee().getId().equals(administrator.getId()))
                 return item(feedback);
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该反馈已由" + feedback.getAssignee().getDisplayName() + "领取");
+            throw new BusinessFailure(409, "该反馈已由" + feedback.getAssignee().getDisplayName() + "领取");
         }
         feedback.claim(administrator);
         auditService.record(administrator, AdminAuditAction.FEEDBACK_CLAIMED, AdminAuditTargetType.FEEDBACK, feedback.getId(), "领取用户反馈：#" + feedback.getId());
@@ -63,7 +63,7 @@ public class AdminFeedbackServiceImpl implements AdminFeedbackService {
     public FeedbackItem resolve(AppUser administrator, Long id, String resolution) {
         UserFeedback feedback = requireFeedback(id);
         if (feedback.getHandlingStatus() != FeedbackHandlingStatus.PROCESSING || feedback.getAssignee() == null || !feedback.getAssignee().getId().equals(administrator.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "请先领取该反馈再处理");
+            throw new BusinessFailure(409, "请先领取该反馈再处理");
         }
         String normalized = requireText(resolution);
         feedback.resolve(normalized);
@@ -78,12 +78,12 @@ public class AdminFeedbackServiceImpl implements AdminFeedbackService {
     }
 
     private UserFeedback requireFeedback(Long id) {
-        return feedbackRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "反馈不存在"));
+        return feedbackRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "反馈不存在"));
     }
 
     private String requireText(String value) {
         if (value == null || value.trim().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入处理结果");
+            throw new BusinessFailure(400, "请输入处理结果");
         }
         return value.trim();
     }

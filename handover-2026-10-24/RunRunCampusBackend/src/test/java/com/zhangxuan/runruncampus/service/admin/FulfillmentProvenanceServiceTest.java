@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -158,8 +158,8 @@ class FulfillmentProvenanceServiceTest {
             "a".repeat(64),
             null);
     var error =
-        assertThrows(ResponseStatusException.class, () -> service().record(admin(1), request));
-    assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
+        assertThrows(BusinessFailure.class, () -> service().record(admin(1), request));
+    assertEquals(HttpStatus.BAD_REQUEST.value(), error.status());
     verifyNoInteractions(jdbc, orders);
   }
 
@@ -176,7 +176,7 @@ class FulfillmentProvenanceServiceTest {
             null,
             "a".repeat(64),
             null);
-    assertThrows(ResponseStatusException.class, () -> service().record(admin(1), request));
+    assertThrows(BusinessFailure.class, () -> service().record(admin(1), request));
     verifyNoInteractions(jdbc, orders);
   }
 
@@ -198,16 +198,16 @@ class FulfillmentProvenanceServiceTest {
             "a".repeat(64),
             null);
     var error =
-        assertThrows(ResponseStatusException.class, () -> service().record(admin(1), request));
-    assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
+        assertThrows(BusinessFailure.class, () -> service().record(admin(1), request));
+    assertEquals(HttpStatus.BAD_REQUEST.value(), error.status());
     verifyNoInteractions(jdbc);
   }
 
   @Test
   void verifierCannotApproveOwnEntry() {
     when(jdbc.update(any(String.class), eq(1L), eq(7L), eq(1L))).thenReturn(0);
-    var error = assertThrows(ResponseStatusException.class, () -> service().verify(admin(1), 7));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+    var error = assertThrows(BusinessFailure.class, () -> service().verify(admin(1), 7));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     verify(jdbc).update(any(String.class), eq(1L), eq(7L), eq(1L));
   }
 

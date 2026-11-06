@@ -13,10 +13,10 @@ import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.OrderIssueVO;
 import java.util.EnumSet;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 
 
 
@@ -57,14 +57,14 @@ public class OrderIssueServiceImpl implements OrderIssueService {
     @Transactional
     @Override
     public OrderIssueVO create(AppUser reporter, Long orderId, OrderIssueType type, String description) {
-        CampusOrder order = orderRepository.findLockedById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireParticipant(reporter, order);
         String normalized = description == null ? "" : description.trim();
         if (type == null || normalized.isEmpty() || normalized.length() > 500) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请填写不超过500字的异常说明");
+            throw new BusinessFailure(400, "请填写不超过500字的异常说明");
         }
         if (issueRepository.existsByOrderAndReporterAndTypeAndHandlingStatusIn(order, reporter, type, EnumSet.of(OrderIssueHandlingStatus.PENDING, OrderIssueHandlingStatus.PROCESSING))) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该异常已有待处理工单，请勿重复提交");
+            throw new BusinessFailure(409, "该异常已有待处理工单，请勿重复提交");
         }
         OrderIssue issue = issueRepository.save(new OrderIssue(order, reporter, type, normalized));
         AppUser recipient = reporter.getId().equals(order.getCustomer().getId()) ? order.getCourier() : order.getCustomer();
@@ -82,7 +82,7 @@ public class OrderIssueServiceImpl implements OrderIssueService {
     }
 
     private CampusOrder requireParticipant(AppUser user, Long orderId) {
-        CampusOrder order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireParticipant(user, order);
         return order;
     }
@@ -91,7 +91,7 @@ public class OrderIssueServiceImpl implements OrderIssueService {
         boolean isCustomer = user.getId().equals(order.getCustomer().getId());
         boolean isCourier = order.getCourier() != null && user.getId().equals(order.getCourier().getId());
         if (!isCustomer && !isCourier) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权查看或反馈此订单");
+            throw new BusinessFailure(403, "无权查看或反馈此订单");
         }
     }
 

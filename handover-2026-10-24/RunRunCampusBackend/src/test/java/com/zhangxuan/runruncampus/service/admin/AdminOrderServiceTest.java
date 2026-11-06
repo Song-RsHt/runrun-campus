@@ -32,7 +32,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -225,9 +225,9 @@ class AdminOrderServiceTest {
   @Test
   void missingOrderReturnsNotFound() {
     when(orderRepository.findById(99L)).thenReturn(Optional.empty());
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> service.detail(99L));
-    assertEquals(HttpStatus.NOT_FOUND, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> service.detail(99L));
+    assertEquals(HttpStatus.NOT_FOUND.value(), exception.status());
   }
 
   @Test

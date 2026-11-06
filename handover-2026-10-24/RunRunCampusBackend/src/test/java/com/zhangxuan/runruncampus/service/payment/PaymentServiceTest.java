@@ -37,7 +37,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -202,10 +202,10 @@ class PaymentServiceTest {
   void cashOnDeliveryOrderCannotStartOnlinePayment() {
     order.requireCashOnDelivery();
     when(orderRepository.findLockedById(10L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> service.createOrderPayment(customer, 10L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+            BusinessFailure.class, () -> service.createOrderPayment(customer, 10L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals("该订单为货到付款，无需发起线上支付", exception.getReason());
     verifyNoInteractions(paymentRepository, gateway);
   }
@@ -235,11 +235,11 @@ class PaymentServiceTest {
     when(gateway.parsePaymentNotification(any(), anyString())).thenReturn(result);
     when(paymentRepository.findLockedByOutTradeNo(payment.getOutTradeNo()))
         .thenReturn(Optional.of(payment));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> service.acceptPaymentNotification(headers(), "signed-body"));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     assertEquals(OrderPaymentStatus.UNPAID, order.getPaymentStatus());
     verifyNoInteractions(membershipService);
   }

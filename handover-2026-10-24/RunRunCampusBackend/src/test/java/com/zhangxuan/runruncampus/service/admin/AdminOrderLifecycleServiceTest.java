@@ -29,7 +29,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -210,8 +210,8 @@ class AdminOrderLifecycleServiceTest {
     when(proofs.existsByOrderAndType(order, OrderProofType.DELIVERY)).thenReturn(true);
     var error =
         assertThrows(
-            ResponseStatusException.class, () -> service.forceComplete(admin, 11L, "已核对送达照片和收款记录"));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+            BusinessFailure.class, () -> service.forceComplete(admin, 11L, "已核对送达照片和收款记录"));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     assertEquals(OrderStatus.PICKED_UP, order.getStatus());
     verifyNoInteractions(events, messages, audit);
   }
@@ -222,8 +222,8 @@ class AdminOrderLifecycleServiceTest {
     order.recordPayment(order.getFeeCents());
     var error =
         assertThrows(
-            ResponseStatusException.class, () -> service.forceComplete(admin, 11L, "已核对送达照片和收款记录"));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+            BusinessFailure.class, () -> service.forceComplete(admin, 11L, "已核对送达照片和收款记录"));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     verifyNoInteractions(events, messages, audit);
   }
 
@@ -234,8 +234,8 @@ class AdminOrderLifecycleServiceTest {
     when(proofs.existsByOrderAndType(order, OrderProofType.DELIVERY)).thenReturn(true);
     var error =
         assertThrows(
-            ResponseStatusException.class, () -> service.forceComplete(admin, 11L, "已核对送达照片和收款记录"));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+            BusinessFailure.class, () -> service.forceComplete(admin, 11L, "已核对送达照片和收款记录"));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     assertEquals(OrderStatus.PICKED_UP, order.getStatus());
   }
 
@@ -264,8 +264,8 @@ class AdminOrderLifecycleServiceTest {
   @Test
   void onlyTerminalSettledOrdersCanBeArchivedAndRestored() {
     var error =
-        assertThrows(ResponseStatusException.class, () -> service.archive(admin, 11L, "测试单不再显示"));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+        assertThrows(BusinessFailure.class, () -> service.archive(admin, 11L, "测试单不再显示"));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     order.updateStatus(OrderStatus.COMPLETED);
     service.archive(admin, 11L, "测试单不再显示");
     assertNotNull(order.getArchivedAt());
@@ -276,7 +276,7 @@ class AdminOrderLifecycleServiceTest {
             eq(AdminAuditTargetType.ORDER),
             eq(11L),
             any());
-    assertThrows(ResponseStatusException.class, () -> service.archive(admin, 11L, "重复归档订单"));
+    assertThrows(BusinessFailure.class, () -> service.archive(admin, 11L, "重复归档订单"));
     service.unarchive(admin, 11L);
     assertNull(order.getArchivedAt());
     verify(audit)
@@ -293,8 +293,8 @@ class AdminOrderLifecycleServiceTest {
     order.updateStatus(OrderStatus.CANCELLED);
     ReflectionTestUtils.setField(order, "paymentStatus", OrderPaymentStatus.REFUNDING);
     var error =
-        assertThrows(ResponseStatusException.class, () -> service.archive(admin, 11L, "测试单不再显示"));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+        assertThrows(BusinessFailure.class, () -> service.archive(admin, 11L, "测试单不再显示"));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     assertNull(order.getArchivedAt());
   }
 
@@ -306,8 +306,8 @@ class AdminOrderLifecycleServiceTest {
     order.markCourierSettlementPending();
     var error =
         assertThrows(
-            ResponseStatusException.class, () -> service.archive(admin, 11L, "等待骑手结算前不应归档"));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+            BusinessFailure.class, () -> service.archive(admin, 11L, "等待骑手结算前不应归档"));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     assertNull(order.getArchivedAt());
   }
 

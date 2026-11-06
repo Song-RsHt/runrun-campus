@@ -38,4 +38,22 @@ class ApiExceptionHandlerTest {
     assertEquals("60", response.getHeaders().getFirst(HttpHeaders.RETRY_AFTER));
     assertEquals("no-store", response.getHeaders().getFirst(HttpHeaders.CACHE_CONTROL));
   }
+
+  /** 业务异常改用中立类型后，逐个核对原 HTTP 状态、正文与限流响应头。 */
+  @org.junit.jupiter.params.ParameterizedTest
+  @org.junit.jupiter.params.provider.ValueSource(ints = {400, 401, 403, 404, 409, 428, 429, 500})
+  void businessFailurePreservesExistingHttpContract(int status) {
+    var handler = new ApiExceptionHandler();
+    var previous = handler.handleStatus(new ResponseStatusException(HttpStatus.valueOf(status), "测试失败提示"));
+    var actual = handler.handleBusiness(new BusinessFailure(status, "测试失败提示"));
+    assertEquals(previous.getStatusCode(), actual.getStatusCode());
+    assertEquals(previous.getBody(), actual.getBody());
+    assertEquals(previous.getHeaders(), actual.getHeaders());
+  }
+
+  @Test
+  void businessFailurePreservesFallbackMessage() {
+    var response = new ApiExceptionHandler().handleBusiness(new BusinessFailure(400));
+    assertEquals("请求失败", response.getBody().get("message"));
+  }
 }

@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -158,9 +158,9 @@ class CourierCertificationServiceTest {
   void missingStudentCardPhotoCannotBeApproved() {
     CourierCertification application = application(11L);
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> certificationService.approve(admin, 11L));
-    assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> certificationService.approve(admin, 11L));
+    assertEquals(HttpStatus.CONFLICT.value(), failure.status());
     assertFalse(courier.isCourierApproved());
   }
 
@@ -223,11 +223,11 @@ class CourierCertificationServiceTest {
       throw new AssertionError(exception);
     }
     assertEquals("image/jpeg", certificationService.studentCardPhoto(admin, 11L).contentType());
-    ResponseStatusException failure =
+    BusinessFailure failure =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> certificationService.studentCardPhoto(courier, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, failure.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), failure.status());
   }
 
   @Test
@@ -260,11 +260,11 @@ class CourierCertificationServiceTest {
 
   @Test
   void customerCannotSubmitCourierApplication() {
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> certificationService.submit(user(2L, UserRole.CUSTOMER)));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   private CourierCertification application(Long id) {

@@ -25,7 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -175,7 +175,7 @@ class CreditServiceTest {
     assertEquals(100, reversed.score());
     assertEquals(CreditEventType.REVERSAL, reversed.type());
     assertThrows(
-        ResponseStatusException.class, () -> service.reverse(administrator, 2L, 9L, "重复撤销"));
+        BusinessFailure.class, () -> service.reverse(administrator, 2L, 9L, "重复撤销"));
   }
 
   @Test

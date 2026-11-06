@@ -24,10 +24,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminOrderService;
 
 @Service
@@ -60,7 +60,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     @Transactional(readOnly = true)
     @Override
     public AdminOrderDetailResponse detail(Long id) {
-        CampusOrder order = orderRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findById(id).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         return new AdminOrderDetailResponse(listItem(order), order.getPickupCode(), order.getPickupLocation(), order.getOriginalFeeCents(), order.getDiscountCents(), order.getCouponTitle(), order.isMembershipUsed(), order.getMembershipPlanTitle(), order.getRatingScore(), order.getRatingComment(), order.getRatedAt(), order.getCourierLatitude(), order.getCourierLongitude(), order.getCourierLocationUpdatedAt(), order.getPayerReference(), order.getPaymentRequestedAt(), order.getPaymentSubmittedAt(), order.getPaymentReviewedAt(), order.getPaymentReviewer() == null ? null : order.getPaymentReviewer().getDisplayName(), order.getPaymentReviewNote(), order.getCourierSettledAt(), order.getCourierSettlementReviewer() == null ? null : order.getCourierSettlementReviewer().getDisplayName(), eventRepository.findByOrderOrderByCreatedAtAsc(order).stream().map(event -> new OrderEventItem(event.getId(), event.getStatus(), user(event.getActor()), event.getCreatedAt())).toList(), issueRepository.findByOrderOrderByCreatedAtAsc(order).stream().map(issue -> new OrderIssueItem(issue.getId(), issue.getType(), issue.getDescription(), user(issue.getReporter()), issue.getCreatedAt())).toList(), proofRepository.findByOrderOrderByCreatedAtAsc(order).stream().map(proof -> new OrderProofItem(proof.getId(), proof.getType(), proof.getOriginalFileName(), proof.getContentType(), proof.getSizeBytes(), user(proof.getUploader()), proof.getCreatedAt())).toList());
     }
 

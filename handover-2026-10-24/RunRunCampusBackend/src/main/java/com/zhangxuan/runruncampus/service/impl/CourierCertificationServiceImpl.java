@@ -21,13 +21,13 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import com.zhangxuan.runruncampus.model.UploadSource;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
 
 @Service
@@ -65,7 +65,7 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
             application = certificationRepository.save(new CourierCertification(courier, "", "", "", null, courier.isCourierApproved()));
         } else {
             if (application.getStatus() == CourierCertificationStatus.PENDING) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "认证申请正在审核中");
+                throw new BusinessFailure(409, "认证申请正在审核中");
             }
             boolean retain = eligible(courier, application);
             String discardedSubmittedPhoto = application.getStatus() == CourierCertificationStatus.REJECTED ? application.getSubmittedPhotoKey() : null;
@@ -107,7 +107,7 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
         requireRole(admin, UserRole.ADMIN);
         CourierCertification application = requirePending(id);
         if (!application.hasCurrentPhoto()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "请先提交学生证照片");
+            throw new BusinessFailure(409, "请先提交学生证照片");
         }
         String oldApprovedPhoto = application.getApprovedPhotoKey();
         application.approve(admin);
@@ -120,11 +120,11 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
     @Transactional
     @Override
     public CertificationResponse approve(AppUser admin, Long id, long expectedVersion, String photoResourceId) {
-        CourierCertification current = certificationRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
+        CourierCertification current = certificationRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "认证申请不存在"));
         if (current.getVersion() != expectedVersion || current.getStatus() != CourierCertificationStatus.PENDING || (photoResourceId != null && !photoResourceId.equals(current.getSubmittedPhotoResourceId())))
             conflict();
         if (photoResourceId == null || !current.hasCurrentPhoto())
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "PROOF_NOT_READY");
+            throw new BusinessFailure(409, "PROOF_NOT_READY");
         return approve(admin, id);
     }
 
@@ -140,9 +140,9 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
     }
 
     private CourierCertification requirePending(Long id) {
-        CourierCertification application = certificationRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
+        CourierCertification application = certificationRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "认证申请不存在"));
         if (application.getStatus() != CourierCertificationStatus.PENDING) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该认证申请已经处理");
+            throw new BusinessFailure(409, "该认证申请已经处理");
         }
         return application;
     }
@@ -151,42 +151,42 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
     @Override
     public CertificationResponse uploadStudentCard(AppUser courier, Long id, UploadSource file) {
         requireRole(courier, UserRole.COURIER);
-        CourierCertification application = certificationRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
+        CourierCertification application = certificationRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "认证申请不存在"));
         if (!application.getCourier().getId().equals(courier.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只能上传自己的学生证照片");
+            throw new BusinessFailure(403, "只能上传自己的学生证照片");
         }
         if (application.getStatus() != CourierCertificationStatus.PENDING) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "当前认证状态不能上传照片");
+            throw new BusinessFailure(409, "当前认证状态不能上传照片");
         }
         if (file == null || file.isEmpty() || file.getSize() > MAX_PHOTO_BYTES) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请选择不超过8MB的学生证照片");
+            throw new BusinessFailure(400, "请选择不超过8MB的学生证照片");
         }
         String contentType = file.getContentType();
         byte[] bytes;
         try {
             bytes = file.getBytes();
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "无法读取学生证照片");
+            throw new BusinessFailure(400, "无法读取学生证照片");
         }
         boolean jpeg = "image/jpeg".equals(contentType) && bytes.length >= 3 && (bytes[0] & 0xff) == 0xff && (bytes[1] & 0xff) == 0xd8 && (bytes[2] & 0xff) == 0xff;
         boolean png = "image/png".equals(contentType) && bytes.length >= 8 && (bytes[0] & 0xff) == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4e && bytes[3] == 0x47 && bytes[4] == 0x0d && bytes[5] == 0x0a && bytes[6] == 0x1a && bytes[7] == 0x0a;
         if (!jpeg && !png) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "仅支持真实 JPG 或 PNG 图片");
+            throw new BusinessFailure(400, "仅支持真实 JPG 或 PNG 图片");
         }
         try {
             // Keep the legacy unit fixture (a three-byte signature) usable; all real uploads
             // are decoded when they contain an image payload.
             if (bytes.length > 16 && ImageIO.read(new ByteArrayInputStream(bytes)) == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UPLOAD_INVALID");
+                throw new BusinessFailure(400, "UPLOAD_INVALID");
             }
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UPLOAD_INVALID", exception);
+            throw new BusinessFailure(400, "UPLOAD_INVALID", exception);
         }
         String key = "courier-card-" + courier.getId() + "-" + UUID.randomUUID() + (jpeg ? ".jpg" : ".png");
         try {
             storage.store(key, contentType, bytes.length, new ByteArrayInputStream(bytes));
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "学生证照片保存失败", exception);
+            throw new BusinessFailure(500, "学生证照片保存失败", exception);
         }
         String previous = application.attachSubmittedPhoto(key, contentType);
         // Replaced evidence is retained for the policy window and handled by the
@@ -197,7 +197,7 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
     @Transactional
     @Override
     public CertificationResponse uploadStudentCard(AppUser courier, Long id, UploadSource file, Long expectedVersion) {
-        CourierCertification current = certificationRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
+        CourierCertification current = certificationRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "认证申请不存在"));
         if (expectedVersion != null && current.getVersion() != expectedVersion)
             conflict();
         return uploadStudentCard(courier, id, file);
@@ -207,9 +207,9 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
     @Override
     public CertificationPhoto studentCardPhoto(AppUser admin, Long id) {
         requireRole(admin, UserRole.ADMIN);
-        CourierCertification application = certificationRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "认证申请不存在"));
+        CourierCertification application = certificationRepository.findById(id).orElseThrow(() -> new BusinessFailure(404, "认证申请不存在"));
         if (!application.hasCurrentPhoto()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "当前申请尚未上传学生证照片");
+            throw new BusinessFailure(404, "当前申请尚未上传学生证照片");
         }
         String key = application.getStatus() == CourierCertificationStatus.APPROVED ? application.getApprovedPhotoKey() : application.getSubmittedPhotoKey();
         String contentType = application.getStatus() == CourierCertificationStatus.APPROVED ? application.getApprovedPhotoContentType() : application.getSubmittedPhotoContentType();
@@ -217,12 +217,12 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
             CertificationPhoto result = new CertificationPhoto(storage.read(key), contentType);
             return result;
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "学生证照片读取失败", exception);
+            throw new BusinessFailure(500, "学生证照片读取失败", exception);
         }
     }
 
     private void conflict() {
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "CERTIFICATION_STATE_CONFLICT");
+        throw new BusinessFailure(409, "CERTIFICATION_STATE_CONFLICT");
     }
 
     @Transactional
@@ -240,7 +240,7 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
             try {
                 storage.delete(key);
             } catch (IOException exception) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "学生证材料删除失败，请稍后重试", exception);
+                throw new BusinessFailure(500, "学生证材料删除失败，请稍后重试", exception);
             }
         }
         certificationRepository.delete(certification);
@@ -283,14 +283,14 @@ public class CourierCertificationServiceImpl implements CourierCertificationServ
 
     private String requireText(String value, String message) {
         if (value == null || value.trim().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+            throw new BusinessFailure(400, message);
         }
         return value.trim();
     }
 
     private void requireRole(AppUser user, UserRole role) {
         if (user.getRole() != role) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "当前账号没有此操作权限");
+            throw new BusinessFailure(403, "当前账号没有此操作权限");
         }
     }
 }

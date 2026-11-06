@@ -19,7 +19,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -151,9 +151,9 @@ class OrderChatServiceTest {
     order.requestReassignment();
     order.assignCourier(newCourier);
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> service.send(courier, 11L, "我还能联系用户吗"));
-    assertEquals(HttpStatus.FORBIDDEN, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> service.send(courier, 11L, "我还能联系用户吗"));
+    assertEquals(HttpStatus.FORBIDDEN.value(), failure.status());
   }
 
   @Test
@@ -204,9 +204,9 @@ class OrderChatServiceTest {
     order.assignCourier(courier);
     order.updateStatus(OrderStatus.COMPLETED);
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> service.send(customer, 11L, "订单完成后留言"));
-    assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> service.send(customer, 11L, "订单完成后留言"));
+    assertEquals(HttpStatus.CONFLICT.value(), failure.status());
   }
 
   private CampusOrder order() {

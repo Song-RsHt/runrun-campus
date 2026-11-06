@@ -14,10 +14,10 @@ import com.zhangxuan.runruncampus.vo.OrderUnreadVO;
 import com.zhangxuan.runruncampus.vo.UnreadChatSummaryVO;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 
 
 
@@ -57,7 +57,7 @@ public class OrderChatServiceImpl implements OrderChatService {
     @Transactional
     @Override
     public List<OrderChatVO> list(AppUser user, Long orderId) {
-        CampusOrder order = orders.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orders.findById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireParticipant(user, order);
         chats.markRead(orderId, user.getId(), Instant.now());
         boolean customer = user.getId().equals(order.getCustomer().getId());
@@ -77,12 +77,12 @@ public class OrderChatServiceImpl implements OrderChatService {
     public OrderChatVO send(AppUser sender, Long orderId, String content) {
         String text = content == null ? "" : content.trim();
         if (text.isBlank() || text.length() > 500) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入不超过500字的消息");
+            throw new BusinessFailure(400, "请输入不超过500字的消息");
         }
-        CampusOrder order = orders.findLockedById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orders.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireParticipant(sender, order);
         if (order.getStatus() != OrderStatus.ACCEPTED && order.getStatus() != OrderStatus.PICKED_UP) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "当前订单不能发送消息");
+            throw new BusinessFailure(409, "当前订单不能发送消息");
         }
         AppUser recipient = sender.getId().equals(order.getCustomer().getId()) ? order.getCourier() : order.getCustomer();
         OrderChatMessage chat = chats.save(new OrderChatMessage(order, sender, recipient, text));
@@ -92,7 +92,7 @@ public class OrderChatServiceImpl implements OrderChatService {
 
     private void requireParticipant(AppUser user, CampusOrder order) {
         if (!user.getId().equals(order.getCustomer().getId()) && (order.getCourier() == null || !user.getId().equals(order.getCourier().getId()))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "仅订单当前参与者可查看或发送消息");
+            throw new BusinessFailure(403, "仅订单当前参与者可查看或发送消息");
         }
     }
 

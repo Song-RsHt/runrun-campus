@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -187,20 +187,20 @@ class OrderIssueServiceTest {
   void unrelatedUserCannotReadIssues() {
     AppUser outsider = user(3L, UserRole.CUSTOMER);
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> issueService.list(outsider, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> issueService.list(outsider, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(issueRepository);
   }
 
   @Test
   void blankDescriptionIsRejected() {
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> issueService.create(customer, 11L, OrderIssueType.OTHER, "   "));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     verifyNoInteractions(issueRepository);
   }
 
@@ -210,11 +210,11 @@ class OrderIssueServiceTest {
     when(issueRepository.existsByOrderAndReporterAndTypeAndHandlingStatusIn(
             eq(order), eq(customer), eq(OrderIssueType.CANNOT_CONTACT), any()))
         .thenReturn(true);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> issueService.create(customer, 11L, OrderIssueType.CANNOT_CONTACT, "仍然联系不上对方"));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     verify(issueRepository, Mockito.never()).save(any());
   }
 

@@ -48,7 +48,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -227,12 +227,12 @@ class AdminMfaPostgresIntegrationTest {
     Session legacy =
         sessions.saveAndFlush(
             new Session(AdminMfaCrypto.randomToken(), user, Instant.now().plusSeconds(3600)));
-    assertThrows(ResponseStatusException.class, () -> auth.login(user.getPhone(), PASSWORD));
+    assertThrows(BusinessFailure.class, () -> auth.login(user.getPhone(), PASSWORD));
     assertThrows(
-        ResponseStatusException.class, () -> auth.requireUser("Bearer " + legacy.getToken()));
+        BusinessFailure.class, () -> auth.requireUser("Bearer " + legacy.getToken()));
     var challenge = mfa.begin(user.getPhone(), PASSWORD);
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> auth.requireUser("Bearer " + challenge.challengeToken()));
     var result =
         mfa.verify(
@@ -243,7 +243,7 @@ class AdminMfaPostgresIntegrationTest {
     assertEquals(AdminRole.valueOf(role).getPermissions(), result.session().user().permissions());
     assertEquals(user.getId(), auth.requireAdmin("Bearer " + result.session().token()).getId());
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> mfa.verify(challenge.challengeToken(), result.recoveryCodes().get(0)));
     String encrypted =
         jdbc.queryForObject(
@@ -265,13 +265,13 @@ class AdminMfaPostgresIntegrationTest {
     AppUser user = admin(AdminRole.OPERATIONS);
     var first = mfa.begin(user.getPhone(), PASSWORD);
     var second = mfa.begin(user.getPhone(), PASSWORD);
-    assertThrows(ResponseStatusException.class, () -> mfa.verify(first.challengeToken(), "123456"));
+    assertThrows(BusinessFailure.class, () -> mfa.verify(first.challengeToken(), "123456"));
     jdbc.update(
         "update admin_mfa_credentials set challenge_expires_at = now() - interval '1 second' where"
             + " user_id = ?",
         user.getId());
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () ->
             mfa.verify(
                 second.challengeToken(),
@@ -332,14 +332,13 @@ class AdminMfaPostgresIntegrationTest {
     for (int i = 0; i < 5; i++) {
       var challenge = mfa.begin(user.getPhone(), PASSWORD);
       assertThrows(
-          ResponseStatusException.class,
+          BusinessFailure.class,
           () -> mfa.verify(challenge.challengeToken(), "invalid-code"));
     }
     assertEquals(5, users.findById(user.getId()).orElseThrow().getFailedLoginAttempts());
     assertEquals(
-        HttpStatus.TOO_MANY_REQUESTS,
-        assertThrows(ResponseStatusException.class, () -> mfa.begin(user.getPhone(), PASSWORD))
-            .getStatusCode());
+        HttpStatus.TOO_MANY_REQUESTS.value(),
+        assertThrows(BusinessFailure.class, () -> mfa.begin(user.getPhone(), PASSWORD)).status());
     assertEquals(
         5,
         jdbc.queryForObject(
@@ -354,12 +353,11 @@ class AdminMfaPostgresIntegrationTest {
   void passwordFailuresArePersisted() {
     AppUser user = admin(AdminRole.SUPPORT);
     for (int i = 0; i < 5; i++)
-      assertThrows(ResponseStatusException.class, () -> mfa.begin(user.getPhone(), "wrong"));
+      assertThrows(BusinessFailure.class, () -> mfa.begin(user.getPhone(), "wrong"));
     assertEquals(5, users.findById(user.getId()).orElseThrow().getFailedLoginAttempts());
     assertEquals(
-        HttpStatus.TOO_MANY_REQUESTS,
-        assertThrows(ResponseStatusException.class, () -> mfa.begin(user.getPhone(), PASSWORD))
-            .getStatusCode());
+        HttpStatus.TOO_MANY_REQUESTS.value(),
+        assertThrows(BusinessFailure.class, () -> mfa.begin(user.getPhone(), PASSWORD)).status());
   }
 
   @ParameterizedTest
@@ -382,10 +380,10 @@ class AdminMfaPostgresIntegrationTest {
               }
             });
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> mfa.verify(challenge.challengeToken(), enrolled.result().recoveryCodes().get(0)));
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> auth.requireUser("Bearer " + enrolled.result().session().token()));
   }
 
@@ -407,8 +405,8 @@ class AdminMfaPostgresIntegrationTest {
             start.await();
             try {
               return mfa.verify(challenge.challengeToken(), code).session() != null;
-            } catch (ResponseStatusException error) {
-              assertEquals(HttpStatus.UNAUTHORIZED, error.getStatusCode());
+            } catch (BusinessFailure error) {
+              assertEquals(HttpStatus.UNAUTHORIZED.value(), error.status());
               return false;
             }
           };
@@ -421,7 +419,7 @@ class AdminMfaPostgresIntegrationTest {
       pool.shutdownNow();
     }
     var retry = mfa.begin(user.getPhone(), PASSWORD);
-    assertThrows(ResponseStatusException.class, () -> mfa.verify(retry.challengeToken(), code));
+    assertThrows(BusinessFailure.class, () -> mfa.verify(retry.challengeToken(), code));
   }
 
   @Test
@@ -439,11 +437,11 @@ class AdminMfaPostgresIntegrationTest {
             AdminMfaCrypto.code(replacement.secret(), Instant.now().getEpochSecond() / 30));
     assertEquals(10, next.recoveryCodes().size());
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> auth.requireAdmin("Bearer " + old.result().session().token()));
     var challenge = mfa.begin(user.getPhone(), PASSWORD);
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> mfa.verify(challenge.challengeToken(), old.result().recoveryCodes().get(1)));
     assertEquals(user.getId(), auth.requireAdmin("Bearer " + next.session().token()).getId());
   }
@@ -456,16 +454,16 @@ class AdminMfaPostgresIntegrationTest {
     AppUser authenticated = auth.requireAdmin("Bearer " + operatorLogin.result().session().token());
     String grant = mfa.reset(authenticated, target.getId(), "当面核对本人校园证件");
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> auth.requireAdmin("Bearer " + targetLogin.result().session().token()));
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> mfa.verify(pending.challengeToken(), targetLogin.result().recoveryCodes().get(0)));
     var recovery = mfa.begin(target.getPhone(), PASSWORD);
     assertEquals("RECOVER", recovery.step());
     assertNull(recovery.secret());
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> mfa.verify(recovery.challengeToken(), "incorrect-grant"));
     var enrollment = mfa.verify(recovery.challengeToken(), grant).challenge();
     assertEquals("ENROLL", enrollment.step());
@@ -474,7 +472,7 @@ class AdminMfaPostgresIntegrationTest {
         AdminMfaCrypto.code(enrollment.secret(), Instant.now().getEpochSecond() / 30));
     assertEquals("VERIFY", mfa.begin(target.getPhone(), PASSWORD).step());
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> mfa.reset(authenticated, operator.getId(), "self reset"));
   }
 
@@ -485,7 +483,7 @@ class AdminMfaPostgresIntegrationTest {
         superAdmin = admin(AdminRole.SUPER_ADMIN);
     var login = enroll(operator).result().session();
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> mfa.reset(auth.requireAdmin("Bearer " + login.token()), target.getId(), "核验"));
     var superLogin = enroll(superAdmin).result().session();
     String grant =
@@ -496,7 +494,7 @@ class AdminMfaPostgresIntegrationTest {
         target.getId());
     var challenge = mfa.begin(target.getPhone(), PASSWORD);
     assertThrows(
-        ResponseStatusException.class, () -> mfa.verify(challenge.challengeToken(), grant));
+        BusinessFailure.class, () -> mfa.verify(challenge.challengeToken(), grant));
   }
 
   @Test
@@ -514,9 +512,9 @@ class AdminMfaPostgresIntegrationTest {
             .replace("COMMIT;", "");
     new TransactionTemplate(transactions).executeWithoutResult(status -> jdbc.execute(sql));
     assertThrows(
-        ResponseStatusException.class, () -> auth.requireAdmin("Bearer " + before.token()));
+        BusinessFailure.class, () -> auth.requireAdmin("Bearer " + before.token()));
     assertEquals(other.getId(), auth.requireAdmin("Bearer " + otherSession.token()).getId());
-    assertThrows(ResponseStatusException.class, () -> mfa.begin(target.getPhone(), "wrong"));
+    assertThrows(BusinessFailure.class, () -> mfa.begin(target.getPhone(), "wrong"));
     var recovery = mfa.begin(target.getPhone(), PASSWORD);
     assertEquals("RECOVER", recovery.step());
     assertNull(recovery.secret());

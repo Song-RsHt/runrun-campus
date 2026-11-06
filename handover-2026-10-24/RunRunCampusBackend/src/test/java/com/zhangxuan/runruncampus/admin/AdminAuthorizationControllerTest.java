@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -185,8 +185,8 @@ class AdminAuthorizationControllerTest {
     var controller = new AdminCommandCenterController(authService, commandCenterService);
     var exception =
         assertThrows(
-            ResponseStatusException.class, () -> controller.snapshot(TOKEN, Queue.WAITING, 0, 0));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> controller.snapshot(TOKEN, Queue.WAITING, 0, 0));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(commandCenterService);
   }
 
@@ -195,10 +195,10 @@ class AdminAuthorizationControllerTest {
     deny(AdminPermission.ORDER_EXPORT);
     AdminOrderController controller =
         new AdminOrderController(authService, orderService, manualQrPaymentService);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> controller.export(TOKEN, null, null, false));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> controller.export(TOKEN, null, null, false));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(orderService);
   }
 
@@ -207,10 +207,10 @@ class AdminAuthorizationControllerTest {
     deny(AdminPermission.PAYMENT_REVIEW);
     AdminOrderController controller =
         new AdminOrderController(authService, orderService, manualQrPaymentService);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> controller.confirmManualPayment(TOKEN, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> controller.confirmManualPayment(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(manualQrPaymentService);
   }
 
@@ -220,9 +220,9 @@ class AdminAuthorizationControllerTest {
     var controller = new AdminOrderLifecycleController(authService, lifecycleService);
     var error =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> controller.forceComplete(TOKEN, 11L, new OrderLifecycleReasonRequest("凭证已核对")));
-    assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
     verifyNoInteractions(lifecycleService);
   }
 
@@ -232,9 +232,9 @@ class AdminAuthorizationControllerTest {
     var controller = new AdminOrderLifecycleController(authService, lifecycleService);
     var error =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> controller.archive(TOKEN, 11L, new OrderLifecycleReasonRequest("订单归档原因")));
-    assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
     verifyNoInteractions(lifecycleService);
   }
 
@@ -242,11 +242,11 @@ class AdminAuthorizationControllerTest {
   void readOnlyAdministratorCannotDispatchOrder() {
     deny(AdminPermission.ORDER_DISPATCH);
     AdminDispatchController controller = new AdminDispatchController(authService, dispatchService);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> controller.dispatch(TOKEN, 11L, new DispatchRequest(3L)));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(dispatchService);
   }
 
@@ -254,9 +254,9 @@ class AdminAuthorizationControllerTest {
   void readOnlyAdministratorCannotClaimIssue() {
     deny(AdminPermission.ISSUE_MANAGE);
     AdminIssueController controller = new AdminIssueController(authService, issueService);
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> controller.claim(TOKEN, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> controller.claim(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(issueService);
   }
 
@@ -265,9 +265,9 @@ class AdminAuthorizationControllerTest {
     deny(AdminPermission.USER_MANAGE);
     AdminUserController controller =
         new AdminUserController(authService, userService, couponService);
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> controller.suspend(TOKEN, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> controller.suspend(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(userService);
   }
 
@@ -276,11 +276,11 @@ class AdminAuthorizationControllerTest {
     deny(AdminPermission.USER_MANAGE);
     AdminUserController controller =
         new AdminUserController(authService, userService, couponService);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> controller.resetPassword(TOKEN, 11L, new AdminUserPasswordResetRequest("new-password")));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(userService);
   }
 
@@ -289,10 +289,10 @@ class AdminAuthorizationControllerTest {
     deny(AdminPermission.COUPON_ISSUE);
     AdminUserController controller =
         new AdminUserController(authService, userService, couponService);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> controller.issueOneYuanCoupon(TOKEN, 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> controller.issueOneYuanCoupon(TOKEN, 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(couponService);
   }
 
@@ -302,9 +302,9 @@ class AdminAuthorizationControllerTest {
     AdminAccountController controller = new AdminAccountController(authService, accountService);
     CreateAdminRequest request =
         new CreateAdminRequest("13800000001", "password", "新管理员", AdminRole.SUPPORT);
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> controller.create(TOKEN, request));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> controller.create(TOKEN, request));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(accountService);
   }
 
@@ -312,15 +312,15 @@ class AdminAuthorizationControllerTest {
   void administratorWithoutAuditPermissionCannotReadAuditLog() {
     deny(AdminPermission.AUDIT_VIEW);
     AdminAuditController controller = new AdminAuditController(authService, auditService);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> controller.list(TOKEN, null, null, 0, 20));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> controller.list(TOKEN, null, null, 0, 20));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(auditService);
   }
 
   private void deny(AdminPermission permission) {
     when(authService.requirePermission(TOKEN, permission))
-        .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN, "当前管理员岗位无此权限"));
+        .thenThrow(new BusinessFailure(HttpStatus.FORBIDDEN.value(), "当前管理员岗位无此权限"));
   }
 }

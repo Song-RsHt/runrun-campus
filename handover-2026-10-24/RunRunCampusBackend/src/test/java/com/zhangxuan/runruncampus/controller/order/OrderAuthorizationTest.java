@@ -37,7 +37,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -238,21 +238,21 @@ class OrderAuthorizationTest {
   @Test
   void unrelatedUserCannotReadOrderDetail() {
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.get(user(3L, UserRole.CUSTOMER), 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   @Test
   void unrelatedUserCannotReadOrderEvents() {
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.events(user(3L, UserRole.CUSTOMER), 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(eventRepository);
   }
 
@@ -260,24 +260,24 @@ class OrderAuthorizationTest {
   void unrelatedUserCannotReadCourierLocation() {
     order.assignCourier(courier);
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.location(user(3L, UserRole.CUSTOMER), 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   @Test
   void anotherCourierCannotUpdateOrderLocation() {
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 orderService.updateLocation(
                     user(3L, UserRole.COURIER), 11L, new LocationUpdateRequest(31.49, 120.31)));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   @Test
@@ -285,11 +285,11 @@ class OrderAuthorizationTest {
     order.assignCourier(courier);
     order.updateStatus(OrderStatus.PICKED_UP);
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.deliveryCode(user(3L, UserRole.CUSTOMER), 11L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   @Test
@@ -301,11 +301,11 @@ class OrderAuthorizationTest {
     packageOrder.assignCourier(courier);
     packageOrder.requestPackageSizeChange(ServiceType.PACKAGE_LARGE);
     when(orderRepository.findLockedById(12L)).thenReturn(Optional.of(packageOrder));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> orderService.approvePackageSize(user(3L, UserRole.CUSTOMER), 12L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     assertEquals(ServiceType.PACKAGE_SMALL, packageOrder.getServiceType());
   }
 
@@ -318,12 +318,12 @@ class OrderAuthorizationTest {
     MockMultipartFile image =
         new MockMultipartFile(
             "file", "proof.jpg", "image/jpeg", new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff});
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 proofService.upload(user(3L, UserRole.COURIER), 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(proofRepository, proofStorage);
   }
 

@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -128,11 +128,11 @@ class AuthServiceTest {
 
   @Test
   void publicRegistrationCannotCreateAdmin() {
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> authService.register("13900000000", "password", "管理员", UserRole.ADMIN));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(userRepository, sessionRepository, passwordEncoder);
   }
 
@@ -155,10 +155,10 @@ class AuthServiceTest {
     when(sessionRepository.findByToken("customer-token"))
         .thenReturn(
             Optional.of(new Session("customer-token", customer, Instant.now().plusSeconds(3600))));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> authService.requireAdmin("Bearer customer-token"));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> authService.requireAdmin("Bearer customer-token"));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   @Test
@@ -179,12 +179,12 @@ class AuthServiceTest {
     when(sessionRepository.findByToken("support-token")).thenReturn(Optional.of(verified));
     assertEquals(
         admin, authService.requirePermission("Bearer support-token", AdminPermission.ISSUE_MANAGE));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 authService.requirePermission("Bearer support-token", AdminPermission.AUDIT_VIEW));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     assertEquals("当前管理员岗位无此权限", exception.getReason());
   }
 
@@ -194,10 +194,10 @@ class AuthServiceTest {
     ReflectionTestUtils.setField(user, "id", 5L);
     when(userRepository.findByPhone("13800000005")).thenReturn(Optional.of(user));
     when(passwordEncoder.matches("wrong", "hash")).thenReturn(false);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> authService.login("13800000005", "wrong"));
-    assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+            BusinessFailure.class, () -> authService.login("13800000005", "wrong"));
+    assertEquals(HttpStatus.UNAUTHORIZED.value(), exception.status());
     assertEquals("手机号或密码错误", exception.getReason());
     verify(loginAttemptService).recordFailure(5L);
   }
@@ -207,10 +207,10 @@ class AuthServiceTest {
     AppUser user = new AppUser("13800000006", "hash", "锁定用户", UserRole.CUSTOMER);
     ReflectionTestUtils.setField(user, "loginLockedUntil", Instant.now().plusSeconds(300));
     when(userRepository.findByPhone("13800000006")).thenReturn(Optional.of(user));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> authService.login("13800000006", "password"));
-    assertEquals(HttpStatus.TOO_MANY_REQUESTS, exception.getStatusCode());
+            BusinessFailure.class, () -> authService.login("13800000006", "password"));
+    assertEquals(HttpStatus.TOO_MANY_REQUESTS.value(), exception.status());
     verifyNoInteractions(passwordEncoder);
     verify(loginAttemptService).requiresCaptcha("13800000006");
   }
@@ -219,13 +219,13 @@ class AuthServiceTest {
   void riskyLoginRequiresCaptchaBeforeCheckingPassword() {
     when(loginAttemptService.requiresCaptcha("13800000007")).thenReturn(true);
     Mockito.doThrow(
-            new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED, "请输入正确的图形验证码"))
+            new BusinessFailure(HttpStatus.PRECONDITION_REQUIRED.value(), "请输入正确的图形验证码"))
         .when(captchaService)
         .verify(null, null);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> authService.login("13800000007", "password"));
-    assertEquals(HttpStatus.PRECONDITION_REQUIRED, exception.getStatusCode());
+            BusinessFailure.class, () -> authService.login("13800000007", "password"));
+    assertEquals(HttpStatus.PRECONDITION_REQUIRED.value(), exception.status());
     verifyNoInteractions(userRepository, passwordEncoder, sessionRepository);
   }
 
@@ -265,11 +265,11 @@ class AuthServiceTest {
     Session current = new Session("current-token", customer, Instant.now().plusSeconds(3600));
     ReflectionTestUtils.setField(current, "id", 90L);
     when(sessionRepository.findByToken("current-token")).thenReturn(Optional.of(current));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> authService.revokeSession("Bearer current-token", 90L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test
@@ -280,11 +280,11 @@ class AuthServiceTest {
     when(sessionRepository.findByToken("current-token")).thenReturn(Optional.of(current));
     when(userRepository.findLockedById(10L)).thenReturn(Optional.of(customer));
     when(passwordEncoder.matches("wrong", "old-hash")).thenReturn(false);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> authService.changeOwnPassword("Bearer current-token", "wrong", "new-password"));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     assertEquals("old-hash", customer.getPasswordHash());
     verify(sessionRepository, never()).deleteByUser(customer);
   }
@@ -297,13 +297,13 @@ class AuthServiceTest {
     when(sessionRepository.findByToken("current-token")).thenReturn(Optional.of(current));
     when(userRepository.findLockedById(11L)).thenReturn(Optional.of(courier));
     when(passwordEncoder.matches("current-password", "old-hash")).thenReturn(true);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () ->
                 authService.changeOwnPassword(
                     "Bearer current-token", "current-password", "current-password"));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
     verify(sessionRepository, never()).deleteByUser(courier);
   }
 

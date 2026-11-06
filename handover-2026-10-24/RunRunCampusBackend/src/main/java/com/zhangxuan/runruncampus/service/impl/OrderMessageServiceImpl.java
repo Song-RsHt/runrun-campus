@@ -10,10 +10,10 @@ import com.zhangxuan.runruncampus.vo.OrderMessageVO;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 
 @Service
@@ -44,9 +44,9 @@ public class OrderMessageServiceImpl implements OrderMessageService {
     @Transactional
     @Override
     public OrderMessageVO markRead(AppUser recipient, Long id) {
-        OrderMessage message = messageRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "消息不存在"));
+        OrderMessage message = messageRepository.findById(id).orElseThrow(() -> new BusinessFailure(404, "消息不存在"));
         if (!recipient.getId().equals(message.getRecipient().getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权操作此消息");
+            throw new BusinessFailure(403, "无权操作此消息");
         }
         message.markRead();
         return response(message);

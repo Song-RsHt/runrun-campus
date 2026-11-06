@@ -18,11 +18,11 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 
 
 
@@ -90,10 +90,10 @@ public class AuthServiceImpl implements AuthService {
     public Session register(String phone, String password, String displayName, UserRole role, SessionMetadata metadata, String privacyPolicyVersion) {
         PrivacyPolicyValidation.requireCurrentVersion(privacyPolicyVersion);
         if (role == UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "管理员账号不能公开注册");
+            throw new BusinessFailure(403, "管理员账号不能公开注册");
         }
         if (userRepository.findByPhone(phone).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该手机号已注册");
+            throw new BusinessFailure(409, "该手机号已注册");
         }
         AppUser user = new AppUser(phone, passwordEncoder.encode(password), displayName, role);
         user.recordPrivacyConsent(privacyPolicyVersion);
@@ -115,20 +115,20 @@ public class AuthServiceImpl implements AuthService {
         AppUser user = userRepository.findByPhone(phone).orElse(null);
         if (user == null) {
             loginAttemptService.recordUnknownFailure(phone);
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "手机号或密码错误");
+            throw new BusinessFailure(401, "手机号或密码错误");
         }
         if (user.getRole() == UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "管理员请通过运营后台完成双因素登录");
+            throw new BusinessFailure(403, "管理员请通过运营后台完成双因素登录");
         }
         if (user.isLoginLocked(Instant.now())) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "登录尝试过多，请稍后再试");
+            throw new BusinessFailure(429, "登录尝试过多，请稍后再试");
         }
         if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             loginAttemptService.recordFailure(user.getId());
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "手机号或密码错误");
+            throw new BusinessFailure(401, "手机号或密码错误");
         }
         if (!user.isEnabled()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "账号已停用，请联系平台管理员");
+            throw new BusinessFailure(403, "账号已停用，请联系平台管理员");
         }
         if (user.getFailedLoginAttempts() > 0 || user.getLoginLockedUntil() != null) {
             loginAttemptService.clearFailures(user.getId());
@@ -148,7 +148,7 @@ public class AuthServiceImpl implements AuthService {
     public AppUser requireAdmin(String authorization) {
         AppUser user = requireUser(authorization);
         if (user.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "仅管理员可访问");
+            throw new BusinessFailure(403, "仅管理员可访问");
         }
         return user;
     }
@@ -158,7 +158,7 @@ public class AuthServiceImpl implements AuthService {
     public AppUser requirePermission(String authorization, AdminPermission permission) {
         AppUser user = requireAdmin(authorization);
         if (user.getAdminRole() == null || !user.getAdminRole().permits(permission)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "当前管理员岗位无此权限");
+            throw new BusinessFailure(403, "当前管理员岗位无此权限");
         }
         return user;
     }
@@ -175,9 +175,9 @@ public class AuthServiceImpl implements AuthService {
     public void revokeSession(String authorization, Long sessionId) {
         Session current = requireSession(authorization);
         if (current.getId().equals(sessionId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "当前设备请使用退出登录");
+            throw new BusinessFailure(409, "当前设备请使用退出登录");
         }
-        Session target = sessionRepository.findByIdAndUser(sessionId, current.getUser()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "登录设备不存在"));
+        Session target = sessionRepository.findByIdAndUser(sessionId, current.getUser()).orElseThrow(() -> new BusinessFailure(404, "登录设备不存在"));
         sessionRepository.delete(target);
     }
 
@@ -198,15 +198,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void changeOwnPassword(String authorization, String currentPassword, String newPassword) {
         AppUser user = requireSession(authorization).getUser();
-        user = userRepository.findLockedById(user.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登录已失效"));
+        user = userRepository.findLockedById(user.getId()).orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
         if (user.getRole() == UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "管理员请在运营后台修改密码");
+            throw new BusinessFailure(403, "管理员请在运营后台修改密码");
         }
         if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "当前密码错误");
+            throw new BusinessFailure(400, "当前密码错误");
         }
         if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "新密码不能与当前密码相同");
+            throw new BusinessFailure(400, "新密码不能与当前密码相同");
         }
         user.changePasswordHash(passwordEncoder.encode(newPassword));
         sessionRepository.deleteByUser(user);
@@ -214,18 +214,18 @@ public class AuthServiceImpl implements AuthService {
 
     private Session requireSession(String authorization) {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "请先登录");
+            throw new BusinessFailure(401, "请先登录");
         }
         String token = authorization.substring("Bearer ".length());
-        Session session = sessionRepository.findByToken(token).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登录已失效"));
+        Session session = sessionRepository.findByToken(token).orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
         if (session.getExpiresAt().isBefore(Instant.now())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登录已失效");
+            throw new BusinessFailure(401, "登录已失效");
         }
         if (!session.getUser().isEnabled()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "账号已停用，请联系平台管理员");
+            throw new BusinessFailure(403, "账号已停用，请联系平台管理员");
         }
         if (session.getUser().getRole() == UserRole.ADMIN && (!session.isAdminMfaVerified() || session.getSecurityVersion() != session.getUser().getSecurityVersion())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "请重新完成管理员双因素登录");
+            throw new BusinessFailure(401, "请重新完成管理员双因素登录");
         }
         return session;
     }

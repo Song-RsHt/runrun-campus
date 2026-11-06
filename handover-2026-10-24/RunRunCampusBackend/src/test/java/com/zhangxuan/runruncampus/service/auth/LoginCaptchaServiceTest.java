@@ -7,7 +7,7 @@ import java.security.SecureRandom;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -35,19 +35,19 @@ class LoginCaptchaServiceTest {
     LoginCaptchaVO challenge = service.issue("1234");
     assertTrue(challenge.imageDataUrl().startsWith("data:image/png;base64,iVBOR"));
     assertDoesNotThrow(() -> service.verify(challenge.challengeToken(), "1234"));
-    ResponseStatusException reused =
+    BusinessFailure reused =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> service.verify(challenge.challengeToken(), "1234"));
-    assertEquals(HttpStatus.PRECONDITION_REQUIRED, reused.getStatusCode());
+    assertEquals(HttpStatus.PRECONDITION_REQUIRED.value(), reused.status());
   }
 
   @Test
   void incorrectAnswerConsumesChallenge() {
     LoginCaptchaVO challenge = service.issue("5678");
     assertThrows(
-        ResponseStatusException.class, () -> service.verify(challenge.challengeToken(), "0000"));
+        BusinessFailure.class, () -> service.verify(challenge.challengeToken(), "0000"));
     assertThrows(
-        ResponseStatusException.class, () -> service.verify(challenge.challengeToken(), "5678"));
+        BusinessFailure.class, () -> service.verify(challenge.challengeToken(), "5678"));
   }
 }

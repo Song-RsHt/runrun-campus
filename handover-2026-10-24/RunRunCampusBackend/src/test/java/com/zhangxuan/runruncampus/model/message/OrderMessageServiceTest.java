@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -181,9 +181,9 @@ class OrderMessageServiceTest {
   void anotherUserCannotMarkMessageRead() {
     OrderMessage message = message(21L, recipient);
     when(messageRepository.findById(21L)).thenReturn(Optional.of(message));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> messageService.markRead(user(2L), 21L));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> messageService.markRead(user(2L), 21L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     assertFalse(message.isRead());
   }
 

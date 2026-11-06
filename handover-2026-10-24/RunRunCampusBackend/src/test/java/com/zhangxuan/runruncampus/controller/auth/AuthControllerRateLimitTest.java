@@ -11,6 +11,7 @@ import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.LoginCaptchaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,11 +54,11 @@ class AuthControllerRateLimitTest {
     LoginRequest request = new LoginRequest("13800000001", "wrong-password");
     when(authService.login(
             request.phone(), request.password(), null, null, SessionMetadata.unknown()))
-        .thenThrow(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "手机号或密码错误"));
+        .thenThrow(new BusinessFailure(HttpStatus.UNAUTHORIZED.value(), "手机号或密码错误"));
     for (int attempt = 0; attempt < 10; attempt++) {
-      ResponseStatusException exception =
-          assertThrows(ResponseStatusException.class, () -> controller.login(request));
-      assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusCode());
+      BusinessFailure exception =
+          assertThrows(BusinessFailure.class, () -> controller.login(request));
+      assertEquals(HttpStatus.UNAUTHORIZED.value(), exception.status());
     }
     ResponseStatusException blocked =
         assertThrows(ResponseStatusException.class, () -> controller.login(request));
@@ -73,7 +74,7 @@ class AuthControllerRateLimitTest {
     AppUser user = new AppUser("13800000002", "hash", "用户", UserRole.CUSTOMER);
     ReflectionTestUtils.setField(user, "id", 2L);
     when(authService.requireUser("Bearer token")).thenReturn(user);
-    doThrow(new ResponseStatusException(HttpStatus.BAD_REQUEST, "当前密码错误"))
+    doThrow(new BusinessFailure(HttpStatus.BAD_REQUEST.value(), "当前密码错误"))
         .when(authService)
         .changeOwnPassword("Bearer token", "wrong", "new-password");
     AuthController controller =
@@ -81,11 +82,11 @@ class AuthControllerRateLimitTest {
     var request = new ChangePasswordRequest("wrong", "new-password");
     for (int attempt = 0; attempt < 5; attempt++) {
       assertEquals(
-          HttpStatus.BAD_REQUEST,
+          HttpStatus.BAD_REQUEST.value(),
           assertThrows(
-                  ResponseStatusException.class,
+                  BusinessFailure.class,
                   () -> controller.changePassword("Bearer token", request))
-              .getStatusCode());
+              .status());
     }
     assertEquals(
         HttpStatus.TOO_MANY_REQUESTS,

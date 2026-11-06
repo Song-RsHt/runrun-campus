@@ -26,7 +26,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -411,7 +411,7 @@ class AdminCommandCenterPostgresIntegrationTest {
     assertNull(service.snapshot(AdminRole.REVIEWER, Queue.WAITING, 0, 0).orders());
     assertNull(service.snapshot(AdminRole.SUPPORT, Queue.WAITING, 0, 0).couriers());
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> service.snapshot(AdminRole.OPERATIONS, Queue.WAITING, -1, 0));
   }
 

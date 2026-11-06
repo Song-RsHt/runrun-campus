@@ -25,10 +25,10 @@ import java.time.Instant;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.CreditService;
 
 @Service
@@ -56,7 +56,7 @@ public class CreditServiceImpl implements CreditService {
     @Override
     public CreditProfileVO profile(AppUser user, int page, int size) {
         if (user.getRole() == UserRole.ADMIN || user.getDeletedAt() != null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "该账号不参与信用体系");
+            throw new BusinessFailure(403, "该账号不参与信用体系");
         }
         return profileResponse(user, profileFor(user), page, size);
     }
@@ -72,14 +72,14 @@ public class CreditServiceImpl implements CreditService {
     @Override
     public CreditChangeVO adjust(AppUser administrator, Long userId, int delta, String reason) {
         if (delta == 0 || delta < -100 || delta > 100) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "信用分调整必须在-100至100之间且不能为0");
+            throw new BusinessFailure(400, "信用分调整必须在-100至100之间且不能为0");
         }
         String normalized = reason(reason);
         AppUser user = requireNonAdminUser(userId);
         CreditProfile profile = lockedProfile(user);
         int applied = profile.apply(delta);
         if (applied == 0)
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "信用分已达到边界，无法继续调整");
+            throw new BusinessFailure(409, "信用分已达到边界，无法继续调整");
         CreditEvent event = events.save(new CreditEvent(user, administrator, CreditEventType.ADMIN_ADJUSTMENT, applied, profile.getScore(), normalized, null, null));
         audit.record(administrator, AdminAuditAction.CREDIT_ADJUSTED, AdminAuditTargetType.CREDIT_EVENT, userId, "调整信用分%+d：%s".formatted(applied, normalized));
         return change(event, profile);
@@ -90,9 +90,9 @@ public class CreditServiceImpl implements CreditService {
     public CreditChangeVO reverse(AppUser administrator, Long userId, Long eventId, String reason) {
         String normalized = reason(reason);
         AppUser user = requireNonAdminUser(userId);
-        CreditEvent original = events.findByIdAndUserId(eventId, userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "信用记录不存在"));
+        CreditEvent original = events.findByIdAndUserId(eventId, userId).orElseThrow(() -> new BusinessFailure(404, "信用记录不存在"));
         if (original.getType() == CreditEventType.REVERSAL || events.existsByOriginalEventId(eventId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该信用记录已经撤销或不能撤销");
+            throw new BusinessFailure(409, "该信用记录已经撤销或不能撤销");
         }
         CreditProfile profile = lockedProfile(user);
         int applied = profile.apply(-original.getDelta());
@@ -105,7 +105,7 @@ public class CreditServiceImpl implements CreditService {
     @Override
     public CreditChangeVO confirmSignal(AppUser administrator, Long signalId, int delta, String reason) {
         if (delta >= 0 || delta < -100) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "确认风险时扣分必须在-100至-1之间");
+            throw new BusinessFailure(400, "确认风险时扣分必须在-100至-1之间");
         }
         String normalized = reason(reason);
         RiskSignal signal = pendingSignal(signalId);
@@ -113,7 +113,7 @@ public class CreditServiceImpl implements CreditService {
         CreditProfile profile = lockedProfile(user);
         int applied = profile.apply(delta);
         if (applied == 0)
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "用户信用分已为0分");
+            throw new BusinessFailure(409, "用户信用分已为0分");
         signal.review(RiskSignalStatus.CONFIRMED, administrator, normalized);
         CreditEvent event = events.save(new CreditEvent(user, administrator, CreditEventType.RISK_CONFIRMED, applied, profile.getScore(), normalized, signal.getId(), null));
         audit.record(administrator, AdminAuditAction.RISK_SIGNAL_CONFIRMED, AdminAuditTargetType.RISK_SIGNAL, signalId, "确认风险并扣分%+d：%s".formatted(applied, normalized));
@@ -152,17 +152,17 @@ public class CreditServiceImpl implements CreditService {
     }
 
     private AppUser requireNonAdminUser(Long id) {
-        AppUser user = users.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "用户不存在"));
+        AppUser user = users.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "用户不存在"));
         if (user.getRole() == UserRole.ADMIN || user.getDeletedAt() != null) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "该账号不参与信用体系");
+            throw new BusinessFailure(403, "该账号不参与信用体系");
         }
         return user;
     }
 
     private RiskSignal pendingSignal(Long id) {
-        RiskSignal signal = signals.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "风险信号不存在"));
+        RiskSignal signal = signals.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "风险信号不存在"));
         if (signal.getStatus() != RiskSignalStatus.PENDING) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "风险信号已经处理");
+            throw new BusinessFailure(409, "风险信号已经处理");
         }
         return signal;
     }
@@ -170,7 +170,7 @@ public class CreditServiceImpl implements CreditService {
     private String reason(String value) {
         String normalized = value == null ? "" : value.trim();
         if (normalized.length() < 5 || normalized.length() > 300) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "处理原因需为5至300个字符");
+            throw new BusinessFailure(400, "处理原因需为5至300个字符");
         }
         return normalized;
     }

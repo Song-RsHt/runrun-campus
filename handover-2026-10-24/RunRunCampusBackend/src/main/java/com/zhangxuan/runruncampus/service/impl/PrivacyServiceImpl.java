@@ -17,11 +17,11 @@ import com.zhangxuan.runruncampus.vo.PrivacyConsentVO;
 import com.zhangxuan.runruncampus.vo.PrivacyPolicyVO;
 import java.time.LocalDate;
 import java.util.UUID;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 
 
 
@@ -150,7 +150,7 @@ public class PrivacyServiceImpl implements PrivacyService {
     @Transactional
     @Override
     public void withdrawConsent(AppUser current) {
-        AppUser user = users.findLockedById(current.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登录已失效"));
+        AppUser user = users.findLockedById(current.getId()).orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
         user.withdrawPrivacyConsent();
         sessions.deleteByUser(user);
     }
@@ -159,20 +159,20 @@ public class PrivacyServiceImpl implements PrivacyService {
     @Override
     public void deleteAccount(AppUser current, String password, boolean confirmed) {
         if (!confirmed)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请确认注销账号");
-        AppUser user = users.findLockedById(current.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登录已失效"));
+            throw new BusinessFailure(400, "请确认注销账号");
+        AppUser user = users.findLockedById(current.getId()).orElseThrow(() -> new BusinessFailure(401, "登录已失效"));
         if (user.getRole() == UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "管理员账号不能在客户端注销");
+            throw new BusinessFailure(403, "管理员账号不能在客户端注销");
         }
         if (!passwords.matches(password, user.getPasswordHash())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "当前密码错误");
+            throw new BusinessFailure(400, "当前密码错误");
         }
         long activeOrders = orders.countByCustomerAndStatusIn(user, PrivacyConstants.ACTIVE_ORDER_STATUSES) + orders.countByCourierAndStatusIn(user, PrivacyConstants.ACTIVE_ORDER_STATUSES);
         if (activeOrders > 0) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "存在进行中订单，完成或取消后才能注销");
+            throw new BusinessFailure(409, "存在进行中订单，完成或取消后才能注销");
         }
         if (refunds.existsUnfinishedByUser(user)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "存在未完成退款，退款完成后才能注销");
+            throw new BusinessFailure(409, "存在未完成退款，退款完成后才能注销");
         }
         certifications.deletePersonalData(user);
         addresses.deleteByUser(user);

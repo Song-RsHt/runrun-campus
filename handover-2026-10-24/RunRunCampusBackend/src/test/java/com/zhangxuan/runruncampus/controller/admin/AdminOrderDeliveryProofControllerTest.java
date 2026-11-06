@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import org.springframework.web.server.ResponseStatusException;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -115,11 +116,11 @@ class AdminOrderDeliveryProofControllerTest {
   @Test
   void restrictedAdminCannotReadDeliveryImage() {
     when(auth.requirePermission("Bearer token", AdminPermission.ORDER_FORCE_COMPLETE))
-        .thenThrow(new ResponseStatusException(HttpStatus.FORBIDDEN));
+        .thenThrow(new BusinessFailure(HttpStatus.FORBIDDEN.value()));
     var error =
         assertThrows(
-            ResponseStatusException.class, () -> controller().deliveryProof("Bearer token", 11L));
-    assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
+            BusinessFailure.class, () -> controller().deliveryProof("Bearer token", 11L));
+    assertEquals(HttpStatus.FORBIDDEN.value(), error.status());
     verifyNoInteractions(orders, proofs, storage);
   }
 
@@ -143,8 +144,8 @@ class AdminOrderDeliveryProofControllerTest {
     when(proof.getContentType()).thenReturn("text/html");
     var error =
         assertThrows(
-            ResponseStatusException.class, () -> controller().deliveryProof("Bearer token", 11L));
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, error.getStatusCode());
+            BusinessFailure.class, () -> controller().deliveryProof("Bearer token", 11L));
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), error.status());
     verifyNoInteractions(storage);
   }
 

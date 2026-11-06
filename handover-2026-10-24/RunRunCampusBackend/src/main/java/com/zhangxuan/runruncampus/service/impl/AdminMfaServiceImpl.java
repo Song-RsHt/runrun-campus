@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 
 
 
@@ -90,7 +90,7 @@ public class AdminMfaServiceImpl implements AdminMfaService {
         this.sessionHours = sessionHours;
     }
 
-    @Transactional(noRollbackFor = ResponseStatusException.class)
+    @Transactional(noRollbackFor = BusinessFailure.class, noRollbackForClassName = "org.springframework.web.server.ResponseStatusException")
     @Override
     public AdminMfaChallengeVO begin(String phone, String password) {
         crypto.requireConfigured();
@@ -102,13 +102,13 @@ public class AdminMfaServiceImpl implements AdminMfaService {
         return challenge(user, state, state.resetGrantHash != null ? "RECOVER" : state.secretCiphertext == null ? "ENROLL" : "VERIFY");
     }
 
-    @Transactional(noRollbackFor = ResponseStatusException.class)
+    @Transactional(noRollbackFor = BusinessFailure.class, noRollbackForClassName = "org.springframework.web.server.ResponseStatusException")
     @Override
     public AdminMfaVerification verify(String token, String code) {
         return verify(token, code, SessionMetadata.unknown());
     }
 
-    @Transactional(noRollbackFor = ResponseStatusException.class)
+    @Transactional(noRollbackFor = BusinessFailure.class, noRollbackForClassName = "org.springframework.web.server.ResponseStatusException")
     @Override
     public AdminMfaVerification verify(String token, String code, SessionMetadata metadata) {
         crypto.requireConfigured();
@@ -161,7 +161,7 @@ public class AdminMfaServiceImpl implements AdminMfaService {
         return new AdminMfaVerification(response(session), recoveryCodes, null);
     }
 
-    @Transactional(noRollbackFor = ResponseStatusException.class)
+    @Transactional(noRollbackFor = BusinessFailure.class, noRollbackForClassName = "org.springframework.web.server.ResponseStatusException")
     @Override
     public AdminMfaChallengeVO replace(AppUser authenticated, String password, String code) {
         crypto.requireConfigured();
@@ -185,10 +185,10 @@ public class AdminMfaServiceImpl implements AdminMfaService {
         AppUser target = locked.stream().filter(user -> user.getId().equals(targetId)).findFirst().orElseThrow();
         requireAvailable(operator);
         if (operator.getSecurityVersion() != authenticated.getSecurityVersion() || operator.getAdminRole() != AdminRole.SUPER_ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "仅超级管理员可重置认证器");
+            throw new BusinessFailure(403, "仅超级管理员可重置认证器");
         }
         if (target.getRole() != UserRole.ADMIN || target.getAdminRole() == AdminRole.SUPER_ADMIN) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "超级管理员认证器恢复请使用受审计的离线流程");
+            throw new BusinessFailure(409, "超级管理员认证器恢复请使用受审计的离线流程");
         }
         String grant = resetState(target);
         audit.record(operator, AdminAuditAction.ADMIN_MFA_RESET, AdminAuditTargetType.ADMIN_ACCOUNT, targetId, "人工核验后重置管理员认证器：" + reason.trim());
@@ -254,7 +254,7 @@ public class AdminMfaServiceImpl implements AdminMfaService {
         if (user.getRole() != UserRole.ADMIN || !user.isEnabled())
             throw rejected("管理员账号不可用");
         if (user.isLoginLocked(Instant.now())) {
-            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "登录尝试过多，请稍后再试");
+            throw new BusinessFailure(429, "登录尝试过多，请稍后再试");
         }
     }
 
@@ -270,8 +270,8 @@ public class AdminMfaServiceImpl implements AdminMfaService {
         audit.record(user, action, AdminAuditTargetType.ADMIN_ACCOUNT, user.getId(), "管理员双因素认证：" + action.name());
     }
 
-    private ResponseStatusException rejected(String message) {
-        return new ResponseStatusException(HttpStatus.UNAUTHORIZED, message);
+    private BusinessFailure rejected(String message) {
+        return new BusinessFailure(401, message);
     }
 
     private AuthResponse response(Session session) {

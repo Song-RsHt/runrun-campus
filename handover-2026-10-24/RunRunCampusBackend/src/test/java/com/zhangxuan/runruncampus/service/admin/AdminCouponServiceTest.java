@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -159,11 +159,11 @@ class AdminCouponServiceTest {
         new AdminCouponServiceImpl(userRepository, couponRepository, auditService);
     AppUser courier = user(2L, "测试骑手", UserRole.COURIER);
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(courier));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> service.issueOneYuan(user(1L, "管理员", UserRole.ADMIN), 2L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     verifyNoInteractions(couponRepository, auditService);
   }
 

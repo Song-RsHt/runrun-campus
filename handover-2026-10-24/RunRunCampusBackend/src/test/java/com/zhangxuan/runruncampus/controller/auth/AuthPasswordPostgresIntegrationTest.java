@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -105,10 +105,10 @@ class AuthPasswordPostgresIntegrationTest {
             .findByUserAndExpiresAtAfterOrderByCreatedAtDesc(user, Instant.now())
             .size());
     assertThrows(
-        ResponseStatusException.class, () -> auth.requireUser("Bearer " + current.getToken()));
+        BusinessFailure.class, () -> auth.requireUser("Bearer " + current.getToken()));
     assertThrows(
-        ResponseStatusException.class, () -> auth.requireUser("Bearer " + other.getToken()));
-    assertThrows(ResponseStatusException.class, () -> auth.login(phone, "old-password"));
+        BusinessFailure.class, () -> auth.requireUser("Bearer " + other.getToken()));
+    assertThrows(BusinessFailure.class, () -> auth.login(phone, "old-password"));
     assertEquals(user.getId(), auth.login(phone, "new-password").getUser().getId());
   }
 

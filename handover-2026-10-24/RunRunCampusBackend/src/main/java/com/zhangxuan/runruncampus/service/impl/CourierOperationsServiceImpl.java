@@ -13,10 +13,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.CourierOperationsService;
 
 @Service
@@ -52,9 +52,9 @@ public class CourierOperationsServiceImpl implements CourierOperationsService {
     @Override
     public OperationsResponse updateAvailability(AppUser courier, boolean acceptingOrders) {
         requireCourier(courier);
-        AppUser locked = userRepository.findLockedById(courier.getId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "骑手不存在"));
+        AppUser locked = userRepository.findLockedById(courier.getId()).orElseThrow(() -> new BusinessFailure(404, "骑手不存在"));
         if (acceptingOrders && !certificationService.isEligible(locked)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "骑手认证有效后才能上线接单");
+            throw new BusinessFailure(403, "骑手认证有效后才能上线接单");
         }
         locked.setCourierAcceptingOrders(acceptingOrders);
         return response(locked);
@@ -75,7 +75,7 @@ public class CourierOperationsServiceImpl implements CourierOperationsService {
 
     private void requireCourier(AppUser user) {
         if (user.getRole() != UserRole.COURIER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有骑手可以访问经营工作台");
+            throw new BusinessFailure(403, "只有骑手可以访问经营工作台");
         }
     }
 }

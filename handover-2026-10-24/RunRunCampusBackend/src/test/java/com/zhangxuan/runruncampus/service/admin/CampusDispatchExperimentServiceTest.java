@@ -8,7 +8,7 @@ import com.zhangxuan.runruncampus.service.impl.CampusDispatchExperimentServiceIm
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -61,8 +61,8 @@ class CampusDispatchExperimentServiceTest {
         new DispatchScenario("duplicate", 5, List.of(candidate, candidate));
     var exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> service.compare(new DispatchExperimentRequest(List.of(scenario))));
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    assertEquals(HttpStatus.BAD_REQUEST.value(), exception.status());
   }
 }

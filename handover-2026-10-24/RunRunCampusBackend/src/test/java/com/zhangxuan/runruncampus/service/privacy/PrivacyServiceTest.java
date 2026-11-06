@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -185,9 +185,9 @@ class PrivacyServiceTest {
 
   @Test
   void consentOnlyAcceptsTheCurrentPublishedVersion() {
-    ResponseStatusException error =
-        assertThrows(ResponseStatusException.class, () -> service.consent(user, "old-version"));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+    BusinessFailure error =
+        assertThrows(BusinessFailure.class, () -> service.consent(user, "old-version"));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     service.consent(user, PrivacyConstants.CURRENT_VERSION);
     assertEquals(PrivacyConstants.CURRENT_VERSION, user.getPrivacyPolicyVersion());
     assertNotNull(user.getPrivacyConsentAt());
@@ -210,10 +210,10 @@ class PrivacyServiceTest {
     when(passwords.matches("password", "old-hash")).thenReturn(true);
     when(orders.countByCustomerAndStatusIn(user, PrivacyConstants.ACTIVE_ORDER_STATUSES))
         .thenReturn(1L);
-    ResponseStatusException error =
+    BusinessFailure error =
         assertThrows(
-            ResponseStatusException.class, () -> service.deleteAccount(user, "password", true));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+            BusinessFailure.class, () -> service.deleteAccount(user, "password", true));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     verify(sessions, never()).deleteByUser(user);
   }
 
@@ -226,10 +226,10 @@ class PrivacyServiceTest {
     when(orders.countByCourierAndStatusIn(user, PrivacyConstants.ACTIVE_ORDER_STATUSES))
         .thenReturn(0L);
     when(refunds.existsUnfinishedByUser(user)).thenReturn(true);
-    ResponseStatusException error =
+    BusinessFailure error =
         assertThrows(
-            ResponseStatusException.class, () -> service.deleteAccount(user, "password", true));
-    assertEquals(HttpStatus.CONFLICT, error.getStatusCode());
+            BusinessFailure.class, () -> service.deleteAccount(user, "password", true));
+    assertEquals(HttpStatus.CONFLICT.value(), error.status());
     verify(sessions, never()).deleteByUser(user);
   }
 

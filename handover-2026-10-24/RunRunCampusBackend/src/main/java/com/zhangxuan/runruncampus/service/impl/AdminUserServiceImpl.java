@@ -13,11 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminUserService;
 
 @Service
@@ -84,9 +84,9 @@ public class AdminUserServiceImpl implements AdminUserService {
     }
 
     private AppUser mutableUser(Long id) {
-        AppUser user = userRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "用户不存在"));
+        AppUser user = userRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "用户不存在"));
         if (user.getRole() == UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "管理员账号不能在用户目录中管理");
+            throw new BusinessFailure(403, "管理员账号不能在用户目录中管理");
         }
         return user;
     }

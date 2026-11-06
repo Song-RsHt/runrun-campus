@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -69,9 +69,9 @@ class CourierCertificationGovernanceTest {
     when(repo.findLockedById(3L)).thenReturn(Optional.of(c));
     var ex =
         Assertions.assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> service.approve(admin, 3L, 99L, c.getSubmittedPhotoResourceId()));
-    assertEquals(409, ex.getStatusCode().value());
+    assertEquals(409, ex.status());
   }
 
   @Test
@@ -88,7 +88,7 @@ class CourierCertificationGovernanceTest {
     var file = new MockMultipartFile("file", "x.jpg", "image/jpeg", new byte[8 * 1024 * 1024 + 1]);
     var ex =
         Assertions.assertThrows(
-            ResponseStatusException.class, () -> service.uploadStudentCard(courier, 3L, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file)));
-    assertEquals(400, ex.getStatusCode().value());
+            BusinessFailure.class, () -> service.uploadStudentCard(courier, 3L, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(file)));
+    assertEquals(400, ex.status());
   }
 }

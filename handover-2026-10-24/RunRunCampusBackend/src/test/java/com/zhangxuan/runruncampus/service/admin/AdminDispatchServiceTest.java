@@ -32,7 +32,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -256,9 +256,9 @@ class AdminDispatchServiceTest {
     CampusOrder order = order();
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
     when(users.findLockedById(3L)).thenReturn(Optional.of(courier));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> service.dispatch(administrator, 11L, 3L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> service.dispatch(administrator, 11L, 3L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals(OrderStatus.PENDING_ASSIGNMENT, order.getStatus());
     verifyNoInteractions(events, messages, audit);
   }
@@ -268,9 +268,9 @@ class AdminDispatchServiceTest {
     CampusOrder order = order();
     order.assignCourier(courier);
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> service.dispatch(administrator, 11L, 3L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> service.dispatch(administrator, 11L, 3L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     verifyNoInteractions(users, events, messages, audit);
   }
 
@@ -283,9 +283,9 @@ class AdminDispatchServiceTest {
             courier, List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
         .thenReturn(2L);
     when(settings.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> service.dispatch(administrator, 11L, 3L));
-    assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> service.dispatch(administrator, 11L, 3L));
+    assertEquals(HttpStatus.CONFLICT.value(), failure.status());
     verifyNoInteractions(events, messages, audit);
   }
 
@@ -295,9 +295,9 @@ class AdminDispatchServiceTest {
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
     when(users.findLockedById(3L)).thenReturn(Optional.of(courier));
     when(certifications.isEligible(courier)).thenReturn(false);
-    ResponseStatusException failure =
-        assertThrows(ResponseStatusException.class, () -> service.dispatch(administrator, 11L, 3L));
-    assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
+    BusinessFailure failure =
+        assertThrows(BusinessFailure.class, () -> service.dispatch(administrator, 11L, 3L));
+    assertEquals(HttpStatus.CONFLICT.value(), failure.status());
     verifyNoInteractions(events, messages, audit);
   }
 

@@ -8,10 +8,10 @@ import com.zhangxuan.runruncampus.repository.FeedbackRepository;
 import com.zhangxuan.runruncampus.vo.FeedbackResponse;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.FeedbackService;
 
 @Service
@@ -34,7 +34,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     public FeedbackResponse submit(AppUser user, FeedbackType type, String content) {
         String trimmedContent = content == null ? "" : content.trim();
         if (trimmedContent.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入反馈内容");
+            throw new BusinessFailure(400, "请输入反馈内容");
         }
         return response(feedbackRepository.save(new UserFeedback(user, type, trimmedContent)));
     }

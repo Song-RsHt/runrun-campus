@@ -27,10 +27,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminDispatchService;
 
 /**
@@ -70,9 +70,9 @@ public class AdminDispatchServiceImpl implements AdminDispatchService {
     @Override
     public DispatchCandidatesVO candidates(Long orderId, int requestedPage) {
         if (requestedPage < 0 || requestedPage > 100000) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "页码超出范围");
+            throw new BusinessFailure(400, "页码超出范围");
         }
-        CampusOrder order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireDispatchable(order);
         Instant now = Instant.now();
         List<DispatchCandidateVO> ranked = mapper.findCandidates(order.getServiceType().name(), settingsService.get().maxActiveOrders()).stream().map(row -> {
@@ -101,14 +101,14 @@ public class AdminDispatchServiceImpl implements AdminDispatchService {
     @Transactional
     @Override
     public DispatchResultVO dispatch(AppUser administrator, Long orderId, Long courierId) {
-        CampusOrder order = orderRepository.findLockedById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         requireDispatchable(order);
         boolean reassignment = order.getStatus() == OrderStatus.PENDING_REASSIGNMENT;
-        AppUser courier = userRepository.findLockedById(courierId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "骑手不存在"));
+        AppUser courier = userRepository.findLockedById(courierId).orElseThrow(() -> new BusinessFailure(404, "骑手不存在"));
         requireAvailableCourier(courier);
         long activeOrders = orderRepository.countByCourierAndStatusIn(courier, List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP));
         if (activeOrders >= settingsService.get().maxActiveOrders()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "所选骑手已达到同时接单上限");
+            throw new BusinessFailure(409, "所选骑手已达到同时接单上限");
         }
         order.assignCourier(courier);
         eventRepository.save(new OrderEvent(order, administrator, order.getStatus()));
@@ -120,25 +120,25 @@ public class AdminDispatchServiceImpl implements AdminDispatchService {
 
     private void requireDispatchable(CampusOrder order) {
         if ((order.getStatus() != OrderStatus.PENDING_ASSIGNMENT && order.getStatus() != OrderStatus.PENDING_REASSIGNMENT) || order.getCourier() != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "订单已被接单，无法再次派单");
+            throw new BusinessFailure(409, "订单已被接单，无法再次派单");
         }
         if (!order.canStartFulfillment()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "订单尚未完成支付");
+            throw new BusinessFailure(409, "订单尚未完成支付");
         }
     }
 
     private void requireAvailableCourier(AppUser courier) {
         if (courier.getRole() != UserRole.COURIER) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "所选用户不是骑手");
+            throw new BusinessFailure(400, "所选用户不是骑手");
         }
         if (!courier.isEnabled()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "所选骑手账号已停用");
+            throw new BusinessFailure(409, "所选骑手账号已停用");
         }
         if (!certificationService.isEligible(courier)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "所选骑手认证未通过或已过期");
+            throw new BusinessFailure(409, "所选骑手认证未通过或已过期");
         }
         if (!courier.isCourierAcceptingOrders() || courier.getCourierAvailabilityUpdatedAt() == null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "所选骑手当前未上线接单");
+            throw new BusinessFailure(409, "所选骑手当前未上线接单");
         }
     }
 

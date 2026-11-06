@@ -16,10 +16,10 @@ import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.CourierReassignmentService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.TaskReleaseVO;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 
 
 
@@ -69,14 +69,14 @@ public class CourierReassignmentServiceImpl implements CourierReassignmentServic
     public TaskReleaseVO reportUnable(AppUser courier, Long orderId, String reason) {
         String explanation = reason == null ? "" : reason.trim();
         if (explanation.isEmpty() || explanation.length() > 300) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入不超过300字的无法履约原因");
+            throw new BusinessFailure(400, "请输入不超过300字的无法履约原因");
         }
-        CampusOrder order = orders.findLockedById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orders.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         if (courier.getRole() != UserRole.COURIER || order.getCourier() == null || !order.getCourier().getId().equals(courier.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "仅当前接单骑手可申请改派");
+            throw new BusinessFailure(403, "仅当前接单骑手可申请改派");
         }
         if (order.getStatus() != OrderStatus.ACCEPTED || proofs.existsByOrderAndType(order, OrderProofType.PICKUP) || proofs.existsByOrderAndType(order, OrderProofType.SIZE_REVIEW)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "已有取件凭证或订单状态已变化，请联系运营处理");
+            throw new BusinessFailure(409, "已有取件凭证或订单状态已变化，请联系运营处理");
         }
         issues.save(new OrderIssue(order, courier, OrderIssueType.OTHER, "骑手无法履约（待改派）：" + explanation));
         order.requestReassignment();

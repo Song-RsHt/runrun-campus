@@ -25,10 +25,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminCourierService;
 
 @Service
@@ -65,7 +65,7 @@ public class AdminCourierServiceImpl implements AdminCourierService {
     @Transactional(readOnly = true)
     @Override
     public AdminCourierPerformanceResponse performance(Long courierId, int page, int size) {
-        AppUser courier = userRepository.findById(courierId).filter(user -> user.getRole() == UserRole.COURIER).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "骑手不存在"));
+        AppUser courier = userRepository.findById(courierId).filter(user -> user.getRole() == UserRole.COURIER).orElseThrow(() -> new BusinessFailure(404, "骑手不存在"));
         LocalDate today = LocalDate.now(CAMPUS_ZONE);
         Instant todayStart = today.atStartOfDay(CAMPUS_ZONE).toInstant();
         Instant lastSevenDaysStart = today.minusDays(6).atStartOfDay(CAMPUS_ZONE).toInstant();

@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -122,11 +122,11 @@ class MembershipServiceTest {
     when(userRepository.findLockedById(1L)).thenReturn(Optional.of(customer));
     when(membershipRepository.findActiveLocked(eq(customer), any(Instant.class)))
         .thenReturn(Optional.of(active));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> membershipService.purchase(customer, MembershipPlanType.STUDENT));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test
@@ -157,9 +157,9 @@ class MembershipServiceTest {
     UserMembership membership = membership(otherCustomer, MembershipPlanType.STUDENT, 11);
     ReflectionTestUtils.setField(membership, "id", 41L);
     when(membershipRepository.findLockedById(41L)).thenReturn(Optional.of(membership));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> membershipService.refund(customer, 41L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> membershipService.refund(customer, 41L));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     assertEquals(11, membership.getRemainingTrips());
   }
 
@@ -174,19 +174,19 @@ class MembershipServiceTest {
   void membershipCannotBeUsedWithoutActiveBalance() {
     when(membershipRepository.findActiveLocked(eq(customer), any(Instant.class)))
         .thenReturn(Optional.empty());
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> membershipService.apply(customer, true));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> membershipService.apply(customer, true));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test
   void courierCannotPurchaseMembership() {
     AppUser courier = user(2L, UserRole.COURIER);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> membershipService.purchase(courier, MembershipPlanType.LIGHT));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(membershipRepository);
   }
 

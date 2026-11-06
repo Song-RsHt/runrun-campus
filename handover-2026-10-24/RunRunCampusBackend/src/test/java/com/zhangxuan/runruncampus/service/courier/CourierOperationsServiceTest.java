@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -195,10 +195,10 @@ class CourierOperationsServiceTest {
   void unapprovedCourierCannotGoOnline() {
     courier.revokeCourierApproval();
     when(userRepository.findLockedById(1L)).thenReturn(Optional.of(courier));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> service.updateAvailability(courier, true));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> service.updateAvailability(courier, true));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     assertEquals("骑手认证有效后才能上线接单", exception.getReason());
   }
 }

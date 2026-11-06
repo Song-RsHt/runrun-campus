@@ -16,10 +16,10 @@ import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.ManualQrPaymentService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.ManualPaymentResponse;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 
 
 
@@ -66,13 +66,13 @@ public class ManualQrPaymentServiceImpl implements ManualQrPaymentService {
         requireCourier(courier, order);
         requireManualQr(order);
         if (order.getStatus() != OrderStatus.PICKED_UP) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "取件并到达交付地点后才能通知付款");
+            throw new BusinessFailure(409, "取件并到达交付地点后才能通知付款");
         }
         if (order.getPaymentStatus() == OrderPaymentStatus.PAID) {
             return response(order);
         }
         if (order.getManualPaymentStatus() != ManualPaymentStatus.NOT_REQUESTED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "已经发起过付款通知");
+            throw new BusinessFailure(409, "已经发起过付款通知");
         }
         order.requestManualPayment();
         messageService.send(order.getCustomer(), order, OrderMessageType.MANUAL_PAYMENT_REQUESTED, "骑手已到达，请付款", "请在订单内扫码支付 ¥%.2f，提交后等待管理员核款。".formatted(order.getFeeCents() / 100.0));
@@ -86,14 +86,14 @@ public class ManualQrPaymentServiceImpl implements ManualQrPaymentService {
         requireCustomer(customer, order);
         requireManualQr(order);
         if (order.getStatus() != OrderStatus.PICKED_UP) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "订单当前状态不能提交付款");
+            throw new BusinessFailure(409, "订单当前状态不能提交付款");
         }
         if (order.getManualPaymentStatus() != ManualPaymentStatus.AWAITING_PAYMENT && order.getManualPaymentStatus() != ManualPaymentStatus.REJECTED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "请等待骑手到达并发起付款通知");
+            throw new BusinessFailure(409, "请等待骑手到达并发起付款通知");
         }
         String normalizedReference = payerReference == null ? "" : payerReference.trim();
         if (normalizedReference.isEmpty() || normalizedReference.length() > 64) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入不超过64字的付款账号备注");
+            throw new BusinessFailure(400, "请输入不超过64字的付款账号备注");
         }
         order.submitManualPayment(normalizedReference);
         messageService.send(order.getCourier(), order, OrderMessageType.MANUAL_PAYMENT_SUBMITTED, "用户已提交付款", "订单 " + order.getOrderNo() + " 正在等待管理员核对到账，请勿提前交付。");
@@ -107,7 +107,7 @@ public class ManualQrPaymentServiceImpl implements ManualQrPaymentService {
         requireAdministrator(administrator);
         requireManualQr(order);
         if (order.getManualPaymentStatus() != ManualPaymentStatus.SUBMITTED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该订单没有待核对的付款申报");
+            throw new BusinessFailure(409, "该订单没有待核对的付款申报");
         }
         order.confirmManualPayment(administrator);
         messageService.send(order.getCustomer(), order, OrderMessageType.MANUAL_PAYMENT_CONFIRMED, "付款已确认", "管理员已确认到账，可以在收到物品后向骑手提供收货码。");
@@ -123,11 +123,11 @@ public class ManualQrPaymentServiceImpl implements ManualQrPaymentService {
         requireAdministrator(administrator);
         requireManualQr(order);
         if (order.getManualPaymentStatus() != ManualPaymentStatus.SUBMITTED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该订单没有待核对的付款申报");
+            throw new BusinessFailure(409, "该订单没有待核对的付款申报");
         }
         String normalizedReason = reason == null ? "" : reason.trim();
         if (normalizedReason.isEmpty() || normalizedReason.length() > 200) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入不超过200字的驳回原因");
+            throw new BusinessFailure(400, "请输入不超过200字的驳回原因");
         }
         order.rejectManualPayment(administrator, normalizedReason);
         messageService.send(order.getCustomer(), order, OrderMessageType.MANUAL_PAYMENT_REJECTED, "付款核对未通过", normalizedReason + "。请核对后重新提交。");
@@ -143,7 +143,7 @@ public class ManualQrPaymentServiceImpl implements ManualQrPaymentService {
         requireAdministrator(administrator);
         requireManualQr(order);
         if (order.getStatus() != OrderStatus.COMPLETED || order.getCourierSettlementStatus() != CourierSettlementStatus.PENDING) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "仅已完成且待结算的订单可以登记结算");
+            throw new BusinessFailure(409, "仅已完成且待结算的订单可以登记结算");
         }
         order.confirmCourierSettlement(administrator);
         messageService.send(order.getCourier(), order, OrderMessageType.COURIER_SETTLEMENT_CONFIRMED, "本单已登记结算", "订单 " + order.getOrderNo() + " 已由管理员登记为已结算。");
@@ -154,39 +154,39 @@ public class ManualQrPaymentServiceImpl implements ManualQrPaymentService {
     @Transactional(readOnly = true)
     @Override
     public ManualPaymentResponse status(AppUser participant, Long orderId) {
-        CampusOrder order = orderRepository.findById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        CampusOrder order = orderRepository.findById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
         if (!order.getCustomer().getId().equals(participant.getId()) && (order.getCourier() == null || !order.getCourier().getId().equals(participant.getId()))) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权查看该订单付款状态");
+            throw new BusinessFailure(403, "无权查看该订单付款状态");
         }
         requireManualQr(order);
         return response(order);
     }
 
     private CampusOrder findLocked(Long orderId) {
-        return orderRepository.findLockedById(orderId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
+        return orderRepository.findLockedById(orderId).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
     }
 
     private void requireCourier(AppUser courier, CampusOrder order) {
         if (courier.getRole() != UserRole.COURIER || order.getCourier() == null || !order.getCourier().getId().equals(courier.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只能操作自己承接的订单");
+            throw new BusinessFailure(403, "只能操作自己承接的订单");
         }
     }
 
     private void requireCustomer(AppUser customer, CampusOrder order) {
         if (customer.getRole() != UserRole.CUSTOMER || !order.getCustomer().getId().equals(customer.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只能提交自己订单的付款信息");
+            throw new BusinessFailure(403, "只能提交自己订单的付款信息");
         }
     }
 
     private void requireAdministrator(AppUser administrator) {
         if (administrator.getRole() != UserRole.ADMIN) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "仅管理员可以核对付款");
+            throw new BusinessFailure(403, "仅管理员可以核对付款");
         }
     }
 
     private void requireManualQr(CampusOrder order) {
         if (order.getPaymentMethod() != OrderPaymentMethod.PERSONAL_QR_MANUAL) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该订单不是人工扫码付款");
+            throw new BusinessFailure(409, "该订单不是人工扫码付款");
         }
     }
 

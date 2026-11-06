@@ -12,9 +12,9 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.CampusDispatchExperimentService;
 
 @Service
@@ -68,7 +68,7 @@ public class CampusDispatchExperimentServiceImpl implements CampusDispatchExperi
         return DispatchScoreCalculator.recommendationScore(candidate.activeOrders(), candidate.onlineMinutes(), candidate.completedOrders(), candidate.matchedCompletedOrders(), candidate.averageRating(), candidate.ratingCount());
     }
 
-    private ResponseStatusException invalid() {
-        return new ResponseStatusException(HttpStatus.BAD_REQUEST, "实验场景字段无效或超过数量限制");
+    private BusinessFailure invalid() {
+        return new BusinessFailure(400, "实验场景字段无效或超过数量限制");
     }
 }

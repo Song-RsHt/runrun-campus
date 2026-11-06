@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -190,11 +190,11 @@ class OrderProofServiceTest {
         new MockMultipartFile(
             "file", "pickup.jpg", "image/jpeg", "<script>alert(1)</script>".getBytes());
     allowPickupProofUpload();
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(400, exception.getStatusCode().value());
+    assertEquals(400, exception.status());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
 
@@ -202,11 +202,11 @@ class OrderProofServiceTest {
   void rejectsContentTypeThatDoesNotMatchImageSignature() {
     MockMultipartFile image = new MockMultipartFile("file", "pickup.jpg", "image/jpeg", PNG_BYTES);
     allowPickupProofUpload();
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(400, exception.getStatusCode().value());
+    assertEquals(400, exception.status());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
 
@@ -215,11 +215,11 @@ class OrderProofServiceTest {
     MockMultipartFile image =
         new MockMultipartFile("file", "pickup.jpg.php", "image/jpeg", JPEG_BYTES);
     allowPickupProofUpload();
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(400, exception.getStatusCode().value());
+    assertEquals(400, exception.status());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
 
@@ -229,11 +229,11 @@ class OrderProofServiceTest {
     when(image.isEmpty()).thenReturn(false);
     when(image.getSize()).thenReturn(8L * 1024 * 1024 + 1);
     allowPickupProofUpload();
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> proofService.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(400, exception.getStatusCode().value());
+    assertEquals(400, exception.status());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
 
@@ -252,11 +252,11 @@ class OrderProofServiceTest {
     packageOrder.assignCourier(courier);
     MockMultipartFile image = new MockMultipartFile("file", "pickup.jpg", "image/jpeg", JPEG_BYTES);
     when(orderRepository.findLockedById(12L)).thenReturn(Optional.of(packageOrder));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> proofService.upload(courier, 12L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(409, exception.getStatusCode().value());
+    assertEquals(409, exception.status());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
 
@@ -294,11 +294,11 @@ class OrderProofServiceTest {
     MockMultipartFile image =
         new MockMultipartFile("file", "size-review.jpg", "image/jpeg", JPEG_BYTES);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> proofService.upload(courier, 11L, OrderProofType.SIZE_REVIEW, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(409, exception.getStatusCode().value());
+    assertEquals(409, exception.status());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
 
@@ -313,11 +313,11 @@ class OrderProofServiceTest {
     doThrow(new IOException("storage unavailable"))
         .when(failingStorage)
         .store(anyString(), anyString(), anyLong(), any(InputStream.class));
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> service.upload(courier, 11L, OrderProofType.PICKUP, com.zhangxuan.runruncampus.integration.web.MultipartUploads.adapt(image)));
-    assertEquals(500, exception.getStatusCode().value());
+    assertEquals(500, exception.status());
     verify(proofRepository, never()).save(any(OrderProof.class));
   }
 

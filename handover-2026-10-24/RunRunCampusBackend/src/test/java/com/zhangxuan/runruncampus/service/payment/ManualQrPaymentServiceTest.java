@@ -21,7 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -183,10 +183,10 @@ class ManualQrPaymentServiceTest {
   void otherCustomerCannotSubmitPaymentClaim() {
     service.requestPayment(courier, 11L);
     AppUser stranger = user(4L, "其他用户", UserRole.CUSTOMER);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class, () -> service.submitPayment(stranger, 11L, "冒名提交"));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+            BusinessFailure.class, () -> service.submitPayment(stranger, 11L, "冒名提交"));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     assertEquals(ManualPaymentStatus.AWAITING_PAYMENT, order.getManualPaymentStatus());
   }
 
@@ -195,11 +195,11 @@ class ManualQrPaymentServiceTest {
     service.requestPayment(courier, 11L);
     service.submitPayment(customer, 11L, "微信昵称尾号28");
     service.confirmPayment(administrator, 11L);
-    ResponseStatusException exception =
+    BusinessFailure exception =
         assertThrows(
-            ResponseStatusException.class,
+            BusinessFailure.class,
             () -> service.confirmCourierSettlement(administrator, 11L));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
     order.updateStatus(OrderStatus.COMPLETED);
     order.markCourierSettlementPending();
     service.confirmCourierSettlement(administrator, 11L);

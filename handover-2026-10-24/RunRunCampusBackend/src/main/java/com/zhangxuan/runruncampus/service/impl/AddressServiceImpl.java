@@ -8,10 +8,10 @@ import com.zhangxuan.runruncampus.repository.AddressRepository;
 import com.zhangxuan.runruncampus.vo.AddressResponse;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AddressService;
 
 @Service
@@ -86,9 +86,9 @@ public class AddressServiceImpl implements AddressService {
 
     private UserAddress requireOwned(AppUser user, Long id) {
         requireCustomer(user);
-        UserAddress address = addressRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "地址不存在"));
+        UserAddress address = addressRepository.findById(id).orElseThrow(() -> new BusinessFailure(404, "地址不存在"));
         if (!user.getId().equals(address.getUser().getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权操作此地址");
+            throw new BusinessFailure(403, "无权操作此地址");
         }
         return address;
     }
@@ -103,7 +103,7 @@ public class AddressServiceImpl implements AddressService {
 
     private void requireCustomer(AppUser user) {
         if (user.getRole() != UserRole.CUSTOMER) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有用户账号可以管理地址");
+            throw new BusinessFailure(403, "只有用户账号可以管理地址");
         }
     }
 

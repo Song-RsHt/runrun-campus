@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -142,7 +142,7 @@ class AdminAccountServiceTest {
   @Test
   void cannotChangeOwnRole() {
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> service.changeRole(operator, 1L, AdminRole.SUPPORT));
   }
 
@@ -165,7 +165,7 @@ class AdminAccountServiceTest {
   @Test
   void cannotSuspendOwnAccount() {
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> service.suspend(operator, 1L));
   }
 
@@ -209,7 +209,7 @@ class AdminAccountServiceTest {
     when(userRepository.findLockedById(1L)).thenReturn(Optional.of(operator));
     when(passwordEncoder.matches("wrong-password", "hash")).thenReturn(false);
     assertThrows(
-        ResponseStatusException.class,
+        BusinessFailure.class,
         () -> service.changeOwnPassword(operator, "wrong-password", "new-password88"));
   }
 

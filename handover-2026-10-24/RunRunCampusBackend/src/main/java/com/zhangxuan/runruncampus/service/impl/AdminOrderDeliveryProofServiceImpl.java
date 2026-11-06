@@ -6,9 +6,9 @@ import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.vo.ProofContent;
 import java.io.IOException;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminOrderDeliveryProofService;
 
 /**
@@ -32,15 +32,15 @@ public class AdminOrderDeliveryProofServiceImpl implements AdminOrderDeliveryPro
 
     @Override
     public ProofContent read(Long id) {
-        var order = orders.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
-        var proof = proofs.findByOrderAndType(order, OrderProofType.DELIVERY).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "送达凭证不存在"));
+        var order = orders.findById(id).orElseThrow(() -> new BusinessFailure(404, "订单不存在"));
+        var proof = proofs.findByOrderAndType(order, OrderProofType.DELIVERY).orElseThrow(() -> new BusinessFailure(404, "送达凭证不存在"));
         if (!proof.getContentType().equals("image/jpeg") && !proof.getContentType().equals("image/png") && !proof.getContentType().equals("image/webp")) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "送达凭证类型无效");
+            throw new BusinessFailure(500, "送达凭证类型无效");
         }
         try {
             return new ProofContent(proof.getContentType(), storage.read(proof.getStoredFileName()));
         } catch (IOException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "送达凭证读取失败", exception);
+            throw new BusinessFailure(500, "送达凭证读取失败", exception);
         }
     }
 }

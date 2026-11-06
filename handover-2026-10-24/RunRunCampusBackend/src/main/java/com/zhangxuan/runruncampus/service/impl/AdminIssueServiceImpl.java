@@ -21,10 +21,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.service.AdminIssueService;
 
 @Service
@@ -70,12 +70,12 @@ public class AdminIssueServiceImpl implements AdminIssueService {
     public AdminIssueItem claim(AppUser administrator, Long id) {
         OrderIssue issue = requireIssue(id);
         if (issue.getHandlingStatus() == OrderIssueHandlingStatus.RESOLVED) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "已解决的工单不能重新领取");
+            throw new BusinessFailure(409, "已解决的工单不能重新领取");
         }
         if (issue.getHandlingStatus() == OrderIssueHandlingStatus.PROCESSING) {
             if (issue.getAssignee().getId().equals(administrator.getId()))
                 return item(issue);
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "该工单已由" + issue.getAssignee().getDisplayName() + "领取");
+            throw new BusinessFailure(409, "该工单已由" + issue.getAssignee().getDisplayName() + "领取");
         }
         issue.claim(administrator);
         auditService.record(administrator, AdminAuditAction.ORDER_ISSUE_CLAIMED, AdminAuditTargetType.ORDER_ISSUE, issue.getId(), "领取异常工单：" + issue.getOrder().getOrderNo());
@@ -87,7 +87,7 @@ public class AdminIssueServiceImpl implements AdminIssueService {
     public AdminIssueItem resolve(AppUser administrator, Long id, String resolution) {
         OrderIssue issue = requireIssue(id);
         if (issue.getHandlingStatus() != OrderIssueHandlingStatus.PROCESSING || issue.getAssignee() == null || !issue.getAssignee().getId().equals(administrator.getId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "请先领取该工单再处理");
+            throw new BusinessFailure(409, "请先领取该工单再处理");
         }
         String normalized = requireText(resolution);
         issue.resolve(normalized);
@@ -122,12 +122,12 @@ public class AdminIssueServiceImpl implements AdminIssueService {
     }
 
     private OrderIssue requireIssue(Long id) {
-        return issueRepository.findLockedById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "异常工单不存在"));
+        return issueRepository.findLockedById(id).orElseThrow(() -> new BusinessFailure(404, "异常工单不存在"));
     }
 
     private String requireText(String value) {
         if (value == null || value.trim().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "请输入处理结果");
+            throw new BusinessFailure(400, "请输入处理结果");
         }
         return value.trim();
     }

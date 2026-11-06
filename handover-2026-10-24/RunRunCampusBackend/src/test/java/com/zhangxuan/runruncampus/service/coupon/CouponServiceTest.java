@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.server.ResponseStatusException;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -122,27 +122,27 @@ class CouponServiceTest {
   void anotherUserCannotApplyCoupon() {
     UserCoupon coupon = coupon(51L, customer, Instant.now().plusSeconds(3600));
     when(couponRepository.findLockedById(51L)).thenReturn(Optional.of(coupon));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> couponService.apply(user(2L), 51L, 200));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> couponService.apply(user(2L), 51L, 200));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
   }
 
   @Test
   void expiredCouponCannotBeApplied() {
     UserCoupon coupon = coupon(51L, customer, Instant.now().minusSeconds(1));
     when(couponRepository.findLockedById(51L)).thenReturn(Optional.of(coupon));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> couponService.apply(customer, 51L, 200));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> couponService.apply(customer, 51L, 200));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test
   void couponMinimumMustBeMet() {
     UserCoupon coupon = coupon(51L, customer, Instant.now().plusSeconds(3600));
     when(couponRepository.findLockedById(51L)).thenReturn(Optional.of(coupon));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> couponService.apply(customer, 51L, 199));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> couponService.apply(customer, 51L, 199));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test
@@ -150,18 +150,18 @@ class CouponServiceTest {
     UserCoupon coupon = coupon(51L, customer, Instant.now().plusSeconds(3600));
     coupon.markUsed();
     when(couponRepository.findLockedById(51L)).thenReturn(Optional.of(coupon));
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> couponService.apply(customer, 51L, 200));
-    assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> couponService.apply(customer, 51L, 200));
+    assertEquals(HttpStatus.CONFLICT.value(), exception.status());
   }
 
   @Test
   void courierCannotListCoupons() {
     AppUser courier = new AppUser("13800000009", "password-hash", "测试骑手", UserRole.COURIER);
     ReflectionTestUtils.setField(courier, "id", 9L);
-    ResponseStatusException exception =
-        assertThrows(ResponseStatusException.class, () -> couponService.list(courier));
-    assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
+    BusinessFailure exception =
+        assertThrows(BusinessFailure.class, () -> couponService.list(courier));
+    assertEquals(HttpStatus.FORBIDDEN.value(), exception.status());
     verifyNoInteractions(couponRepository);
   }
 
