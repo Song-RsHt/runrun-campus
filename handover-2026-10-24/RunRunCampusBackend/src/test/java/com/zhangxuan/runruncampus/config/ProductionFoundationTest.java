@@ -13,12 +13,12 @@ import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ClassPathResource;
 
 class ProductionFoundationTest {
+
   @Test
   void separatesDevelopmentAndProductionConfiguration() {
     Properties common = yaml("application.yml");
     Properties development = yaml("application-dev.yml");
     Properties production = yaml("application-prod.yml");
-
     assertEquals("dev", common.getProperty("spring.profiles.default"));
     assertEquals("validate", common.getProperty("spring.jpa.hibernate.ddl-auto"));
     assertEquals("true", development.getProperty("spring.flyway.baseline-on-migrate"));
@@ -50,7 +50,6 @@ class ProductionFoundationTest {
     String packagePickup = resourceText("db/migration/V13__package_pickup_service_types.sql");
     String extraLargePackage = resourceText("db/migration/V18__extra_large_package.sql");
     String finerPackageTypes = resourceText("db/migration/V39__finer_package_service_types.sql");
-
     List.of(
             "app_users",
             "campus_orders",

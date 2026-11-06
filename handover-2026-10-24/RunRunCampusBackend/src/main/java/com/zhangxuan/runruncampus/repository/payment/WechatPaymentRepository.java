@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface WechatPaymentRepository extends JpaRepository<WechatPayment, Long> {
+
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @Query("select p from WechatPayment p where p.outTradeNo = :outTradeNo")
   Optional<WechatPayment> findLockedByOutTradeNo(@Param("outTradeNo") String outTradeNo);

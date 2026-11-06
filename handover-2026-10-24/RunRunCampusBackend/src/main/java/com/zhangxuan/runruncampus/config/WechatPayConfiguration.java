@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties(WechatPayProperties.class)
 public class WechatPayConfiguration {
+
   @Bean
   @ConditionalOnProperty(prefix = "wechat.pay", name = "enabled", havingValue = "true")
   public WechatPayGateway configuredWechatPayGateway(WechatPayProperties properties) {

@@ -26,14 +26,14 @@ public class RiskSignalMaintenance {
   }
 
   private void frequentCancellations() {
-    mapper.frequentCancellationsWriteStatement();
+    mapper.recordFrequentCancellations();
   }
 
   private void repeatedIssues() {
-    mapper.repeatedIssuesWriteStatement();
+    mapper.recordRepeatedIssues();
   }
 
   private void overdueCourierOrders(int deliveryMinutes) {
-    mapper.overdueCourierOrdersWriteStatement(deliveryMinutes);
+    mapper.recordOverdueCourierOrders(deliveryMinutes);
   }
 }

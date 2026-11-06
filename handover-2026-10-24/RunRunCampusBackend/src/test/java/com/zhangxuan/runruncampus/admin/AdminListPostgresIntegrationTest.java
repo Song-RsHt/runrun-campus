@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminCourierController;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderItem;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPageResponse;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
@@ -47,6 +49,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class AdminListPostgresIntegrationTest {
+
   @Container
   private static final PostgreSQLContainer<?> POSTGRES =
       new PostgreSQLContainer<>("postgres:16-alpine");
@@ -59,17 +62,29 @@ class AdminListPostgresIntegrationTest {
   }
 
   @Autowired private AdminOrderService orderService;
+
   @PersistenceContext private EntityManager entityManager;
+
   @Autowired private AdminOrderLifecycleService lifecycleService;
+
   @Autowired private AdminAuditLogRepository auditLogRepository;
+
   @Autowired private AdminCourierService courierService;
+
   @Autowired private AdminUserService userService;
+
   @Autowired private AdminIssueService issueService;
+
   @Autowired private AdminFeedbackService feedbackService;
+
   @Autowired private AdminAuditService auditService;
+
   @Autowired private UserRepository userRepository;
+
   @Autowired private OrderRepository orderRepository;
+
   @Autowired private OrderEventRepository orderEventRepository;
+
   @Autowired private OrderProofRepository orderProofRepository;
 
   @Test
@@ -100,7 +115,6 @@ class AdminListPostgresIntegrationTest {
         userRepository.save(new AppUser("13800009001", "hash", "统计测试用户", UserRole.CUSTOMER));
     AppUser courier =
         userRepository.save(new AppUser("13800009002", "hash", "统计测试骑手", UserRole.COURIER));
-
     CampusOrder firstCompleted = order("COUNT-TEST-1", customer, courier, ServiceType.LOBBY);
     firstCompleted.updateStatus(OrderStatus.COMPLETED);
     CampusOrder secondCompleted =
@@ -117,15 +131,11 @@ class AdminListPostgresIntegrationTest {
         new OrderEvent(secondCompleted, courier, OrderStatus.COMPLETED));
     orderEventRepository.saveAndFlush(
         new OrderEvent(thirdCompleted, courier, OrderStatus.COMPLETED));
-
-    AdminCourierController.AdminCourierPageResponse response =
-        courierService.list("13800009002", null, 0, 10);
-
+    AdminCourierPageResponse response = courierService.list("13800009002", null, 0, 10);
     assertEquals(1, response.items().size());
     assertEquals(3, response.items().get(0).completedOrderCount());
     assertEquals(2, response.items().get(0).completedPackageOrderCount());
-
-    AdminCourierController.AdminCourierPerformanceResponse performance =
+    AdminCourierPerformanceResponse performance =
         courierService.performance(courier.getId(), 0, 10);
     assertEquals(2, performance.todayCompletedPackageOrders());
     assertEquals(2, performance.lastSevenDaysCompletedPackageOrders());
@@ -141,7 +151,7 @@ class AdminListPostgresIntegrationTest {
     assertEquals(
         Set.of("COUNT-TEST-2", "COUNT-TEST-3", "COUNT-TEST-4"),
         performance.orders().items().stream()
-            .map(AdminCourierController.AdminCourierOrderItem::orderNo)
+            .map(AdminCourierOrderItem::orderNo)
             .collect(java.util.stream.Collectors.toSet()));
   }
 
@@ -156,11 +166,9 @@ class AdminListPostgresIntegrationTest {
         new CampusOrder("ARCHIVE-TEST-1", customer, "测试商家", "1234", "东门", "1号楼", ServiceType.LOBBY);
     order.updateStatus(OrderStatus.CANCELLED);
     orderRepository.saveAndFlush(order);
-
     lifecycleService.archive(admin, order.getId(), "已结束测试订单归档");
     orderRepository.flush();
     entityManager.clear();
-
     assertTrue(orderService.list("ARCHIVE-TEST-1", null, false, 0, 10).items().isEmpty());
     assertEquals(1, orderService.list("ARCHIVE-TEST-1", null, true, 0, 10).items().size());
     assertNotNull(orderService.detail(order.getId()));
@@ -170,7 +178,6 @@ class AdminListPostgresIntegrationTest {
                 log ->
                     log.getTargetId().equals(order.getId())
                         && log.getAction() == AdminAuditAction.ORDER_ARCHIVED));
-
     lifecycleService.unarchive(admin, order.getId());
     orderRepository.flush();
     entityManager.clear();
@@ -204,11 +211,9 @@ class AdminListPostgresIntegrationTest {
             "proof.jpg",
             "image/jpeg",
             16));
-
     lifecycleService.forceComplete(admin, order.getId(), "已核对送达照片和收款记录");
     orderRepository.flush();
     entityManager.clear();
-
     assertEquals(
         OrderStatus.COMPLETED, orderRepository.findById(order.getId()).orElseThrow().getStatus());
     assertTrue(

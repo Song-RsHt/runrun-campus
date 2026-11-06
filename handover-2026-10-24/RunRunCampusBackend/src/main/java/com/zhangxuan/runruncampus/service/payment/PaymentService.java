@@ -11,6 +11,11 @@ import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
+import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
+import com.zhangxuan.runruncampus.model.payment.RefundNotificationResult;
+import com.zhangxuan.runruncampus.model.payment.RefundResult;
+import com.zhangxuan.runruncampus.model.payment.TradeResult;
 import com.zhangxuan.runruncampus.model.payment.WechatPayment;
 import com.zhangxuan.runruncampus.model.payment.WechatRefund;
 import com.zhangxuan.runruncampus.model.user.AppUser;
@@ -26,15 +31,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/** legacy 支付与退款业务边界，使用原 JPA Repository 及支付网关。金额和幂等保持旧契约，不能作为 v2 支付兼容层。 */
 @Service
 public class PaymentService {
+
   private static final Duration PAYMENT_WINDOW = Duration.ofMinutes(30);
 
   private final WechatPaymentRepository paymentRepository;
+
   private final WechatRefundRepository refundRepository;
+
   private final OrderRepository orderRepository;
+
   private final MembershipService membershipService;
+
   private final WechatPayGateway gateway;
+
   private final WechatPayProperties properties;
 
   public PaymentService(
@@ -74,7 +86,6 @@ public class PaymentService {
     }
     int dueCents = order.getFeeCents() - order.getPaidCents();
     if (dueCents <= 0) return paidResponse(order);
-
     WechatPayment pending =
         paymentRepository
             .findFirstByOrderAndStatusOrderByCreatedAtDesc(order, PaymentStatus.PENDING)
@@ -85,11 +96,10 @@ public class PaymentService {
       return response(pending);
     }
     if (pending != null) close(pending);
-
     Instant expiresAt = Instant.now().plus(PAYMENT_WINDOW);
     WechatPayment payment =
         paymentRepository.save(WechatPayment.forOrder(customer, order, dueCents, expiresAt));
-    WechatPayGateway.AppPayParameters parameters =
+    AppPayParameters parameters =
         gateway.prepay(
             payment.getOutTradeNo(),
             "跑跑代取服务-" + order.getOrderNo(),
@@ -116,11 +126,10 @@ public class PaymentService {
       return response(pending);
     }
     if (pending != null) close(pending);
-
     Instant expiresAt = Instant.now().plus(PAYMENT_WINDOW);
     WechatPayment payment =
         paymentRepository.save(WechatPayment.forMembership(customer, plan, expiresAt));
-    WechatPayGateway.AppPayParameters parameters =
+    AppPayParameters parameters =
         gateway.prepay(
             payment.getOutTradeNo(),
             "跑跑代取-" + plan.getTitle(),
@@ -142,15 +151,15 @@ public class PaymentService {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "无权查看此支付单");
     }
     if (payment.getStatus() == PaymentStatus.PENDING && payment.hasPayParameters()) {
-      WechatPayGateway.TradeResult result = gateway.query(outTradeNo);
+      TradeResult result = gateway.query(outTradeNo);
       if (result.paid()) confirmPaid(payment, result);
     }
     return response(payment);
   }
 
   @Transactional
-  public void acceptPaymentNotification(WechatPayGateway.NotificationHeaders headers, String body) {
-    WechatPayGateway.TradeResult result = gateway.parsePaymentNotification(headers, body);
+  public void acceptPaymentNotification(NotificationHeaders headers, String body) {
+    TradeResult result = gateway.parsePaymentNotification(headers, body);
     if (!result.paid()) return;
     WechatPayment payment =
         paymentRepository
@@ -160,9 +169,8 @@ public class PaymentService {
   }
 
   @Transactional
-  public void acceptRefundNotification(WechatPayGateway.NotificationHeaders headers, String body) {
-    WechatPayGateway.RefundNotificationResult result =
-        gateway.parseRefundNotification(headers, body);
+  public void acceptRefundNotification(NotificationHeaders headers, String body) {
+    RefundNotificationResult result = gateway.parseRefundNotification(headers, body);
     WechatRefund refund =
         refundRepository
             .findLockedByOutRefundNo(result.outRefundNo())
@@ -171,7 +179,7 @@ public class PaymentService {
         || refund.getAmountCents() != result.refundCents()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "退款通知与本地退款单不一致");
     }
-    refund.record(new WechatPayGateway.RefundResult(result.refundId(), result.status()));
+    refund.record(new RefundResult(result.refundId(), result.status()));
     if (result.status() == RefundStatus.SUCCESS) finishOrderRefund(refund.getPayment().getOrder());
   }
 
@@ -214,7 +222,7 @@ public class PaymentService {
         .toList();
   }
 
-  private void confirmPaid(WechatPayment payment, WechatPayGateway.TradeResult result) {
+  private void confirmPaid(WechatPayment payment, TradeResult result) {
     if (payment.getStatus() == PaymentStatus.PAID) return;
     if (!payment.getOutTradeNo().equals(result.outTradeNo())
         || !properties.appId().equals(result.appId())

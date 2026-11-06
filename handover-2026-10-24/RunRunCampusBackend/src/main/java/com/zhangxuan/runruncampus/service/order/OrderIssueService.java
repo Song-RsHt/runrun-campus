@@ -20,8 +20,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class OrderIssueService {
+
   private final OrderRepository orderRepository;
+
   private final OrderIssueRepository issueRepository;
+
   private final OrderMessageService messageService;
 
   public OrderIssueService(

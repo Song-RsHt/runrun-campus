@@ -1,6 +1,10 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminCourierController;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierItem;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderItem;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderPage;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPageResponse;
+import com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.courier.CourierCertification;
@@ -25,10 +29,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminCourierService {
+
   private static final ZoneId CAMPUS_ZONE = ZoneId.of("Asia/Shanghai");
 
   private final UserRepository userRepository;
+
   private final CourierCertificationRepository certificationRepository;
+
   private final OrderRepository orderRepository;
 
   public AdminCourierService(
@@ -41,7 +48,7 @@ public class AdminCourierService {
   }
 
   @Transactional(readOnly = true)
-  public AdminCourierController.AdminCourierPageResponse list(
+  public AdminCourierPageResponse list(
       String query, CourierCertificationStatus status, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
@@ -66,7 +73,7 @@ public class AdminCourierService {
                     Collectors.toMap(
                         OrderRepository.CourierCompletedOrderStats::getCourierId,
                         Function.identity()));
-    return new AdminCourierController.AdminCourierPageResponse(
+    return new AdminCourierPageResponse(
         couriers.getContent().stream()
             .map(
                 courier -> {
@@ -86,8 +93,7 @@ public class AdminCourierService {
   }
 
   @Transactional(readOnly = true)
-  public AdminCourierController.AdminCourierPerformanceResponse performance(
-      Long courierId, int page, int size) {
+  public AdminCourierPerformanceResponse performance(Long courierId, int page, int size) {
     AppUser courier =
         userRepository
             .findById(courierId)
@@ -104,7 +110,7 @@ public class AdminCourierService {
         orderRepository.findPackageOrdersForCourier(
             courier.getId(),
             PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id")));
-    return new AdminCourierController.AdminCourierPerformanceResponse(
+    return new AdminCourierPerformanceResponse(
         value(stats == null ? null : stats.getTodayCompletedPackageOrders()),
         value(stats == null ? null : stats.getLastSevenDaysCompletedPackageOrders()),
         value(stats == null ? null : stats.getCurrentMonthCompletedPackageOrders()),
@@ -115,7 +121,7 @@ public class AdminCourierService {
         value(stats == null ? null : stats.getLargeCompletedPackageOrders()),
         value(stats == null ? null : stats.getSpecialLargeCompletedPackageOrders()),
         value(stats == null ? null : stats.getExtraLargeCompletedPackageOrders()),
-        new AdminCourierController.AdminCourierOrderPage(
+        new AdminCourierOrderPage(
             orders.getContent().stream().map(this::orderItem).toList(),
             orders.getNumber(),
             orders.getSize(),
@@ -123,7 +129,7 @@ public class AdminCourierService {
             orders.getTotalPages()));
   }
 
-  private AdminCourierController.AdminCourierItem item(
+  private AdminCourierItem item(
       AppUser courier,
       CourierCertification certification,
       long completedOrderCount,
@@ -133,7 +139,7 @@ public class AdminCourierService {
           courier.isCourierApproved()
               ? CourierCertificationStatus.APPROVED
               : CourierCertificationStatus.NOT_APPLIED;
-      return new AdminCourierController.AdminCourierItem(
+      return new AdminCourierItem(
           courier.getId(),
           courier.getDisplayName(),
           courier.getPhone(),
@@ -155,7 +161,7 @@ public class AdminCourierService {
           false);
     }
     AppUser reviewer = certification.getReviewer();
-    return new AdminCourierController.AdminCourierItem(
+    return new AdminCourierItem(
         courier.getId(),
         courier.getDisplayName(),
         courier.getPhone(),
@@ -177,8 +183,8 @@ public class AdminCourierService {
         certification.hasCurrentPhoto());
   }
 
-  private AdminCourierController.AdminCourierOrderItem orderItem(CampusOrder order) {
-    return new AdminCourierController.AdminCourierOrderItem(
+  private AdminCourierOrderItem orderItem(CampusOrder order) {
+    return new AdminCourierOrderItem(
         order.getId(),
         order.getOrderNo(),
         order.getStatus(),

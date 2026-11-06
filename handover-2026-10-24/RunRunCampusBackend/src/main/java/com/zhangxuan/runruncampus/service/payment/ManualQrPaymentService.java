@@ -21,8 +21,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ManualQrPaymentService {
+
   private final OrderRepository orderRepository;
+
   private final OrderMessageService messageService;
+
   private final AdminAuditService auditService;
 
   public ManualQrPaymentService(

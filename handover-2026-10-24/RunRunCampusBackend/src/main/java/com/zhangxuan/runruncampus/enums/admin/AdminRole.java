@@ -36,8 +36,10 @@ public enum AdminRole {
           AdminPermission.FEEDBACK_MANAGE)),
   REVIEWER(
       EnumSet.of(
-          AdminPermission.DASHBOARD_VIEW, AdminPermission.USER_VIEW,
-          AdminPermission.COURIER_VIEW, AdminPermission.COURIER_REVIEW)),
+          AdminPermission.DASHBOARD_VIEW,
+          AdminPermission.USER_VIEW,
+          AdminPermission.COURIER_VIEW,
+          AdminPermission.COURIER_REVIEW)),
   AUDITOR(
       EnumSet.of(
           AdminPermission.DASHBOARD_VIEW,

@@ -13,20 +13,32 @@ import org.springframework.stereotype.Component;
 @Profile("prod")
 @Order(0)
 public class ProductionConfigurationValidator implements ApplicationRunner {
+
   private static final Pattern PHONE = Pattern.compile("1\\d{10}");
+
   private static final Pattern VERIFIED_SSL = Pattern.compile("[?&]sslmode=verify-full(?:&|$)");
+
   private static final Pattern RDS_CA =
       Pattern.compile("[?&]sslrootcert=/run/secrets/RDS_CA_CERTIFICATE(?:&|$)");
 
   private final String datasourceUrl;
+
   private final String datasourceUsername;
+
   private final String datasourcePassword;
+
   private final String adminPhone;
+
   private final String adminPassword;
+
   private final String proofStorageType;
+
   private final String ossRegion;
+
   private final String ossBucket;
+
   private final String ossRoleName;
+
   private final boolean useInternalEndpoint;
 
   public ProductionConfigurationValidator(

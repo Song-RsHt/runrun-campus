@@ -39,6 +39,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class PushDeliveryPostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -50,10 +51,15 @@ class PushDeliveryPostgresIntegrationTest {
   }
 
   @Autowired PushDeliveryRepository deliveries;
+
   @Autowired PlatformTransactionManager transactions;
+
   @Autowired ApplicationEventPublisher events;
+
   @Autowired UserRepository users;
+
   @Autowired OrderRepository orders;
+
   @Autowired JdbcTemplate jdbc;
 
   @Test
@@ -67,9 +73,7 @@ class PushDeliveryPostgresIntegrationTest {
         new OrderPushRequested(customer.getId(), order.getId(), "订单更新", "请查看订单", "stable-token");
     new TransactionTemplate(transactions)
         .executeWithoutResult(status -> events.publishEvent(event));
-
     var claimed = deliveries.claimNext();
-
     assertTrue(claimed.isPresent());
     assertEquals("stable-token", claimed.orElseThrow().notification().idempotentToken());
     deliveries.markSent(claimed.orElseThrow().id());
@@ -81,7 +85,6 @@ class PushDeliveryPostgresIntegrationTest {
             where idempotent_token = 'stable-token' and status = 'SENT'
             """,
             Integer.class));
-
     new TransactionTemplate(transactions)
         .executeWithoutResult(
             status -> {
@@ -105,10 +108,8 @@ class PushDeliveryPostgresIntegrationTest {
             "请更新认证材料",
             "certification-reminder-stable-token",
             PushDestination.COURIER_CERTIFICATION);
-
     deliveries.enqueue(notification);
     deliveries.enqueue(notification);
-
     assertEquals(
         1,
         jdbc.queryForObject(

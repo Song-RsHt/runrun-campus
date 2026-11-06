@@ -25,7 +25,7 @@ public class PlatformSettingsService {
 
   @Transactional(readOnly = true)
   public Settings get() {
-    return mapper.getValueStatement();
+    return mapper.findSettings();
   }
 
   @Transactional
@@ -46,7 +46,7 @@ public class PlatformSettingsService {
       throw new ResponseStatusException(
           HttpStatus.BAD_REQUEST, "营业时间不能为空，阈值需为1–1440分钟，接单上限需为1–10单");
     }
-    mapper.updateWriteStatement(
+    mapper.updateSettings(
         hours,
         requested.waitMinutes(),
         requested.deliveryMinutes(),

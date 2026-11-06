@@ -29,8 +29,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class AdminCouponServiceTest {
+
   @Mock UserRepository userRepository;
+
   @Mock UserCouponRepository couponRepository;
+
   @Mock AdminAuditService auditService;
 
   @Test
@@ -48,9 +51,7 @@ class AdminCouponServiceTest {
               return coupon;
             });
     Instant before = Instant.now().plusSeconds(29L * 24 * 3600);
-
     AdminCouponService.GrantResponse result = service.issueOneYuan(administrator, 2L);
-
     assertEquals(51L, result.couponId());
     assertEquals(100, result.discountCents());
     assertEquals(200, result.minimumOrderCents());
@@ -71,12 +72,10 @@ class AdminCouponServiceTest {
         new AdminCouponService(userRepository, couponRepository, auditService);
     AppUser courier = user(2L, "测试骑手", UserRole.COURIER);
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(courier));
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () -> service.issueOneYuan(user(1L, "管理员", UserRole.ADMIN), 2L));
-
     assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
     verifyNoInteractions(couponRepository, auditService);
   }

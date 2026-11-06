@@ -18,8 +18,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class LoginAttemptServiceTest {
+
   @Mock UserRepository userRepository;
+
   private LoginAttemptService service;
+
   private AppUser user;
 
   @BeforeEach
@@ -35,7 +38,6 @@ class LoginAttemptServiceTest {
   @Test
   void locksAccountAfterConfiguredNumberOfFailures() {
     for (int attempt = 0; attempt < 5; attempt++) service.recordFailure(1L);
-
     assertEquals(5, user.getFailedLoginAttempts());
     assertTrue(user.isLoginLocked(Instant.now()));
   }
@@ -43,9 +45,7 @@ class LoginAttemptServiceTest {
   @Test
   void successfulLoginClearsPreviousFailures() {
     user.recordLoginFailure(5, Instant.now().plusSeconds(900));
-
     service.clearFailures(1L);
-
     assertEquals(0, user.getFailedLoginAttempts());
     assertEquals(null, user.getLoginLockedUntil());
   }
@@ -53,9 +53,7 @@ class LoginAttemptServiceTest {
   @Test
   void unknownAccountsAlsoRequireCaptchaAfterThreeFailures() {
     when(userRepository.findByPhone("13800000009")).thenReturn(Optional.empty());
-
     for (int attempt = 0; attempt < 3; attempt++) service.recordUnknownFailure("13800000009");
-
     assertTrue(service.requiresCaptcha("13800000009"));
   }
 }

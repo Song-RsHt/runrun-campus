@@ -5,6 +5,8 @@ import com.zhangxuan.runruncampus.dto.response.provenance.Summary;
 import com.zhangxuan.runruncampus.enums.provenance.Channel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -20,17 +22,17 @@ public class FulfillmentProvenanceMapper {
     this.jdbc = jdbc;
   }
 
-  public java.lang.Long recordValueStatement(
-      java.lang.String parameter2,
-      java.lang.String parameter3,
-      java.lang.Long parameter4,
-      java.sql.Timestamp parameter5,
-      java.lang.Long parameter6,
-      java.lang.Long parameter7,
-      java.lang.Long parameter8,
-      java.lang.String parameter9,
-      java.lang.Object parameter10,
-      java.lang.Long parameter11) {
+  public Long insertProvenance(
+      String sourceRef,
+      String channel,
+      Long appOrderId,
+      Timestamp completedAt,
+      Long customerPaidCents,
+      Long platformRevenueCents,
+      Long courierSettlementCents,
+      String completionEvidenceSha256,
+      Object financialEvidenceSha256,
+      Long recordedBy) {
     return jdbc.queryForObject(
         """
         insert into fulfillment_provenance
@@ -40,40 +42,39 @@ public class FulfillmentProvenanceMapper {
         values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id
         """,
         Long.class,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5,
-        parameter6,
-        parameter7,
-        parameter8,
-        parameter9,
-        parameter10,
-        parameter11);
+        sourceRef,
+        channel,
+        appOrderId,
+        completedAt,
+        customerPaidCents,
+        platformRevenueCents,
+        courierSettlementCents,
+        completionEvidenceSha256,
+        financialEvidenceSha256,
+        recordedBy);
   }
 
-  public int verifyWriteStatement(java.lang.Long parameter1, long id, java.lang.Long parameter3) {
+  public int verifyByIndependentAdministrator(Long id2, long id, Long id3) {
     return jdbc.update(
         """
         update fulfillment_provenance set verified_by = ?, verified_at = now()
         where id = ? and verified_by is null and recorded_by <> ?
         """,
-        parameter1,
+        id2,
         id,
-        parameter3);
+        id3);
   }
 
-  public java.util.List<com.zhangxuan.runruncampus.dto.response.provenance.Entry> listRowsStatement(
-      int parameter2) {
+  public List<Entry> pageProvenance(int count) {
     return jdbc.query(
         """
         select * from fulfillment_provenance order by id desc limit 100 offset ?
         """,
         (rs, row) -> map(rs),
-        parameter2);
+        count);
   }
 
-  public com.zhangxuan.runruncampus.dto.response.provenance.Summary summaryValueStatement() {
+  public Summary summarizeVerifiedProvenance() {
     return jdbc.queryForObject(
         """
 select count(*) as recorded_count,
@@ -95,7 +96,7 @@ from fulfillment_provenance
                     : rs.getBigDecimal("verified_revenue_cents").longValueExact()));
   }
 
-  public com.zhangxuan.runruncampus.dto.response.provenance.Entry findValueStatement(long id) {
+  public Entry findProvenance(long id) {
     return jdbc.queryForObject(
         "select * from fulfillment_provenance where id = ?", (rs, row) -> map(rs), id);
   }

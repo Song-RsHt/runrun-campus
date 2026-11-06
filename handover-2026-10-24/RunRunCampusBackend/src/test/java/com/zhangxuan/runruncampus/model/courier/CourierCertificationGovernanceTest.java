@@ -17,6 +17,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 class CourierCertificationGovernanceTest {
+
   @Test
   void staleReviewVersionIsRejected() {
     var repo = Mockito.mock(CourierCertificationRepository.class);

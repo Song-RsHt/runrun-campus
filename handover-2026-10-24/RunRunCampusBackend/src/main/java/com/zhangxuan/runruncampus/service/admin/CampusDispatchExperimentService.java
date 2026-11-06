@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CampusDispatchExperimentService {
+
   public Result compare(Request request) {
     if (request == null
         || request.scenarios() == null

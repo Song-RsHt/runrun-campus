@@ -1,18 +1,16 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.dto.request.admin.issue.ResolveIssueRequest;
+import com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem;
+import com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssuePageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.Instant;
-import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/issues")
 public class AdminIssueController {
+
   private final AuthService authService;
+
   private final AdminIssueService adminIssueService;
 
   public AdminIssueController(AuthService authService, AdminIssueService adminIssueService) {
@@ -65,37 +65,4 @@ public class AdminIssueController {
         id,
         request.resolution());
   }
-
-  public record AdminIssuePageResponse(
-      List<AdminIssueItem> items,
-      int page,
-      int size,
-      long totalElements,
-      int totalPages,
-      long overdueTotal) {}
-
-  public record AdminIssueItem(
-      Long id,
-      OrderIssueType type,
-      String description,
-      Instant createdAt,
-      Long orderId,
-      String orderNo,
-      OrderStatus orderStatus,
-      Long reporterId,
-      String reporterName,
-      String reporterPhone,
-      OrderIssueHandlingStatus handlingStatus,
-      Long assigneeId,
-      String assigneeName,
-      String resolution,
-      Instant handledAt,
-      Instant updatedAt,
-      Instant slaDeadlineAt,
-      boolean overdue,
-      long overdueMinutes) {}
-
-  public record ResolveIssueRequest(
-      @NotBlank(message = "请输入处理结果") @Size(max = 500, message = "处理结果不能超过500字")
-          String resolution) {}
 }

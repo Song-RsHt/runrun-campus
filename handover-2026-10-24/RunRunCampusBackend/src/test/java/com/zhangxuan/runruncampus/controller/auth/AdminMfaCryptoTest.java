@@ -12,7 +12,9 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.web.server.ResponseStatusException;
 
 class AdminMfaCryptoTest {
+
   private static final String SECRET = "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ";
+
   private static final String KEY =
       Base64.getEncoder()
           .encodeToString("0123456789abcdef0123456789abcdef".getBytes(StandardCharsets.UTF_8));

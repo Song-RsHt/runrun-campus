@@ -22,8 +22,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Component
 public class AdminMfaCrypto {
+
   private static final SecureRandom RANDOM = new SecureRandom();
+
   private static final String BASE32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+
   private final byte[] key;
 
   public AdminMfaCrypto(

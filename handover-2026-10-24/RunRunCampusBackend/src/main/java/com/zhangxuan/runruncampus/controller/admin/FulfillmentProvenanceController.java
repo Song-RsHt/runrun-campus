@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/fulfillment-provenance")
 public class FulfillmentProvenanceController {
+
   private final AuthService auth;
+
   private final FulfillmentProvenanceService service;
 
   public FulfillmentProvenanceController(AuthService auth, FulfillmentProvenanceService service) {

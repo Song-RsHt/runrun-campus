@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AddressService {
+
   private final AddressRepository addressRepository;
 
   public AddressService(AddressRepository addressRepository) {

@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface OrderChatRepository extends JpaRepository<OrderChatMessage, Long> {
+
   List<OrderChatMessage> findByOrderOrderByCreatedAtAsc(CampusOrder order);
 
   @Modifying
@@ -30,6 +31,7 @@ public interface OrderChatRepository extends JpaRepository<OrderChatMessage, Lon
   List<UnreadCount> findUnreadCounts(@Param("recipientId") Long recipientId);
 
   public interface UnreadCount {
+
     Long getOrderId();
 
     long getUnreadCount();

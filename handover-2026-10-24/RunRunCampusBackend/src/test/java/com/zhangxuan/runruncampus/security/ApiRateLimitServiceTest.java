@@ -12,17 +12,15 @@ import java.time.ZoneOffset;
 import org.junit.jupiter.api.Test;
 
 class ApiRateLimitServiceTest {
+
   @Test
   void tokenBucketRejectsExcessAndRefillsContinuously() {
     MutableClock clock = new MutableClock();
     ApiRateLimitService service = new ApiRateLimitService(clock);
-
     assertTrue(service.tryAcquire("write", "session-a", 2));
     assertTrue(service.tryAcquire("write", "session-a", 2));
     assertFalse(service.tryAcquire("write", "session-a", 2));
-
     clock.advance(Duration.ofSeconds(30));
-
     assertTrue(service.tryAcquire("write", "session-a", 2));
     assertFalse(service.tryAcquire("write", "session-a", 2));
   }
@@ -30,7 +28,6 @@ class ApiRateLimitServiceTest {
   @Test
   void differentIdentitiesAndScopesUseIndependentBuckets() {
     ApiRateLimitService service = new ApiRateLimitService(new MutableClock());
-
     assertTrue(service.tryAcquire("proof", "session-a", 1));
     assertFalse(service.tryAcquire("proof", "session-a", 1));
     assertTrue(service.tryAcquire("proof", "session-b", 1));
@@ -40,15 +37,14 @@ class ApiRateLimitServiceTest {
   @Test
   void trackedIdentityIsOneWayFingerprint() {
     String rawToken = "Bearer secret-session-token";
-
     String fingerprint = ApiRateLimitService.fingerprint(rawToken);
-
     assertNotEquals(rawToken, fingerprint);
     assertFalse(fingerprint.contains("secret-session-token"));
     assertTrue(fingerprint.matches("[0-9a-f]{64}"));
   }
 
   private static final class MutableClock extends Clock {
+
     private Instant instant = Instant.parse("2026-09-02T00:00:00Z");
 
     void advance(Duration duration) {

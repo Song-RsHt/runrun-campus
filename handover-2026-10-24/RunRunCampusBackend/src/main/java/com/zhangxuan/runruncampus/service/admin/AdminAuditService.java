@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminAuditController;
+import com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditItem;
+import com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditPageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.model.admin.AdminAuditLog;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminAuditService {
+
   private final AdminAuditLogRepository auditLogRepository;
 
   public AdminAuditService(AdminAuditLogRepository auditLogRepository) {
@@ -32,8 +34,7 @@ public class AdminAuditService {
   }
 
   @Transactional(readOnly = true)
-  public AdminAuditController.AdminAuditPageResponse list(
-      String query, AdminAuditAction action, int page, int size) {
+  public AdminAuditPageResponse list(String query, AdminAuditAction action, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
         PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
@@ -41,7 +42,7 @@ public class AdminAuditService {
         normalizedQuery == null
             ? auditLogRepository.filter(action, pageable)
             : auditLogRepository.search(normalizedQuery, action, pageable);
-    return new AdminAuditController.AdminAuditPageResponse(
+    return new AdminAuditPageResponse(
         logs.getContent().stream().map(this::item).toList(),
         logs.getNumber(),
         logs.getSize(),
@@ -49,9 +50,9 @@ public class AdminAuditService {
         logs.getTotalPages());
   }
 
-  private AdminAuditController.AdminAuditItem item(AdminAuditLog log) {
+  private AdminAuditItem item(AdminAuditLog log) {
     AppUser administrator = log.getAdministrator();
-    return new AdminAuditController.AdminAuditItem(
+    return new AdminAuditItem(
         log.getId(),
         log.getAction(),
         log.getTargetType(),

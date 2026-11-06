@@ -17,6 +17,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "campus_orders")
 public class CampusOrder {
+
   private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
   @Id

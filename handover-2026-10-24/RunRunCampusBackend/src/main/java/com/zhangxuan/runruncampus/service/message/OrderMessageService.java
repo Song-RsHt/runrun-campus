@@ -16,7 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class OrderMessageService {
+
   private final OrderMessageRepository messageRepository;
+
   private final ApplicationEventPublisher eventPublisher;
 
   public OrderMessageService(

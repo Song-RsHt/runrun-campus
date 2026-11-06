@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/** 按权限组装运营队列快照。重复读事务确保计数及分页来自一致视图；SQL 和行映射集中在 Mapper，分页裁剪由本层决定。 */
 @Service
 public class AdminCommandCenterService {
 
@@ -53,19 +54,19 @@ public class AdminCommandCenterService {
       Queue queue, int requestedPage, Instant now, int waitMinutes, int deliveryMinutes) {
     Timestamp waitCutoff = Timestamp.from(now.minusSeconds(waitMinutes * 60L));
     Timestamp deliveryCutoff = Timestamp.from(now.minusSeconds(deliveryMinutes * 60L));
-    long[] counts = mapper.ordersValueStatement(waitCutoff, deliveryCutoff);
+    long[] counts = mapper.countOrderQueues(waitCutoff, deliveryCutoff);
     long total = counts[queue.ordinal()];
     int page = clampPage(requestedPage, total);
     List<OrderItem> items =
-        mapper.ordersRowsStatement(queue, waitCutoff, deliveryCutoff, PAGE_SIZE, page * PAGE_SIZE);
+        mapper.pageOrderQueue(queue, waitCutoff, deliveryCutoff, PAGE_SIZE, page * PAGE_SIZE);
     return new Orders(
         counts[0], counts[1], counts[2], counts[3], queue, items, page, PAGE_SIZE, total);
   }
 
   private Couriers couriers(int requestedPage) {
-    long[] counts = mapper.couriersValueStatement();
+    long[] counts = mapper.countOnlineCouriers();
     int page = clampPage(requestedPage, counts[0]);
-    List<CourierItem> items = mapper.couriersRowsStatement(PAGE_SIZE, page * PAGE_SIZE);
+    List<CourierItem> items = mapper.pageOnlineCouriers(PAGE_SIZE, page * PAGE_SIZE);
     return new Couriers(counts[0], counts[1], items, page, PAGE_SIZE);
   }
 

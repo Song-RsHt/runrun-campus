@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 /** Preserves independent status counts and the repository's existing paging semantics. */
 @Service
 public class AdminPushDeliveryService {
+
   private final PushDeliveryRepository deliveries;
 
   public AdminPushDeliveryService(PushDeliveryRepository deliveries) {

@@ -5,6 +5,7 @@ public enum PickupStation {
   CAMPUS_PACKAGE_STATION("校内快递驿站", true);
 
   private final String displayName;
+
   private final boolean packageStation;
 
   PickupStation(String displayName, boolean packageStation) {

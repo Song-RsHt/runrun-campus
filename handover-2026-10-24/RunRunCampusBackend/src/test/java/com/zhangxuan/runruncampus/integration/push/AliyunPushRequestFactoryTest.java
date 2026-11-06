@@ -10,6 +10,7 @@ import java.time.Instant;
 import org.junit.jupiter.api.Test;
 
 class AliyunPushRequestFactoryTest {
+
   @Test
   void buildsAccountTargetedOrderNotification() {
     AliyunPushRequestFactory factory =
@@ -18,9 +19,7 @@ class AliyunPushRequestFactoryTest {
     OrderPushRequested event =
         new OrderPushRequested(
             8L, 42L, "骑手已接单", "骑手正在前往取餐点", "12345678-1234-1234-1234-123456789012");
-
     PushV2Request request = factory.create(event, Instant.parse("2026-08-31T00:00:00Z"));
-
     assertEquals(123456L, request.getAppKey());
     assertEquals("ACCOUNT", request.getPushTask().getTarget().getType());
     assertEquals("8", request.getPushTask().getTarget().getValue());
@@ -53,9 +52,7 @@ class AliyunPushRequestFactoryTest {
             "请及时更新材料",
             "certification-reminder-token",
             PushDestination.COURIER_CERTIFICATION);
-
     PushV2Request request = factory.create(event, Instant.parse("2026-08-31T00:00:00Z"));
-
     assertTrue(
         request
             .getPushTask()

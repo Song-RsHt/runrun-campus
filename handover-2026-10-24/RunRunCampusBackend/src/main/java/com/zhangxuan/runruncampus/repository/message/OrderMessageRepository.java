@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OrderMessageRepository extends JpaRepository<OrderMessage, Long> {
+
   List<OrderMessage> findByRecipientOrderByCreatedAtDesc(AppUser recipient);
 
   List<OrderMessage> findByRecipientAndReadAtIsNull(AppUser recipient);

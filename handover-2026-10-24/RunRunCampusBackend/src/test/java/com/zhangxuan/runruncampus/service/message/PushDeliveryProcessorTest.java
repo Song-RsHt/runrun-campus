@@ -14,17 +14,18 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 class PushDeliveryProcessorTest {
+
   private final PushDeliveryRepository deliveries = mock(PushDeliveryRepository.class);
+
   private final PushNotificationGateway gateway = mock(PushNotificationGateway.class);
+
   private final PushDeliveryProcessor processor = new PushDeliveryProcessor(deliveries, gateway);
 
   @Test
   void successfulDeliveryIsMarkedSent() throws Exception {
     var task = task(0);
     when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
-
     processor.process();
-
     verify(gateway).send(task.notification());
     verify(deliveries).markSent(task.id());
     verify(deliveries, never()).markFailure(anyLong(), anyInt(), anyString(), any(), anyBoolean());
@@ -37,9 +38,7 @@ class PushDeliveryProcessorTest {
     doThrow(new IllegalStateException("provider unavailable"))
         .when(gateway)
         .send(task.notification());
-
     processor.process();
-
     verify(deliveries)
         .markFailure(
             eq(task.id()), eq(1), eq("provider unavailable"), any(Instant.class), eq(false));
@@ -51,9 +50,7 @@ class PushDeliveryProcessorTest {
     var task = task(4);
     when(deliveries.claimNext()).thenReturn(Optional.of(task), Optional.empty());
     doThrow(new IllegalStateException("still unavailable")).when(gateway).send(task.notification());
-
     processor.process();
-
     verify(deliveries)
         .markFailure(eq(task.id()), eq(5), eq("still unavailable"), any(Instant.class), eq(true));
   }

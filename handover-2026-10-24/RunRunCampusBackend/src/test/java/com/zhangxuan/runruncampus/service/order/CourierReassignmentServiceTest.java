@@ -31,14 +31,22 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 class CourierReassignmentServiceTest {
+
   private final OrderRepository orders = mock(OrderRepository.class);
+
   private final OrderProofRepository proofs = mock(OrderProofRepository.class);
+
   private final OrderIssueRepository issues = mock(OrderIssueRepository.class);
+
   private final OrderEventRepository events = mock(OrderEventRepository.class);
+
   private final OrderMessageService messages = mock(OrderMessageService.class);
+
   private final CourierReassignmentService service =
       new CourierReassignmentService(orders, proofs, issues, events, messages);
+
   private final AppUser customer = user(1L, UserRole.CUSTOMER);
+
   private final AppUser courier = user(2L, UserRole.COURIER);
 
   @Test
@@ -47,9 +55,7 @@ class CourierReassignmentServiceTest {
     order.assignCourier(courier);
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
     when(issues.save(any(OrderIssue.class))).thenAnswer(call -> call.getArgument(0));
-
     var result = service.reportUnable(courier, 11L, "临时身体不适，无法前往取件");
-
     assertEquals(OrderStatus.PENDING_REASSIGNMENT, result.status());
     assertNull(order.getCourier());
     verify(events).save(any(OrderEvent.class));
@@ -68,11 +74,9 @@ class CourierReassignmentServiceTest {
     order.assignCourier(courier);
     order.updateStatus(OrderStatus.PICKED_UP);
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
-
     ResponseStatusException failure =
         assertThrows(
             ResponseStatusException.class, () -> service.reportUnable(courier, 11L, "无法配送"));
-
     assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
     verifyNoInteractions(issues, events, messages);
   }
@@ -83,11 +87,9 @@ class CourierReassignmentServiceTest {
     order.assignCourier(courier);
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
     when(proofs.existsByOrderAndType(order, OrderProofType.PICKUP)).thenReturn(true);
-
     ResponseStatusException failure =
         assertThrows(
             ResponseStatusException.class, () -> service.reportUnable(courier, 11L, "无法配送"));
-
     assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
     verifyNoInteractions(issues, events, messages);
   }
@@ -98,11 +100,9 @@ class CourierReassignmentServiceTest {
     order.assignCourier(courier);
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
     when(proofs.existsByOrderAndType(order, OrderProofType.SIZE_REVIEW)).thenReturn(true);
-
     ResponseStatusException failure =
         assertThrows(
             ResponseStatusException.class, () -> service.reportUnable(courier, 11L, "无法配送"));
-
     assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
     verifyNoInteractions(issues, events, messages);
   }
@@ -112,11 +112,9 @@ class CourierReassignmentServiceTest {
     CampusOrder order = order();
     order.assignCourier(user(3L, UserRole.COURIER));
     when(orders.findLockedById(11L)).thenReturn(Optional.of(order));
-
     ResponseStatusException failure =
         assertThrows(
             ResponseStatusException.class, () -> service.reportUnable(courier, 11L, "无法配送"));
-
     assertEquals(HttpStatus.FORBIDDEN, failure.getStatusCode());
     verifyNoInteractions(issues, events, messages);
   }

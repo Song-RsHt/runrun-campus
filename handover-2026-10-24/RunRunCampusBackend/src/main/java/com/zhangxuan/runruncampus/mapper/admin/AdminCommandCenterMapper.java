@@ -1,8 +1,10 @@
 package com.zhangxuan.runruncampus.mapper.admin;
 
-
 import com.zhangxuan.runruncampus.dto.response.commandcenter.CourierItem;
 import com.zhangxuan.runruncampus.dto.response.commandcenter.OrderItem;
+import com.zhangxuan.runruncampus.enums.commandcenter.Queue;
+import java.sql.Timestamp;
+import java.util.List;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -62,8 +64,7 @@ public class AdminCommandCenterMapper {
     this.jdbc = jdbc;
   }
 
-  public long[] ordersValueStatement(
-      java.sql.Timestamp waitCutoff, java.sql.Timestamp deliveryCutoff) {
+  public long[] countOrderQueues(Timestamp waitCutoff, Timestamp deliveryCutoff) {
     return jdbc.queryForObject(
         ORDER_CTE
             + """
@@ -78,13 +79,8 @@ from queue_orders
         deliveryCutoff);
   }
 
-  public java.util.List<com.zhangxuan.runruncampus.dto.response.commandcenter.OrderItem>
-      ordersRowsStatement(
-          com.zhangxuan.runruncampus.enums.commandcenter.Queue queue,
-          java.sql.Timestamp waitCutoff,
-          java.sql.Timestamp deliveryCutoff,
-          int limit,
-          int offset) {
+  public List<OrderItem> pageOrderQueue(
+      Queue queue, Timestamp waitCutoff, Timestamp deliveryCutoff, int limit, int offset) {
     String condition =
         switch (queue) {
           case WAITING -> "status in ('PENDING_ASSIGNMENT', 'PENDING_REASSIGNMENT')";
@@ -119,7 +115,7 @@ from queue_orders
         args);
   }
 
-  public long[] couriersValueStatement() {
+  public long[] countOnlineCouriers() {
     return jdbc.queryForObject(
         COURIER_CTE
             + """
@@ -128,8 +124,7 @@ from queue_orders
         (rs, row) -> new long[] {rs.getLong(1), rs.getLong(2)});
   }
 
-  public java.util.List<com.zhangxuan.runruncampus.dto.response.commandcenter.CourierItem>
-      couriersRowsStatement(int PAGE_SIZE, int parameter3) {
+  public List<CourierItem> pageOnlineCouriers(int PAGE_SIZE, int count) {
     return jdbc.query(
         COURIER_CTE
             + "select * from online_couriers order by active_orders asc,"
@@ -141,6 +136,6 @@ from queue_orders
                 rs.getLong("active_orders"),
                 rs.getTimestamp("courier_availability_updated_at").toInstant()),
         PAGE_SIZE,
-        parameter3);
+        count);
   }
 }

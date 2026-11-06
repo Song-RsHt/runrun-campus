@@ -12,13 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 class LoginCaptchaServiceTest {
+
   private final LoginCaptchaService service =
       new LoginCaptchaService(new SecureRandom(), Clock.systemUTC());
 
   @Test
   void challengeContainsRenderablePngAndCanOnlyBeUsedOnce() {
     LoginCaptchaService.Challenge challenge = service.issue("1234");
-
     assertTrue(challenge.imageDataUrl().startsWith("data:image/png;base64,iVBOR"));
     assertDoesNotThrow(() -> service.verify(challenge.challengeToken(), "1234"));
     ResponseStatusException reused =
@@ -31,7 +31,6 @@ class LoginCaptchaServiceTest {
   @Test
   void incorrectAnswerConsumesChallenge() {
     LoginCaptchaService.Challenge challenge = service.issue("5678");
-
     assertThrows(
         ResponseStatusException.class, () -> service.verify(challenge.challengeToken(), "0000"));
     assertThrows(

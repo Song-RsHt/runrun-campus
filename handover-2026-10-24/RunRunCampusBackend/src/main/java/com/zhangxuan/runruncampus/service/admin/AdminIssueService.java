@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
+import com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem;
+import com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssuePageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
@@ -46,7 +47,7 @@ public class AdminIssueService {
   }
 
   @Transactional(readOnly = true)
-  public AdminIssueController.AdminIssuePageResponse list(
+  public AdminIssuePageResponse list(
       String query,
       OrderIssueType type,
       OrderIssueHandlingStatus handlingStatus,
@@ -56,7 +57,7 @@ public class AdminIssueService {
   }
 
   @Transactional(readOnly = true)
-  public AdminIssueController.AdminIssuePageResponse list(
+  public AdminIssuePageResponse list(
       String query,
       OrderIssueType type,
       OrderIssueHandlingStatus handlingStatus,
@@ -91,7 +92,7 @@ public class AdminIssueService {
                     processingCutoff,
                     PageRequest.of(0, 1))
                 .getTotalElements();
-    return new AdminIssueController.AdminIssuePageResponse(
+    return new AdminIssuePageResponse(
         issues.getContent().stream().map(issue -> item(issue, now, settings)).toList(),
         issues.getNumber(),
         issues.getSize(),
@@ -101,7 +102,7 @@ public class AdminIssueService {
   }
 
   @Transactional
-  public AdminIssueController.AdminIssueItem claim(AppUser administrator, Long id) {
+  public AdminIssueItem claim(AppUser administrator, Long id) {
     OrderIssue issue = requireIssue(id);
     if (issue.getHandlingStatus() == OrderIssueHandlingStatus.RESOLVED) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "已解决的工单不能重新领取");
@@ -122,8 +123,7 @@ public class AdminIssueService {
   }
 
   @Transactional
-  public AdminIssueController.AdminIssueItem resolve(
-      AppUser administrator, Long id, String resolution) {
+  public AdminIssueItem resolve(AppUser administrator, Long id, String resolution) {
     OrderIssue issue = requireIssue(id);
     if (issue.getHandlingStatus() != OrderIssueHandlingStatus.PROCESSING
         || issue.getAssignee() == null
@@ -147,12 +147,11 @@ public class AdminIssueService {
     return item(issue);
   }
 
-  private AdminIssueController.AdminIssueItem item(OrderIssue issue) {
+  private AdminIssueItem item(OrderIssue issue) {
     return item(issue, Instant.now(), settingsService.get());
   }
 
-  private AdminIssueController.AdminIssueItem item(
-      OrderIssue issue, Instant now, Settings settings) {
+  private AdminIssueItem item(OrderIssue issue, Instant now, Settings settings) {
     CampusOrder order = issue.getOrder();
     AppUser reporter = issue.getReporter();
     AppUser assignee = issue.getAssignee();
@@ -165,7 +164,7 @@ public class AdminIssueService {
         };
     boolean overdue = deadline != null && now.isAfter(deadline);
     long overdueMinutes = overdue ? Duration.between(deadline, now).toMinutes() : 0;
-    return new AdminIssueController.AdminIssueItem(
+    return new AdminIssueItem(
         issue.getId(),
         issue.getType(),
         issue.getDescription(),

@@ -18,6 +18,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "credit_events")
 public class CreditEvent {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -44,6 +45,7 @@ public class CreditEvent {
   private String reason;
 
   private Long riskSignalId;
+
   private Long originalEventId;
 
   @Column(nullable = false, updatable = false)

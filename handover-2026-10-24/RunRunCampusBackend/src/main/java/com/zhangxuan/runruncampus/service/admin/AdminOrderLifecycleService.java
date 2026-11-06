@@ -24,10 +24,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminOrderLifecycleService {
+
   private final OrderRepository orders;
+
   private final OrderProofRepository proofs;
+
   private final OrderEventRepository events;
+
   private final OrderMessageService messages;
+
   private final AdminAuditService audit;
 
   public AdminOrderLifecycleService(

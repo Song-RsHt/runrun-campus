@@ -17,8 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class OrderChatService {
+
   private final OrderRepository orders;
+
   private final OrderChatRepository chats;
+
   private final OrderMessageService notifications;
 
   public OrderChatService(

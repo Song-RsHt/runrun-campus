@@ -8,13 +8,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class RiskSignalMaintenanceMapper {
+
   private final org.springframework.jdbc.core.JdbcTemplate jdbc;
 
   public RiskSignalMaintenanceMapper(org.springframework.jdbc.core.JdbcTemplate jdbc) {
     this.jdbc = jdbc;
   }
 
-  public int frequentCancellationsWriteStatement() {
+  public int recordFrequentCancellations() {
     return jdbc.update(
         """
         insert into risk_signals
@@ -44,7 +45,7 @@ public class RiskSignalMaintenanceMapper {
         """);
   }
 
-  public int repeatedIssuesWriteStatement() {
+  public int recordRepeatedIssues() {
     return jdbc.update(
         """
         insert into risk_signals
@@ -73,7 +74,7 @@ public class RiskSignalMaintenanceMapper {
         """);
   }
 
-  public int overdueCourierOrdersWriteStatement(int deliveryMinutes) {
+  public int recordOverdueCourierOrders(int deliveryMinutes) {
     return jdbc.update(
         """
         insert into risk_signals

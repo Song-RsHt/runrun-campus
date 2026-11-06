@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CouponService {
+
   private final UserCouponRepository couponRepository;
 
   public CouponService(UserCouponRepository couponRepository) {
@@ -100,6 +101,7 @@ public class CouponService {
       Instant usedAt) {}
 
   public record CouponApplication(int discountCents, String couponTitle, Long couponId) {
+
     public CouponApplication(int discountCents, String couponTitle) {
       this(discountCents, couponTitle, null);
     }

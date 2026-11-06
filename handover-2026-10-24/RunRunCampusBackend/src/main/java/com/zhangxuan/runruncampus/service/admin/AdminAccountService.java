@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminAccountController;
+import com.zhangxuan.runruncampus.dto.response.admin.account.AdminAccountItem;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
@@ -17,9 +17,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminAccountService {
+
   private final UserRepository userRepository;
+
   private final SessionRepository sessionRepository;
+
   private final PasswordEncoder passwordEncoder;
+
   private final AdminAuditService auditService;
 
   public AdminAccountService(
@@ -34,14 +38,14 @@ public class AdminAccountService {
   }
 
   @Transactional(readOnly = true)
-  public List<AdminAccountController.AdminAccountItem> list() {
+  public List<AdminAccountItem> list() {
     return userRepository.findByRoleOrderByCreatedAtAsc(UserRole.ADMIN).stream()
         .map(this::item)
         .toList();
   }
 
   @Transactional
-  public AdminAccountController.AdminAccountItem create(
+  public AdminAccountItem create(
       AppUser creator, String phone, String password, String displayName, AdminRole role) {
     if (userRepository.findByPhone(phone).isPresent()) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "该手机号已注册");
@@ -60,8 +64,7 @@ public class AdminAccountService {
   }
 
   @Transactional
-  public AdminAccountController.AdminAccountItem changeRole(
-      AppUser operator, Long id, AdminRole role) {
+  public AdminAccountItem changeRole(AppUser operator, Long id, AdminRole role) {
     AppUser administrator = requireOtherAdministrator(operator, id, "不能修改自己的管理员岗位");
     administrator.changeAdminRole(role);
     sessionRepository.deleteByUser(administrator);
@@ -75,7 +78,7 @@ public class AdminAccountService {
   }
 
   @Transactional
-  public AdminAccountController.AdminAccountItem suspend(AppUser operator, Long id) {
+  public AdminAccountItem suspend(AppUser operator, Long id) {
     AppUser administrator = requireOtherAdministrator(operator, id, "不能停用自己的管理员账号");
     if (!administrator.isEnabled()) return item(administrator);
     administrator.suspend();
@@ -90,7 +93,7 @@ public class AdminAccountService {
   }
 
   @Transactional
-  public AdminAccountController.AdminAccountItem restore(AppUser operator, Long id) {
+  public AdminAccountItem restore(AppUser operator, Long id) {
     AppUser administrator = requireOtherAdministrator(operator, id, "不能恢复自己的管理员账号");
     if (administrator.isEnabled()) return item(administrator);
     administrator.restore();
@@ -104,8 +107,7 @@ public class AdminAccountService {
   }
 
   @Transactional
-  public AdminAccountController.AdminAccountItem resetPassword(
-      AppUser operator, Long id, String password) {
+  public AdminAccountItem resetPassword(AppUser operator, Long id, String password) {
     AppUser administrator = requireOtherAdministrator(operator, id, "不能通过此入口重置自己的密码");
     administrator.changePasswordHash(passwordEncoder.encode(password));
     sessionRepository.deleteByUser(administrator);
@@ -119,7 +121,7 @@ public class AdminAccountService {
   }
 
   @Transactional
-  public AdminAccountController.AdminAccountItem unlockLogin(AppUser operator, Long id) {
+  public AdminAccountItem unlockLogin(AppUser operator, Long id) {
     AppUser administrator = requireOtherAdministrator(operator, id, "不能通过此入口解锁自己的账号");
     if (administrator.getFailedLoginAttempts() == 0
         && administrator.getLoginLockedUntil() == null) {
@@ -167,8 +169,8 @@ public class AdminAccountService {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "管理员不存在"));
   }
 
-  private AdminAccountController.AdminAccountItem item(AppUser user) {
-    return new AdminAccountController.AdminAccountItem(
+  private AdminAccountItem item(AppUser user) {
+    return new AdminAccountItem(
         user.getId(),
         user.getPhone(),
         user.getDisplayName(),

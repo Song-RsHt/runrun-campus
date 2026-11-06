@@ -27,12 +27,15 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class CourierCertificationMaintenanceTest {
+
   private static final LocalDate TODAY = LocalDate.of(2026, 10, 1);
 
   @Mock CourierCertificationRepository certifications;
+
   @Mock OrderProofStorage storage;
 
   private CourierCertificationMaintenance maintenance;
+
   private AppUser administrator;
 
   @BeforeEach
@@ -48,9 +51,7 @@ class CourierCertificationMaintenanceTest {
     when(certifications.findApprovedPhotosToClean(any(Instant.class))).thenReturn(List.of(expired));
     when(certifications.findRejectedPhotosToClean(any(Instant.class)))
         .thenReturn(List.of(rejected));
-
     maintenance.run(TODAY);
-
     verify(storage).delete("approved.jpg");
     verify(storage).delete("submitted.jpg");
     assertNull(expired.getApprovedPhotoKey());
@@ -65,9 +66,7 @@ class CourierCertificationMaintenanceTest {
     when(certifications.findApprovedPhotosToClean(any(Instant.class))).thenReturn(List.of(expired));
     when(certifications.findRejectedPhotosToClean(any(Instant.class))).thenReturn(List.of());
     doThrow(new IOException("temporary failure")).when(storage).delete("retry.jpg");
-
     maintenance.run(TODAY);
-
     assertEquals("retry.jpg", expired.getApprovedPhotoKey());
   }
 

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class WechatPaymentTest {
+
   private final AppUser customer = user(1L);
 
   @Test
@@ -24,7 +25,6 @@ class WechatPaymentTest {
     payment.markPaid("wx-transaction-1");
     payment.markPaid("wx-transaction-1");
     assertEquals(PaymentStatus.PAID, payment.getStatus());
-
     WechatPayment closed =
         WechatPayment.forMembership(
             customer, MembershipPlanType.LIGHT, Instant.now().plusSeconds(1800));
@@ -41,7 +41,6 @@ class WechatPaymentTest {
     WechatPayment membershipPayment =
         WechatPayment.forMembership(
             customer, MembershipPlanType.STUDENT, Instant.now().plusSeconds(1800));
-
     assertEquals(PaymentBusinessType.ORDER, orderPayment.getBusinessType());
     assertEquals(300, orderPayment.getAmountCents());
     assertSame(order, orderPayment.getOrder());

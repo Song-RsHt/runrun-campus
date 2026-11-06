@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
+import com.zhangxuan.runruncampus.dto.request.order.LocationUpdateRequest;
+import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
 import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
@@ -16,7 +19,10 @@ import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.coupon.CouponService;
+import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.service.order.OrderProofService;
@@ -36,23 +42,31 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class OrderAuthorizationTest {
+
   @Mock private OrderRepository orderRepository;
+
   @Mock private OrderEventRepository eventRepository;
+
   @Mock private OrderProofRepository proofRepository;
+
   @Mock private OrderMessageService messageService;
+
   @Mock private CouponService couponService;
+
   @Mock private MembershipService membershipService;
+
   @Mock private PaymentService paymentService;
 
-  @Mock
-  private com.zhangxuan.runruncampus.service.courier.CourierCertificationService
-      certificationService;
+  @Mock private CourierCertificationService certificationService;
 
   @Mock private OrderProofStorage proofStorage;
 
   private OrderService orderService;
+
   private CampusOrder order;
+
   private AppUser customer;
+
   private AppUser courier;
 
   @BeforeEach
@@ -65,14 +79,12 @@ class OrderAuthorizationTest {
             messageService,
             couponService,
             membershipService,
-            org.mockito.Mockito.mock(
-                com.zhangxuan.runruncampus.repository.user.UserRepository.class),
+            org.mockito.Mockito.mock(UserRepository.class),
             new com.fasterxml.jackson.databind.ObjectMapper(),
             paymentService,
-            org.mockito.Mockito.mock(
-                com.zhangxuan.runruncampus.service.api.PlatformSettingsService.class),
+            org.mockito.Mockito.mock(PlatformSettingsService.class),
             certificationService,
-            new com.zhangxuan.runruncampus.config.ManualQrPaymentProperties(false));
+            new ManualQrPaymentProperties(false));
     org.mockito.Mockito.lenient()
         .when(certificationService.isEligible(org.mockito.ArgumentMatchers.any(AppUser.class)))
         .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
@@ -86,33 +98,27 @@ class OrderAuthorizationTest {
   @Test
   void availableOrderHidesPickupCodeUntilCourierAcceptsIt() {
     when(orderRepository.findFulfillablePendingOrders()).thenReturn(List.of(order));
-
-    OrderController.OrderResponse response = orderService.available(courier).get(0);
-
+    OrderResponse response = orderService.available(courier).get(0);
     assertNull(response.pickupCode());
   }
 
   @Test
   void unrelatedUserCannotReadOrderDetail() {
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () -> orderService.get(user(3L, UserRole.CUSTOMER), 11L));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
   }
 
   @Test
   void unrelatedUserCannotReadOrderEvents() {
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () -> orderService.events(user(3L, UserRole.CUSTOMER), 11L));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     verifyNoInteractions(eventRepository);
   }
@@ -121,12 +127,10 @@ class OrderAuthorizationTest {
   void unrelatedUserCannotReadCourierLocation() {
     order.assignCourier(courier);
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () -> orderService.location(user(3L, UserRole.CUSTOMER), 11L));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
   }
 
@@ -134,16 +138,12 @@ class OrderAuthorizationTest {
   void anotherCourierCannotUpdateOrderLocation() {
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () ->
                 orderService.updateLocation(
-                    user(3L, UserRole.COURIER),
-                    11L,
-                    new OrderController.LocationUpdateRequest(31.49, 120.31)));
-
+                    user(3L, UserRole.COURIER), 11L, new LocationUpdateRequest(31.49, 120.31)));
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
   }
 
@@ -152,12 +152,10 @@ class OrderAuthorizationTest {
     order.assignCourier(courier);
     order.updateStatus(OrderStatus.PICKED_UP);
     when(orderRepository.findById(11L)).thenReturn(Optional.of(order));
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () -> orderService.deliveryCode(user(3L, UserRole.CUSTOMER), 11L));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
   }
 
@@ -170,12 +168,10 @@ class OrderAuthorizationTest {
     packageOrder.assignCourier(courier);
     packageOrder.requestPackageSizeChange(ServiceType.PACKAGE_LARGE);
     when(orderRepository.findLockedById(12L)).thenReturn(Optional.of(packageOrder));
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () -> orderService.approvePackageSize(user(3L, UserRole.CUSTOMER), 12L));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     assertEquals(ServiceType.PACKAGE_SMALL, packageOrder.getServiceType());
   }
@@ -189,13 +185,11 @@ class OrderAuthorizationTest {
     MockMultipartFile image =
         new MockMultipartFile(
             "file", "proof.jpg", "image/jpeg", new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff});
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () ->
                 proofService.upload(user(3L, UserRole.COURIER), 11L, OrderProofType.PICKUP, image));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     verifyNoInteractions(proofRepository, proofStorage);
   }

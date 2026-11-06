@@ -23,11 +23,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class PrivacyService {
+
   public static final String CURRENT_VERSION = "2026-10-24";
+
   public static final List<OrderStatus> ACTIVE_ORDER_STATUSES =
       List.of(
-          OrderStatus.PENDING_ASSIGNMENT, OrderStatus.PENDING_REASSIGNMENT,
-          OrderStatus.ACCEPTED, OrderStatus.PICKED_UP);
+          OrderStatus.PENDING_ASSIGNMENT,
+          OrderStatus.PENDING_REASSIGNMENT,
+          OrderStatus.ACCEPTED,
+          OrderStatus.PICKED_UP);
+
   private static final String CONTENT =
       """
 一、我们处理的信息
@@ -51,13 +56,21 @@ public class PrivacyService {
 """;
 
   private final UserRepository users;
+
   private final OrderRepository orders;
+
   private final WechatRefundRepository refunds;
+
   private final SessionRepository sessions;
+
   private final AddressRepository addresses;
+
   private final CourierCertificationService certifications;
+
   private final OrderMessageRepository messages;
+
   private final PushDeliveryRepository deliveries;
+
   private final PasswordEncoder passwords;
 
   public PrivacyService(

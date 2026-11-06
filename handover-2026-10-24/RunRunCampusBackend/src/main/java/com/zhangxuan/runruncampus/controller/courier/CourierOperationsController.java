@@ -1,8 +1,9 @@
 package com.zhangxuan.runruncampus.controller.courier;
 
+import com.zhangxuan.runruncampus.dto.request.courier.courieroperations.AvailabilityRequest;
+import com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.courier.CourierOperationsService;
-import java.time.Instant;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/courier/operations")
 public class CourierOperationsController {
+
   private final AuthService authService;
+
   private final CourierOperationsService operationsService;
 
   public CourierOperationsController(
@@ -34,21 +37,4 @@ public class CourierOperationsController {
     return operationsService.updateAvailability(
         authService.requireUser(authorization), request.acceptingOrders());
   }
-
-  public record AvailabilityRequest(boolean acceptingOrders) {}
-
-  public record OperationsResponse(
-      boolean courierApproved,
-      boolean acceptingOrders,
-      Instant availabilityUpdatedAt,
-      long availableOrders,
-      long activeOrders,
-      int maxActiveOrders,
-      long todayCompletedOrders,
-      long totalCompletedOrders,
-      long todayGrossServiceFeeCents,
-      long totalGrossServiceFeeCents,
-      double averageRating,
-      long ratingCount,
-      Instant generatedAt) {}
 }

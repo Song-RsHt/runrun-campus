@@ -4,6 +4,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,16 +14,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 @ExtendWith(MockitoExtension.class)
 class UserRoleSchemaMigrationTest {
+
   @Mock private JdbcTemplate jdbcTemplate;
 
   private UserRoleSchemaMigration migration;
 
   @BeforeEach
   void setUp() {
-    migration =
-        new UserRoleSchemaMigration(
-            new com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper(
-                jdbcTemplate));
+    migration = new UserRoleSchemaMigration(new UserRoleSchemaMigrationMapper(jdbcTemplate));
   }
 
   @Test
@@ -34,9 +33,7 @@ class UserRoleSchemaMigrationTest {
         .thenReturn(
             "CHECK (((role)::text = ANY ((ARRAY['CUSTOMER'::character varying, 'COURIER'::character"
                 + " varying])::text[])))");
-
     migration.run(null);
-
     verify(jdbcTemplate)
         .execute(
             com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
@@ -56,9 +53,7 @@ class UserRoleSchemaMigrationTest {
         .thenReturn(
             "CHECK (((role)::text = ANY ((ARRAY['CUSTOMER'::character varying, 'COURIER'::character"
                 + " varying, 'ADMIN'::character varying])::text[])))");
-
     migration.run(null);
-
     verify(jdbcTemplate, never())
         .execute(
             com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper

@@ -20,6 +20,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "risk_signals")
 public class RiskSignal {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

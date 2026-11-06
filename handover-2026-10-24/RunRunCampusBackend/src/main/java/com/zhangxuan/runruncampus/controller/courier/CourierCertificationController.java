@@ -1,12 +1,12 @@
 package com.zhangxuan.runruncampus.controller.courier;
 
+import com.zhangxuan.runruncampus.dto.request.courier.couriercertification.CertificationRequest;
+import com.zhangxuan.runruncampus.dto.request.courier.couriercertification.DecisionRequest;
+import com.zhangxuan.runruncampus.dto.request.courier.couriercertification.RejectionRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -17,7 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/v2/courier/certification")
 public class CourierCertificationController {
+
   private final AuthService authService;
+
   private final CourierCertificationService certificationService;
 
   public CourierCertificationController(
@@ -98,16 +100,4 @@ public class CourierCertificationController {
         id,
         request.reason());
   }
-
-  public record CertificationRequest(
-      String realName, String studentId, String campus, LocalDate validUntil) {}
-
-  public record RejectionRequest(
-      @NotBlank(message = "请输入驳回原因") @Size(max = 300, message = "驳回原因不能超过300字") String reason) {}
-
-  public record DecisionRequest(
-      @NotBlank String decision,
-      long expectedVersion,
-      String photoResourceId,
-      @Size(max = 300) String reason) {}
 }

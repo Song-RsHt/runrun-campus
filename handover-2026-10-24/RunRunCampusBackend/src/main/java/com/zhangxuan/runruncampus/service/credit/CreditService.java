@@ -27,10 +27,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CreditService {
+
   private final CreditProfileRepository profiles;
+
   private final CreditEventRepository events;
+
   private final RiskSignalRepository signals;
+
   private final UserRepository users;
+
   private final AdminAuditService audit;
 
   public CreditService(

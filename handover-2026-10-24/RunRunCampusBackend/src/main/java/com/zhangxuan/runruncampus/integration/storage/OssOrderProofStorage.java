@@ -21,7 +21,9 @@ import org.springframework.stereotype.Component;
 @Component
 @ConditionalOnProperty(name = "app.proof-storage.type", havingValue = "oss")
 public class OssOrderProofStorage implements OrderProofStorage {
+
   private final OSSClient client;
+
   private final String bucket;
 
   public OssOrderProofStorage(

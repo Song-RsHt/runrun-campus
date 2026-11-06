@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
     havingValue = "local",
     matchIfMissing = true)
 public class LocalOrderProofStorage implements OrderProofStorage {
+
   private final Path storageDirectory;
 
   public LocalOrderProofStorage(

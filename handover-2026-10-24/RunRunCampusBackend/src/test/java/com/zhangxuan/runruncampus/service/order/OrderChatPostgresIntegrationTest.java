@@ -30,6 +30,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Transactional
 class OrderChatPostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -41,8 +42,11 @@ class OrderChatPostgresIntegrationTest {
   }
 
   @Autowired OrderChatService chat;
+
   @Autowired OrderRepository orders;
+
   @Autowired UserRepository users;
+
   @Autowired JdbcTemplate jdbc;
 
   @Test
@@ -62,13 +66,11 @@ class OrderChatPostgresIntegrationTest {
             ServiceType.LOBBY);
     order.assignCourier(firstCourier);
     order = orders.saveAndFlush(order);
-
     chat.send(customer, order.getId(), "原骑手收到的消息");
     order.requestReassignment();
     order.assignCourier(nextCourier);
     orders.saveAndFlush(order);
     chat.send(customer, order.getId(), "新骑手收到的消息");
-
     assertEquals(
         2,
         jdbc.queryForObject(
@@ -97,14 +99,10 @@ class OrderChatPostgresIntegrationTest {
             ServiceType.LOBBY);
     order.assignCourier(courier);
     order = orders.saveAndFlush(order);
-
     chat.send(customer, order.getId(), "请尽快送达");
-
     assertEquals(1L, chat.unread(courier).total());
     assertEquals(0L, chat.unread(customer).total());
-
     chat.list(courier, order.getId());
-
     assertEquals(0L, chat.unread(courier).total());
     assertEquals(
         1,
@@ -148,14 +146,12 @@ class OrderChatPostgresIntegrationTest {
             (order_id, sender_id, recipient_id, content, created_at)
         values (1, 1, 2, '迁移前消息', now())
         """);
-
     Flyway.configure()
         .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
         .schemas(schema)
         .defaultSchema(schema)
         .load()
         .migrate();
-
     assertEquals(
         1,
         jdbc.queryForObject(

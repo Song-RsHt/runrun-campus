@@ -11,11 +11,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ApiRateLimitService {
+
   private static final long REFILL_MILLIS = 60_000;
+
   private static final long STALE_BUCKET_MILLIS = 10 * 60_000;
+
   private static final int CLEANUP_THRESHOLD = 10_000;
 
   private final Clock clock;
+
   private final Map<String, Bucket> buckets = new HashMap<>();
 
   public ApiRateLimitService() {
@@ -36,7 +40,6 @@ public class ApiRateLimitService {
     if (buckets.size() >= CLEANUP_THRESHOLD) {
       buckets.entrySet().removeIf(entry -> now - entry.getValue().lastSeen >= STALE_BUCKET_MILLIS);
     }
-
     Bucket bucket = buckets.computeIfAbsent(key, ignored -> new Bucket(capacity, now));
     long elapsed = Math.max(0, now - bucket.lastRefill);
     bucket.tokens = Math.min(capacity, bucket.tokens + elapsed * capacity / (double) REFILL_MILLIS);
@@ -58,8 +61,11 @@ public class ApiRateLimitService {
   }
 
   private static final class Bucket {
+
     private double tokens;
+
     private long lastRefill;
+
     private long lastSeen;
 
     private Bucket(int capacity, long now) {

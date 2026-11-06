@@ -10,6 +10,7 @@ public record OrderPushRequested(
     String content,
     String idempotentToken,
     PushDestination destination) {
+
   public OrderPushRequested(
       Long recipientId, Long orderId, String title, String content, String idempotentToken) {
     this(recipientId, orderId, title, content, idempotentToken, null);

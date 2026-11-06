@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+
   @ExceptionHandler(ResponseStatusException.class)
   public ResponseEntity<Map<String, String>> handleStatus(ResponseStatusException exception) {
     ResponseEntity.BodyBuilder response = ResponseEntity.status(exception.getStatusCode());

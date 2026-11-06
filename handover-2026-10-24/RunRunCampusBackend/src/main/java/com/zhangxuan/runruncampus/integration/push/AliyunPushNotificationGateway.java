@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 @ConditionalOnProperty(name = "app.push.enabled", havingValue = "true")
 public class AliyunPushNotificationGateway implements PushNotificationGateway {
+
   private final com.aliyun.push20160801.Client client;
+
   private final AliyunPushRequestFactory requestFactory;
 
   public AliyunPushNotificationGateway(

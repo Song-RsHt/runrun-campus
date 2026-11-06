@@ -6,6 +6,7 @@ import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.order.OrderIssue;
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.LockModeType;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface OrderIssueRepository extends JpaRepository<OrderIssue, Long> {
+
   List<OrderIssue> findByOrderOrderByCreatedAtAsc(CampusOrder order);
 
   long countByHandlingStatus(OrderIssueHandlingStatus handlingStatus);
@@ -69,8 +71,8 @@ where (:type is null or issue.type = :type)
       @Param("type") OrderIssueType type,
       @Param("handlingStatus") OrderIssueHandlingStatus handlingStatus,
       @Param("overdueOnly") boolean overdueOnly,
-      @Param("pendingCutoff") java.time.Instant pendingCutoff,
-      @Param("processingCutoff") java.time.Instant processingCutoff,
+      @Param("pendingCutoff") Instant pendingCutoff,
+      @Param("processingCutoff") Instant processingCutoff,
       Pageable pageable);
 
   @Query(
@@ -102,8 +104,8 @@ where (:type is null or issue.type = :type)
       @Param("type") OrderIssueType type,
       @Param("handlingStatus") OrderIssueHandlingStatus handlingStatus,
       @Param("overdueOnly") boolean overdueOnly,
-      @Param("pendingCutoff") java.time.Instant pendingCutoff,
-      @Param("processingCutoff") java.time.Instant processingCutoff,
+      @Param("pendingCutoff") Instant pendingCutoff,
+      @Param("processingCutoff") Instant processingCutoff,
       Pageable pageable);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)

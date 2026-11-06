@@ -2,7 +2,17 @@ package com.zhangxuan.runruncampus.service.order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
-import com.zhangxuan.runruncampus.controller.order.OrderController;
+import com.zhangxuan.runruncampus.dto.request.order.CompleteOrderRequest;
+import com.zhangxuan.runruncampus.dto.request.order.ConfirmPackageSizeRequest;
+import com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest;
+import com.zhangxuan.runruncampus.dto.request.order.CreateRatingRequest;
+import com.zhangxuan.runruncampus.dto.request.order.LocationUpdateRequest;
+import com.zhangxuan.runruncampus.dto.response.order.CourierLocationResponse;
+import com.zhangxuan.runruncampus.dto.response.order.CourierRatingResponse;
+import com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse;
+import com.zhangxuan.runruncampus.dto.response.order.MineOrderPage;
+import com.zhangxuan.runruncampus.dto.response.order.OrderEventResponse;
+import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
@@ -42,27 +52,42 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/** legacy 订单业务边界，保留原 JPA 事务和锁顺序，请求与响应通过独立 DTO 表达。 保留旧行为仅避免重构回归，不表示授权 v2 使用旧接口。 */
 @Service
 public class OrderService {
+
   private static final List<OrderStatus> ACTIVE_STATUSES =
       List.of(
           OrderStatus.PENDING_ASSIGNMENT,
           OrderStatus.PENDING_REASSIGNMENT,
           OrderStatus.ACCEPTED,
           OrderStatus.PICKED_UP);
+
   private static final List<OrderStatus> HISTORY_STATUSES =
       List.of(OrderStatus.COMPLETED, OrderStatus.CANCELLED);
+
   private final OrderRepository orderRepository;
+
   private final OrderEventRepository eventRepository;
+
   private final OrderProofRepository proofRepository;
+
   private final OrderMessageService messageService;
+
   private final CouponService couponService;
+
   private final MembershipService membershipService;
+
   private final UserRepository userRepository;
+
   private final ObjectMapper objectMapper;
+
   private final PaymentService paymentService;
+
   private final PlatformSettingsService settingsService;
+
   private final CourierCertificationService certificationService;
+
   private final ManualQrPaymentProperties manualQrPaymentProperties;
 
   public OrderService(
@@ -93,14 +118,12 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderController.OrderResponse create(
-      AppUser customer, OrderController.CreateOrderRequest request) {
+  public OrderResponse create(AppUser customer, CreateOrderRequest request) {
     return create(customer, request, null);
   }
 
   @Transactional
-  public OrderController.OrderResponse create(
-      AppUser customer, OrderController.CreateOrderRequest request, UUID requestKey) {
+  public OrderResponse create(AppUser customer, CreateOrderRequest request, UUID requestKey) {
     requireRole(customer, UserRole.CUSTOMER);
     String fingerprint = null;
     if (requestKey != null) {
@@ -175,7 +198,7 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<OrderController.OrderResponse> mine(AppUser user) {
+  public List<OrderResponse> mine(AppUser user) {
     List<CampusOrder> orders =
         user.getRole() == UserRole.COURIER
             ? orderRepository.findByCourierOrderByCreatedAtDesc(user)
@@ -184,7 +207,7 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<OrderController.OrderResponse> mineActive(AppUser user) {
+  public List<OrderResponse> mineActive(AppUser user) {
     requireOrderOwner(user);
     List<CampusOrder> orders =
         user.getRole() == UserRole.COURIER
@@ -194,7 +217,7 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public OrderController.MineOrderPage mineHistory(AppUser user, int page, int size) {
+  public MineOrderPage mineHistory(AppUser user, int page, int size) {
     requireOrderOwner(user);
     if (page < 0 || page > 100000 || size < 1 || size > 50) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "历史订单页码或每页数量超出范围");
@@ -205,7 +228,7 @@ public class OrderService {
         user.getRole() == UserRole.COURIER
             ? orderRepository.findByCourierAndStatusIn(user, HISTORY_STATUSES, pageable)
             : orderRepository.findByCustomerAndStatusIn(user, HISTORY_STATUSES, pageable);
-    return new OrderController.MineOrderPage(
+    return new MineOrderPage(
         orders.getContent().stream().map(this::response).toList(),
         page,
         size,
@@ -214,7 +237,7 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public OrderController.MineOrderPage mineHistory(
+  public MineOrderPage mineHistory(
       AppUser user,
       int page,
       int size,
@@ -249,7 +272,7 @@ public class OrderService {
                 user, statuses, hasStart, hasEnd, startInclusive, endExclusive, pageable)
             : orderRepository.findHistoryByCustomer(
                 user, statuses, hasStart, hasEnd, startInclusive, endExclusive, pageable);
-    return new OrderController.MineOrderPage(
+    return new MineOrderPage(
         orders.getContent().stream().map(this::response).toList(),
         page,
         size,
@@ -264,7 +287,7 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<OrderController.OrderResponse> available(AppUser courier) {
+  public List<OrderResponse> available(AppUser courier) {
     requireApprovedCourier(courier);
     return orderRepository.findFulfillablePendingOrders().stream()
         .map(order -> response(order, false))
@@ -272,20 +295,20 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public OrderController.OrderResponse get(AppUser user, Long id) {
+  public OrderResponse get(AppUser user, Long id) {
     CampusOrder order = find(id);
     assertParticipant(user, order);
     return response(order);
   }
 
   @Transactional(readOnly = true)
-  public List<OrderController.OrderEventResponse> events(AppUser user, Long id) {
+  public List<OrderEventResponse> events(AppUser user, Long id) {
     CampusOrder order = find(id);
     assertParticipant(user, order);
     return eventRepository.findByOrderOrderByCreatedAtAsc(order).stream()
         .map(
             event ->
-                new OrderController.OrderEventResponse(
+                new OrderEventResponse(
                     event.getId(),
                     event.getStatus(),
                     event.getActor().getDisplayName(),
@@ -294,22 +317,22 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public OrderController.CourierLocationResponse location(AppUser user, Long id) {
+  public CourierLocationResponse location(AppUser user, Long id) {
     CampusOrder order = find(id);
     assertParticipant(user, order);
     return locationResponse(order);
   }
 
   @Transactional
-  public OrderController.CourierLocationResponse updateLocation(
-      AppUser courier, Long id, OrderController.LocationUpdateRequest request) {
+  public CourierLocationResponse updateLocation(
+      AppUser courier, Long id, LocationUpdateRequest request) {
     CampusOrder order = requireActiveCourierOrder(courier, id);
     order.updateCourierLocation(request.latitude(), request.longitude());
     return locationResponse(order);
   }
 
   @Transactional
-  public OrderController.OrderResponse accept(AppUser courier, Long id) {
+  public OrderResponse accept(AppUser courier, Long id) {
     requireApprovedCourier(courier);
     if (!courier.isCourierAcceptingOrders()) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "请先在骑手工作台上线接单");
@@ -347,7 +370,7 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderController.OrderResponse cancel(AppUser customer, Long id) {
+  public OrderResponse cancel(AppUser customer, Long id) {
     requireRole(customer, UserRole.CUSTOMER);
     CampusOrder order = findLocked(id);
     if (!customer.getId().equals(order.getCustomer().getId())) {
@@ -364,8 +387,8 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderController.OrderResponse confirmPackageSize(
-      AppUser courier, Long id, OrderController.ConfirmPackageSizeRequest request) {
+  public OrderResponse confirmPackageSize(
+      AppUser courier, Long id, ConfirmPackageSizeRequest request) {
     CampusOrder order = requireCourierOrder(courier, id, OrderStatus.ACCEPTED);
     if (!order.getServiceType().isPackageDelivery() || !request.serviceType().isPackageDelivery()) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "只能确认小件、中件、大件或超大件快递");
@@ -403,7 +426,7 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderController.OrderResponse approvePackageSize(AppUser customer, Long id) {
+  public OrderResponse approvePackageSize(AppUser customer, Long id) {
     CampusOrder order = requireCustomerPackageSizeRequest(customer, id);
     ServiceType proposedServiceType = order.getProposedPackageServiceType();
     int paidBeforeChange = order.getPaidCents();
@@ -421,7 +444,7 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderController.OrderResponse rejectPackageSize(AppUser customer, Long id) {
+  public OrderResponse rejectPackageSize(AppUser customer, Long id) {
     CampusOrder order = requireCustomerPackageSizeRequest(customer, id);
     ServiceType proposedServiceType = order.getProposedPackageServiceType();
     paymentService.closeAndRefundForCancellation(order);
@@ -446,7 +469,7 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderController.OrderResponse markPickedUp(AppUser courier, Long id) {
+  public OrderResponse markPickedUp(AppUser courier, Long id) {
     CampusOrder order = requireCourierOrder(courier, id, OrderStatus.ACCEPTED);
     if (!order.canStartFulfillment()) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "订单补差价支付完成后才能取件");
@@ -469,7 +492,7 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public OrderController.DeliveryCodeResponse deliveryCode(AppUser customer, Long id) {
+  public DeliveryCodeResponse deliveryCode(AppUser customer, Long id) {
     requireRole(customer, UserRole.CUSTOMER);
     CampusOrder order = find(id);
     if (!customer.getId().equals(order.getCustomer().getId())) {
@@ -482,12 +505,11 @@ public class OrderService {
         && order.getPaymentStatus() != OrderPaymentStatus.PAID) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "管理员确认到账后才能查看收货码");
     }
-    return new OrderController.DeliveryCodeResponse(order.getDeliveryCode());
+    return new DeliveryCodeResponse(order.getDeliveryCode());
   }
 
   @Transactional
-  public OrderController.OrderResponse complete(
-      AppUser courier, Long id, OrderController.CompleteOrderRequest request) {
+  public OrderResponse complete(AppUser courier, Long id, CompleteOrderRequest request) {
     CampusOrder order = requireCourierOrder(courier, id, OrderStatus.PICKED_UP);
     if (!proofRepository.existsByOrderAndType(order, OrderProofType.DELIVERY)) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "请先上传送达凭证");
@@ -513,8 +535,7 @@ public class OrderService {
   }
 
   @Transactional
-  public OrderController.OrderResponse rate(
-      AppUser customer, Long id, OrderController.CreateRatingRequest request) {
+  public OrderResponse rate(AppUser customer, Long id, CreateRatingRequest request) {
     requireRole(customer, UserRole.CUSTOMER);
     CampusOrder order = findLocked(id);
     if (!customer.getId().equals(order.getCustomer().getId())) {
@@ -533,11 +554,11 @@ public class OrderService {
   }
 
   @Transactional(readOnly = true)
-  public OrderController.CourierRatingResponse courierRating(AppUser courier) {
+  public CourierRatingResponse courierRating(AppUser courier) {
     requireRole(courier, UserRole.COURIER);
     Double average = orderRepository.averageRatingForCourier(courier);
     double roundedAverage = average == null ? 0 : Math.round(average * 10.0) / 10.0;
-    return new OrderController.CourierRatingResponse(
+    return new CourierRatingResponse(
         roundedAverage, orderRepository.countByCourierAndRatingScoreIsNotNull(courier));
   }
 
@@ -628,7 +649,7 @@ public class OrderService {
     return "RP-" + String.format(java.util.Locale.ROOT, "%020d", orderRepository.nextOrderNumber());
   }
 
-  private String requestFingerprint(OrderController.CreateOrderRequest request) {
+  private String requestFingerprint(CreateOrderRequest request) {
     try {
       byte[] digest =
           MessageDigest.getInstance("SHA-256")
@@ -640,11 +661,11 @@ public class OrderService {
     }
   }
 
-  private OrderController.OrderResponse response(CampusOrder order) {
+  private OrderResponse response(CampusOrder order) {
     return response(order, true);
   }
 
-  private OrderController.OrderResponse response(CampusOrder order, boolean includePickupCode) {
+  private OrderResponse response(CampusOrder order, boolean includePickupCode) {
     String courierName = order.getCourier() == null ? null : order.getCourier().getDisplayName();
     boolean packageSizeReviewProofUploaded =
         proofRepository.existsByOrderAndType(order, OrderProofType.SIZE_REVIEW);
@@ -652,7 +673,7 @@ public class OrderService {
         proofRepository.existsByOrderAndType(order, OrderProofType.PICKUP);
     boolean deliveryProofUploaded =
         proofRepository.existsByOrderAndType(order, OrderProofType.DELIVERY);
-    return new OrderController.OrderResponse(
+    return new OrderResponse(
         order.getId(),
         order.getOrderNo(),
         order.getMerchant(),
@@ -694,8 +715,8 @@ public class OrderService {
         order.getUpdatedAt());
   }
 
-  private OrderController.CourierLocationResponse locationResponse(CampusOrder order) {
-    return new OrderController.CourierLocationResponse(
+  private CourierLocationResponse locationResponse(CampusOrder order) {
+    return new CourierLocationResponse(
         order.getCourierLatitude() != null,
         order.getCourierLatitude(),
         order.getCourierLongitude(),

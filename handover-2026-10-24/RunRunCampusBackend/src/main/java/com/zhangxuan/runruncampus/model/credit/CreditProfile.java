@@ -12,6 +12,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "credit_profiles")
 public class CreditProfile {
+
   @Id private Long userId;
 
   @Column(nullable = false)

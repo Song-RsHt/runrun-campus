@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class AdminIssueResultNotificationTest {
+
   @Test
   void resolvedIssueNotifiesReporter() {
     OrderIssueRepository repository = mock(OrderIssueRepository.class);
@@ -39,13 +40,11 @@ class AdminIssueResultNotificationTest {
     ReflectionTestUtils.setField(issue, "id", 12L);
     issue.claim(administrator);
     when(repository.findLockedById(12L)).thenReturn(Optional.of(issue));
-
     PlatformSettingsService settings = mock(PlatformSettingsService.class);
     when(settings.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 10, 30, 120));
     var result =
         new AdminIssueService(repository, audit, messages, settings)
             .resolve(administrator, 12L, "已联系骑手重新送达");
-
     assertEquals("已联系骑手重新送达", result.resolution());
     verify(messages)
         .send(

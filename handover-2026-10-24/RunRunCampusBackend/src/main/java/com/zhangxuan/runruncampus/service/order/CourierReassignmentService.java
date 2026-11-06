@@ -21,10 +21,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CourierReassignmentService {
+
   private final OrderRepository orders;
+
   private final OrderProofRepository proofs;
+
   private final OrderIssueRepository issues;
+
   private final OrderEventRepository events;
+
   private final OrderMessageService messages;
 
   public CourierReassignmentService(

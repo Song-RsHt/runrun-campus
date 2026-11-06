@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class PushDeliveryRepository {
+
   private final JdbcTemplate jdbc;
 
   public PushDeliveryRepository(JdbcTemplate jdbc) {

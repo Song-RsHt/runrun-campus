@@ -9,6 +9,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "admin_mfa_credentials")
 public class AdminMfaCredential {
+
   @Id public Long userId;
 
   @Column(columnDefinition = "text")

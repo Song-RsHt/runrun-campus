@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminFeedbackController;
+import com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackItem;
+import com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackPageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
@@ -18,7 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminFeedbackService {
+
   private final FeedbackRepository feedbackRepository;
+
   private final AdminAuditService auditService;
 
   public AdminFeedbackService(
@@ -28,7 +31,7 @@ public class AdminFeedbackService {
   }
 
   @Transactional(readOnly = true)
-  public AdminFeedbackController.FeedbackPageResponse list(
+  public FeedbackPageResponse list(
       String query, FeedbackType type, FeedbackHandlingStatus handlingStatus, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
@@ -37,7 +40,7 @@ public class AdminFeedbackService {
         normalizedQuery == null
             ? feedbackRepository.filterForAdmin(type, handlingStatus, pageable)
             : feedbackRepository.searchForAdmin(normalizedQuery, type, handlingStatus, pageable);
-    return new AdminFeedbackController.FeedbackPageResponse(
+    return new FeedbackPageResponse(
         feedback.getContent().stream().map(this::item).toList(),
         feedback.getNumber(),
         feedback.getSize(),
@@ -46,7 +49,7 @@ public class AdminFeedbackService {
   }
 
   @Transactional
-  public AdminFeedbackController.FeedbackItem claim(AppUser administrator, Long id) {
+  public FeedbackItem claim(AppUser administrator, Long id) {
     UserFeedback feedback = requireFeedback(id);
     if (feedback.getHandlingStatus() == FeedbackHandlingStatus.RESOLVED) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "已解决的反馈不能重新领取");
@@ -67,8 +70,7 @@ public class AdminFeedbackService {
   }
 
   @Transactional
-  public AdminFeedbackController.FeedbackItem resolve(
-      AppUser administrator, Long id, String resolution) {
+  public FeedbackItem resolve(AppUser administrator, Long id, String resolution) {
     UserFeedback feedback = requireFeedback(id);
     if (feedback.getHandlingStatus() != FeedbackHandlingStatus.PROCESSING
         || feedback.getAssignee() == null
@@ -86,10 +88,10 @@ public class AdminFeedbackService {
     return item(feedback);
   }
 
-  private AdminFeedbackController.FeedbackItem item(UserFeedback feedback) {
+  private FeedbackItem item(UserFeedback feedback) {
     AppUser user = feedback.getUser();
     AppUser assignee = feedback.getAssignee();
-    return new AdminFeedbackController.FeedbackItem(
+    return new FeedbackItem(
         feedback.getId(),
         feedback.getType(),
         feedback.getContent(),

@@ -22,16 +22,16 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class OrderProofService {
+
   private static final long MAX_FILE_SIZE = 8L * 1024 * 1024;
+
   private static final Map<String, String> CONTENT_TYPE_BY_EXTENSION =
-      Map.of(
-          "jpg", "image/jpeg",
-          "jpeg", "image/jpeg",
-          "png", "image/png",
-          "webp", "image/webp");
+      Map.of("jpg", "image/jpeg", "jpeg", "image/jpeg", "png", "image/png", "webp", "image/webp");
 
   private final OrderRepository orderRepository;
+
   private final OrderProofRepository proofRepository;
+
   private final OrderProofStorage storage;
 
   public OrderProofService(
@@ -49,7 +49,6 @@ public class OrderProofService {
     if (courier.getRole() != UserRole.COURIER) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "只有骑手可以上传配送凭证");
     }
-
     CampusOrder order =
         orderRepository
             .findLockedById(orderId)
@@ -57,7 +56,6 @@ public class OrderProofService {
     if (order.getCourier() == null || !courier.getId().equals(order.getCourier().getId())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "该订单不属于当前骑手");
     }
-
     OrderStatus requiredStatus =
         type == OrderProofType.DELIVERY ? OrderStatus.PICKED_UP : OrderStatus.ACCEPTED;
     if (order.getStatus() != requiredStatus) {
@@ -75,7 +73,6 @@ public class OrderProofService {
     if (proofRepository.existsByOrderAndType(order, type)) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "该凭证已上传");
     }
-
     String contentType =
         file.getContentType() == null ? "" : file.getContentType().toLowerCase(Locale.ROOT);
     if (file.isEmpty()) {
@@ -84,7 +81,6 @@ public class OrderProofService {
     if (file.getSize() > MAX_FILE_SIZE) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "凭证图片不能超过 8MB");
     }
-
     String originalFileName = safeOriginalFileName(file.getOriginalFilename());
     String expectedContentType = CONTENT_TYPE_BY_EXTENSION.get(extensionOf(originalFileName));
     if (expectedContentType == null) {
@@ -93,7 +89,6 @@ public class OrderProofService {
     if (!expectedContentType.equals(contentType) || !contentType.equals(detectContentType(file))) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "图片类型与文件内容不一致");
     }
-
     String storedFileName =
         orderId
             + "-"
@@ -108,7 +103,6 @@ public class OrderProofService {
     } catch (IOException exception) {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "凭证保存失败", exception);
     }
-
     try {
       OrderProof proof =
           proofRepository.save(
@@ -155,7 +149,6 @@ public class OrderProofService {
     } catch (IOException exception) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "无法读取凭证图片", exception);
     }
-
     if (startsWith(signature, 0xff, 0xd8, 0xff)) return "image/jpeg";
     if (startsWith(signature, 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a)) return "image/png";
     if (startsWith(signature, 0x52, 0x49, 0x46, 0x46)

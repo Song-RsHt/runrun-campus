@@ -7,6 +7,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "user_coupons")
 public class UserCoupon {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

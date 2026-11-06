@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface RiskSignalRepository extends JpaRepository<RiskSignal, Long> {
+
   long countBySubjectIdAndStatus(Long subjectId, RiskSignalStatus status);
 
   Page<RiskSignal> findByStatusOrderByCreatedAtAsc(RiskSignalStatus status, Pageable pageable);

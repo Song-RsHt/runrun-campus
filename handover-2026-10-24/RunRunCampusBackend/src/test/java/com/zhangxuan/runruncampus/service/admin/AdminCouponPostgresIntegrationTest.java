@@ -28,6 +28,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class AdminCouponPostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -39,7 +40,9 @@ class AdminCouponPostgresIntegrationTest {
   }
 
   @Autowired AdminCouponService service;
+
   @Autowired UserRepository users;
+
   @Autowired JdbcTemplate jdbc;
 
   @Test
@@ -56,9 +59,7 @@ class AdminCouponPostgresIntegrationTest {
     administrator.changeAdminRole(AdminRole.OPERATIONS);
     administrator = users.saveAndFlush(administrator);
     AppUser customer = users.saveAndFlush(new AppUser(phone(), "hash", "获券用户", UserRole.CUSTOMER));
-
     var result = service.issueOneYuan(administrator, customer.getId());
-
     assertEquals(100, result.discountCents());
     assertEquals(200, result.minimumOrderCents());
     assertEquals("管理员赠送1元券", result.title());
@@ -107,14 +108,12 @@ class AdminCouponPostgresIntegrationTest {
             (action, target_type, target_id, summary, created_at, administrator_id)
         values ('ORDER_DISPATCHED', 'ORDER', 9, '迁移前审计记录', now(), 1)
         """);
-
     Flyway.configure()
         .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
         .schemas(schema)
         .defaultSchema(schema)
         .load()
         .migrate();
-
     assertEquals(
         "43",
         jdbc.queryForObject(

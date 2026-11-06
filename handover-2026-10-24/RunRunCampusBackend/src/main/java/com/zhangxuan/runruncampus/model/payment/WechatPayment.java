@@ -3,7 +3,6 @@ package com.zhangxuan.runruncampus.model.payment;
 import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
 import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
-import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.user.AppUser;
 import jakarta.persistence.*;
@@ -13,6 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "wechat_payments")
 public class WechatPayment {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -108,7 +108,7 @@ public class WechatPayment {
     return new WechatPayment(user, null, plan, plan.getPriceCents(), expiresAt);
   }
 
-  public void recordPrepay(WechatPayGateway.AppPayParameters parameters) {
+  public void recordPrepay(AppPayParameters parameters) {
     this.appId = parameters.appId();
     this.partnerId = parameters.partnerId();
     this.prepayId = parameters.prepayId();

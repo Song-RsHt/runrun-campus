@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.DefaultApplicationArguments;
 
 class ProductionConfigurationValidatorTest {
+
   private static final String DATABASE_PASSWORD = "Db!90123456789abcdef0123456789ab";
+
   private static final String ADMIN_PASSWORD = "Admin!9-0123456789abcdef";
 
   @Test

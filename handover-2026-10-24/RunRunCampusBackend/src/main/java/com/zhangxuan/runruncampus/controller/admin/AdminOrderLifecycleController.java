@@ -1,11 +1,11 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.dto.request.admin.orderlifecycle.ReasonRequest;
+import com.zhangxuan.runruncampus.dto.response.admin.orderlifecycle.ActionResult;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/orders")
 public class AdminOrderLifecycleController {
+
   private final AuthService auth;
+
   private final AdminOrderLifecycleService service;
 
   public AdminOrderLifecycleController(AuthService auth, AdminOrderLifecycleService service) {
@@ -52,8 +54,4 @@ public class AdminOrderLifecycleController {
     service.unarchive(auth.requirePermission(authorization, AdminPermission.ORDER_ARCHIVE), id);
     return new ActionResult(id, "UNARCHIVED");
   }
-
-  public record ReasonRequest(@NotBlank @Size(min = 5, max = 200) String reason) {}
-
-  public record ActionResult(Long orderId, String action) {}
 }

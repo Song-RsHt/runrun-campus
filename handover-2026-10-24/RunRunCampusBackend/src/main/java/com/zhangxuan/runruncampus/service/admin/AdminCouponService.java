@@ -16,12 +16,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminCouponService {
+
   public static final String TITLE = "管理员赠送1元券";
+
   public static final int DISCOUNT_CENTS = 100;
+
   public static final int MINIMUM_ORDER_CENTS = 200;
 
   private final UserRepository userRepository;
+
   private final UserCouponRepository couponRepository;
+
   private final AdminAuditService auditService;
 
   public AdminCouponService(

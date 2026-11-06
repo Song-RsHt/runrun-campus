@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -28,10 +29,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CourierCertificationService {
+
   private static final Logger LOG = LoggerFactory.getLogger(CourierCertificationService.class);
+
   private static final long MAX_PHOTO_BYTES = 8L * 1024 * 1024;
+
   private final CourierCertificationRepository certificationRepository;
+
   private final AdminAuditService auditService;
+
   private final OrderProofStorage storage;
 
   public CourierCertificationService(
@@ -280,7 +286,7 @@ public class CourierCertificationService {
     CourierCertification certification =
         certificationRepository.findLockedByCourier(courier).orElse(null);
     if (certification == null) return;
-    java.util.LinkedHashSet<String> photoKeys = new java.util.LinkedHashSet<>();
+    LinkedHashSet<String> photoKeys = new LinkedHashSet<>();
     if (certification.getSubmittedPhotoKey() != null)
       photoKeys.add(certification.getSubmittedPhotoKey());
     if (certification.getApprovedPhotoKey() != null)
@@ -301,6 +307,7 @@ public class CourierCertificationService {
     if (!TransactionSynchronizationManager.isSynchronizationActive()) return;
     TransactionSynchronizationManager.registerSynchronization(
         new TransactionSynchronization() {
+
           @Override
           public void afterCompletion(int status) {
             String target = status == STATUS_COMMITTED ? oldKey : newKey;

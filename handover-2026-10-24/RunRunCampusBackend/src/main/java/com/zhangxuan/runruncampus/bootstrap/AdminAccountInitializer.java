@@ -16,12 +16,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Order(1)
 public class AdminAccountInitializer implements ApplicationRunner {
+
   private static final Logger log = LoggerFactory.getLogger(AdminAccountInitializer.class);
 
   private final UserRepository userRepository;
+
   private final PasswordEncoder passwordEncoder;
+
   private final String phone;
+
   private final String password;
+
   private final String displayName;
 
   public AdminAccountInitializer(

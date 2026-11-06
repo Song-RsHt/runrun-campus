@@ -18,10 +18,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class ApiRateLimitFilter extends OncePerRequestFilter {
+
   private static final Policy AUTH = new Policy("auth", 0, 30);
+
   private static final Policy PAYMENT_CALLBACK = new Policy("payment-callback", 0, 6_000);
+
   private static final Policy PROOF = new Policy("proof", 12, 120);
+
   private static final Policy WRITE = new Policy("write", 60, 600);
+
   private static final Policy READ = new Policy("read", 180, 1_200);
 
   private final ApiRateLimitService rateLimitService;
@@ -52,7 +57,6 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
       reject(response);
       return;
     }
-
     String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
     if (policy.perCredential > 0
         && authorization != null
@@ -62,7 +66,6 @@ public class ApiRateLimitFilter extends OncePerRequestFilter {
       reject(response);
       return;
     }
-
     filterChain.doFilter(request, response);
   }
 

@@ -16,6 +16,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface OrderRepository extends JpaRepository<CampusOrder, Long> {
+
   Optional<CampusOrder> findByCustomerAndRequestKey(AppUser customer, UUID requestKey);
 
   @Query(value = "select nextval('order_number_seq')", nativeQuery = true)
@@ -114,6 +115,7 @@ order by o.createdAt asc
       @Param("courier") AppUser courier, @Param("todayStart") Instant todayStart);
 
   public interface CourierBusinessStats {
+
     Long getTodayCompletedOrders();
 
     Long getTotalCompletedOrders();
@@ -144,6 +146,7 @@ order by o.createdAt asc
       @Param("courierIds") List<Long> courierIds);
 
   public interface CourierCompletedOrderStats {
+
     Long getCourierId();
 
     Long getCompletedOrderCount();
@@ -193,6 +196,7 @@ where o.courier.id = :courierId
       @Param("currentMonthStart") Instant currentMonthStart);
 
   public interface CourierPackagePerformanceStats {
+
     Long getTodayCompletedPackageOrders();
 
     Long getLastSevenDaysCompletedPackageOrders();

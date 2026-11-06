@@ -1,5 +1,6 @@
 package com.zhangxuan.runruncampus.controller.api;
 
+import com.zhangxuan.runruncampus.dto.response.api.appversion.AndroidVersion;
 import java.net.URI;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,8 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/app-version")
 public class AppVersionController {
+
   private final int versionCode;
+
   private final String versionName;
+
   private final String downloadUrl;
 
   public AppVersionController(
@@ -38,7 +42,4 @@ public class AppVersionController {
       return false;
     }
   }
-
-  public record AndroidVersion(
-      boolean available, int latestVersionCode, String latestVersionName, String downloadUrl) {}
 }

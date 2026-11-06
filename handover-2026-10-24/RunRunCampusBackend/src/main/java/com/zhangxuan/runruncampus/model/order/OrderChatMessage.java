@@ -7,6 +7,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "order_chat_messages")
 public class OrderChatMessage {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

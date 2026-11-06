@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface FeedbackRepository extends JpaRepository<UserFeedback, Long> {
+
   List<UserFeedback> findByUserOrderByCreatedAtDesc(AppUser user);
 
   long countByHandlingStatus(FeedbackHandlingStatus handlingStatus);

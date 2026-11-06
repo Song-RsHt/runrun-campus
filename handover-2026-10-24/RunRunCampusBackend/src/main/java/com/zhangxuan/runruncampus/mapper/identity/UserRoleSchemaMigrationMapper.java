@@ -30,15 +30,15 @@ public class UserRoleSchemaMigrationMapper {
     this.jdbc = jdbc;
   }
 
-  public java.lang.String runValueStatement() {
+  public String findRoleConstraint() {
     return jdbc.queryForObject(CONSTRAINT_QUERY, String.class);
   }
 
-  public void runRowsStatement() {
+  public void dropRoleConstraint() {
     jdbc.execute(DROP_CONSTRAINT);
   }
 
-  public void runRowsStatement2() {
+  public void addAdminRoleConstraint() {
     jdbc.execute(ADD_CONSTRAINT);
   }
 }

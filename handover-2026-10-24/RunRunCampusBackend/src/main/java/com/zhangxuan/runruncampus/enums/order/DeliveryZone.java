@@ -5,6 +5,7 @@ public enum DeliveryZone {
   MEIYUAN("梅园", 200);
 
   private final String displayName;
+
   private final int packageSurchargeCents;
 
   DeliveryZone(String displayName, int packageSurchargeCents) {

@@ -8,11 +8,13 @@ import static org.mockito.Mockito.when;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus;
 import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.service.admin.AdminPushDeliveryService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class AdminPushDeliveryControllerTest {
+
   @Test
   void overviewRequiresDedicatedPermissionAndReturnsFailureCounts() {
     AuthService auth = mock(AuthService.class);
@@ -22,13 +24,9 @@ class AdminPushDeliveryControllerTest {
     when(deliveries.count(PushDeliveryStatus.PROCESSING)).thenReturn(1L);
     when(deliveries.page(PushDeliveryStatus.DEAD, 0, 20))
         .thenReturn(new PushDeliveryRepository.DeliveryPage(List.of(), 0, 20, 3, 1));
-
     var result =
-        new AdminPushDeliveryController(
-                auth,
-                new com.zhangxuan.runruncampus.service.admin.AdminPushDeliveryService(deliveries))
+        new AdminPushDeliveryController(auth, new AdminPushDeliveryService(deliveries))
             .overview("Bearer token", PushDeliveryStatus.DEAD, 0, 20);
-
     verify(auth).requirePermission("Bearer token", AdminPermission.PUSH_DELIVERY_VIEW);
     assertEquals(3, result.dead());
     assertEquals(2, result.pending());

@@ -3,6 +3,7 @@ package com.zhangxuan.runruncampus.controller.order;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest;
 import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
@@ -46,6 +47,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class OrderConcurrencyPostgresIntegrationTest {
+
   @Container
   private static final PostgreSQLContainer<?> POSTGRES =
       new PostgreSQLContainer<>("postgres:16-alpine");
@@ -58,13 +60,21 @@ class OrderConcurrencyPostgresIntegrationTest {
   }
 
   @Autowired private TestRestTemplate http;
+
   @Autowired private UserRepository users;
+
   @Autowired private SessionRepository sessions;
+
   @Autowired private UserCouponRepository coupons;
+
   @Autowired private UserMembershipRepository memberships;
+
   @Autowired private OrderRepository orders;
+
   @Autowired private OrderEventRepository events;
+
   @Autowired private WechatPaymentRepository payments;
+
   @Autowired private JdbcTemplate jdbc;
 
   @Test
@@ -134,18 +144,15 @@ class OrderConcurrencyPostgresIntegrationTest {
     ResponseEntity<JsonNode> created =
         create(customer, UUID.randomUUID().toString(), request(null, true));
     long orderId = created.getBody().path("id").asLong();
-
     assertEquals(200, created.getStatusCode().value());
     assertEquals(0, memberships.findById(membership.getId()).orElseThrow().getRemainingTrips());
     assertEquals(
         membership.getId(),
         jdbc.queryForObject(
             "select membership_id from campus_orders where id = ?", Long.class, orderId));
-
     assertEquals(
         200, post(customer, "/" + orderId + "/cancel", null, null).getStatusCode().value());
     assertEquals(1, memberships.findById(membership.getId()).orElseThrow().getRemainingTrips());
-
     assertEquals(
         409, post(customer, "/" + orderId + "/cancel", null, null).getStatusCode().value());
     assertEquals(1, memberships.findById(membership.getId()).orElseThrow().getRemainingTrips());
@@ -160,18 +167,15 @@ class OrderConcurrencyPostgresIntegrationTest {
     ResponseEntity<JsonNode> created =
         create(customer, UUID.randomUUID().toString(), request(coupon.getId(), false));
     long orderId = created.getBody().path("id").asLong();
-
     assertEquals(200, created.getStatusCode().value());
     assertTrue(coupons.findById(coupon.getId()).orElseThrow().isUsed());
     assertEquals(
         coupon.getId(),
         jdbc.queryForObject(
             "select coupon_id from campus_orders where id = ?", Long.class, orderId));
-
     assertEquals(
         200, post(customer, "/" + orderId + "/cancel", null, null).getStatusCode().value());
     assertFalse(coupons.findById(coupon.getId()).orElseThrow().isUsed());
-
     assertEquals(
         409, post(customer, "/" + orderId + "/cancel", null, null).getStatusCode().value());
     assertFalse(coupons.findById(coupon.getId()).orElseThrow().isUsed());
@@ -209,14 +213,12 @@ class OrderConcurrencyPostgresIntegrationTest {
             + " 'CANCELLED', now(), 1, true, '轻享月卡', '123456'), (22, now() - interval '11 hours',"
             + " '测试楼', 0, '测试驿站', 'HIST-COMPLETED', '5678', '测试驿站', 'LOBBY', 'COMPLETED', now(), 1,"
             + " true, '轻享月卡', '654321')");
-
     Flyway.configure()
         .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
         .schemas(schema)
         .defaultSchema(schema)
         .load()
         .migrate();
-
     assertEquals(
         List.of(11L, 11L),
         jdbc.queryForList(
@@ -262,14 +264,12 @@ class OrderConcurrencyPostgresIntegrationTest {
             + " 'CANCELLED', now(), 1, '取消券', 100, '123456'), (22, now() - interval '11 hours',"
             + " '测试楼', 100, '测试驿站', 'COUPON-COMPLETED', '5678', '测试驿站', 'LOBBY', 'COMPLETED',"
             + " now(), 1, '完成券', 100, '654321')");
-
     Flyway.configure()
         .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
         .schemas(schema)
         .defaultSchema(schema)
         .load()
         .migrate();
-
     assertEquals(
         List.of(11L, 12L),
         jdbc.queryForList(
@@ -305,14 +305,12 @@ class OrderConcurrencyPostgresIntegrationTest {
             + " pickup_code, pickup_location, service_type, status, updated_at, customer_id,"
             + " delivery_code) values (21, now() - interval '1 day', '测试楼', 300, '测试商家',"
             + " 'PAY-HISTORICAL', '1234', '东门', 'DOOR', 'COMPLETED', now(), 1, '123456')");
-
     Flyway.configure()
         .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
         .schemas(schema)
         .defaultSchema(schema)
         .load()
         .migrate();
-
     assertEquals(
         "PAID",
         jdbc.queryForObject(
@@ -384,10 +382,8 @@ class OrderConcurrencyPostgresIntegrationTest {
             + " 'COMPLETED', ?, ?)",
         id,
         courier.user().getId());
-
     OrderRepository.CourierBusinessStats stats =
         orders.businessStatsForCourier(courier.user(), Instant.now().minusSeconds(60));
-
     assertEquals(1L, stats.getTodayCompletedOrders());
     assertEquals(1L, stats.getTotalCompletedOrders());
     assertEquals((long) feeCents, stats.getTodayGrossServiceFeeCents());
@@ -428,7 +424,6 @@ class OrderConcurrencyPostgresIntegrationTest {
     users.saveAndFlush(dispatchedCourier.user());
     Account acceptingCourier = account(UserRole.COURIER);
     long id = pendingOrder(customer);
-
     var results =
         concurrently(
             2,
@@ -439,7 +434,6 @@ class OrderConcurrencyPostgresIntegrationTest {
                         "/" + id + "/dispatch",
                         new AdminDispatchRequest(dispatchedCourier.user().getId()))
                     : post(acceptingCourier, "/" + id + "/accept", null, null));
-
     assertStatuses(results, 1, 1);
     boolean adminWon = results.get(0).getStatusCode().value() == 200;
     assertEquals(
@@ -466,7 +460,7 @@ class OrderConcurrencyPostgresIntegrationTest {
     Account customer = account(UserRole.CUSTOMER);
     String key = UUID.randomUUID().toString();
     var changed =
-        new OrderController.CreateOrderRequest(
+        new CreateOrderRequest(
             "并发验收", "1234", "测试驿站", "另一栋楼", ServiceType.PACKAGE_MEDIUM, null, false);
     var results =
         concurrently(16, i -> create(customer, key, i % 2 == 0 ? request(null, false) : changed));
@@ -519,8 +513,7 @@ class OrderConcurrencyPostgresIntegrationTest {
         400, create(customer, "invalid-key", request(null, false)).getStatusCode().value());
     String key = UUID.randomUUID().toString();
     var invalid =
-        new OrderController.CreateOrderRequest(
-            "", "1234", "测试驿站", "测试楼", ServiceType.PACKAGE_MEDIUM, null, false);
+        new CreateOrderRequest("", "1234", "测试驿站", "测试楼", ServiceType.PACKAGE_MEDIUM, null, false);
     assertEquals(400, create(customer, key, invalid).getStatusCode().value());
     assertEquals(
         0,
@@ -553,8 +546,7 @@ class OrderConcurrencyPostgresIntegrationTest {
     assertEquals(0, memberships.findById(membership.getId()).orElseThrow().getRemainingTrips());
   }
 
-  private void failEventWrite(
-      Account customer, String key, OrderController.CreateOrderRequest request) {
+  private void failEventWrite(Account customer, String key, CreateOrderRequest request) {
     jdbc.execute(
         "alter table order_events add constraint test_reject_event check (actor_id <> "
             + customer.user().getId()
@@ -639,13 +631,13 @@ class OrderConcurrencyPostgresIntegrationTest {
     return order.getId();
   }
 
-  private OrderController.CreateOrderRequest request(Long couponId, boolean membership) {
-    return new OrderController.CreateOrderRequest(
+  private CreateOrderRequest request(Long couponId, boolean membership) {
+    return new CreateOrderRequest(
         "并发验收", "1234", "测试驿站", "测试楼", ServiceType.PACKAGE_MEDIUM, couponId, membership);
   }
 
   private ResponseEntity<JsonNode> create(
-      Account customer, String key, OrderController.CreateOrderRequest request) {
+      Account customer, String key, CreateOrderRequest request) {
     return post(customer, "", key, request);
   }
 

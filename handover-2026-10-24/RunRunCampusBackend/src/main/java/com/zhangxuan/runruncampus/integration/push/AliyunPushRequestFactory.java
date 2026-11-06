@@ -7,8 +7,11 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
 public class AliyunPushRequestFactory {
+
   private final long appKey;
+
   private final String channelId;
+
   private final String activity;
 
   public AliyunPushRequestFactory(long appKey, String channelId, String activity) {
@@ -54,7 +57,6 @@ public class AliyunPushRequestFactory {
             .setExpireTime(now.plus(24, ChronoUnit.HOURS).toString())
             .setJobKey(jobKey)
             .setTrim(true);
-
     return new PushV2Request()
         .setAppKey(appKey)
         .setIdempotentToken(event.idempotentToken())

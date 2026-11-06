@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.controller.payment;
 
-import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
+import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import java.util.Map;
@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/payments")
 public class PaymentController {
+
   private final AuthService authService;
+
   private final PaymentService paymentService;
 
   public PaymentController(AuthService authService, PaymentService paymentService) {
@@ -39,8 +41,7 @@ public class PaymentController {
           String signType,
       @RequestBody String body) {
     paymentService.acceptPaymentNotification(
-        new WechatPayGateway.NotificationHeaders(serial, timestamp, nonce, signature, signType),
-        body);
+        new NotificationHeaders(serial, timestamp, nonce, signature, signType), body);
     return Map.of("code", "SUCCESS", "message", "成功");
   }
 
@@ -54,8 +55,7 @@ public class PaymentController {
           String signType,
       @RequestBody String body) {
     paymentService.acceptRefundNotification(
-        new WechatPayGateway.NotificationHeaders(serial, timestamp, nonce, signature, signType),
-        body);
+        new NotificationHeaders(serial, timestamp, nonce, signature, signType), body);
     return Map.of("code", "SUCCESS", "message", "成功");
   }
 }

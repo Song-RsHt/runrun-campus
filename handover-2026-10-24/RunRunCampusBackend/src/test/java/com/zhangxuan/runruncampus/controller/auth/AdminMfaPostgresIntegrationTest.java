@@ -47,11 +47,13 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class AdminMfaPostgresIntegrationTest {
+
   @Container
   private static final PostgreSQLContainer<?> POSTGRES =
       new PostgreSQLContainer<>("postgres:16-alpine");
 
   private static final AtomicInteger NUMBER = new AtomicInteger(100);
+
   private static final String PASSWORD = "MfaTestPassword2026";
 
   @DynamicPropertySource
@@ -62,12 +64,19 @@ class AdminMfaPostgresIntegrationTest {
   }
 
   @Autowired private AdminMfaService mfa;
+
   @Autowired private AuthService auth;
+
   @Autowired private UserRepository users;
+
   @Autowired private SessionRepository sessions;
+
   @Autowired private PasswordEncoder passwords;
+
   @Autowired private JdbcTemplate jdbc;
+
   @Autowired private PlatformTransactionManager transactions;
+
   @Autowired private TestRestTemplate http;
 
   private AppUser admin(AdminRole role) {
@@ -163,9 +172,7 @@ class AdminMfaPostgresIntegrationTest {
             challenge.challengeToken(),
             AdminMfaCrypto.code(first.secret(), Instant.now().getEpochSecond() / 30),
             AuthService.SessionMetadata.of("ADMIN_WEB", "Chrome on Windows"));
-
     var active = auth.sessions("Bearer " + second.session().token());
-
     assertEquals(2, active.size());
     assertEquals(
         "Chrome on Windows",
@@ -185,7 +192,6 @@ class AdminMfaPostgresIntegrationTest {
     AppUser customer = new AppUser(phone, passwords.encode(PASSWORD), "验证码用户", UserRole.CUSTOMER);
     users.saveAndFlush(customer);
     Map<String, Object> wrong = Map.of("phone", phone, "password", "wrong-password");
-
     for (int attempt = 0; attempt < 3; attempt++) {
       assertEquals(
           HttpStatus.UNAUTHORIZED,

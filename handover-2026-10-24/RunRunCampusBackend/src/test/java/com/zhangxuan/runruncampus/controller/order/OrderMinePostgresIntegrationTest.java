@@ -33,6 +33,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Transactional
 class OrderMinePostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -44,7 +45,9 @@ class OrderMinePostgresIntegrationTest {
   }
 
   @Autowired OrderService service;
+
   @Autowired OrderRepository orders;
+
   @Autowired UserRepository users;
 
   @Test
@@ -56,10 +59,8 @@ class OrderMinePostgresIntegrationTest {
     }
     order(customer, OrderStatus.PENDING_ASSIGNMENT);
     order(other, OrderStatus.COMPLETED);
-
     var first = service.mineHistory(customer, 0, 2);
     var second = service.mineHistory(customer, 1, 2);
-
     assertEquals(4, first.totalElements());
     assertEquals(2, first.totalPages());
     assertEquals(2, first.items().size());
@@ -75,7 +76,6 @@ class OrderMinePostgresIntegrationTest {
         orderAt(customer, OrderStatus.COMPLETED, Instant.parse("2026-09-01T04:00:00Z"));
     orderAt(customer, OrderStatus.CANCELLED, Instant.parse("2026-09-02T04:00:00Z"));
     orderAt(customer, OrderStatus.COMPLETED, Instant.parse("2026-09-04T04:00:00Z"));
-
     var result =
         service.mineHistory(
             customer,
@@ -84,7 +84,6 @@ class OrderMinePostgresIntegrationTest {
             OrderStatus.COMPLETED,
             LocalDate.parse("2026-09-01"),
             LocalDate.parse("2026-09-03"));
-
     assertEquals(1, result.totalElements());
     assertEquals(included.getId(), result.items().get(0).id());
     assertEquals(

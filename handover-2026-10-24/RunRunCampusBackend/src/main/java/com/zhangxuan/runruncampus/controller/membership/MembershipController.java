@@ -1,18 +1,20 @@
 package com.zhangxuan.runruncampus.controller.membership;
 
-import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
+import com.zhangxuan.runruncampus.dto.request.membership.PurchaseRequest;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.membership.MembershipService;
 import com.zhangxuan.runruncampus.service.payment.PaymentService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/membership")
 public class MembershipController {
+
   private final AuthService authService;
+
   private final MembershipService membershipService;
+
   private final PaymentService paymentService;
 
   public MembershipController(
@@ -35,6 +37,4 @@ public class MembershipController {
     return paymentService.createMembershipPayment(
         authService.requireUser(authorization), request.plan());
   }
-
-  public record PurchaseRequest(@NotNull(message = "请选择月卡套餐") MembershipPlanType plan) {}
 }

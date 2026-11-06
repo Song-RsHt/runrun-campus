@@ -10,6 +10,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "courier_certifications")
 public class CourierCertification {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -44,20 +45,25 @@ public class CourierCertification {
   @Transient private AppUser reviewer;
 
   @Transient private LocalDate requestedValidUntil;
+
   @Transient private LocalDate approvedValidUntil;
 
   @Column(name = "submitted_photo_key", length = 160)
   private String submittedPhotoKey;
 
   @Transient private String submittedPhotoContentType;
+
   @Transient private Instant submittedPhotoAt;
 
   @Column(name = "approved_photo_key", length = 160)
   private String approvedPhotoKey;
 
   @Transient private String approvedPhotoContentType;
+
   @Transient private String submittedPhotoResourceId;
+
   @Transient private String approvedPhotoResourceId;
+
   @Transient private Instant approvedPhotoAt;
 
   @Transient private boolean approvalRetained;

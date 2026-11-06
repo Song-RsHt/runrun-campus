@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.service.courier;
 
-import com.zhangxuan.runruncampus.controller.courier.CourierOperationsController;
+import com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.model.user.AppUser;
@@ -18,13 +18,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class CourierOperationsService {
+
   private static final ZoneId CAMPUS_ZONE = ZoneId.of("Asia/Shanghai");
+
   private static final List<OrderStatus> ACTIVE_STATUSES =
       List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP);
 
   private final UserRepository userRepository;
+
   private final OrderRepository orderRepository;
+
   private final CourierCertificationService certificationService;
+
   private final PlatformSettingsService settingsService;
 
   public CourierOperationsService(
@@ -39,14 +44,13 @@ public class CourierOperationsService {
   }
 
   @Transactional(readOnly = true)
-  public CourierOperationsController.OperationsResponse overview(AppUser courier) {
+  public OperationsResponse overview(AppUser courier) {
     requireCourier(courier);
     return response(courier);
   }
 
   @Transactional
-  public CourierOperationsController.OperationsResponse updateAvailability(
-      AppUser courier, boolean acceptingOrders) {
+  public OperationsResponse updateAvailability(AppUser courier, boolean acceptingOrders) {
     requireCourier(courier);
     AppUser locked =
         userRepository
@@ -59,14 +63,14 @@ public class CourierOperationsService {
     return response(locked);
   }
 
-  private CourierOperationsController.OperationsResponse response(AppUser courier) {
+  private OperationsResponse response(AppUser courier) {
     boolean approved = certificationService.isEligible(courier);
     Instant todayStart = LocalDate.now(CAMPUS_ZONE).atStartOfDay(CAMPUS_ZONE).toInstant();
     OrderRepository.CourierBusinessStats stats =
         orderRepository.businessStatsForCourier(courier, todayStart);
     Double average = orderRepository.averageRatingForCourier(courier);
     double averageRating = average == null ? 0 : Math.round(average * 10.0) / 10.0;
-    return new CourierOperationsController.OperationsResponse(
+    return new OperationsResponse(
         approved,
         approved && courier.isCourierAcceptingOrders(),
         courier.getCourierAvailabilityUpdatedAt(),

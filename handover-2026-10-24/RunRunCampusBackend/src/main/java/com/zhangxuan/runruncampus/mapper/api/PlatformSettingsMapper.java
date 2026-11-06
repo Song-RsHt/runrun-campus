@@ -16,7 +16,7 @@ public class PlatformSettingsMapper {
     this.jdbc = jdbc;
   }
 
-  public com.zhangxuan.runruncampus.model.settings.Settings getValueStatement() {
+  public Settings findSettings() {
     return jdbc.queryForObject(
         """
         select business_hours, wait_minutes, delivery_minutes, max_active_orders,
@@ -33,13 +33,13 @@ public class PlatformSettingsMapper {
                 rs.getInt(6)));
   }
 
-  public int updateWriteStatement(
-      java.lang.String hours,
-      int parameter2,
-      int parameter3,
-      int parameter4,
-      int parameter5,
-      int parameter6) {
+  public int updateSettings(
+      String hours,
+      int waitMinutes,
+      int deliveryMinutes,
+      int maxActiveOrders,
+      int issuePendingMinutes,
+      int issueProcessingMinutes) {
     return jdbc.update(
         """
         update platform_settings set business_hours = ?, wait_minutes = ?, delivery_minutes = ?,
@@ -47,10 +47,10 @@ public class PlatformSettingsMapper {
             updated_at = now() where id = 1
         """,
         hours,
-        parameter2,
-        parameter3,
-        parameter4,
-        parameter5,
-        parameter6);
+        waitMinutes,
+        deliveryMinutes,
+        maxActiveOrders,
+        issuePendingMinutes,
+        issueProcessingMinutes);
   }
 }

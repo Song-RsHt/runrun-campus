@@ -20,6 +20,11 @@ import com.wechat.pay.java.service.refund.model.RefundNotification;
 import com.wechat.pay.java.service.refund.model.Status;
 import com.zhangxuan.runruncampus.config.WechatPayProperties;
 import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
+import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
+import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
+import com.zhangxuan.runruncampus.model.payment.RefundNotificationResult;
+import com.zhangxuan.runruncampus.model.payment.RefundResult;
+import com.zhangxuan.runruncampus.model.payment.TradeResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -29,9 +34,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 public final class WechatPayApiV3Gateway implements WechatPayGateway {
+
   private final WechatPayProperties properties;
+
   private final AppServiceExtension appService;
+
   private final RefundService refundService;
+
   private final NotificationParser notificationParser;
 
   public WechatPayApiV3Gateway(WechatPayProperties properties) {

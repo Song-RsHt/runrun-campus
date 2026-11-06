@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.service.auth;
 
-import com.zhangxuan.runruncampus.controller.auth.AuthController;
+import com.zhangxuan.runruncampus.dto.response.auth.AuthResponse;
+import com.zhangxuan.runruncampus.dto.response.auth.UserResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
@@ -28,12 +29,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminMfaService {
+
   private final UserRepository users;
+
   private final AdminMfaRepository credentials;
+
   private final SessionRepository sessions;
+
   private final PasswordEncoder passwords;
+
   private final AdminMfaCrypto crypto;
+
   private final AdminAuditService audit;
+
   private final int sessionHours;
 
   public AdminMfaService(
@@ -280,11 +288,11 @@ public class AdminMfaService {
     return new ResponseStatusException(HttpStatus.UNAUTHORIZED, message);
   }
 
-  private AuthController.AuthResponse response(Session session) {
+  private AuthResponse response(Session session) {
     AppUser user = session.getUser();
-    return new AuthController.AuthResponse(
+    return new AuthResponse(
         session.getToken(),
-        new AuthController.UserResponse(
+        new UserResponse(
             user.getId(),
             user.getPhone(),
             user.getDisplayName(),
@@ -299,5 +307,5 @@ public class AdminMfaService {
       String step, String challengeToken, Instant expiresAt, String secret, String otpauthUri) {}
 
   public record Verification(
-      AuthController.AuthResponse session, List<String> recoveryCodes, Challenge challenge) {}
+      AuthResponse session, List<String> recoveryCodes, Challenge challenge) {}
 }

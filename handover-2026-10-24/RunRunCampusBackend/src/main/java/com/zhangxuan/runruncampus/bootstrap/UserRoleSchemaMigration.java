@@ -21,12 +21,12 @@ public class UserRoleSchemaMigration implements ApplicationRunner {
   public void run(ApplicationArguments args) {
     String definition;
     try {
-      definition = mapper.runValueStatement();
+      definition = mapper.findRoleConstraint();
     } catch (EmptyResultDataAccessException ignored) {
       definition = null;
     }
     if (definition != null && definition.contains("ADMIN")) return;
-    mapper.runRowsStatement();
-    mapper.runRowsStatement2();
+    mapper.dropRoleConstraint();
+    mapper.addAdminRoleConstraint();
   }
 }

@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.service.admin.AdminOrderDeliveryProofService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -14,12 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/orders")
 public class AdminOrderDeliveryProofController {
+
   private final AuthService auth;
-  private final com.zhangxuan.runruncampus.service.admin.AdminOrderDeliveryProofService service;
+
+  private final AdminOrderDeliveryProofService service;
 
   public AdminOrderDeliveryProofController(
-      AuthService auth,
-      com.zhangxuan.runruncampus.service.admin.AdminOrderDeliveryProofService service) {
+      AuthService auth, AdminOrderDeliveryProofService service) {
     this.auth = auth;
     this.service = service;
   }

@@ -1,5 +1,8 @@
 package com.zhangxuan.runruncampus.controller.api;
 
+import com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.ConfigurationResponse;
+import com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.StationResponse;
+import com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.ZoneResponse;
 import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
 import com.zhangxuan.runruncampus.enums.order.PickupStation;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/service-config")
 public class ServiceConfigurationController {
+
   private final PlatformSettingsService settingsService;
 
   public ServiceConfigurationController(PlatformSettingsService settingsService) {
@@ -39,14 +43,4 @@ public class ServiceConfigurationController {
     return new ConfigurationResponse(
         "无锡学院", settingsService.get().businessHours(), stations, zones);
   }
-
-  public record ConfigurationResponse(
-      String campusName,
-      String businessHours,
-      List<StationResponse> pickupStations,
-      List<ZoneResponse> deliveryZones) {}
-
-  public record StationResponse(String code, String displayName, String kind) {}
-
-  public record ZoneResponse(String code, String displayName, int packageSurchargeCents) {}
 }

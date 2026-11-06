@@ -1,9 +1,14 @@
 package com.zhangxuan.runruncampus.integration.payment;
 
-import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
+import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
+import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
+import com.zhangxuan.runruncampus.model.payment.RefundNotificationResult;
+import com.zhangxuan.runruncampus.model.payment.RefundResult;
+import com.zhangxuan.runruncampus.model.payment.TradeResult;
 import java.time.Instant;
 
 public interface WechatPayGateway {
+
   AppPayParameters prepay(
       String outTradeNo, String description, int amountCents, String attach, Instant expiresAt);
 
@@ -19,33 +24,4 @@ public interface WechatPayGateway {
   TradeResult parsePaymentNotification(NotificationHeaders headers, String body);
 
   RefundNotificationResult parseRefundNotification(NotificationHeaders headers, String body);
-
-  public record AppPayParameters(
-      String appId,
-      String partnerId,
-      String prepayId,
-      String packageValue,
-      String nonceStr,
-      String timestamp,
-      String sign) {}
-
-  public record TradeResult(
-      String appId,
-      String merchantId,
-      String outTradeNo,
-      String transactionId,
-      int amountCents,
-      boolean paid) {}
-
-  public record RefundResult(String refundId, RefundStatus status) {}
-
-  public record RefundNotificationResult(
-      String outTradeNo,
-      String outRefundNo,
-      String refundId,
-      int refundCents,
-      RefundStatus status) {}
-
-  public record NotificationHeaders(
-      String serial, String timestamp, String nonce, String signature, String signType) {}
 }

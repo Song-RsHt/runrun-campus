@@ -8,6 +8,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "app_users")
 public class AppUser {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

@@ -1,5 +1,8 @@
 package com.zhangxuan.runruncampus.mapper.admin;
 
+import com.zhangxuan.runruncampus.model.admin.DispatchCandidateRow;
+import java.sql.Timestamp;
+import java.util.List;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -40,15 +43,14 @@ where u.role = 'COURIER' and u.enabled = true
     this.jdbc = jdbc;
   }
 
-  public java.util.List<com.zhangxuan.runruncampus.model.admin.DispatchCandidateRow> findCandidates(
-      String serviceType, int maxActiveOrders) {
+  public List<DispatchCandidateRow> findCandidates(String serviceType, int maxActiveOrders) {
     return jdbc.query(
         CANDIDATE_SQL,
         (rs, row) -> {
           double rating = rs.getDouble("average_rating");
           Double averageRating = rs.wasNull() ? null : rating;
-          java.sql.Timestamp availability = rs.getTimestamp("courier_availability_updated_at");
-          return new com.zhangxuan.runruncampus.model.admin.DispatchCandidateRow(
+          Timestamp availability = rs.getTimestamp("courier_availability_updated_at");
+          return new DispatchCandidateRow(
               rs.getLong("id"),
               rs.getString("display_name"),
               rs.getLong("active_orders"),

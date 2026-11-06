@@ -14,6 +14,7 @@ import com.zhangxuan.runruncampus.model.user.AppUser;
 import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,12 +29,17 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class CourierCertificationServiceTest {
+
   @Mock private CourierCertificationRepository certificationRepository;
+
   @Mock private AdminAuditService auditService;
+
   @Mock private OrderProofStorage storage;
 
   private CourierCertificationService certificationService;
+
   private AppUser courier;
+
   private AppUser admin;
 
   @BeforeEach
@@ -48,10 +54,8 @@ class CourierCertificationServiceTest {
   @Test
   void newCourierStartsNotApplied() {
     when(certificationRepository.findByCourier(courier)).thenReturn(Optional.empty());
-
     CourierCertificationService.CertificationResponse response =
         certificationService.overview(courier);
-
     assertEquals(CourierCertificationStatus.NOT_APPLIED, response.status());
     assertFalse(response.approved());
   }
@@ -66,10 +70,8 @@ class CourierCertificationServiceTest {
               ReflectionTestUtils.setField(application, "id", 11L);
               return application;
             });
-
     CourierCertificationService.CertificationResponse response =
         certificationService.submit(courier);
-
     assertEquals(11L, response.id());
     assertEquals(null, response.realName());
     assertEquals(null, response.studentId());
@@ -84,10 +86,8 @@ class CourierCertificationServiceTest {
     CourierCertification application = application(11L);
     application.attachSubmittedPhoto("card-test.jpg", "image/jpeg");
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-
     CourierCertificationService.CertificationResponse response =
         certificationService.approve(admin, 11L);
-
     assertEquals(CourierCertificationStatus.APPROVED, response.status());
     assertTrue(response.approved());
     assertTrue(courier.isCourierApproved());
@@ -98,10 +98,8 @@ class CourierCertificationServiceTest {
   void missingStudentCardPhotoCannotBeApproved() {
     CourierCertification application = application(11L);
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-
     ResponseStatusException failure =
         assertThrows(ResponseStatusException.class, () -> certificationService.approve(admin, 11L));
-
     assertEquals(HttpStatus.CONFLICT, failure.getStatusCode());
     assertFalse(courier.isCourierApproved());
   }
@@ -112,10 +110,8 @@ class CourierCertificationServiceTest {
     application.declareValidity(LocalDate.now(java.time.ZoneId.of("Asia/Shanghai")).minusDays(1));
     application.attachSubmittedPhoto("card-test.jpg", "image/jpeg");
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-
     CourierCertificationService.CertificationResponse response =
         certificationService.approve(admin, 11L);
-
     assertEquals(CourierCertificationStatus.APPROVED, response.status());
     assertEquals(null, response.approvedValidUntil());
   }
@@ -126,9 +122,7 @@ class CourierCertificationServiceTest {
     when(certificationRepository.findLockedByCourier(courier)).thenReturn(Optional.empty());
     when(certificationRepository.save(any(CourierCertification.class)))
         .thenAnswer(call -> call.getArgument(0));
-
     var response = certificationService.submit(courier);
-
     assertEquals(CourierCertificationStatus.PENDING, response.status());
     assertTrue(response.approved());
     assertTrue(certificationService.isEligible(courier));
@@ -144,9 +138,7 @@ class CourierCertificationServiceTest {
             "card.jpg",
             "image/jpeg",
             new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff, 1, 2});
-
     var response = certificationService.uploadStudentCard(courier, 11L, file);
-
     assertTrue(response.photoUploaded());
   }
 
@@ -157,7 +149,6 @@ class CourierCertificationServiceTest {
     application.attachSubmittedPhoto("expired-card.jpg", "image/jpeg");
     application.approve(admin);
     when(certificationRepository.findByCourier(courier)).thenReturn(Optional.of(application));
-
     assertTrue(certificationService.isEligible(courier));
   }
 
@@ -168,10 +159,9 @@ class CourierCertificationServiceTest {
     when(certificationRepository.findById(11L)).thenReturn(Optional.of(application));
     try {
       when(storage.read("card-test.jpg")).thenReturn(new byte[] {1, 2, 3});
-    } catch (java.io.IOException exception) {
+    } catch (IOException exception) {
       throw new AssertionError(exception);
     }
-
     assertEquals("image/jpeg", certificationService.studentCardPhoto(admin, 11L).contentType());
     ResponseStatusException failure =
         assertThrows(
@@ -184,10 +174,8 @@ class CourierCertificationServiceTest {
   void adminCanRejectPendingApplication() {
     CourierCertification application = application(11L);
     when(certificationRepository.findLockedById(11L)).thenReturn(Optional.of(application));
-
     CourierCertificationService.CertificationResponse response =
         certificationService.reject(admin, 11L, "  学号信息不完整  ");
-
     assertEquals(CourierCertificationStatus.REJECTED, response.status());
     assertEquals("学号信息不完整", response.rejectionReason());
     assertFalse(courier.isCourierApproved());
@@ -199,10 +187,8 @@ class CourierCertificationServiceTest {
     application.attachSubmittedPhoto("rejected-card.jpg", "image/jpeg");
     application.reject(admin, "资料不完整");
     when(certificationRepository.findLockedByCourier(courier)).thenReturn(Optional.of(application));
-
     CourierCertificationService.CertificationResponse response =
         certificationService.submit(courier);
-
     assertEquals(CourierCertificationStatus.PENDING, response.status());
     assertEquals(null, response.realName());
     assertEquals(null, response.studentId());
@@ -218,7 +204,6 @@ class CourierCertificationServiceTest {
         assertThrows(
             ResponseStatusException.class,
             () -> certificationService.submit(user(2L, UserRole.CUSTOMER)));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
   }
 

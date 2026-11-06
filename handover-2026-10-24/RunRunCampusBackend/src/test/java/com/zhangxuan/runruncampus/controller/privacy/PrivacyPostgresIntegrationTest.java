@@ -34,6 +34,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class PrivacyPostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -45,11 +46,17 @@ class PrivacyPostgresIntegrationTest {
   }
 
   @Autowired AuthService auth;
+
   @Autowired PrivacyService privacy;
+
   @Autowired UserRepository users;
+
   @Autowired OrderRepository orders;
+
   @Autowired AddressRepository addresses;
+
   @Autowired CourierCertificationRepository certifications;
+
   @Autowired JdbcTemplate jdbc;
 
   @Test
@@ -77,9 +84,7 @@ class PrivacyPostgresIntegrationTest {
     order.assignCourier(courier);
     order.updateStatus(OrderStatus.COMPLETED);
     Long orderId = orders.saveAndFlush(order).getId();
-
     privacy.deleteAccount(courier, "password", true);
-
     assertTrue(users.findByPhone("13800138002").isEmpty());
     assertEquals(
         "已注销用户",
@@ -103,7 +108,6 @@ class PrivacyPostgresIntegrationTest {
         courier.getId(),
         jdbc.queryForObject(
             "select courier_id from campus_orders where id = ?", Long.class, orderId));
-
     AppUser replacement =
         auth.register(
                 "13800138002",

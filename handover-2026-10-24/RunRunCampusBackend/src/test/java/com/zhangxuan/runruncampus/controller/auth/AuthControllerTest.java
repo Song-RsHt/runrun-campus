@@ -13,6 +13,7 @@ import com.zhangxuan.runruncampus.service.auth.LoginCaptchaService;
 import org.junit.jupiter.api.Test;
 
 class AuthControllerTest {
+
   @Test
   void currentUserReturnsLiveAdminRoleAndPermissions() {
     AuthService auth = mock(AuthService.class);
@@ -21,9 +22,7 @@ class AuthControllerTest {
     when(auth.requireUser("Bearer token")).thenReturn(admin);
     AuthController controller =
         new AuthController(auth, mock(ApiRateLimitService.class), mock(LoginCaptchaService.class));
-
     var user = controller.me("Bearer token");
-
     assertEquals(AdminRole.REVIEWER, user.adminRole());
     assertEquals(AdminRole.REVIEWER.getPermissions(), user.permissions());
   }

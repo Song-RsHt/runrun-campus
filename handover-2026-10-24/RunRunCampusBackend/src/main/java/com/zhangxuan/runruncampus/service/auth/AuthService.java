@@ -21,12 +21,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthService {
+
   private final UserRepository userRepository;
+
   private final SessionRepository sessionRepository;
+
   private final PasswordEncoder passwordEncoder;
+
   private final LoginAttemptService loginAttemptService;
+
   private final LoginCaptchaService captchaService;
+
   private final int sessionHours;
+
   private final SecureRandom secureRandom = new SecureRandom();
 
   public AuthService(
@@ -237,6 +244,7 @@ public class AuthService {
   }
 
   public record SessionMetadata(SessionClientType clientType, String deviceName) {
+
     public static SessionMetadata of(String clientType, String deviceName) {
       SessionClientType type = SessionClientType.from(clientType);
       String normalizedName = deviceName == null || deviceName.isBlank() ? "未知设备" : deviceName;

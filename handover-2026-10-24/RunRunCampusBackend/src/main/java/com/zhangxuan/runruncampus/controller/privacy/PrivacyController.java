@@ -1,11 +1,10 @@
 package com.zhangxuan.runruncampus.controller.privacy;
 
+import com.zhangxuan.runruncampus.dto.request.privacy.AccountDeletionRequest;
+import com.zhangxuan.runruncampus.dto.request.privacy.ConsentRequest;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.privacy.PrivacyService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/privacy")
 public class PrivacyController {
+
   private final AuthService auth;
+
   private final PrivacyService privacy;
 
   public PrivacyController(AuthService auth, PrivacyService privacy) {
@@ -57,10 +58,4 @@ public class PrivacyController {
     privacy.deleteAccount(auth.requireUser(authorization), request.password(), request.confirmed());
     return ResponseEntity.noContent().build();
   }
-
-  public record ConsentRequest(@NotBlank @Size(max = 32) String version) {}
-
-  public record AccountDeletionRequest(
-      @NotBlank(message = "请输入当前密码") @Size(max = 72) String password,
-      @AssertTrue(message = "请确认注销账号") boolean confirmed) {}
 }

@@ -1,25 +1,16 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.dto.request.admin.order.RejectManualPaymentRequest;
+import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailResponse;
+import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
-import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.Instant;
-import java.util.List;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +28,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/orders")
 public class AdminOrderController {
+
   private final AuthService authService;
+
   private final AdminOrderService adminOrderService;
+
   private final ManualQrPaymentService manualQrPaymentService;
 
   public AdminOrderController(
@@ -109,72 +103,4 @@ public class AdminOrderController {
     return manualQrPaymentService.confirmCourierSettlement(
         authService.requirePermission(authorization, AdminPermission.PAYMENT_REVIEW), id);
   }
-
-  public record AdminOrderPageResponse(
-      List<AdminOrderListItem> items, int page, int size, long totalElements, int totalPages) {}
-
-  public record AdminOrderListItem(
-      Long id,
-      String orderNo,
-      OrderStatus status,
-      ServiceType serviceType,
-      String merchant,
-      String destination,
-      int feeCents,
-      OrderPaymentMethod paymentMethod,
-      OrderPaymentStatus paymentStatus,
-      int paidCents,
-      ManualPaymentStatus manualPaymentStatus,
-      CourierSettlementStatus courierSettlementStatus,
-      UserSummary customer,
-      UserSummary courier,
-      Instant createdAt,
-      Instant updatedAt,
-      Instant archivedAt) {}
-
-  public record AdminOrderDetailResponse(
-      AdminOrderListItem order,
-      String pickupCode,
-      String pickupLocation,
-      int originalFeeCents,
-      int discountCents,
-      String couponTitle,
-      boolean membershipUsed,
-      String membershipPlanTitle,
-      Integer ratingScore,
-      String ratingComment,
-      Instant ratedAt,
-      Double courierLatitude,
-      Double courierLongitude,
-      Instant courierLocationUpdatedAt,
-      String payerReference,
-      Instant paymentRequestedAt,
-      Instant paymentSubmittedAt,
-      Instant paymentReviewedAt,
-      String paymentReviewerName,
-      String paymentReviewNote,
-      Instant courierSettledAt,
-      String courierSettlementReviewerName,
-      List<OrderEventItem> events,
-      List<OrderIssueItem> issues,
-      List<OrderProofItem> proofs) {}
-
-  public record UserSummary(Long id, String displayName, String phone, UserRole role) {}
-
-  public record OrderEventItem(Long id, OrderStatus status, UserSummary actor, Instant createdAt) {}
-
-  public record OrderIssueItem(
-      Long id, OrderIssueType type, String description, UserSummary reporter, Instant createdAt) {}
-
-  public record OrderProofItem(
-      Long id,
-      OrderProofType type,
-      String originalFileName,
-      String contentType,
-      long sizeBytes,
-      UserSummary uploader,
-      Instant createdAt) {}
-
-  public record RejectManualPaymentRequest(
-      @NotBlank(message = "请输入驳回原因") @Size(max = 200, message = "驳回原因不能超过200字") String reason) {}
 }

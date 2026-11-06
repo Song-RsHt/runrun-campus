@@ -1,13 +1,15 @@
 package com.zhangxuan.runruncampus.controller.auth;
 
+import com.zhangxuan.runruncampus.dto.request.auth.mfa.LoginRequest;
+import com.zhangxuan.runruncampus.dto.request.auth.mfa.ReplaceRequest;
+import com.zhangxuan.runruncampus.dto.request.auth.mfa.ResetRequest;
+import com.zhangxuan.runruncampus.dto.request.auth.mfa.VerifyRequest;
+import com.zhangxuan.runruncampus.dto.response.auth.mfa.ResetResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.security.ApiRateLimitService;
 import com.zhangxuan.runruncampus.service.auth.AdminMfaService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,8 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/v1")
 public class AdminMfaController {
+
   private final AdminMfaService mfa;
+
   private final AuthService auth;
+
   private final ApiRateLimitService limits;
 
   public AdminMfaController(AdminMfaService mfa, AuthService auth, ApiRateLimitService limits) {
@@ -64,25 +69,4 @@ public class AdminMfaController {
       throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "请求过于频繁，请稍后重试");
     }
   }
-
-  public record LoginRequest(
-      @NotBlank @Pattern(regexp = "^1\\d{10}$") String phone,
-      @NotBlank @Size(max = 72) String password) {}
-
-  public record VerifyRequest(
-      @NotBlank @Size(max = 128) String challengeToken,
-      @NotBlank @Size(max = 128) String code,
-      @Size(max = 16) String clientType,
-      @Size(max = 80) String deviceName) {
-    public VerifyRequest(String challengeToken, String code) {
-      this(challengeToken, code, null, null);
-    }
-  }
-
-  public record ReplaceRequest(
-      @NotBlank @Size(max = 72) String password, @NotBlank @Size(max = 128) String code) {}
-
-  public record ResetRequest(@NotBlank @Size(max = 200) String reason) {}
-
-  public record ResetResponse(String resetGrant) {}
 }

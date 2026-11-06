@@ -13,6 +13,7 @@ import java.time.Instant;
             name = "uk_order_proof_order_type",
             columnNames = {"order_id", "type"}))
 public class OrderProof {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

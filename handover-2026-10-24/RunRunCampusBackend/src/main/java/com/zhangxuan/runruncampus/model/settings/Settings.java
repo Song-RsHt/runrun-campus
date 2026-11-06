@@ -1,6 +1,5 @@
 package com.zhangxuan.runruncampus.model.settings;
 
-
 public record Settings(
     String businessHours,
     int waitMinutes,

@@ -1,7 +1,6 @@
 package com.zhangxuan.runruncampus.model.payment;
 
 import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
-import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
@@ -9,6 +8,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "wechat_refunds")
 public class WechatRefund {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -52,7 +52,7 @@ public class WechatRefund {
     this.updatedAt = createdAt;
   }
 
-  public void record(WechatPayGateway.RefundResult result) {
+  public void record(RefundResult result) {
     this.wechatRefundId = result.refundId();
     this.status = result.status();
     this.updatedAt = Instant.now();

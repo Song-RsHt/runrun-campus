@@ -29,6 +29,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Transactional
 class CourierCertificationPostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -40,7 +41,9 @@ class CourierCertificationPostgresIntegrationTest {
   }
 
   @Autowired CourierCertificationService service;
+
   @Autowired UserRepository users;
+
   @Autowired JdbcTemplate jdbc;
 
   @Test
@@ -56,7 +59,6 @@ class CourierCertificationPostgresIntegrationTest {
             courier, pending.id(), new MockMultipartFile("file", "card.jpg", "image/jpeg", image));
     var photo = service.studentCardPhoto(administrator, pending.id());
     var approved = service.approve(administrator, pending.id());
-
     assertTrue(uploaded.photoUploaded());
     assertArrayEquals(image, photo.bytes());
     assertEquals(null, approved.approvedValidUntil());

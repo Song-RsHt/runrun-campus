@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/messages")
 public class OrderMessageController {
+
   private final AuthService authService;
+
   private final OrderMessageService messageService;
 
   public OrderMessageController(AuthService authService, OrderMessageService messageService) {

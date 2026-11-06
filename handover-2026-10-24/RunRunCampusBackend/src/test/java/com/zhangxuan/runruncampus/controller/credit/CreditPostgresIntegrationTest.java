@@ -33,6 +33,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class CreditPostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -44,11 +45,17 @@ class CreditPostgresIntegrationTest {
   }
 
   @Autowired AuthService auth;
+
   @Autowired UserRepository users;
+
   @Autowired OrderRepository orders;
+
   @Autowired OrderEventRepository orderEvents;
+
   @Autowired RiskSignalMaintenance maintenance;
+
   @Autowired CreditService credit;
+
   @Autowired JdbcTemplate jdbc;
 
   @Test
@@ -69,7 +76,6 @@ class CreditPostgresIntegrationTest {
             "select score from credit_profiles where user_id = ?",
             Integer.class,
             customer.getId()));
-
     for (int index = 1; index <= 3; index++) {
       CampusOrder order =
           new CampusOrder(
@@ -78,16 +84,12 @@ class CreditPostgresIntegrationTest {
       orders.saveAndFlush(order);
       orderEvents.saveAndFlush(new OrderEvent(order, customer, OrderStatus.CANCELLED));
     }
-
     maintenance.scan();
     maintenance.scan();
-
     var pending = credit.signals(RiskSignalStatus.PENDING, 0, 20);
     assertEquals(1, pending.totalElements());
     assertEquals(100, credit.profile(customer, 0, 20).score());
-
     credit.confirmSignal(administrator, pending.items().get(0).id(), -10, "人工核实存在重复无效下单");
-
     assertEquals(90, credit.profile(customer, 0, 20).score());
     assertEquals(0, credit.signals(RiskSignalStatus.PENDING, 0, 20).totalElements());
     assertEquals(1, credit.signals(RiskSignalStatus.CONFIRMED, 0, 20).totalElements());

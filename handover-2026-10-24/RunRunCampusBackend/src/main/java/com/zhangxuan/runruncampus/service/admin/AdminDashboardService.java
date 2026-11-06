@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminDashboardController;
+import com.zhangxuan.runruncampus.dto.response.admin.dashboard.AdminDashboardResponse;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
 import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
@@ -16,10 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AdminDashboardService {
+
   private final UserRepository userRepository;
+
   private final OrderRepository orderRepository;
+
   private final CourierCertificationRepository certificationRepository;
+
   private final OrderIssueRepository issueRepository;
+
   private final FeedbackRepository feedbackRepository;
 
   public AdminDashboardService(
@@ -36,8 +41,8 @@ public class AdminDashboardService {
   }
 
   @Transactional(readOnly = true)
-  public AdminDashboardController.AdminDashboardResponse overview() {
-    return new AdminDashboardController.AdminDashboardResponse(
+  public AdminDashboardResponse overview() {
+    return new AdminDashboardResponse(
         userRepository.count(),
         userRepository.countByRole(UserRole.COURIER),
         orderRepository.count(),

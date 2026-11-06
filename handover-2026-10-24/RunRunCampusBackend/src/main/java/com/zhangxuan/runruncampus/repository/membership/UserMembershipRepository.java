@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface UserMembershipRepository extends JpaRepository<UserMembership, Long> {
+
   Optional<UserMembership> findFirstByUserOrderByPurchasedAtDesc(AppUser user);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)

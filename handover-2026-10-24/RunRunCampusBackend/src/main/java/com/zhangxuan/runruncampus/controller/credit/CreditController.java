@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/credit")
 public class CreditController {
+
   private final AuthService auth;
+
   private final CreditService credit;
 
   public CreditController(AuthService auth, CreditService credit) {

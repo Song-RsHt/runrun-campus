@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/** 保留 legacy 派单资格、推荐排名及审计规则。Mapper 返回骑手原始事实，在线时长及推荐策略在本层计算。 */
 @Service
 public class AdminDispatchService {
 

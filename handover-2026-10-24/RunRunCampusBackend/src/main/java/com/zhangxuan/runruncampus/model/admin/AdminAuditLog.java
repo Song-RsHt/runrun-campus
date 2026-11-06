@@ -18,6 +18,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "admin_audit_logs")
 public class AdminAuditLog {
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

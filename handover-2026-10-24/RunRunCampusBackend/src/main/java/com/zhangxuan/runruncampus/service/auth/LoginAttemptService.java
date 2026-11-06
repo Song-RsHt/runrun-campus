@@ -13,10 +13,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LoginAttemptService {
+
   private final UserRepository userRepository;
+
   private final int maximumAttempts;
+
   private final long lockSeconds;
+
   private final int captchaAfterAttempts;
+
   private final Map<String, Integer> unknownAccountFailures = new ConcurrentHashMap<>();
 
   @Autowired

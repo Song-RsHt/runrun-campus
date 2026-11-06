@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+/** 维护履约溯源及独立核验约束。金额、证据摘要及录入人与核验人关系在业务层校验，再按原事务持久化。 */
 @Service
 public class FulfillmentProvenanceService {
 
@@ -74,7 +75,7 @@ public class FulfillmentProvenanceService {
     }
     try {
       Long id =
-          mapper.recordValueStatement(
+          mapper.insertProvenance(
               request.sourceRef(),
               request.channel().name(),
               request.appOrderId(),
@@ -95,7 +96,8 @@ public class FulfillmentProvenanceService {
 
   @Transactional
   public Entry verify(AppUser administrator, long id) {
-    int updated = mapper.verifyWriteStatement(administrator.getId(), id, administrator.getId());
+    int updated =
+        mapper.verifyByIndependentAdministrator(administrator.getId(), id, administrator.getId());
     if (updated != 1) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "记录不存在、已核验或不能由录入人自行核验");
     }
@@ -107,16 +109,16 @@ public class FulfillmentProvenanceService {
     if (page < 0 || page > 10000) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "页码超出范围");
     }
-    return mapper.listRowsStatement(page * 100);
+    return mapper.pageProvenance(page * 100);
   }
 
   @Transactional(readOnly = true)
   public Summary summary() {
-    return mapper.summaryValueStatement();
+    return mapper.summarizeVerifiedProvenance();
   }
 
   private Entry find(long id) {
-    return mapper.findValueStatement(id);
+    return mapper.findProvenance(id);
   }
 
   private static boolean negative(Long amount) {

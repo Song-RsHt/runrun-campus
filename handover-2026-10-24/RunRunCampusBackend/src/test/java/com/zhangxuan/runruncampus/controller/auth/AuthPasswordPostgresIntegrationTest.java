@@ -33,6 +33,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @ActiveProfiles("test")
 @Testcontainers
 class AuthPasswordPostgresIntegrationTest {
+
   @Container
   static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -44,9 +45,13 @@ class AuthPasswordPostgresIntegrationTest {
   }
 
   @Autowired AuthService auth;
+
   @Autowired UserRepository users;
+
   @Autowired SessionRepository sessions;
+
   @Autowired PasswordEncoder passwords;
+
   @Autowired TestRestTemplate http;
 
   @Test
@@ -57,7 +62,6 @@ class AuthPasswordPostgresIntegrationTest {
             new AppUser(phone, passwords.encode("old-password"), "测试用户", UserRole.CUSTOMER));
     Session current = auth.login(phone, "old-password");
     Session other = auth.login(phone, "old-password");
-
     assertEquals(HttpStatus.BAD_REQUEST, change(current, "wrong-password", "new-password"));
     assertEquals(HttpStatus.BAD_REQUEST, change(current, "old-password", "old-password"));
     assertEquals(
@@ -65,7 +69,6 @@ class AuthPasswordPostgresIntegrationTest {
         sessions
             .findByUserAndExpiresAtAfterOrderByCreatedAtDesc(user, java.time.Instant.now())
             .size());
-
     assertEquals(HttpStatus.NO_CONTENT, change(current, "old-password", "new-password"));
     assertEquals(
         0,

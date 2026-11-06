@@ -16,8 +16,11 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @Service
 public class AdminOrderDeliveryProofService {
+
   private final OrderRepository orders;
+
   private final OrderProofRepository proofs;
+
   private final OrderProofStorage storage;
 
   public AdminOrderDeliveryProofService(

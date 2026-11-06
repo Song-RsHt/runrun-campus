@@ -30,14 +30,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class ManualQrPaymentServiceTest {
+
   @Mock private OrderRepository orderRepository;
+
   @Mock private OrderMessageService messageService;
+
   @Mock private AdminAuditService auditService;
 
   private ManualQrPaymentService service;
+
   private AppUser customer;
+
   private AppUser courier;
+
   private AppUser administrator;
+
   private CampusOrder order;
 
   @BeforeEach
@@ -60,11 +67,9 @@ class ManualQrPaymentServiceTest {
   void paymentNeedsCourierRequestCustomerSubmissionAndAdminConfirmation() {
     service.requestPayment(courier, 11L);
     assertEquals(ManualPaymentStatus.AWAITING_PAYMENT, order.getManualPaymentStatus());
-
     service.submitPayment(customer, 11L, "微信昵称尾号28");
     assertEquals(ManualPaymentStatus.SUBMITTED, order.getManualPaymentStatus());
     assertEquals(OrderPaymentStatus.UNPAID, order.getPaymentStatus());
-
     service.confirmPayment(administrator, 11L);
     assertEquals(ManualPaymentStatus.CONFIRMED, order.getManualPaymentStatus());
     assertEquals(OrderPaymentStatus.PAID, order.getPaymentStatus());
@@ -79,10 +84,8 @@ class ManualQrPaymentServiceTest {
     service.requestPayment(courier, 11L);
     service.submitPayment(customer, 11L, "错误昵称");
     service.rejectPayment(administrator, 11L, "未查询到对应到账记录");
-
     assertEquals(ManualPaymentStatus.REJECTED, order.getManualPaymentStatus());
     assertEquals("未查询到对应到账记录", order.getPaymentReviewNote());
-
     service.submitPayment(customer, 11L, "正确昵称");
     assertEquals(ManualPaymentStatus.SUBMITTED, order.getManualPaymentStatus());
     assertEquals("正确昵称", order.getPayerReference());
@@ -92,11 +95,9 @@ class ManualQrPaymentServiceTest {
   void otherCustomerCannotSubmitPaymentClaim() {
     service.requestPayment(courier, 11L);
     AppUser stranger = user(4L, "其他用户", UserRole.CUSTOMER);
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class, () -> service.submitPayment(stranger, 11L, "冒名提交"));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     assertEquals(ManualPaymentStatus.AWAITING_PAYMENT, order.getManualPaymentStatus());
   }
@@ -106,13 +107,11 @@ class ManualQrPaymentServiceTest {
     service.requestPayment(courier, 11L);
     service.submitPayment(customer, 11L, "微信昵称尾号28");
     service.confirmPayment(administrator, 11L);
-
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
             () -> service.confirmCourierSettlement(administrator, 11L));
     assertEquals(HttpStatus.CONFLICT, exception.getStatusCode());
-
     order.updateStatus(OrderStatus.COMPLETED);
     order.markCourierSettlementPending();
     service.confirmCourierSettlement(administrator, 11L);

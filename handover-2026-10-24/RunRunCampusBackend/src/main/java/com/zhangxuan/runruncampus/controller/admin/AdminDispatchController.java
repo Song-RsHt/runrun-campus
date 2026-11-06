@@ -1,10 +1,10 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.dto.request.admin.dispatch.DispatchRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/orders")
 public class AdminDispatchController {
+
   private final AuthService authService;
+
   private final AdminDispatchService service;
 
   public AdminDispatchController(AuthService authService, AdminDispatchService service) {
@@ -43,6 +45,4 @@ public class AdminDispatchController {
         authService.requirePermission(authorization, AdminPermission.ORDER_DISPATCH);
     return service.dispatch(administrator, id, request.courierId());
   }
-
-  public record DispatchRequest(@NotNull Long courierId) {}
 }

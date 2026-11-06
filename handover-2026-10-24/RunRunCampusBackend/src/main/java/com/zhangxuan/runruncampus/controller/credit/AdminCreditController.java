@@ -1,5 +1,7 @@
 package com.zhangxuan.runruncampus.controller.credit;
 
+import com.zhangxuan.runruncampus.dto.request.credit.AdjustmentRequest;
+import com.zhangxuan.runruncampus.dto.request.credit.ReasonRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
@@ -7,8 +9,6 @@ import com.zhangxuan.runruncampus.service.credit.CreditService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin")
 public class AdminCreditController {
+
   private final AuthService auth;
+
   private final CreditService credit;
 
   public AdminCreditController(AuthService auth, CreditService credit) {
@@ -96,9 +98,4 @@ public class AdminCreditController {
     return credit.dismissSignal(
         auth.requirePermission(authorization, AdminPermission.USER_MANAGE), id, request.reason());
   }
-
-  public record AdjustmentRequest(
-      @Min(-100) @Max(100) int delta, @NotBlank @Size(min = 5, max = 300) String reason) {}
-
-  public record ReasonRequest(@NotBlank @Size(min = 5, max = 300) String reason) {}
 }

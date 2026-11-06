@@ -4,6 +4,7 @@ import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.payment.RefundResult;
 import com.zhangxuan.runruncampus.model.payment.WechatRefund;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository;
@@ -47,7 +48,7 @@ public class WechatRefundProcessor {
     work.addAll(refundRepository.findTop20ByStatusOrderByCreatedAtAsc(RefundStatus.PROCESSING));
     for (WechatRefund refund : work) {
       try {
-        WechatPayGateway.RefundResult result =
+        RefundResult result =
             refund.getStatus() == RefundStatus.PENDING
                 ? gateway.refund(
                     refund.getPayment().getOutTradeNo(),

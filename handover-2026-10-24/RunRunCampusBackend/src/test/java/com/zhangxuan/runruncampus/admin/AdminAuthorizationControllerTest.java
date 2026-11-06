@@ -13,6 +13,10 @@ import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
 import com.zhangxuan.runruncampus.controller.admin.AdminOrderController;
 import com.zhangxuan.runruncampus.controller.admin.AdminOrderLifecycleController;
 import com.zhangxuan.runruncampus.controller.admin.AdminUserController;
+import com.zhangxuan.runruncampus.dto.request.admin.account.CreateAdminRequest;
+import com.zhangxuan.runruncampus.dto.request.admin.dispatch.DispatchRequest;
+import com.zhangxuan.runruncampus.dto.request.admin.orderlifecycle.ReasonRequest;
+import com.zhangxuan.runruncampus.dto.request.admin.user.ResetPasswordRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.enums.commandcenter.Queue;
@@ -103,9 +107,7 @@ class AdminAuthorizationControllerTest {
     var error =
         assertThrows(
             ResponseStatusException.class,
-            () ->
-                controller.forceComplete(
-                    TOKEN, 11L, new AdminOrderLifecycleController.ReasonRequest("凭证已核对")));
+            () -> controller.forceComplete(TOKEN, 11L, new ReasonRequest("凭证已核对")));
     assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
     verifyNoInteractions(lifecycleService);
   }
@@ -117,9 +119,7 @@ class AdminAuthorizationControllerTest {
     var error =
         assertThrows(
             ResponseStatusException.class,
-            () ->
-                controller.archive(
-                    TOKEN, 11L, new AdminOrderLifecycleController.ReasonRequest("订单归档原因")));
+            () -> controller.archive(TOKEN, 11L, new ReasonRequest("订单归档原因")));
     assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
     verifyNoInteractions(lifecycleService);
   }
@@ -131,7 +131,7 @@ class AdminAuthorizationControllerTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () -> controller.dispatch(TOKEN, 11L, new AdminDispatchController.DispatchRequest(3L)));
+            () -> controller.dispatch(TOKEN, 11L, new DispatchRequest(3L)));
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     verifyNoInteractions(dispatchService);
   }
@@ -165,9 +165,7 @@ class AdminAuthorizationControllerTest {
     ResponseStatusException exception =
         assertThrows(
             ResponseStatusException.class,
-            () ->
-                controller.resetPassword(
-                    TOKEN, 11L, new AdminUserController.ResetPasswordRequest("new-password")));
+            () -> controller.resetPassword(TOKEN, 11L, new ResetPasswordRequest("new-password")));
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     verifyNoInteractions(userService);
   }
@@ -188,9 +186,8 @@ class AdminAuthorizationControllerTest {
   void administratorWithoutAdminManagePermissionCannotCreateAdministrator() {
     deny(AdminPermission.ADMIN_MANAGE);
     AdminAccountController controller = new AdminAccountController(authService, accountService);
-    AdminAccountController.CreateAdminRequest request =
-        new AdminAccountController.CreateAdminRequest(
-            "13800000001", "password", "新管理员", AdminRole.SUPPORT);
+    CreateAdminRequest request =
+        new CreateAdminRequest("13800000001", "password", "新管理员", AdminRole.SUPPORT);
     ResponseStatusException exception =
         assertThrows(ResponseStatusException.class, () -> controller.create(TOKEN, request));
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());

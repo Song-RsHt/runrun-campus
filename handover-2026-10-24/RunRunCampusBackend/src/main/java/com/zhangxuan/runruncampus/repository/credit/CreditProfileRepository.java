@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface CreditProfileRepository extends JpaRepository<CreditProfile, Long> {
+
   Optional<CreditProfile> findByUserId(Long userId);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)

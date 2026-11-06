@@ -1,6 +1,12 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminOrderController;
+import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailResponse;
+import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderListItem;
+import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse;
+import com.zhangxuan.runruncampus.dto.response.admin.order.OrderEventItem;
+import com.zhangxuan.runruncampus.dto.response.admin.order.OrderIssueItem;
+import com.zhangxuan.runruncampus.dto.response.admin.order.OrderProofItem;
+import com.zhangxuan.runruncampus.dto.response.admin.order.UserSummary;
 import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.model.user.AppUser;
@@ -20,12 +26,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminOrderService {
+
   public static final int EXPORT_LIMIT = 10_000;
+
   private static final String CSV_HEADER =
       "订单号,状态,服务类型,商家,送达位置,配送费(元),支付方式,支付状态,已结清(元),用户昵称,用户手机,骑手昵称,骑手手机,创建时间,更新时间\r\n";
+
   private final OrderRepository orderRepository;
+
   private final OrderEventRepository eventRepository;
+
   private final OrderIssueRepository issueRepository;
+
   private final OrderProofRepository proofRepository;
 
   public AdminOrderService(
@@ -40,7 +52,7 @@ public class AdminOrderService {
   }
 
   @Transactional(readOnly = true)
-  public AdminOrderController.AdminOrderPageResponse list(
+  public AdminOrderPageResponse list(
       String query, OrderStatus status, boolean archived, int page, int size) {
     Page<CampusOrder> orders =
         findOrders(
@@ -48,7 +60,7 @@ public class AdminOrderService {
             status,
             archived,
             PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id")));
-    return new AdminOrderController.AdminOrderPageResponse(
+    return new AdminOrderPageResponse(
         orders.getContent().stream().map(this::listItem).toList(),
         orders.getNumber(),
         orders.getSize(),
@@ -57,12 +69,12 @@ public class AdminOrderService {
   }
 
   @Transactional(readOnly = true)
-  public AdminOrderController.AdminOrderDetailResponse detail(Long id) {
+  public AdminOrderDetailResponse detail(Long id) {
     CampusOrder order =
         orderRepository
             .findById(id)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "订单不存在"));
-    return new AdminOrderController.AdminOrderDetailResponse(
+    return new AdminOrderDetailResponse(
         listItem(order),
         order.getPickupCode(),
         order.getPickupLocation(),
@@ -90,7 +102,7 @@ public class AdminOrderService {
         eventRepository.findByOrderOrderByCreatedAtAsc(order).stream()
             .map(
                 event ->
-                    new AdminOrderController.OrderEventItem(
+                    new OrderEventItem(
                         event.getId(),
                         event.getStatus(),
                         user(event.getActor()),
@@ -99,7 +111,7 @@ public class AdminOrderService {
         issueRepository.findByOrderOrderByCreatedAtAsc(order).stream()
             .map(
                 issue ->
-                    new AdminOrderController.OrderIssueItem(
+                    new OrderIssueItem(
                         issue.getId(),
                         issue.getType(),
                         issue.getDescription(),
@@ -109,7 +121,7 @@ public class AdminOrderService {
         proofRepository.findByOrderOrderByCreatedAtAsc(order).stream()
             .map(
                 proof ->
-                    new AdminOrderController.OrderProofItem(
+                    new OrderProofItem(
                         proof.getId(),
                         proof.getType(),
                         proof.getOriginalFileName(),
@@ -177,8 +189,8 @@ public class AdminOrderService {
         : orderRepository.searchForAdmin(normalizedQuery, status, archived, pageable);
   }
 
-  private AdminOrderController.AdminOrderListItem listItem(CampusOrder order) {
-    return new AdminOrderController.AdminOrderListItem(
+  private AdminOrderListItem listItem(CampusOrder order) {
+    return new AdminOrderListItem(
         order.getId(),
         order.getOrderNo(),
         order.getStatus(),
@@ -198,11 +210,10 @@ public class AdminOrderService {
         order.getArchivedAt());
   }
 
-  private AdminOrderController.UserSummary user(AppUser user) {
+  private UserSummary user(AppUser user) {
     return user == null
         ? null
-        : new AdminOrderController.UserSummary(
-            user.getId(), user.getDisplayName(), user.getPhone(), user.getRole());
+        : new UserSummary(user.getId(), user.getDisplayName(), user.getPhone(), user.getRole());
   }
 
   private String normalize(String query) {

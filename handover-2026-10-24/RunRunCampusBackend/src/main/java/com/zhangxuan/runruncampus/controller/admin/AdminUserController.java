@@ -1,5 +1,8 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.dto.request.admin.user.ResetPasswordRequest;
+import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem;
+import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserPageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.service.admin.AdminCouponService;
@@ -8,10 +11,6 @@ import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.Instant;
-import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,8 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/users")
 public class AdminUserController {
+
   private final AuthService authService;
+
   private final AdminUserService adminUserService;
+
   private final AdminCouponService adminCouponService;
 
   public AdminUserController(
@@ -89,22 +91,4 @@ public class AdminUserController {
     return adminCouponService.issueOneYuan(
         authService.requirePermission(authorization, AdminPermission.COUPON_ISSUE), id);
   }
-
-  public record AdminUserPageResponse(
-      List<AdminUserItem> items, int page, int size, long totalElements, int totalPages) {}
-
-  public record AdminUserItem(
-      Long id,
-      String displayName,
-      String phone,
-      UserRole role,
-      boolean enabled,
-      boolean courierApproved,
-      Instant registeredAt,
-      int failedLoginAttempts,
-      Instant loginLockedUntil) {}
-
-  public record ResetPasswordRequest(
-      @NotBlank(message = "请输入新密码") @Size(min = 6, max = 72, message = "密码长度应为 6 到 72 位")
-          String password) {}
 }

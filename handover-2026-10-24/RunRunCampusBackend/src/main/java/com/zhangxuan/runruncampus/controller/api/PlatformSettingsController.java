@@ -1,14 +1,11 @@
 package com.zhangxuan.runruncampus.controller.api;
 
+import com.zhangxuan.runruncampus.dto.request.api.platformsettings.UpdateRequest;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.model.settings.Settings;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -45,12 +42,4 @@ public class PlatformSettingsController {
             request.issuePendingMinutes(),
             request.issueProcessingMinutes()));
   }
-
-  public record UpdateRequest(
-      @NotBlank @Size(max = 80) String businessHours,
-      @Min(1) @Max(1440) int waitMinutes,
-      @Min(1) @Max(1440) int deliveryMinutes,
-      @Min(1) @Max(10) int maxActiveOrders,
-      @Min(1) @Max(1440) int issuePendingMinutes,
-      @Min(1) @Max(1440) int issueProcessingMinutes) {}
 }

@@ -17,7 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class MembershipService {
+
   private final UserMembershipRepository membershipRepository;
+
   private final UserRepository userRepository;
 
   public MembershipService(
@@ -146,6 +148,7 @@ public class MembershipService {
       boolean active) {}
 
   public record MembershipApplication(boolean used, String planTitle, Long membershipId) {
+
     public MembershipApplication(boolean used, String planTitle) {
       this(used, planTitle, null);
     }

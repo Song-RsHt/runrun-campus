@@ -18,9 +18,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class LoginCaptchaService {
+
   private static final int WIDTH = 160;
+
   private static final int HEIGHT = 56;
+
   private static final int MAX_ACTIVE_CHALLENGES = 10_000;
+
   private static final String[][] DIGITS = {
     {"11111", "10001", "10011", "10101", "11001", "10001", "11111"},
     {"00100", "01100", "00100", "00100", "00100", "00100", "01110"},
@@ -35,7 +39,9 @@ public class LoginCaptchaService {
   };
 
   private final SecureRandom random;
+
   private final Clock clock;
+
   private final Map<String, State> challenges = new ConcurrentHashMap<>();
 
   public LoginCaptchaService() {

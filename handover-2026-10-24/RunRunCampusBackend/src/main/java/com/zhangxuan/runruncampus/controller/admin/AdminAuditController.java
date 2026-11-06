@@ -1,14 +1,12 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditPageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import java.time.Instant;
-import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/audit-logs")
 public class AdminAuditController {
+
   private final AuthService authService;
+
   private final AdminAuditService adminAuditService;
 
   public AdminAuditController(AuthService authService, AdminAuditService adminAuditService) {
@@ -38,18 +38,4 @@ public class AdminAuditController {
     authService.requirePermission(authorization, AdminPermission.AUDIT_VIEW);
     return adminAuditService.list(query, action, page, size);
   }
-
-  public record AdminAuditPageResponse(
-      List<AdminAuditItem> items, int page, int size, long totalElements, int totalPages) {}
-
-  public record AdminAuditItem(
-      Long id,
-      AdminAuditAction action,
-      AdminAuditTargetType targetType,
-      Long targetId,
-      String summary,
-      Long administratorId,
-      String administratorName,
-      String administratorPhone,
-      Instant createdAt) {}
 }

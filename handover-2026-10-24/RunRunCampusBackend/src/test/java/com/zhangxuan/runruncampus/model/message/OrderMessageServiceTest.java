@@ -31,11 +31,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class OrderMessageServiceTest {
+
   @Mock private OrderMessageRepository messageRepository;
+
   @Mock private ApplicationEventPublisher eventPublisher;
 
   private OrderMessageService messageService;
+
   private AppUser recipient;
+
   private CampusOrder order;
 
   @BeforeEach
@@ -51,7 +55,6 @@ class OrderMessageServiceTest {
   @Test
   void savingMessagePublishesPushRequest() {
     messageService.send(recipient, order, OrderMessageType.ORDER_ACCEPTED, "骑手已接单", "测试骑手已接单");
-
     verify(messageRepository).save(any(OrderMessage.class));
     ArgumentCaptor<OrderPushRequested> captor = ArgumentCaptor.forClass(OrderPushRequested.class);
     verify(eventPublisher).publishEvent(captor.capture());
@@ -66,9 +69,7 @@ class OrderMessageServiceTest {
     OrderMessage message = message(21L, recipient);
     when(messageRepository.findByRecipientOrderByCreatedAtDesc(recipient))
         .thenReturn(List.of(message));
-
     List<OrderMessageService.MessageResponse> responses = messageService.list(recipient);
-
     assertEquals(1, responses.size());
     assertFalse(responses.get(0).read());
     assertEquals(11L, responses.get(0).orderId());
@@ -78,9 +79,7 @@ class OrderMessageServiceTest {
   void recipientCanMarkMessageRead() {
     OrderMessage message = message(21L, recipient);
     when(messageRepository.findById(21L)).thenReturn(Optional.of(message));
-
     OrderMessageService.MessageResponse response = messageService.markRead(recipient, 21L);
-
     assertTrue(response.read());
     assertNotNull(response.readAt());
   }
@@ -89,10 +88,8 @@ class OrderMessageServiceTest {
   void anotherUserCannotMarkMessageRead() {
     OrderMessage message = message(21L, recipient);
     when(messageRepository.findById(21L)).thenReturn(Optional.of(message));
-
     ResponseStatusException exception =
         assertThrows(ResponseStatusException.class, () -> messageService.markRead(user(2L), 21L));
-
     assertEquals(HttpStatus.FORBIDDEN, exception.getStatusCode());
     assertFalse(message.isRead());
   }
@@ -103,9 +100,7 @@ class OrderMessageServiceTest {
     OrderMessage second = message(22L, recipient);
     when(messageRepository.findByRecipientAndReadAtIsNull(recipient))
         .thenReturn(List.of(first, second));
-
     messageService.markAllRead(recipient);
-
     assertTrue(first.isRead());
     assertTrue(second.isRead());
   }

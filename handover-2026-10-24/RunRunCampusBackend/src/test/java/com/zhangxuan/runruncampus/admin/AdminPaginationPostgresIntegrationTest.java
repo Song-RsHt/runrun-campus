@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
+import com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
@@ -57,6 +57,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @Transactional
 class AdminPaginationPostgresIntegrationTest {
+
   @Container
   private static final PostgreSQLContainer<?> POSTGRES =
       new PostgreSQLContainer<>("postgres:16-alpine");
@@ -69,13 +70,21 @@ class AdminPaginationPostgresIntegrationTest {
   }
 
   @Autowired private EntityManager entities;
+
   @Autowired private AdminOrderService orders;
+
   @Autowired private AdminUserService users;
+
   @Autowired private AdminCourierService couriers;
+
   @Autowired private AdminIssueService issues;
+
   @Autowired private AdminFeedbackService feedback;
+
   @Autowired private AdminAuditService audit;
+
   private final Map<String, List<Long>> ids = new HashMap<>();
+
   private Long courierId;
 
   @BeforeEach
@@ -96,7 +105,6 @@ class AdminPaginationPostgresIntegrationTest {
       people.add(person);
       if (i < 7)
         entities.persist(new CourierCertification(person, "Rider", "Student" + i, "Campus"));
-
       CampusOrder order =
           new CampusOrder(
               "PAGE-" + i,
@@ -109,7 +117,6 @@ class AdminPaginationPostgresIntegrationTest {
       order.assignCourier(people.get(i == 6 || i == 7 ? 6 : 0));
       order.updateStatus(i >= 7 ? OrderStatus.CANCELLED : OrderStatus.COMPLETED);
       persistAt("orders", order, time);
-
       OrderIssue issue =
           new OrderIssue(
               order, customer, i == 7 ? OrderIssueType.MISSING_ITEM : OrderIssueType.OTHER, text);
@@ -183,11 +190,10 @@ class AdminPaginationPostgresIntegrationTest {
   void issueOverdueFilterReturnsOnlyOverdueItemsAndAccurateTotal() {
     var result =
         issues.list("Match", OrderIssueType.OTHER, OrderIssueHandlingStatus.PENDING, true, 0, 2);
-
     assertEquals(6, result.totalElements());
     assertEquals(6, result.overdueTotal());
     assertEquals(2, result.items().size());
-    assertTrue(result.items().stream().allMatch(AdminIssueController.AdminIssueItem::overdue));
+    assertTrue(result.items().stream().allMatch(AdminIssueItem::overdue));
   }
 
   private List<Long> expectedIds(String kind) {

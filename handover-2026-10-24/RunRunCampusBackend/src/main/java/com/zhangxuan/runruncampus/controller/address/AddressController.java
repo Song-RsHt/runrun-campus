@@ -1,11 +1,9 @@
 package com.zhangxuan.runruncampus.controller.address;
 
-import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
+import com.zhangxuan.runruncampus.dto.request.address.AddressRequest;
 import com.zhangxuan.runruncampus.service.address.AddressService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/addresses")
 public class AddressController {
+
   private final AuthService authService;
+
   private final AddressService addressService;
 
   public AddressController(AuthService authService, AddressService addressService) {
@@ -63,15 +63,5 @@ public class AddressController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@RequestHeader("Authorization") String authorization, @PathVariable Long id) {
     addressService.delete(authService.requireUser(authorization), id);
-  }
-
-  public record AddressRequest(
-      @NotBlank(message = "请输入地址标签") @Size(max = 32, message = "地址标签过长") String label,
-      @NotBlank(message = "请输入详细地址") @Size(max = 120, message = "详细地址过长") String address,
-      DeliveryZone deliveryZone,
-      boolean defaultAddress) {
-    public AddressRequest(String label, String address, boolean defaultAddress) {
-      this(label, address, DeliveryZone.fromLegacy(address), defaultAddress);
-    }
   }
 }

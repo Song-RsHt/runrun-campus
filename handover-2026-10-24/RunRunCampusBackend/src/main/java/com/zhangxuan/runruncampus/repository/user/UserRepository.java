@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface UserRepository extends JpaRepository<AppUser, Long> {
+
   Optional<AppUser> findByPhone(String phone);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)

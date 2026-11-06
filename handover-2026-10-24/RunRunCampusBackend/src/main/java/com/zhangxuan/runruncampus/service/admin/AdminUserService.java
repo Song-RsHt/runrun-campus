@@ -1,6 +1,7 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminUserController;
+import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem;
+import com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserPageResponse;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
@@ -18,9 +19,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AdminUserService {
+
   private final UserRepository userRepository;
+
   private final SessionRepository sessionRepository;
+
   private final PasswordEncoder passwordEncoder;
+
   private final AdminAuditService auditService;
 
   public AdminUserService(
@@ -35,7 +40,7 @@ public class AdminUserService {
   }
 
   @Transactional
-  public AdminUserController.AdminUserItem suspend(AppUser administrator, Long id) {
+  public AdminUserItem suspend(AppUser administrator, Long id) {
     AppUser user = mutableUser(id);
     if (!user.isEnabled()) return item(user);
     user.suspend();
@@ -50,7 +55,7 @@ public class AdminUserService {
   }
 
   @Transactional
-  public AdminUserController.AdminUserItem restore(AppUser administrator, Long id) {
+  public AdminUserItem restore(AppUser administrator, Long id) {
     AppUser user = mutableUser(id);
     if (user.isEnabled()) return item(user);
     user.restore();
@@ -64,7 +69,7 @@ public class AdminUserService {
   }
 
   @Transactional
-  public AdminUserController.AdminUserItem unlockLogin(AppUser administrator, Long id) {
+  public AdminUserItem unlockLogin(AppUser administrator, Long id) {
     AppUser user = mutableUser(id);
     if (user.getFailedLoginAttempts() == 0 && user.getLoginLockedUntil() == null) return item(user);
     user.clearLoginFailures();
@@ -78,8 +83,7 @@ public class AdminUserService {
   }
 
   @Transactional
-  public AdminUserController.AdminUserItem resetPassword(
-      AppUser administrator, Long id, String password) {
+  public AdminUserItem resetPassword(AppUser administrator, Long id, String password) {
     AppUser user = mutableUser(id);
     user.changePasswordHash(passwordEncoder.encode(password));
     user.clearLoginFailures();
@@ -105,8 +109,7 @@ public class AdminUserService {
   }
 
   @Transactional(readOnly = true)
-  public AdminUserController.AdminUserPageResponse list(
-      String query, UserRole role, int page, int size) {
+  public AdminUserPageResponse list(String query, UserRole role, int page, int size) {
     String normalizedQuery = normalize(query);
     PageRequest pageable =
         PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt", "id"));
@@ -114,7 +117,7 @@ public class AdminUserService {
         normalizedQuery == null
             ? userRepository.filterForAdmin(role, pageable)
             : userRepository.searchForAdmin(normalizedQuery, role, pageable);
-    return new AdminUserController.AdminUserPageResponse(
+    return new AdminUserPageResponse(
         users.getContent().stream().map(this::item).toList(),
         users.getNumber(),
         users.getSize(),
@@ -122,8 +125,8 @@ public class AdminUserService {
         users.getTotalPages());
   }
 
-  private AdminUserController.AdminUserItem item(AppUser user) {
-    return new AdminUserController.AdminUserItem(
+  private AdminUserItem item(AppUser user) {
+    return new AdminUserItem(
         user.getId(),
         user.getDisplayName(),
         user.getPhone(),
