@@ -1,10 +1,10 @@
 package com.zhangxuan.runruncampus.model.message;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import com.zhangxuan.runruncampus.repository.message.OrderMessageRepository;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService.MessageResponse;
@@ -28,6 +28,36 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

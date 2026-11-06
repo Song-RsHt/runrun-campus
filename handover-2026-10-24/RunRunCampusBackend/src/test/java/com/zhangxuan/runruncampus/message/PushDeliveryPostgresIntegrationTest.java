@@ -1,15 +1,15 @@
 package com.zhangxuan.runruncampus.message;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus;
 import com.zhangxuan.runruncampus.enums.message.PushDestination;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,6 +26,34 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

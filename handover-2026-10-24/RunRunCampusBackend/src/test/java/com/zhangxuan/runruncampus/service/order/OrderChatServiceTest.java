@@ -1,15 +1,17 @@
 package com.zhangxuan.runruncampus.service.order;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.OrderChatMessage;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.order.OrderChatMessage;
-import com.zhangxuan.runruncampus.repository.order.OrderChatRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderChatRepository.UnreadCount;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.model.UnreadCount;
+import com.zhangxuan.runruncampus.repository.OrderChatRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.service.OrderChatService;
+import com.zhangxuan.runruncampus.service.impl.OrderChatServiceImpl;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import java.time.Instant;
 import java.util.List;
@@ -55,6 +57,34 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class OrderChatServiceTest {
 
   private final OrderRepository orders = mock(OrderRepository.class);
@@ -63,7 +93,7 @@ class OrderChatServiceTest {
 
   private final OrderMessageService notifications = mock(OrderMessageService.class);
 
-  private final OrderChatService service = new OrderChatService(orders, chats, notifications);
+  private final OrderChatService service = new OrderChatServiceImpl(orders, chats, notifications);
 
   private final AppUser customer = user(1L, UserRole.CUSTOMER);
 

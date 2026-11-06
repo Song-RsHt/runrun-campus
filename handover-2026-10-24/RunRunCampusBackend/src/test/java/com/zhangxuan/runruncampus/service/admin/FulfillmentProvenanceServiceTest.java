@@ -2,15 +2,15 @@ package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.enums.provenance.Channel;
 import com.zhangxuan.runruncampus.mapper.admin.FulfillmentProvenanceMapper;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -29,6 +29,37 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

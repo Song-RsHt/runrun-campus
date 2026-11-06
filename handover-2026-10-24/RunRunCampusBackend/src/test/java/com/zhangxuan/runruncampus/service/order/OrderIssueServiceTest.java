@@ -1,17 +1,19 @@
 package com.zhangxuan.runruncampus.service.order;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.OrderIssue;
+import com.zhangxuan.runruncampus.enums.OrderIssueHandlingStatus;
+import com.zhangxuan.runruncampus.enums.OrderIssueType;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderIssueType;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.order.OrderIssue;
-import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.service.OrderIssueService;
+import com.zhangxuan.runruncampus.service.impl.OrderIssueServiceImpl;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import com.zhangxuan.runruncampus.service.order.OrderIssueService.IssueResponse;
+import com.zhangxuan.runruncampus.vo.OrderIssueVO;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +65,39 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class OrderIssueServiceTest {
 
@@ -80,7 +115,7 @@ class OrderIssueServiceTest {
 
   @BeforeEach
   void setUp() {
-    issueService = new OrderIssueService(orderRepository, issueRepository, messageService);
+    issueService = new OrderIssueServiceImpl(orderRepository, issueRepository, messageService);
     customer = user(1L, UserRole.CUSTOMER);
     order =
         new CampusOrder("RP-TEST-ISSUE", customer, "测试商家", "1234", "东门", "3号楼", ServiceType.LOBBY);
@@ -92,7 +127,7 @@ class OrderIssueServiceTest {
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(issueRepository.save(any(OrderIssue.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    IssueResponse response =
+    OrderIssueVO response =
         issueService.create(customer, 11L, OrderIssueType.MISSING_ITEM, "少了一份米饭");
     assertEquals(OrderIssueType.MISSING_ITEM, response.type());
     assertEquals("少了一份米饭", response.description());
@@ -106,7 +141,7 @@ class OrderIssueServiceTest {
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(issueRepository.save(any(OrderIssue.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    IssueResponse response =
+    OrderIssueVO response =
         issueService.create(courier, 11L, OrderIssueType.CANNOT_CONTACT, "无法联系收餐人");
     assertEquals(UserRole.COURIER, response.reporterRole());
     verify(messageService)

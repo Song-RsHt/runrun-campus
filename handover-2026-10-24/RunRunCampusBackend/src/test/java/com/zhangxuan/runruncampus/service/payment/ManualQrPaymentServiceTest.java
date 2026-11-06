@@ -1,15 +1,17 @@
 package com.zhangxuan.runruncampus.service.payment;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.CourierSettlementStatus;
+import com.zhangxuan.runruncampus.enums.ManualPaymentStatus;
+import com.zhangxuan.runruncampus.enums.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus;
-import com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.service.ManualQrPaymentService;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.service.impl.ManualQrPaymentServiceImpl;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +28,34 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -77,7 +107,7 @@ class ManualQrPaymentServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new ManualQrPaymentService(orderRepository, messageService, auditService);
+    service = new ManualQrPaymentServiceImpl(orderRepository, messageService, auditService);
     customer = user(1L, "用户", UserRole.CUSTOMER);
     courier = user(2L, "骑手", UserRole.COURIER);
     administrator = user(3L, "运营", UserRole.ADMIN);

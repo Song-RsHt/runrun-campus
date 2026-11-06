@@ -1,11 +1,19 @@
 package com.zhangxuan.runruncampus.integration.payment;
 
-import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
-import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
-import com.zhangxuan.runruncampus.model.payment.RefundNotificationResult;
-import com.zhangxuan.runruncampus.model.payment.RefundResult;
-import com.zhangxuan.runruncampus.model.payment.TradeResult;
+import com.zhangxuan.runruncampus.model.AppPayParameters;
+import com.zhangxuan.runruncampus.model.NotificationHeaders;
+import com.zhangxuan.runruncampus.model.RefundNotificationResult;
+import com.zhangxuan.runruncampus.model.RefundResult;
+import com.zhangxuan.runruncampus.model.TradeResult;
 import java.time.Instant;
+
+
+
+
+
+
+
+
 
 public interface WechatPayGateway {
 

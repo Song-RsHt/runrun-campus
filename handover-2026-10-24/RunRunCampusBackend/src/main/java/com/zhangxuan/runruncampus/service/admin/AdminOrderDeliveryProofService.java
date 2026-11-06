@@ -1,14 +1,25 @@
 package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.dto.response.admin.ProofContent;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
+import com.zhangxuan.runruncampus.enums.OrderProofType;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
 import java.io.IOException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Reads private delivery evidence only after the controller has checked the existing admin

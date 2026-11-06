@@ -1,10 +1,12 @@
 package com.zhangxuan.runruncampus.service.coupon;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.UserCoupon;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
-import com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository;
-import com.zhangxuan.runruncampus.service.coupon.CouponService.CouponApplication;
+import com.zhangxuan.runruncampus.model.CouponApplication;
+import com.zhangxuan.runruncampus.repository.UserCouponRepository;
+import com.zhangxuan.runruncampus.service.CouponService;
+import com.zhangxuan.runruncampus.service.impl.CouponServiceImpl;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +51,31 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class CouponServiceTest {
 
@@ -60,7 +87,7 @@ class CouponServiceTest {
 
   @BeforeEach
   void setUp() {
-    couponService = new CouponService(couponRepository);
+    couponService = new CouponServiceImpl(couponRepository);
     customer = user(1L);
   }
 

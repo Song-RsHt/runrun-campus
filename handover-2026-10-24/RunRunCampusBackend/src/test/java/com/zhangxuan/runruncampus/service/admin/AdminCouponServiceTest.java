@@ -1,14 +1,14 @@
 package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.UserCoupon;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
+import com.zhangxuan.runruncampus.repository.UserCouponRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminCouponService.GrantResponse;
 import java.time.Instant;
 import java.util.Optional;
@@ -26,6 +26,34 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

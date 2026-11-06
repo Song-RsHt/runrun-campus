@@ -1,6 +1,0 @@
-package com.zhangxuan.runruncampus.dto.request.order;
-
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import jakarta.validation.constraints.NotNull;
-
-public record ConfirmPackageSizeRequest(@NotNull(message = "请选择包裹规格") ServiceType serviceType) {}

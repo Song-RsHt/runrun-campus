@@ -1,18 +1,20 @@
 package com.zhangxuan.runruncampus.service.order;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.OrderEvent;
+import com.zhangxuan.runruncampus.entity.OrderIssue;
+import com.zhangxuan.runruncampus.enums.OrderProofType;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.order.OrderEvent;
-import com.zhangxuan.runruncampus.model.order.OrderIssue;
-import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderIssueRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.OrderEventRepository;
+import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
+import com.zhangxuan.runruncampus.repository.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.service.CourierReassignmentService;
+import com.zhangxuan.runruncampus.service.impl.CourierReassignmentServiceImpl;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -60,6 +62,36 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class CourierReassignmentServiceTest {
 
   private final OrderRepository orders = mock(OrderRepository.class);
@@ -73,7 +105,7 @@ class CourierReassignmentServiceTest {
   private final OrderMessageService messages = mock(OrderMessageService.class);
 
   private final CourierReassignmentService service =
-      new CourierReassignmentService(orders, proofs, issues, events, messages);
+      new CourierReassignmentServiceImpl(orders, proofs, issues, events, messages);
 
   private final AppUser customer = user(1L, UserRole.CUSTOMER);
 

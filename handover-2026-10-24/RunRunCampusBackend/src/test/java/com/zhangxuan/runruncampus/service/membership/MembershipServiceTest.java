@@ -1,13 +1,15 @@
 package com.zhangxuan.runruncampus.service.membership;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.UserMembership;
+import com.zhangxuan.runruncampus.enums.MembershipPlanType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
-import com.zhangxuan.runruncampus.model.membership.UserMembership;
+import com.zhangxuan.runruncampus.model.MembershipApplication;
+import com.zhangxuan.runruncampus.repository.UserMembershipRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.repository.membership.UserMembershipRepository;
-import com.zhangxuan.runruncampus.service.membership.MembershipService.ActiveMembershipResponse;
-import com.zhangxuan.runruncampus.service.membership.MembershipService.MembershipApplication;
+import com.zhangxuan.runruncampus.service.MembershipService;
+import com.zhangxuan.runruncampus.service.impl.MembershipServiceImpl;
+import com.zhangxuan.runruncampus.vo.ActiveMembershipResponse;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +56,34 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class MembershipServiceTest {
 
@@ -67,7 +97,7 @@ class MembershipServiceTest {
 
   @BeforeEach
   void setUp() {
-    membershipService = new MembershipService(membershipRepository, userRepository);
+    membershipService = new MembershipServiceImpl(membershipRepository, userRepository);
     customer = user(1L, UserRole.CUSTOMER);
   }
 

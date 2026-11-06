@@ -2,27 +2,29 @@ package com.zhangxuan.runruncampus.controller.order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
-import com.zhangxuan.runruncampus.dto.request.order.LocationUpdateRequest;
-import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
+import com.zhangxuan.runruncampus.dto.LocationUpdateRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.OrderProofType;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.repository.OrderEventRepository;
+import com.zhangxuan.runruncampus.repository.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.CouponService;
+import com.zhangxuan.runruncampus.service.MembershipService;
+import com.zhangxuan.runruncampus.service.OrderProofService;
+import com.zhangxuan.runruncampus.service.OrderService;
+import com.zhangxuan.runruncampus.service.PaymentService;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.coupon.CouponService;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.service.membership.MembershipService;
+import com.zhangxuan.runruncampus.service.impl.OrderProofServiceImpl;
+import com.zhangxuan.runruncampus.service.impl.OrderServiceImpl;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import com.zhangxuan.runruncampus.service.order.OrderProofService;
-import com.zhangxuan.runruncampus.service.order.OrderService;
-import com.zhangxuan.runruncampus.service.payment.PaymentService;
+import com.zhangxuan.runruncampus.vo.OrderResponse;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +43,49 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -115,7 +160,7 @@ class OrderAuthorizationTest {
   @BeforeEach
   void setUp() {
     orderService =
-        new OrderService(
+        new OrderServiceImpl(
             orderRepository,
             eventRepository,
             proofRepository,
@@ -224,7 +269,7 @@ class OrderAuthorizationTest {
     order.assignCourier(courier);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     OrderProofService proofService =
-        new OrderProofService(orderRepository, proofRepository, proofStorage);
+        new OrderProofServiceImpl(orderRepository, proofRepository, proofStorage);
     MockMultipartFile image =
         new MockMultipartFile(
             "file", "proof.jpg", "image/jpeg", new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff});

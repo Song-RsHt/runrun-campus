@@ -1,12 +1,12 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.OrderProof;
+import com.zhangxuan.runruncampus.enums.OrderProofType;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.order.OrderProof;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.repository.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderDeliveryProofService;
 import java.io.IOException;
@@ -22,6 +22,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

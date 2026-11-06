@@ -1,0 +1,30 @@
+package com.zhangxuan.runruncampus.service;
+
+import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.OrderProof;
+import com.zhangxuan.runruncampus.enums.OrderProofType;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
+import com.zhangxuan.runruncampus.repository.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.vo.OrderProofVO;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+/**
+ * 业务服务契约；由实现类维护事务与并发边界。
+ */
+public interface OrderProofService {
+
+    OrderProofVO upload(AppUser courier, Long orderId, OrderProofType type, MultipartFile file);
+}

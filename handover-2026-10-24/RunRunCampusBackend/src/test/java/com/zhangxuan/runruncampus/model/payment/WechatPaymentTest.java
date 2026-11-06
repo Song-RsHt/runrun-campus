@@ -1,18 +1,34 @@
 package com.zhangxuan.runruncampus.model.payment;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.WechatPayment;
+import com.zhangxuan.runruncampus.enums.MembershipPlanType;
+import com.zhangxuan.runruncampus.enums.PaymentBusinessType;
+import com.zhangxuan.runruncampus.enums.PaymentStatus;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
-import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
 import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

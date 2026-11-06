@@ -1,11 +1,13 @@
 package com.zhangxuan.runruncampus.service.address;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.UserAddress;
+import com.zhangxuan.runruncampus.enums.DeliveryZone;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
-import com.zhangxuan.runruncampus.model.address.UserAddress;
-import com.zhangxuan.runruncampus.repository.address.AddressRepository;
-import com.zhangxuan.runruncampus.service.address.AddressService.AddressResponse;
+import com.zhangxuan.runruncampus.repository.AddressRepository;
+import com.zhangxuan.runruncampus.service.AddressService;
+import com.zhangxuan.runruncampus.service.impl.AddressServiceImpl;
+import com.zhangxuan.runruncampus.vo.AddressResponse;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,6 +49,30 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class AddressServiceTest {
 
@@ -58,7 +84,7 @@ class AddressServiceTest {
 
   @BeforeEach
   void setUp() {
-    addressService = new AddressService(addressRepository);
+    addressService = new AddressServiceImpl(addressRepository);
     customer = user(1L, "13800000001");
   }
 

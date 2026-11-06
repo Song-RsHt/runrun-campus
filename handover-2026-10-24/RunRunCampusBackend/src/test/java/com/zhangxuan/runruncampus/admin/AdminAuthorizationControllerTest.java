@@ -16,6 +16,7 @@ import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.enums.commandcenter.Queue;
 import com.zhangxuan.runruncampus.service.AuthService;
+import com.zhangxuan.runruncampus.service.ManualQrPaymentService;
 import com.zhangxuan.runruncampus.service.admin.AdminAccountService;
 import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
 import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
@@ -25,7 +26,6 @@ import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.admin.AdminUserService;
-import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,6 +36,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

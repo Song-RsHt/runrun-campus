@@ -1,18 +1,33 @@
 package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.UserCoupon;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.model.coupon.UserCoupon;
+import com.zhangxuan.runruncampus.repository.UserCouponRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

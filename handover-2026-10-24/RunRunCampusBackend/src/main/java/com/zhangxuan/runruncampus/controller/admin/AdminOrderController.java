@@ -1,15 +1,15 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
-import com.zhangxuan.runruncampus.dto.request.admin.order.RejectManualPaymentRequest;
-import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailResponse;
-import com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse;
+import com.zhangxuan.runruncampus.dto.RejectManualPaymentRequest;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
 import com.zhangxuan.runruncampus.service.AuthService;
+import com.zhangxuan.runruncampus.service.ManualQrPaymentService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService.OrderExport;
-import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService;
-import com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService.ManualPaymentResponse;
+import com.zhangxuan.runruncampus.vo.AdminOrderDetailResponse;
+import com.zhangxuan.runruncampus.vo.AdminOrderPageResponse;
+import com.zhangxuan.runruncampus.vo.ManualPaymentResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -26,6 +26,34 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

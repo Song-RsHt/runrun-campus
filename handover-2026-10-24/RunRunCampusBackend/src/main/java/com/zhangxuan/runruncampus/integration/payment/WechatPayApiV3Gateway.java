@@ -11,6 +11,7 @@ import com.wechat.pay.java.service.payments.app.model.PrepayRequest;
 import com.wechat.pay.java.service.payments.app.model.PrepayWithRequestPaymentResponse;
 import com.wechat.pay.java.service.payments.app.model.QueryOrderByOutTradeNoRequest;
 import com.wechat.pay.java.service.payments.model.Transaction;
+import com.wechat.pay.java.service.payments.model.Transaction.TradeStateEnum;
 import com.wechat.pay.java.service.refund.RefundService;
 import com.wechat.pay.java.service.refund.model.AmountReq;
 import com.wechat.pay.java.service.refund.model.CreateRequest;
@@ -19,12 +20,12 @@ import com.wechat.pay.java.service.refund.model.Refund;
 import com.wechat.pay.java.service.refund.model.RefundNotification;
 import com.wechat.pay.java.service.refund.model.Status;
 import com.zhangxuan.runruncampus.config.WechatPayProperties;
-import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
-import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
-import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
-import com.zhangxuan.runruncampus.model.payment.RefundNotificationResult;
-import com.zhangxuan.runruncampus.model.payment.RefundResult;
-import com.zhangxuan.runruncampus.model.payment.TradeResult;
+import com.zhangxuan.runruncampus.enums.RefundStatus;
+import com.zhangxuan.runruncampus.model.AppPayParameters;
+import com.zhangxuan.runruncampus.model.NotificationHeaders;
+import com.zhangxuan.runruncampus.model.RefundNotificationResult;
+import com.zhangxuan.runruncampus.model.RefundResult;
+import com.zhangxuan.runruncampus.model.TradeResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -32,6 +33,40 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public final class WechatPayApiV3Gateway implements WechatPayGateway {
 
@@ -48,14 +83,14 @@ public final class WechatPayApiV3Gateway implements WechatPayGateway {
     requireConfigured(properties, apiV3Key);
     this.properties = properties;
     Config config =
-        new RSAAutoCertificateConfig.Builder()
+        new com.wechat.pay.java.core.RSAAutoCertificateConfig.Builder()
             .merchantId(properties.merchantId())
             .privateKeyFromPath(properties.privateKeyPath())
             .merchantSerialNumber(properties.merchantSerialNumber())
             .apiV3Key(apiV3Key)
             .build();
-    this.appService = new AppServiceExtension.Builder().config(config).build();
-    this.refundService = new RefundService.Builder().config(config).build();
+    this.appService = new com.wechat.pay.java.service.payments.app.AppServiceExtension.Builder().config(config).build();
+    this.refundService = new com.wechat.pay.java.service.refund.RefundService.Builder().config(config).build();
     this.notificationParser = new NotificationParser((RSAAutoCertificateConfig) config);
   }
 
@@ -181,7 +216,7 @@ public final class WechatPayApiV3Gateway implements WechatPayGateway {
   }
 
   private RequestParam requestParam(NotificationHeaders headers, String body) {
-    return new RequestParam.Builder()
+    return new com.wechat.pay.java.core.notification.RequestParam.Builder()
         .serialNumber(headers.serial())
         .timestamp(headers.timestamp())
         .nonce(headers.nonce())
@@ -202,7 +237,7 @@ public final class WechatPayApiV3Gateway implements WechatPayGateway {
         transaction.getOutTradeNo(),
         transaction.getTransactionId(),
         total,
-        transaction.getTradeState() == Transaction.TradeStateEnum.SUCCESS);
+        transaction.getTradeState() == TradeStateEnum.SUCCESS);
   }
 
   private RefundResult refund(Refund refund) {

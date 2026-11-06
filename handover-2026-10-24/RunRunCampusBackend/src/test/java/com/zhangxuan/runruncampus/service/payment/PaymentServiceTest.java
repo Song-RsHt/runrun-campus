@@ -2,28 +2,30 @@ package com.zhangxuan.runruncampus.service.payment;
 
 import com.zhangxuan.runruncampus.config.WechatPayProperties;
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.WechatPayment;
+import com.zhangxuan.runruncampus.entity.WechatRefund;
+import com.zhangxuan.runruncampus.enums.MembershipPlanType;
+import com.zhangxuan.runruncampus.enums.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.enums.PaymentBusinessType;
+import com.zhangxuan.runruncampus.enums.PaymentStatus;
+import com.zhangxuan.runruncampus.enums.RefundStatus;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.membership.MembershipPlanType;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType;
-import com.zhangxuan.runruncampus.enums.payment.PaymentStatus;
-import com.zhangxuan.runruncampus.enums.payment.RefundStatus;
 import com.zhangxuan.runruncampus.integration.payment.WechatPayGateway;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.payment.AppPayParameters;
-import com.zhangxuan.runruncampus.model.payment.NotificationHeaders;
-import com.zhangxuan.runruncampus.model.payment.RefundNotificationResult;
-import com.zhangxuan.runruncampus.model.payment.TradeResult;
-import com.zhangxuan.runruncampus.model.payment.WechatPayment;
-import com.zhangxuan.runruncampus.model.payment.WechatRefund;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository;
-import com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository;
-import com.zhangxuan.runruncampus.service.membership.MembershipService;
-import com.zhangxuan.runruncampus.service.payment.PaymentService.PaymentResponse;
-import com.zhangxuan.runruncampus.service.payment.PaymentService.RefundResponse;
+import com.zhangxuan.runruncampus.model.AppPayParameters;
+import com.zhangxuan.runruncampus.model.NotificationHeaders;
+import com.zhangxuan.runruncampus.model.RefundNotificationResult;
+import com.zhangxuan.runruncampus.model.TradeResult;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.repository.WechatPaymentRepository;
+import com.zhangxuan.runruncampus.repository.WechatRefundRepository;
+import com.zhangxuan.runruncampus.service.MembershipService;
+import com.zhangxuan.runruncampus.service.PaymentService;
+import com.zhangxuan.runruncampus.service.impl.PaymentServiceImpl;
+import com.zhangxuan.runruncampus.vo.PaymentResponse;
+import com.zhangxuan.runruncampus.vo.RefundResponse;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -88,6 +90,55 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class PaymentServiceTest {
 
@@ -110,7 +161,7 @@ class PaymentServiceTest {
   @BeforeEach
   void setUp() {
     service =
-        new PaymentService(
+        new PaymentServiceImpl(
             paymentRepository,
             refundRepository,
             orderRepository,

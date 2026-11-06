@@ -2,37 +2,39 @@ package com.zhangxuan.runruncampus.service.order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zhangxuan.runruncampus.config.ManualQrPaymentProperties;
-import com.zhangxuan.runruncampus.dto.request.order.CompleteOrderRequest;
-import com.zhangxuan.runruncampus.dto.request.order.ConfirmPackageSizeRequest;
-import com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest;
-import com.zhangxuan.runruncampus.dto.request.order.CreateRatingRequest;
-import com.zhangxuan.runruncampus.dto.response.order.CourierRatingResponse;
-import com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse;
-import com.zhangxuan.runruncampus.dto.response.order.OrderResponse;
+import com.zhangxuan.runruncampus.dto.CompleteOrderRequest;
+import com.zhangxuan.runruncampus.dto.ConfirmPackageSizeRequest;
+import com.zhangxuan.runruncampus.dto.CreateOrderRequest;
+import com.zhangxuan.runruncampus.dto.CreateRatingRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.OrderPaymentMethod;
+import com.zhangxuan.runruncampus.enums.OrderPaymentStatus;
+import com.zhangxuan.runruncampus.enums.OrderProofType;
+import com.zhangxuan.runruncampus.enums.OrderStatus;
+import com.zhangxuan.runruncampus.enums.PickupStation;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.enums.order.DeliveryZone;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod;
-import com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
-import com.zhangxuan.runruncampus.enums.order.OrderStatus;
-import com.zhangxuan.runruncampus.enums.order.PickupStation;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
+import com.zhangxuan.runruncampus.model.CouponApplication;
+import com.zhangxuan.runruncampus.model.MembershipApplication;
 import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.repository.OrderEventRepository;
+import com.zhangxuan.runruncampus.repository.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.CouponService;
+import com.zhangxuan.runruncampus.service.MembershipService;
+import com.zhangxuan.runruncampus.service.OrderService;
+import com.zhangxuan.runruncampus.service.PaymentService;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.coupon.CouponService;
-import com.zhangxuan.runruncampus.service.coupon.CouponService.CouponApplication;
 import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.service.membership.MembershipService;
-import com.zhangxuan.runruncampus.service.membership.MembershipService.MembershipApplication;
+import com.zhangxuan.runruncampus.service.impl.OrderServiceImpl;
 import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import com.zhangxuan.runruncampus.service.payment.PaymentService;
+import com.zhangxuan.runruncampus.vo.CourierRatingResponse;
+import com.zhangxuan.runruncampus.vo.DeliveryCodeResponse;
+import com.zhangxuan.runruncampus.vo.OrderResponse;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -61,6 +63,69 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -152,7 +217,7 @@ class OrderServiceTest {
   @BeforeEach
   void setUp() {
     orderService =
-        new OrderService(
+        new OrderServiceImpl(
             orderRepository,
             eventRepository,
             proofRepository,
@@ -808,7 +873,7 @@ class OrderServiceTest {
   @Test
   void disabledManualQrPaymentFallsBackToCashOnDelivery() {
     OrderService disabledService =
-        new OrderService(
+        new OrderServiceImpl(
             orderRepository,
             eventRepository,
             proofRepository,

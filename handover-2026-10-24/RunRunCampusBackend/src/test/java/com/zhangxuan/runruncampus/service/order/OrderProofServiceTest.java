@@ -1,16 +1,18 @@
 package com.zhangxuan.runruncampus.service.order;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.OrderProof;
+import com.zhangxuan.runruncampus.enums.OrderProofType;
+import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.order.OrderProofType;
-import com.zhangxuan.runruncampus.enums.order.ServiceType;
 import com.zhangxuan.runruncampus.integration.storage.LocalOrderProofStorage;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.model.order.CampusOrder;
-import com.zhangxuan.runruncampus.model.order.OrderProof;
-import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
-import com.zhangxuan.runruncampus.repository.order.OrderRepository;
-import com.zhangxuan.runruncampus.service.order.OrderProofService.ProofResponse;
+import com.zhangxuan.runruncampus.repository.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.service.OrderProofService;
+import com.zhangxuan.runruncampus.service.impl.OrderProofServiceImpl;
+import com.zhangxuan.runruncampus.vo.OrderProofVO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -37,6 +39,45 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -106,7 +147,7 @@ class OrderProofServiceTest {
     ReflectionTestUtils.setField(order, "id", 11L);
     order.assignCourier(courier);
     proofService =
-        new OrderProofService(
+        new OrderProofServiceImpl(
             orderRepository,
             proofRepository,
             new LocalOrderProofStorage(storageDirectory.toString()));
@@ -119,7 +160,7 @@ class OrderProofServiceTest {
     when(proofRepository.existsByOrderAndType(order, OrderProofType.PICKUP)).thenReturn(false);
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    ProofResponse response =
+    OrderProofVO response =
         proofService.upload(courier, 11L, OrderProofType.PICKUP, image);
     assertEquals(OrderProofType.PICKUP, response.type());
     assertEquals("pickup.jpg", response.originalFileName());
@@ -134,7 +175,7 @@ class OrderProofServiceTest {
     allowPickupProofUpload();
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    ProofResponse response =
+    OrderProofVO response =
         proofService.upload(courier, 11L, OrderProofType.PICKUP, image);
     assertEquals("image/png", response.contentType());
     assertEquals("pickup.png", response.originalFileName());
@@ -239,7 +280,7 @@ class OrderProofServiceTest {
         .thenReturn(false);
     when(proofRepository.save(any(OrderProof.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
-    ProofResponse response =
+    OrderProofVO response =
         proofService.upload(courier, 12L, OrderProofType.SIZE_REVIEW, image);
     assertEquals(OrderProofType.SIZE_REVIEW, response.type());
     assertEquals("size-review.jpg", response.originalFileName());
@@ -266,7 +307,7 @@ class OrderProofServiceTest {
     MockMultipartFile image = new MockMultipartFile("file", "pickup.jpg", "image/jpeg", JPEG_BYTES);
     OrderProofStorage failingStorage = mock(OrderProofStorage.class);
     OrderProofService service =
-        new OrderProofService(orderRepository, proofRepository, failingStorage);
+        new OrderProofServiceImpl(orderRepository, proofRepository, failingStorage);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(proofRepository.existsByOrderAndType(order, OrderProofType.PICKUP)).thenReturn(false);
     doThrow(new IOException("storage unavailable"))
