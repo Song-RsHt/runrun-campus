@@ -1,11 +1,11 @@
 package com.zhangxuan.runrunv2;
 
 import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
-import com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper;
+import com.zhangxuan.runrunv2.mapper.CourierCertificationV2Mapper;
+import com.zhangxuan.runrunv2.mapper.CourierEvidenceGovernanceMapper;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
-import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
+import com.zhangxuan.runrunv2.service.impl.CourierCertificationV2ServiceImpl;
+import com.zhangxuan.runrunv2.service.impl.CourierEvidenceGovernanceServiceImpl;
 import com.zhangxuan.runrunv2.vo.Account;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +27,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -121,7 +150,7 @@ class V2JdbcContractDatabaseTest {
     when(identity.requireRole("admin-session", "ADMIN", false))
         .thenReturn(new Account("999", "ADMIN", "ACTIVE", true, 0, false));
     var service =
-        new CourierCertificationV2Service(
+        new CourierCertificationV2ServiceImpl(
             new CourierCertificationV2Mapper(db), identity, null, null, null);
     Map<String, Object> result = service.performance("admin-session", 999, 0, 20);
     assertEquals(0L, result.get("totalCompletedPackageOrders"));
@@ -162,7 +191,7 @@ class V2JdbcContractDatabaseTest {
     when(identity.authorizeForWrite("admin-session", "ADMIN", false))
         .thenReturn(new Account(Long.toString(admin), "ADMIN", "ACTIVE", true, 0, false));
     var service =
-        new CourierEvidenceGovernanceService(
+        new CourierEvidenceGovernanceServiceImpl(
             new CourierEvidenceGovernanceMapper(db), null, identity, mock(OrderIdempotency.class));
     Instant due = Instant.parse("2030-01-02T03:04:05.123456Z");
     var result =
@@ -207,7 +236,7 @@ class V2JdbcContractDatabaseTest {
             Long.class,
             courier);
     var service =
-        new CourierEvidenceGovernanceService(
+        new CourierEvidenceGovernanceServiceImpl(
             new CourierEvidenceGovernanceMapper(db), null, null, null);
     Instant due = Instant.parse("2030-02-03T04:05:06.654321Z");
     tx.executeWithoutResult(

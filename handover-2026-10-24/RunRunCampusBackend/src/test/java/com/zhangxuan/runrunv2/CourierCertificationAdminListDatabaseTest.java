@@ -1,9 +1,9 @@
 package com.zhangxuan.runrunv2;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
+import com.zhangxuan.runrunv2.mapper.CourierCertificationV2Mapper;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
+import com.zhangxuan.runrunv2.service.impl.CourierCertificationV2ServiceImpl;
 import com.zhangxuan.runrunv2.vo.Account;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +27,35 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -88,7 +117,7 @@ class CourierCertificationAdminListDatabaseTest {
     when(identity.requireRole("test-session", "ADMIN", false))
         .thenReturn(new Account("999", "ADMIN", "ACTIVE", true, 0, false));
     var service =
-        new CourierCertificationV2Service(
+        new CourierCertificationV2ServiceImpl(
             new CourierCertificationV2Mapper(db), identity, null, null, null);
     assertEquals(0L, service.adminList("test-session", null, null, 0, 20).get("totalElements"));
     long first =
@@ -145,7 +174,7 @@ class CourierCertificationAdminListDatabaseTest {
     var identity = mock(IdentityService.class);
     when(identity.requireRole("denied-session", "ADMIN", false))
         .thenThrow(new IdentityFailure(403, "FORBIDDEN"));
-    var service = new CourierCertificationV2Service(null, identity, null, null, null);
+    var service = new CourierCertificationV2ServiceImpl(null, identity, null, null, null);
     assertThrows(
         IdentityFailure.class, () -> service.adminList("denied-session", null, null, 0, 20));
   }

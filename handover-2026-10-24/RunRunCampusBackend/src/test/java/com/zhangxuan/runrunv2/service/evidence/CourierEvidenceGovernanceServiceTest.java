@@ -2,11 +2,11 @@ package com.zhangxuan.runrunv2.service.evidence;
 
 import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
-import com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper;
+import com.zhangxuan.runrunv2.mapper.CourierEvidenceGovernanceMapper;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
+import com.zhangxuan.runrunv2.service.impl.CourierEvidenceGovernanceServiceImpl;
 import com.zhangxuan.runrunv2.vo.Account;
-import com.zhangxuan.runrunv2.dto.response.evidence.HoldResult;
+import com.zhangxuan.runrunv2.vo.HoldResult;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +20,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -78,7 +100,7 @@ class CourierEvidenceGovernanceServiceTest {
     when(idem.replay(eq("9"), eq("evidence-hold:create"), eq("k"), any(), eq(HoldResult.class)))
         .thenReturn(expected);
     var service =
-        new CourierEvidenceGovernanceService(
+        new CourierEvidenceGovernanceServiceImpl(
             new CourierEvidenceGovernanceMapper(db),
             mock(V2StudentCardStorage.class),
             identity,
@@ -105,7 +127,7 @@ class CourierEvidenceGovernanceServiceTest {
     when(idem.replay(eq("9"), eq("evidence-hold:release"), eq("k"), eq("7"), eq(HoldResult.class)))
         .thenReturn(expected);
     var service =
-        new CourierEvidenceGovernanceService(
+        new CourierEvidenceGovernanceServiceImpl(
             new CourierEvidenceGovernanceMapper(db),
             mock(V2StudentCardStorage.class),
             identity,
