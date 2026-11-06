@@ -475,6 +475,29 @@ class OrderIntegrationTest {
   }
 
   @Test
+  void disabledConfigPreservesNullableReviewOwner() {
+    db.update(
+        "UPDATE runrun_v2.platform_settings SET new_order_enabled=false,review_owner_id=NULL");
+    Config updated =
+        config.patch(
+            admin,
+            "unassigned-disabled-config",
+            new ConfigChange(0L, 0L, null, null, null, null, null, "合成未分配负责人配置"));
+    assertFalse(updated.newOrderEnabled());
+    assertNull(updated.reviewOwnerId());
+    assertEquals(1, updated.configVersion());
+    failure(
+        "REVIEW_OWNER_REQUIRED",
+        () ->
+            config.patch(
+                admin,
+                "unassigned-enable-rejected",
+                new ConfigChange(1L, 1L, true, null, null, null, null, "合成开启接单")));
+    assertEquals(1, count("admin_audit_logs"));
+    assertEquals(updated, config.config(admin));
+  }
+
+  @Test
   void concurrentConfigUpdatesRejectStaleWriter() throws Exception {
     String admin2 = account("13800000005", "ADMIN");
     List<Object> results =

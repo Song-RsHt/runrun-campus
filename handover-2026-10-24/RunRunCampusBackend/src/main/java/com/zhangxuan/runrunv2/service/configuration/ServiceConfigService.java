@@ -200,7 +200,7 @@ public class ServiceConfigService {
     Long owner =
         change.reviewOwnerId() == null
             ? (Long) settings.get("review_owner_id")
-            : id(change.reviewOwnerId());
+            : Long.valueOf(id(change.reviewOwnerId()));
     boolean enabled =
         change.newOrderEnabled() == null
             ? Boolean.TRUE.equals(settings.get("new_order_enabled"))
