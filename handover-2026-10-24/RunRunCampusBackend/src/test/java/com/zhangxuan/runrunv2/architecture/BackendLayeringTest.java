@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.zhangxuan.runruncampus.RunRunCampusBackendApplication;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.service.impl.AdminMfaServiceImpl;
+import com.zhangxuan.runruncampus.service.impl.auth.AdminMfaServiceImpl;
 import com.zhangxuan.runrunv2.IdentityApplication;
 
 import jakarta.persistence.Entity;
@@ -20,6 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
@@ -41,7 +42,7 @@ import java.util.regex.Pattern;
 /** 校验两个应用的技术层、接口依赖与调度边界，不启动或替换数据库。 */
 class BackendLayeringTest {
     private static final String OWNER = "com.zhangxuan.";
-    private static final Set<String> FLAT_LAYERS =
+    private static final Set<String> TECHNICAL_LAYERS =
             Set.of(
                     "controller",
                     "mapper",
@@ -58,6 +59,18 @@ class BackendLayeringTest {
                     "config",
                     "task",
                     "bootstrap");
+    private static final Set<String> BUSINESS_LAYERS =
+            Set.of(
+                    "controller",
+                    "mapper",
+                    "repository",
+                    "dto",
+                    "vo",
+                    "entity",
+                    "model",
+                    "enums",
+                    "constant",
+                    "task");
 
     private record Source(Path path, String text, String packageName) {
         String namespace() {
@@ -66,6 +79,15 @@ class BackendLayeringTest {
 
         String layer() {
             return packageName.substring(namespace().length() + 1);
+        }
+
+        String technicalLayer() {
+            return layer().split("\\.")[0];
+        }
+
+        String businessDomain() {
+            String[] parts = layer().split("\\.");
+            return parts[0].equals("service") && parts[1].equals("impl") ? parts[2] : parts[1];
         }
 
         Class<?> type() throws ClassNotFoundException {
@@ -124,7 +146,7 @@ class BackendLayeringTest {
     }
 
     @Test
-    void technicalLayersAreFlatAndSourcePathsMatchPackages() throws Exception {
+    void businessClassesLiveInDomainSubpackagesAndSourcePathsMatchPackages() throws Exception {
         for (var source : sources()) {
             String name = source.packageName();
             String namespace =
@@ -147,18 +169,20 @@ class BackendLayeringTest {
             String layer = name.substring(namespace.length() + 1);
             String first = layer.split("\\.")[0];
             if (first.equals("service")) {
-                assertTrue(layer.equals("service") || layer.equals("service.impl"), name);
+                assertTrue(layer.matches("service\\.(?:impl\\.)?[a-z][a-z0-9]*"), name);
             } else if (first.equals("integration")) {
                 assertTrue(layer.startsWith("integration."), name);
+            } else if (BUSINESS_LAYERS.contains(first)) {
+                assertTrue(layer.matches(first + "\\.[a-z][a-z0-9]*"), name);
             } else {
-                assertTrue(FLAT_LAYERS.contains(layer), name);
+                assertTrue(TECHNICAL_LAYERS.contains(layer), name);
             }
             Class<?> type = source.type();
             if (type.isAnnotationPresent(RestController.class)) {
-                assertEquals("controller", layer, name);
+                assertEquals("controller", first, name);
             }
             if (type.isAnnotationPresent(Entity.class)) {
-                assertEquals("entity", layer, name);
+                assertEquals("entity", first, name);
             }
         }
     }
@@ -172,14 +196,16 @@ class BackendLayeringTest {
                 continue;
             }
             Class<?> type = source.type();
-            if (source.layer().equals("service")) {
+            if (!source.layer().startsWith("service.impl.")) {
                 assertTrue(type.isInterface(), type.getName());
                 assertFalse(type.isAnnotationPresent(Service.class), type.getName());
                 if (!type.getSimpleName().equals("OriginalPaymentWriter")) {
                     Class<?> impl =
                             Class.forName(
-                                    source.packageName()
-                                            + ".impl."
+                                    source.namespace()
+                                            + ".service.impl."
+                                            + source.businessDomain()
+                                            + "."
                                             + type.getSimpleName()
                                             + "Impl");
                     assertTrue(type.isAssignableFrom(impl), type.getName());
@@ -199,13 +225,16 @@ class BackendLayeringTest {
                             Arrays.stream(type.getDeclaredConstructors())
                                     .filter(
                                             constructor ->
-                                                    constructor.isAnnotationPresent(Autowired.class))
+                                                    constructor.isAnnotationPresent(
+                                                            Autowired.class))
                                     .count(),
                             type.getName());
                 }
                 assertEquals(1, type.getInterfaces().length, type.getName());
                 Class<?> contract = type.getInterfaces()[0];
-                assertEquals(source.namespace() + ".service", contract.getPackageName());
+                assertEquals(
+                        source.namespace() + ".service." + source.businessDomain(),
+                        contract.getPackageName());
                 for (var method : type.getDeclaredMethods()) {
                     if (Modifier.isPublic(method.getModifiers())
                             && !Modifier.isStatic(method.getModifiers())
@@ -217,7 +246,7 @@ class BackendLayeringTest {
                 }
                 for (var field : type.getDeclaredFields()) {
                     assertFalse(
-                            field.getType().getPackageName().endsWith(".service.impl"),
+                            field.getType().getPackageName().contains(".service.impl."),
                             field.toString());
                     assertFalse(field.isAnnotationPresent(Autowired.class), field.toString());
                 }
@@ -230,7 +259,7 @@ class BackendLayeringTest {
     @Test
     void controllersAndServicesCannotBypassPersistenceOrTransportBoundaries() throws Exception {
         for (var source : sources()) {
-            if (source.packageName().endsWith(".controller")) {
+            if (source.packageName().contains(".controller.")) {
                 reject(
                         source,
                         "JdbcTemplate|DataSource|EntityManager|com\\.zhangxuan\\.[\\w.]+\\.(?:repository|mapper)\\.");
@@ -251,13 +280,13 @@ class BackendLayeringTest {
     @Test
     void persistenceDoesNotDependOnServicesOrHttpOrOwnTransactions() throws Exception {
         for (var source : sources()) {
-            if (source.packageName().endsWith(".mapper")
-                    || source.packageName().endsWith(".repository")) {
+            if (source.packageName().contains(".mapper.")
+                    || source.packageName().contains(".repository.")) {
                 reject(
                         source,
                         "com\\.zhangxuan\\.[\\w.]+\\.(?:service|controller)\\.|HttpServlet|ResponseEntity");
             }
-            if (source.packageName().endsWith(".mapper")) {
+            if (source.packageName().contains(".mapper.")) {
                 reject(source, "@Transactional|PlatformTransactionManager|TransactionTemplate");
             }
         }
@@ -273,7 +302,7 @@ class BackendLayeringTest {
                 if (schedule == null) {
                     continue;
                 }
-                assertEquals("task", source.layer(), method.toString());
+                assertEquals("task", source.technicalLayer(), method.toString());
                 reject(
                         source,
                         "JdbcTemplate|EntityManager|com\\.zhangxuan\\.[\\w.]+\\.(?:repository|mapper)\\.");
@@ -361,8 +390,7 @@ class BackendLayeringTest {
                                     assertFalse(
                                             transaction.rollbackOn(
                                                     new ResponseStatusException(
-                                                            org.springframework.http.HttpStatus
-                                                                    .UNAUTHORIZED)),
+                                                            HttpStatus.UNAUTHORIZED)),
                                             method.toString());
                                     assertTrue(
                                             transaction.rollbackOn(
