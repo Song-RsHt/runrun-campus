@@ -2,20 +2,24 @@ package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.mapper.admin.AdminDispatchMapper;
-import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.mapper.AdminDispatchMapper;
+import com.zhangxuan.runruncampus.model.DispatchScoreCalculator;
+import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminDispatchService;
+import com.zhangxuan.runruncampus.service.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.OrderMessageService;
+import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.impl.AdminDispatchServiceImpl;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +42,46 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -147,7 +191,7 @@ class AdminDispatchServiceTest {
   @BeforeEach
   void setUp() {
     service =
-        new AdminDispatchService(
+        new AdminDispatchServiceImpl(
             new AdminDispatchMapper(jdbc),
             orders,
             users,
@@ -278,24 +322,24 @@ class AdminDispatchServiceTest {
 
   @Test
   void recommendationKeepsIdleCourierAheadOfBusyExperiencedCourier() {
-    int idleNewcomer = AdminDispatchService.recommendationScore(0, 0, 0, 0, null, 0);
-    int busyVeteran = AdminDispatchService.recommendationScore(1, 120, 100, 50, 5.0, 100);
+    int idleNewcomer = DispatchScoreCalculator.recommendationScore(0, 0, 0, 0, null, 0);
+    int busyVeteran = DispatchScoreCalculator.recommendationScore(1, 120, 100, 50, 5.0, 100);
     assertEquals(60, idleNewcomer);
     assertEquals(55, busyVeteran);
   }
 
   @Test
   void recommendationUsesVerifiedExperienceAndIgnoresSparseRatingBonus() {
-    int sparseRating = AdminDispatchService.recommendationScore(0, 60, 20, 6, 5.0, 2);
-    int verifiedRating = AdminDispatchService.recommendationScore(0, 60, 20, 6, 5.0, 3);
+    int sparseRating = DispatchScoreCalculator.recommendationScore(0, 60, 20, 6, 5.0, 2);
+    int verifiedRating = DispatchScoreCalculator.recommendationScore(0, 60, 20, 6, 5.0, 3);
     assertEquals(73, sparseRating);
     assertEquals(83, verifiedRating);
   }
 
   @Test
   void recommendationScoreKeepsIdleCourierAheadOfBusyExperiencedCourier() {
-    int idleNewCourier = AdminDispatchService.recommendationScore(0, 0, 0, 0, null, 0);
-    int busyTopPerformer = AdminDispatchService.recommendationScore(1, 120, 100, 100, 5.0, 100);
+    int idleNewCourier = DispatchScoreCalculator.recommendationScore(0, 0, 0, 0, null, 0);
+    int busyTopPerformer = DispatchScoreCalculator.recommendationScore(1, 120, 100, 100, 5.0, 100);
     assertTrue(idleNewCourier > busyTopPerformer);
     assertEquals(60, idleNewCourier);
     assertEquals(55, busyTopPerformer);
@@ -303,8 +347,8 @@ class AdminDispatchServiceTest {
 
   @Test
   void recommendationScoreRequiresEnoughRatingsBeforeUsingRatingBonus() {
-    int sparse = AdminDispatchService.recommendationScore(0, 0, 0, 0, 5.0, 2);
-    int established = AdminDispatchService.recommendationScore(0, 0, 0, 0, 5.0, 3);
+    int sparse = DispatchScoreCalculator.recommendationScore(0, 0, 0, 0, 5.0, 2);
+    int established = DispatchScoreCalculator.recommendationScore(0, 0, 0, 0, 5.0, 3);
     assertEquals(60, sparse);
     assertEquals(70, established);
   }

@@ -1,17 +1,39 @@
 package com.zhangxuan.runruncampus.service.message;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
+import com.zhangxuan.runruncampus.integration.push.PushDeliveryProcessor;
 import com.zhangxuan.runruncampus.integration.push.PushNotificationGateway;
-import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
-import com.zhangxuan.runruncampus.model.message.PushDeliveryTask;
-import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.model.OrderPushRequested;
+import com.zhangxuan.runruncampus.model.PushDeliveryTask;
+import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class PushDeliveryProcessorTest {
 

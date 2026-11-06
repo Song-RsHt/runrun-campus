@@ -5,7 +5,7 @@ import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.Session;
 import com.zhangxuan.runruncampus.enums.SessionClientType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
+import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.model.PrivacyPolicyValidation;
 import com.zhangxuan.runruncampus.model.SessionMetadata;
 import com.zhangxuan.runruncampus.repository.SessionRepository;

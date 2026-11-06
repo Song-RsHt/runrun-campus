@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.entity;
 
+import com.zhangxuan.runruncampus.enums.AdminRole;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +12,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Objects;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Entity
 @Table(name = "app_users")

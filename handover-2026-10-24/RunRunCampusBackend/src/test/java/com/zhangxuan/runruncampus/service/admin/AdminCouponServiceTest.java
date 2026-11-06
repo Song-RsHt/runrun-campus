@@ -2,14 +2,17 @@ package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.UserCoupon;
+import com.zhangxuan.runruncampus.enums.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.AdminPermission;
+import com.zhangxuan.runruncampus.enums.AdminRole;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.repository.UserCouponRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.service.admin.AdminCouponService.GrantResponse;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminCouponService;
+import com.zhangxuan.runruncampus.service.impl.AdminCouponServiceImpl;
+import com.zhangxuan.runruncampus.vo.CouponGrantResponse;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -83,6 +86,34 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class AdminCouponServiceTest {
 
@@ -95,7 +126,7 @@ class AdminCouponServiceTest {
   @Test
   void operationsAdministratorIssuesFixedOneYuanCouponAndWritesAudit() {
     AdminCouponService service =
-        new AdminCouponService(userRepository, couponRepository, auditService);
+        new AdminCouponServiceImpl(userRepository, couponRepository, auditService);
     AppUser administrator = user(1L, "运营管理员", UserRole.ADMIN);
     AppUser customer = user(2L, "测试用户", UserRole.CUSTOMER);
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(customer));
@@ -107,7 +138,7 @@ class AdminCouponServiceTest {
               return coupon;
             });
     Instant before = Instant.now().plusSeconds(29L * 24 * 3600);
-    GrantResponse result = service.issueOneYuan(administrator, 2L);
+    CouponGrantResponse result = service.issueOneYuan(administrator, 2L);
     assertEquals(51L, result.couponId());
     assertEquals(100, result.discountCents());
     assertEquals(200, result.minimumOrderCents());
@@ -125,7 +156,7 @@ class AdminCouponServiceTest {
   @Test
   void couponCannotBeIssuedToCourier() {
     AdminCouponService service =
-        new AdminCouponService(userRepository, couponRepository, auditService);
+        new AdminCouponServiceImpl(userRepository, couponRepository, auditService);
     AppUser courier = user(2L, "测试骑手", UserRole.COURIER);
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(courier));
     ResponseStatusException exception =

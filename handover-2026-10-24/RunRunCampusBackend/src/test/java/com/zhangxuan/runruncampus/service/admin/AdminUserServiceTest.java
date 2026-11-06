@@ -1,11 +1,14 @@
 package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.repository.SessionRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminUserService;
+import com.zhangxuan.runruncampus.service.impl.AdminUserServiceImpl;
 import com.zhangxuan.runruncampus.vo.AdminUserItem;
 import java.time.Instant;
 import java.util.Optional;
@@ -19,6 +22,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -56,7 +80,7 @@ class AdminUserServiceTest {
   @Test
   void unlocksNonAdminUserAndWritesAuditLog() {
     AdminUserService service =
-        new AdminUserService(userRepository, sessionRepository, passwordEncoder, auditService);
+        new AdminUserServiceImpl(userRepository, sessionRepository, passwordEncoder, auditService);
     AppUser administrator = user(1L, "超级管理员", UserRole.ADMIN);
     AppUser target = user(2L, "锁定用户", UserRole.CUSTOMER);
     target.recordLoginFailure(1, Instant.now().plusSeconds(900));
@@ -76,7 +100,7 @@ class AdminUserServiceTest {
   @Test
   void resetsCourierPasswordRevokesSessionsUnlocksLoginAndWritesAuditLog() {
     AdminUserService service =
-        new AdminUserService(userRepository, sessionRepository, passwordEncoder, auditService);
+        new AdminUserServiceImpl(userRepository, sessionRepository, passwordEncoder, auditService);
     AppUser administrator = user(1L, "超级管理员", UserRole.ADMIN);
     AppUser courier = user(2L, "配送骑手", UserRole.COURIER);
     courier.recordLoginFailure(1, Instant.now().plusSeconds(900));

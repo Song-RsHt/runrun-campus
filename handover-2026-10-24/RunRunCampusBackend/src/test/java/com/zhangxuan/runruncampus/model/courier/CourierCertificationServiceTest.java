@@ -1,13 +1,15 @@
 package com.zhangxuan.runruncampus.model.courier;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CourierCertification;
+import com.zhangxuan.runruncampus.enums.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
-import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService.CertificationResponse;
+import com.zhangxuan.runruncampus.repository.CourierCertificationRepository;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.impl.CourierCertificationServiceImpl;
+import com.zhangxuan.runruncampus.vo.CertificationResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -56,6 +58,35 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class CourierCertificationServiceTest {
 
@@ -74,7 +105,7 @@ class CourierCertificationServiceTest {
   @BeforeEach
   void setUp() {
     certificationService =
-        new CourierCertificationService(certificationRepository, auditService, storage);
+        new CourierCertificationServiceImpl(certificationRepository, auditService, storage);
     courier = user(1L, UserRole.COURIER);
     courier.markNewCourierUnapproved();
     admin = user(9L, UserRole.ADMIN);

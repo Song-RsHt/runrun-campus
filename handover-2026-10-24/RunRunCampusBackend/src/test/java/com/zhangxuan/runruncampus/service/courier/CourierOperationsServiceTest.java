@@ -1,14 +1,17 @@
 package com.zhangxuan.runruncampus.service.courier;
 
-import com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.model.CourierBusinessStats;
-import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.CourierCertificationService;
+import com.zhangxuan.runruncampus.service.CourierOperationsService;
+import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.impl.CourierOperationsServiceImpl;
+import com.zhangxuan.runruncampus.vo.OperationsResponse;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -94,6 +97,38 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class CourierOperationsServiceTest {
 
@@ -112,7 +147,7 @@ class CourierOperationsServiceTest {
   @BeforeEach
   void setUp() {
     service =
-        new CourierOperationsService(
+        new CourierOperationsServiceImpl(
             userRepository, orderRepository, certificationService, settingsService);
     Mockito.lenient()
         .when(certificationService.isEligible(any(AppUser.class)))

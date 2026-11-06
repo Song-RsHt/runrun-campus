@@ -1,11 +1,12 @@
 package com.zhangxuan.runruncampus.model.courier;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CourierCertification;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
-import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
+import com.zhangxuan.runruncampus.repository.CourierCertificationRepository;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.impl.CourierCertificationServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,23 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class CourierCertificationGovernanceTest {
 
   @Test
@@ -40,7 +58,7 @@ class CourierCertificationGovernanceTest {
     var repo = Mockito.mock(CourierCertificationRepository.class);
     var storage = Mockito.mock(OrderProofStorage.class);
     var service =
-        new CourierCertificationService(repo, Mockito.mock(AdminAuditService.class), storage);
+        new CourierCertificationServiceImpl(repo, Mockito.mock(AdminAuditService.class), storage);
     var courier = new AppUser("13800000001", "hash", "rider", UserRole.COURIER);
     ReflectionTestUtils.setField(courier, "id", 1L);
     var admin = new AppUser("13800000002", "hash", "admin", UserRole.ADMIN);
@@ -61,7 +79,7 @@ class CourierCertificationGovernanceTest {
     var repo = Mockito.mock(CourierCertificationRepository.class);
     var storage = Mockito.mock(OrderProofStorage.class);
     var service =
-        new CourierCertificationService(repo, Mockito.mock(AdminAuditService.class), storage);
+        new CourierCertificationServiceImpl(repo, Mockito.mock(AdminAuditService.class), storage);
     var courier = new AppUser("13800000001", "hash", "rider", UserRole.COURIER);
     ReflectionTestUtils.setField(courier, "id", 1L);
     var c = new CourierCertification(courier, "", "", "");

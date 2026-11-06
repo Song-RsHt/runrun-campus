@@ -3,11 +3,12 @@ package com.zhangxuan.runruncampus.service.impl;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
 import com.zhangxuan.runruncampus.entity.OrderChatMessage;
+import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.repository.OrderChatRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.OrderChatService;
+import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.OrderChatVO;
 import com.zhangxuan.runruncampus.vo.OrderUnreadVO;
 import com.zhangxuan.runruncampus.vo.UnreadChatSummaryVO;
@@ -17,7 +18,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import com.zhangxuan.runruncampus.service.OrderChatService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @Service
 public class OrderChatServiceImpl implements OrderChatService {

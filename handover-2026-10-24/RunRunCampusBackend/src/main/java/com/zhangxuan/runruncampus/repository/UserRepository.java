@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.repository;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
 import jakarta.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +12,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public interface UserRepository extends JpaRepository<AppUser, Long> {
 
@@ -55,10 +69,10 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
                 or lower(c.campus) like lower(concat('%', :query, '%')))))
           and (:status is null
             or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.NOT_APPLIED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
                 and u.courierApproved = false
                 and not exists (select c from CourierCertification c where c.courier = u))
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.APPROVED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
                 and (u.courierApproved = true or u.courierApproved is null)
                 and not exists (select c from CourierCertification c where c.courier = u)))
         """, countQuery = """
@@ -73,10 +87,10 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
                 or lower(c.campus) like lower(concat('%', :query, '%')))))
           and (:status is null
             or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.NOT_APPLIED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
                 and u.courierApproved = false
                 and not exists (select c from CourierCertification c where c.courier = u))
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.APPROVED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
                 and (u.courierApproved = true or u.courierApproved is null)
                 and not exists (select c from CourierCertification c where c.courier = u)))
         """)
@@ -87,10 +101,10 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
         where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
           and (:status is null
             or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.NOT_APPLIED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
                 and u.courierApproved = false
                 and not exists (select c from CourierCertification c where c.courier = u))
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.APPROVED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
                 and (u.courierApproved = true or u.courierApproved is null)
                 and not exists (select c from CourierCertification c where c.courier = u)))
         """, countQuery = """
@@ -98,10 +112,10 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
         where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
           and (:status is null
             or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.NOT_APPLIED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
                 and u.courierApproved = false
                 and not exists (select c from CourierCertification c where c.courier = u))
-            or (:status = com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus.APPROVED
+            or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
                 and (u.courierApproved = true or u.courierApproved is null)
                 and not exists (select c from CourierCertification c where c.courier = u)))
         """)

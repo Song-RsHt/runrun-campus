@@ -1,14 +1,17 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackItem;
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.UserFeedback;
+import com.zhangxuan.runruncampus.enums.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.FeedbackHandlingStatus;
+import com.zhangxuan.runruncampus.enums.FeedbackType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
-import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
-import com.zhangxuan.runruncampus.model.feedback.UserFeedback;
-import com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository;
+import com.zhangxuan.runruncampus.repository.FeedbackRepository;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminFeedbackService;
+import com.zhangxuan.runruncampus.service.impl.AdminFeedbackServiceImpl;
+import com.zhangxuan.runruncampus.vo.FeedbackItem;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,27 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -57,7 +81,7 @@ class AdminFeedbackServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new AdminFeedbackService(feedbackRepository, auditService);
+    service = new AdminFeedbackServiceImpl(feedbackRepository, auditService);
     administrator = new AppUser("13800000000", "hash", "运营员", UserRole.ADMIN);
     ReflectionTestUtils.setField(administrator, "id", 1L);
     AppUser user = new AppUser("13800000001", "hash", "反馈用户", UserRole.CUSTOMER);

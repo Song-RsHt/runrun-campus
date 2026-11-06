@@ -5,14 +5,14 @@ import com.zhangxuan.runruncampus.entity.CampusOrder;
 import com.zhangxuan.runruncampus.entity.OrderIssue;
 import com.zhangxuan.runruncampus.enums.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.enums.OrderIssueType;
+import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.OrderIssueService;
+import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.service.impl.OrderIssueServiceImpl;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
 import com.zhangxuan.runruncampus.vo.OrderIssueVO;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +33,41 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

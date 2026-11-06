@@ -1,16 +1,28 @@
 package com.zhangxuan.runruncampus.bootstrap;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper;
+import com.zhangxuan.runruncampus.mapper.UserRoleSchemaMigrationMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 @ExtendWith(MockitoExtension.class)
 class UserRoleSchemaMigrationTest {
@@ -27,7 +39,7 @@ class UserRoleSchemaMigrationTest {
   @Test
   void expandsOldRoleConstraintToIncludeAdmin() {
     when(jdbcTemplate.queryForObject(
-            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+            UserRoleSchemaMigrationMapper
                 .CONSTRAINT_QUERY,
             String.class))
         .thenReturn(
@@ -36,18 +48,18 @@ class UserRoleSchemaMigrationTest {
     migration.run(null);
     verify(jdbcTemplate)
         .execute(
-            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+            UserRoleSchemaMigrationMapper
                 .DROP_CONSTRAINT);
     verify(jdbcTemplate)
         .execute(
-            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+            UserRoleSchemaMigrationMapper
                 .ADD_CONSTRAINT);
   }
 
   @Test
   void leavesCurrentRoleConstraintUnchanged() {
     when(jdbcTemplate.queryForObject(
-            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+            UserRoleSchemaMigrationMapper
                 .CONSTRAINT_QUERY,
             String.class))
         .thenReturn(
@@ -56,11 +68,11 @@ class UserRoleSchemaMigrationTest {
     migration.run(null);
     verify(jdbcTemplate, never())
         .execute(
-            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+            UserRoleSchemaMigrationMapper
                 .DROP_CONSTRAINT);
     verify(jdbcTemplate, never())
         .execute(
-            com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper
+            UserRoleSchemaMigrationMapper
                 .ADD_CONSTRAINT);
   }
 }

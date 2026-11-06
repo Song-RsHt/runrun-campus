@@ -2,12 +2,15 @@ package com.zhangxuan.runruncampus.model.message;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.entity.OrderMessage;
+import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
-import com.zhangxuan.runruncampus.repository.message.OrderMessageRepository;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService.MessageResponse;
+import com.zhangxuan.runruncampus.model.OrderPushRequested;
+import com.zhangxuan.runruncampus.repository.OrderMessageRepository;
+import com.zhangxuan.runruncampus.service.OrderMessageService;
+import com.zhangxuan.runruncampus.service.impl.OrderMessageServiceImpl;
+import com.zhangxuan.runruncampus.vo.OrderMessageVO;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,6 +92,36 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class OrderMessageServiceTest {
 
@@ -104,7 +137,7 @@ class OrderMessageServiceTest {
 
   @BeforeEach
   void setUp() {
-    messageService = new OrderMessageService(messageRepository, eventPublisher);
+    messageService = new OrderMessageServiceImpl(messageRepository, eventPublisher);
     recipient = user(1L);
     order =
         new CampusOrder(
@@ -129,7 +162,7 @@ class OrderMessageServiceTest {
     OrderMessage message = message(21L, recipient);
     when(messageRepository.findByRecipientOrderByCreatedAtDesc(recipient))
         .thenReturn(List.of(message));
-    List<MessageResponse> responses = messageService.list(recipient);
+    List<OrderMessageVO> responses = messageService.list(recipient);
     assertEquals(1, responses.size());
     assertFalse(responses.get(0).read());
     assertEquals(11L, responses.get(0).orderId());
@@ -139,7 +172,7 @@ class OrderMessageServiceTest {
   void recipientCanMarkMessageRead() {
     OrderMessage message = message(21L, recipient);
     when(messageRepository.findById(21L)).thenReturn(Optional.of(message));
-    MessageResponse response = messageService.markRead(recipient, 21L);
+    OrderMessageVO response = messageService.markRead(recipient, 21L);
     assertTrue(response.read());
     assertNotNull(response.readAt());
   }

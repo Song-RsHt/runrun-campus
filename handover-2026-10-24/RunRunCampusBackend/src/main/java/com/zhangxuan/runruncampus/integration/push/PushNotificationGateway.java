@@ -1,6 +1,9 @@
 package com.zhangxuan.runruncampus.integration.push;
 
-import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
+import com.zhangxuan.runruncampus.model.OrderPushRequested;
+
+
+
 
 public interface PushNotificationGateway {
 

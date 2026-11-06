@@ -2,20 +2,23 @@ package com.zhangxuan.runruncampus.service.admin;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.AdminPermission;
+import com.zhangxuan.runruncampus.enums.AdminRole;
+import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.OrderProofType;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminOrderLifecycleService;
+import com.zhangxuan.runruncampus.service.OrderMessageService;
+import com.zhangxuan.runruncampus.service.impl.AdminOrderLifecycleServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,46 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -143,7 +186,7 @@ class AdminOrderLifecycleServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new AdminOrderLifecycleService(orders, proofs, events, messages, audit);
+    service = new AdminOrderLifecycleServiceImpl(orders, proofs, events, messages, audit);
     admin = user(1, UserRole.ADMIN);
     customer = user(2, UserRole.CUSTOMER);
     courier = user(3, UserRole.COURIER);

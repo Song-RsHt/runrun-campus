@@ -1,12 +1,14 @@
 package com.zhangxuan.runruncampus.service.feedback;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.UserFeedback;
+import com.zhangxuan.runruncampus.enums.FeedbackHandlingStatus;
+import com.zhangxuan.runruncampus.enums.FeedbackType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus;
-import com.zhangxuan.runruncampus.enums.feedback.FeedbackType;
-import com.zhangxuan.runruncampus.model.feedback.UserFeedback;
-import com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository;
-import com.zhangxuan.runruncampus.service.feedback.FeedbackService.FeedbackResponse;
+import com.zhangxuan.runruncampus.repository.FeedbackRepository;
+import com.zhangxuan.runruncampus.service.FeedbackService;
+import com.zhangxuan.runruncampus.service.impl.FeedbackServiceImpl;
+import com.zhangxuan.runruncampus.vo.FeedbackResponse;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +51,31 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class FeedbackServiceTest {
 
@@ -60,7 +87,7 @@ class FeedbackServiceTest {
 
   @BeforeEach
   void setUp() {
-    feedbackService = new FeedbackService(feedbackRepository);
+    feedbackService = new FeedbackServiceImpl(feedbackRepository);
     user = user(1L, UserRole.CUSTOMER);
   }
 

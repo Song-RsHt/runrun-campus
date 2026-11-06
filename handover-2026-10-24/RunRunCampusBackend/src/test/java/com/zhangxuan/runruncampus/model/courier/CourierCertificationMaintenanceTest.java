@@ -1,11 +1,12 @@
 package com.zhangxuan.runruncampus.model.courier;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CourierCertification;
+import com.zhangxuan.runruncampus.enums.CourierCertificationStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus;
+import com.zhangxuan.runruncampus.integration.maintenance.CourierCertificationMaintenance;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
-import com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationMaintenance;
+import com.zhangxuan.runruncampus.repository.CourierCertificationRepository;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -23,6 +24,31 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

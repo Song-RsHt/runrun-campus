@@ -4,14 +4,14 @@ import com.zhangxuan.runruncampus.constant.PrivacyConstants;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.repository.AddressRepository;
+import com.zhangxuan.runruncampus.repository.OrderMessageRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
 import com.zhangxuan.runruncampus.repository.SessionRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.WechatRefundRepository;
-import com.zhangxuan.runruncampus.repository.message.OrderMessageRepository;
-import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.PrivacyService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.impl.PrivacyServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +32,40 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

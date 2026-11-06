@@ -1,13 +1,16 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.dto.response.admin.account.AdminAccountItem;
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.enums.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.AdminRole;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
-import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.repository.SessionRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
+import com.zhangxuan.runruncampus.service.AdminAccountService;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.impl.AdminAccountServiceImpl;
+import com.zhangxuan.runruncampus.vo.AdminAccountItem;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +57,34 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class AdminAccountServiceTest {
 
@@ -72,7 +103,7 @@ class AdminAccountServiceTest {
   @BeforeEach
   void setUp() {
     service =
-        new AdminAccountService(userRepository, sessionRepository, passwordEncoder, auditService);
+        new AdminAccountServiceImpl(userRepository, sessionRepository, passwordEncoder, auditService);
     operator = admin(1L, "超级管理员");
   }
 
@@ -191,7 +222,7 @@ class AdminAccountServiceTest {
     operator.changePasswordHash(originalHash);
     when(userRepository.findLockedById(1L)).thenReturn(Optional.of(stored));
     AdminAccountService accountService =
-        new AdminAccountService(userRepository, sessionRepository, encoder, auditService);
+        new AdminAccountServiceImpl(userRepository, sessionRepository, encoder, auditService);
     accountService.changeOwnPassword(operator, "current-password", "new-password88");
     assertTrue(encoder.matches("new-password88", stored.getPasswordHash()));
     assertFalse(encoder.matches("current-password", stored.getPasswordHash()));

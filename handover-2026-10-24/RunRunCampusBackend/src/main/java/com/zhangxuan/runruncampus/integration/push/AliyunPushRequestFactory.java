@@ -1,10 +1,23 @@
 package com.zhangxuan.runruncampus.integration.push;
 
 import com.aliyun.push20160801.models.PushTask;
+import com.aliyun.push20160801.models.PushTask.PushTaskNotification;
+import com.aliyun.push20160801.models.PushTask.PushTaskNotificationAndroid;
+import com.aliyun.push20160801.models.PushTask.PushTaskNotificationAndroidOptions;
+import com.aliyun.push20160801.models.PushTask.PushTaskNotificationAndroidOptionsAccs;
+import com.aliyun.push20160801.models.PushTask.PushTaskOptions;
+import com.aliyun.push20160801.models.PushTask.PushTaskTarget;
 import com.aliyun.push20160801.models.PushV2Request;
-import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
+import com.zhangxuan.runruncampus.model.OrderPushRequested;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+
+
+
+
+
+
+
 
 public class AliyunPushRequestFactory {
 
@@ -30,30 +43,30 @@ public class AliyunPushRequestFactory {
         event.orderId() == null
             ? "notification-" + Math.floorMod(event.idempotentToken().hashCode(), Integer.MAX_VALUE)
             : "order-" + event.orderId();
-    PushTask.PushTaskTarget target =
-        new PushTask.PushTaskTarget()
+    PushTaskTarget target =
+        new PushTaskTarget()
             .setType("ACCOUNT")
             .setValue(event.recipientId().toString())
             .setPlatform("ANDROID");
-    PushTask.PushTaskNotificationAndroidOptionsAccs accs =
-        new PushTask.PushTaskNotificationAndroidOptionsAccs()
+    PushTaskNotificationAndroidOptionsAccs accs =
+        new PushTaskNotificationAndroidOptionsAccs()
             .setOpenType("NONE")
             .setNotifyType("BOTH")
             .setPriority(2);
-    PushTask.PushTaskNotificationAndroid android =
-        new PushTask.PushTaskNotificationAndroid()
+    PushTaskNotificationAndroid android =
+        new PushTaskNotificationAndroid()
             .setChannelId(channelId)
             .setVendorChannelActivity(activity)
             .setExtParameters(route)
             .setNotifyId(Math.floorMod(event.idempotentToken().hashCode(), Integer.MAX_VALUE))
-            .setOptions(new PushTask.PushTaskNotificationAndroidOptions().setAccs(accs));
-    PushTask.PushTaskNotification notification =
-        new PushTask.PushTaskNotification()
+            .setOptions(new PushTaskNotificationAndroidOptions().setAccs(accs));
+    PushTaskNotification notification =
+        new PushTaskNotification()
             .setTitle(event.title())
             .setBody(event.content())
             .setAndroid(android);
-    PushTask.PushTaskOptions options =
-        new PushTask.PushTaskOptions()
+    PushTaskOptions options =
+        new PushTaskOptions()
             .setExpireTime(now.plus(24, ChronoUnit.HOURS).toString())
             .setJobKey(jobKey)
             .setTrim(true);

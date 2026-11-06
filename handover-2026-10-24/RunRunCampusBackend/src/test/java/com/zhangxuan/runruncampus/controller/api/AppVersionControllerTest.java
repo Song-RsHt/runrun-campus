@@ -1,10 +1,17 @@
 package com.zhangxuan.runruncampus.controller.api;
 
+import com.zhangxuan.runruncampus.controller.AppVersionController;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.Test;
+
+
+
+
+
+
 
 class AppVersionControllerTest {
 

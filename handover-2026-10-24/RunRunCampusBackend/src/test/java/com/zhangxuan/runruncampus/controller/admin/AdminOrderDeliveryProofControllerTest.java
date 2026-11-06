@@ -1,14 +1,15 @@
 package com.zhangxuan.runruncampus.controller.admin;
 
+import com.zhangxuan.runruncampus.controller.AdminOrderDeliveryProofController;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
 import com.zhangxuan.runruncampus.entity.OrderProof;
+import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.enums.OrderProofType;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
 import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
 import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.AuthService;
-import com.zhangxuan.runruncampus.service.admin.AdminOrderDeliveryProofService;
+import com.zhangxuan.runruncampus.service.impl.AdminOrderDeliveryProofServiceImpl;
 import java.io.IOException;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -125,6 +150,6 @@ class AdminOrderDeliveryProofControllerTest {
 
   private AdminOrderDeliveryProofController controller() {
     return new AdminOrderDeliveryProofController(
-        auth, new AdminOrderDeliveryProofService(orders, proofs, storage));
+        auth, new AdminOrderDeliveryProofServiceImpl(orders, proofs, storage));
   }
 }

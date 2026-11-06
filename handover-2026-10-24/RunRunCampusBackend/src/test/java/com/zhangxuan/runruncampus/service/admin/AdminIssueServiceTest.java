@@ -7,10 +7,13 @@ import com.zhangxuan.runruncampus.enums.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.enums.OrderIssueType;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.model.settings.Settings;
+import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
-import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminIssueService;
+import com.zhangxuan.runruncampus.service.OrderMessageService;
+import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.service.impl.AdminIssueServiceImpl;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -75,6 +78,31 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class AdminIssueServiceTest {
 
   private final OrderIssueRepository repository = mock(OrderIssueRepository.class);
@@ -82,7 +110,7 @@ class AdminIssueServiceTest {
   private final PlatformSettingsService settings = mock(PlatformSettingsService.class);
 
   private final AdminIssueService service =
-      new AdminIssueService(
+      new AdminIssueServiceImpl(
           repository, mock(AdminAuditService.class), mock(OrderMessageService.class), settings);
 
   @Test

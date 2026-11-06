@@ -1,19 +1,21 @@
 package com.zhangxuan.runruncampus.service.credit;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
+import com.zhangxuan.runruncampus.entity.CreditEvent;
+import com.zhangxuan.runruncampus.entity.CreditProfile;
+import com.zhangxuan.runruncampus.entity.RiskSignal;
+import com.zhangxuan.runruncampus.enums.CreditEventType;
+import com.zhangxuan.runruncampus.enums.CreditRiskLevel;
+import com.zhangxuan.runruncampus.enums.RiskSignalStatus;
+import com.zhangxuan.runruncampus.enums.RiskSignalType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.credit.CreditEventType;
-import com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel;
-import com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus;
-import com.zhangxuan.runruncampus.enums.credit.RiskSignalType;
-import com.zhangxuan.runruncampus.model.credit.CreditEvent;
-import com.zhangxuan.runruncampus.model.credit.CreditProfile;
-import com.zhangxuan.runruncampus.model.credit.RiskSignal;
+import com.zhangxuan.runruncampus.repository.CreditEventRepository;
+import com.zhangxuan.runruncampus.repository.CreditProfileRepository;
+import com.zhangxuan.runruncampus.repository.RiskSignalRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
-import com.zhangxuan.runruncampus.repository.credit.CreditEventRepository;
-import com.zhangxuan.runruncampus.repository.credit.CreditProfileRepository;
-import com.zhangxuan.runruncampus.repository.credit.RiskSignalRepository;
-import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.CreditService;
+import com.zhangxuan.runruncampus.service.impl.CreditServiceImpl;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,40 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -89,7 +125,7 @@ class CreditServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new CreditService(profiles, events, signals, users, audit);
+    service = new CreditServiceImpl(profiles, events, signals, users, audit);
     administrator = user(1L, "管理员", UserRole.ADMIN);
     customer = user(2L, "用户", UserRole.CUSTOMER);
   }

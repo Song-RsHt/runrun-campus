@@ -5,14 +5,14 @@ import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.model.PrivacyPolicyValidation;
 import com.zhangxuan.runruncampus.repository.AddressRepository;
+import com.zhangxuan.runruncampus.repository.OrderMessageRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.repository.PushDeliveryRepository;
 import com.zhangxuan.runruncampus.repository.SessionRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.repository.WechatRefundRepository;
-import com.zhangxuan.runruncampus.repository.message.OrderMessageRepository;
-import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
+import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.PrivacyService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
 import com.zhangxuan.runruncampus.vo.PrivacyConsentVO;
 import com.zhangxuan.runruncampus.vo.PrivacyPolicyVO;
 import java.time.LocalDate;
@@ -22,6 +22,30 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

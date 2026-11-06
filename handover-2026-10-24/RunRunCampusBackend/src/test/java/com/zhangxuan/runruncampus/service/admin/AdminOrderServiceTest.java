@@ -1,15 +1,18 @@
 package com.zhangxuan.runruncampus.service.admin;
 
+import com.zhangxuan.runruncampus.constant.AdminOrderConstants;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
+import com.zhangxuan.runruncampus.model.OrderExport;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
 import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
-import com.zhangxuan.runruncampus.service.admin.AdminOrderService.OrderExport;
+import com.zhangxuan.runruncampus.service.AdminOrderService;
+import com.zhangxuan.runruncampus.service.impl.AdminOrderServiceImpl;
 import com.zhangxuan.runruncampus.vo.AdminOrderDetailResponse;
 import com.zhangxuan.runruncampus.vo.AdminOrderPageResponse;
 import java.nio.charset.StandardCharsets;
@@ -114,6 +117,45 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class AdminOrderServiceTest {
 
@@ -130,7 +172,7 @@ class AdminOrderServiceTest {
   @BeforeEach
   void setUp() {
     service =
-        new AdminOrderService(orderRepository, eventRepository, issueRepository, proofRepository);
+        new AdminOrderServiceImpl(orderRepository, eventRepository, issueRepository, proofRepository);
   }
 
   @Test
@@ -194,7 +236,7 @@ class AdminOrderServiceTest {
     ReflectionTestUtils.setField(order, "merchant", "=SUM(1,1)");
     PageRequest request =
         PageRequest.of(
-            0, AdminOrderService.EXPORT_LIMIT, Sort.by(Direction.DESC, "createdAt"));
+            0, AdminOrderConstants.EXPORT_LIMIT, Sort.by(Direction.DESC, "createdAt"));
     when(orderRepository.filterForAdmin(eq(null), eq(false), any(Pageable.class)))
         .thenReturn(new PageImpl<>(List.of(order), request, 1));
     OrderExport export = service.exportCsv(null, null, false);

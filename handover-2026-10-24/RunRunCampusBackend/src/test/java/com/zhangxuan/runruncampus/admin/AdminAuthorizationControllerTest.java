@@ -1,31 +1,31 @@
 package com.zhangxuan.runruncampus.admin;
 
-import com.zhangxuan.runruncampus.controller.admin.AdminAccountController;
-import com.zhangxuan.runruncampus.controller.admin.AdminAuditController;
-import com.zhangxuan.runruncampus.controller.admin.AdminCommandCenterController;
-import com.zhangxuan.runruncampus.controller.admin.AdminDispatchController;
-import com.zhangxuan.runruncampus.controller.admin.AdminIssueController;
-import com.zhangxuan.runruncampus.controller.admin.AdminOrderController;
-import com.zhangxuan.runruncampus.controller.admin.AdminOrderLifecycleController;
-import com.zhangxuan.runruncampus.controller.admin.AdminUserController;
+import com.zhangxuan.runruncampus.controller.AdminAccountController;
+import com.zhangxuan.runruncampus.controller.AdminAuditController;
+import com.zhangxuan.runruncampus.controller.AdminCommandCenterController;
+import com.zhangxuan.runruncampus.controller.AdminDispatchController;
+import com.zhangxuan.runruncampus.controller.AdminIssueController;
+import com.zhangxuan.runruncampus.controller.AdminOrderController;
+import com.zhangxuan.runruncampus.controller.AdminOrderLifecycleController;
+import com.zhangxuan.runruncampus.controller.AdminUserController;
 import com.zhangxuan.runruncampus.dto.AdminUserPasswordResetRequest;
-import com.zhangxuan.runruncampus.dto.request.admin.account.CreateAdminRequest;
-import com.zhangxuan.runruncampus.dto.request.admin.dispatch.DispatchRequest;
-import com.zhangxuan.runruncampus.dto.request.admin.orderlifecycle.ReasonRequest;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.commandcenter.Queue;
+import com.zhangxuan.runruncampus.dto.CreateAdminRequest;
+import com.zhangxuan.runruncampus.dto.DispatchRequest;
+import com.zhangxuan.runruncampus.dto.OrderLifecycleReasonRequest;
+import com.zhangxuan.runruncampus.enums.AdminPermission;
+import com.zhangxuan.runruncampus.enums.AdminRole;
+import com.zhangxuan.runruncampus.enums.Queue;
+import com.zhangxuan.runruncampus.service.AdminAccountService;
+import com.zhangxuan.runruncampus.service.AdminAuditService;
+import com.zhangxuan.runruncampus.service.AdminCommandCenterService;
+import com.zhangxuan.runruncampus.service.AdminCouponService;
+import com.zhangxuan.runruncampus.service.AdminDispatchService;
+import com.zhangxuan.runruncampus.service.AdminIssueService;
+import com.zhangxuan.runruncampus.service.AdminOrderLifecycleService;
+import com.zhangxuan.runruncampus.service.AdminOrderService;
+import com.zhangxuan.runruncampus.service.AdminUserService;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.ManualQrPaymentService;
-import com.zhangxuan.runruncampus.service.admin.AdminAccountService;
-import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
-import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
-import com.zhangxuan.runruncampus.service.admin.AdminCouponService;
-import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
-import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
-import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
-import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
-import com.zhangxuan.runruncampus.service.admin.AdminUserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -36,6 +36,44 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -183,7 +221,7 @@ class AdminAuthorizationControllerTest {
     var error =
         assertThrows(
             ResponseStatusException.class,
-            () -> controller.forceComplete(TOKEN, 11L, new ReasonRequest("凭证已核对")));
+            () -> controller.forceComplete(TOKEN, 11L, new OrderLifecycleReasonRequest("凭证已核对")));
     assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
     verifyNoInteractions(lifecycleService);
   }
@@ -195,7 +233,7 @@ class AdminAuthorizationControllerTest {
     var error =
         assertThrows(
             ResponseStatusException.class,
-            () -> controller.archive(TOKEN, 11L, new ReasonRequest("订单归档原因")));
+            () -> controller.archive(TOKEN, 11L, new OrderLifecycleReasonRequest("订单归档原因")));
     assertEquals(HttpStatus.FORBIDDEN, error.getStatusCode());
     verifyNoInteractions(lifecycleService);
   }

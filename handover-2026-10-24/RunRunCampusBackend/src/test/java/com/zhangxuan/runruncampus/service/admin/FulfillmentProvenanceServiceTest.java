@@ -1,16 +1,18 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest;
+import com.zhangxuan.runruncampus.dto.CreateRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
+import com.zhangxuan.runruncampus.enums.AdminPermission;
+import com.zhangxuan.runruncampus.enums.AdminRole;
+import com.zhangxuan.runruncampus.enums.Channel;
 import com.zhangxuan.runruncampus.enums.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.admin.AdminPermission;
-import com.zhangxuan.runruncampus.enums.admin.AdminRole;
-import com.zhangxuan.runruncampus.enums.provenance.Channel;
-import com.zhangxuan.runruncampus.mapper.admin.FulfillmentProvenanceMapper;
+import com.zhangxuan.runruncampus.mapper.FulfillmentProvenanceMapper;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
+import com.zhangxuan.runruncampus.service.FulfillmentProvenanceService;
+import com.zhangxuan.runruncampus.service.impl.FulfillmentProvenanceServiceImpl;
 import java.time.Instant;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -91,6 +93,37 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class FulfillmentProvenanceServiceTest {
 
@@ -99,7 +132,7 @@ class FulfillmentProvenanceServiceTest {
   @Mock OrderRepository orders;
 
   private FulfillmentProvenanceService service() {
-    return new FulfillmentProvenanceService(new FulfillmentProvenanceMapper(jdbc), orders);
+    return new FulfillmentProvenanceServiceImpl(new FulfillmentProvenanceMapper(jdbc), orders);
   }
 
   @Test

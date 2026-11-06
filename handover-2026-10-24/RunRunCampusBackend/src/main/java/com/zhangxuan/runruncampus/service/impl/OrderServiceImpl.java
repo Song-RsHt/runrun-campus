@@ -11,6 +11,7 @@ import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
 import com.zhangxuan.runruncampus.entity.OrderEvent;
 import com.zhangxuan.runruncampus.enums.DeliveryZone;
+import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.OrderPaymentMethod;
 import com.zhangxuan.runruncampus.enums.OrderPaymentStatus;
 import com.zhangxuan.runruncampus.enums.OrderProofType;
@@ -18,7 +19,6 @@ import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.PickupStation;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.enums.message.OrderMessageType;
 import com.zhangxuan.runruncampus.model.CouponApplication;
 import com.zhangxuan.runruncampus.model.MembershipApplication;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
@@ -26,11 +26,12 @@ import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.service.CouponService;
+import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.MembershipService;
+import com.zhangxuan.runruncampus.service.OrderMessageService;
+import com.zhangxuan.runruncampus.service.OrderService;
 import com.zhangxuan.runruncampus.service.PaymentService;
-import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
-import com.zhangxuan.runruncampus.service.courier.CourierCertificationService;
-import com.zhangxuan.runruncampus.service.message.OrderMessageService;
+import com.zhangxuan.runruncampus.service.PlatformSettingsService;
 import com.zhangxuan.runruncampus.vo.CourierLocationResponse;
 import com.zhangxuan.runruncampus.vo.CourierRatingResponse;
 import com.zhangxuan.runruncampus.vo.DeliveryCodeResponse;
@@ -56,7 +57,65 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import com.zhangxuan.runruncampus.service.OrderService;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * legacy 订单业务边界，保留原 JPA 事务和锁顺序，请求与响应通过独立 DTO 表达。 保留旧行为仅避免重构回归，不表示授权 v2 使用旧接口。

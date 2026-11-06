@@ -1,11 +1,19 @@
 package com.zhangxuan.runruncampus.bootstrap;
 
-import com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper;
+import com.zhangxuan.runruncampus.mapper.UserRoleSchemaMigrationMapper;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
+
+
+
+
+
+
+
+
 
 @Component
 @Order(0)
