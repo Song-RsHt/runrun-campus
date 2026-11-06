@@ -1,8 +1,8 @@
-# 主类分层映射
+# 重构后主类映射
 
-映射覆盖全部主类；同名新旧实现保留各自命名空间。测试随被测边界分类，跨层引用使用显式 import。
+覆盖全部 216 个基线主类；同名新旧实现通过应用命名空间区分。新增 Mapper、Task、DTO 见 after.json。嵌套 DTO/枚举的拆分保留字段和注解，类型位置通过 after.json 查找。
 
-|原类|目标类|
+|原类|当前主类|
 |---|---|
 |com.zhangxuan.runruncampus.address.AddressController|com.zhangxuan.runruncampus.controller.address.AddressController|
 |com.zhangxuan.runruncampus.address.AddressRepository|com.zhangxuan.runruncampus.repository.address.AddressRepository|
@@ -17,7 +17,7 @@
 |com.zhangxuan.runruncampus.admin.AdminAuditService|com.zhangxuan.runruncampus.service.admin.AdminAuditService|
 |com.zhangxuan.runruncampus.admin.AdminAuditTargetType|com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType|
 |com.zhangxuan.runruncampus.admin.AdminCommandCenterController|com.zhangxuan.runruncampus.controller.admin.AdminCommandCenterController|
-|com.zhangxuan.runruncampus.admin.AdminCommandCenterService|com.zhangxuan.runruncampus.enums.admin.AdminCommandCenterService|
+|com.zhangxuan.runruncampus.admin.AdminCommandCenterService|com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService|
 |com.zhangxuan.runruncampus.admin.AdminCouponService|com.zhangxuan.runruncampus.service.admin.AdminCouponService|
 |com.zhangxuan.runruncampus.admin.AdminCourierController|com.zhangxuan.runruncampus.controller.admin.AdminCourierController|
 |com.zhangxuan.runruncampus.admin.AdminCourierService|com.zhangxuan.runruncampus.service.admin.AdminCourierService|
@@ -42,7 +42,7 @@
 |com.zhangxuan.runruncampus.admin.CampusDispatchExperimentController|com.zhangxuan.runruncampus.controller.admin.CampusDispatchExperimentController|
 |com.zhangxuan.runruncampus.admin.CampusDispatchExperimentService|com.zhangxuan.runruncampus.service.admin.CampusDispatchExperimentService|
 |com.zhangxuan.runruncampus.admin.FulfillmentProvenanceController|com.zhangxuan.runruncampus.controller.admin.FulfillmentProvenanceController|
-|com.zhangxuan.runruncampus.admin.FulfillmentProvenanceService|com.zhangxuan.runruncampus.enums.admin.FulfillmentProvenanceService|
+|com.zhangxuan.runruncampus.admin.FulfillmentProvenanceService|com.zhangxuan.runruncampus.service.admin.FulfillmentProvenanceService|
 |com.zhangxuan.runruncampus.api.ApiExceptionHandler|com.zhangxuan.runruncampus.exception.ApiExceptionHandler|
 |com.zhangxuan.runruncampus.api.ApiRateLimitFilter|com.zhangxuan.runruncampus.security.ApiRateLimitFilter|
 |com.zhangxuan.runruncampus.api.ApiRateLimitService|com.zhangxuan.runruncampus.security.ApiRateLimitService|
@@ -116,7 +116,7 @@
 |com.zhangxuan.runruncampus.message.PushDeliveryProcessor|com.zhangxuan.runruncampus.service.message.PushDeliveryProcessor|
 |com.zhangxuan.runruncampus.message.PushDeliveryRepository|com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository|
 |com.zhangxuan.runruncampus.message.PushDeliveryStatus|com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus|
-|com.zhangxuan.runruncampus.message.PushDeliveryTask|com.zhangxuan.runruncampus.service.message.PushDeliveryTask|
+|com.zhangxuan.runruncampus.message.PushDeliveryTask|com.zhangxuan.runruncampus.model.message.PushDeliveryTask|
 |com.zhangxuan.runruncampus.message.PushDestination|com.zhangxuan.runruncampus.enums.message.PushDestination|
 |com.zhangxuan.runruncampus.message.PushNotificationGateway|com.zhangxuan.runruncampus.integration.push.PushNotificationGateway|
 |com.zhangxuan.runruncampus.order.CampusOrder|com.zhangxuan.runruncampus.model.order.CampusOrder|
@@ -183,7 +183,7 @@
 |com.zhangxuan.runrunv2.FulfillmentCompletionJob|com.zhangxuan.runrunv2.task.fulfillment.FulfillmentCompletionJob|
 |com.zhangxuan.runrunv2.FulfillmentController|com.zhangxuan.runrunv2.controller.fulfillment.FulfillmentController|
 |com.zhangxuan.runrunv2.FulfillmentEvidence|com.zhangxuan.runrunv2.service.fulfillment.FulfillmentEvidence|
-|com.zhangxuan.runrunv2.FulfillmentModels|com.zhangxuan.runrunv2.model.fulfillment.FulfillmentModels|
+|com.zhangxuan.runrunv2.FulfillmentModels|com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels|
 |com.zhangxuan.runrunv2.FulfillmentQueries|com.zhangxuan.runrunv2.service.fulfillment.FulfillmentQueries|
 |com.zhangxuan.runrunv2.FulfillmentService|com.zhangxuan.runrunv2.service.fulfillment.FulfillmentService|
 |com.zhangxuan.runrunv2.IdentityAdminCommand|com.zhangxuan.runrunv2.bootstrap.IdentityAdminCommand|
@@ -206,13 +206,13 @@
 |com.zhangxuan.runrunv2.OrderController|com.zhangxuan.runrunv2.controller.order.OrderController|
 |com.zhangxuan.runrunv2.OrderIdempotency|com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency|
 |com.zhangxuan.runrunv2.OrderJson|com.zhangxuan.runrunv2.config.OrderJson|
-|com.zhangxuan.runrunv2.OrderModels|com.zhangxuan.runrunv2.model.order.OrderModels|
+|com.zhangxuan.runrunv2.OrderModels|com.zhangxuan.runrunv2.dto.response.order.OrderModels|
 |com.zhangxuan.runrunv2.OrderService|com.zhangxuan.runrunv2.service.order.OrderService|
 |com.zhangxuan.runrunv2.OrderStore|com.zhangxuan.runrunv2.mapper.order.OrderStore|
 |com.zhangxuan.runrunv2.OriginalPaymentWriter|com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter|
 |com.zhangxuan.runrunv2.PaymentController|com.zhangxuan.runrunv2.controller.payment.PaymentController|
 |com.zhangxuan.runrunv2.PaymentExpiryJob|com.zhangxuan.runrunv2.task.payment.PaymentExpiryJob|
-|com.zhangxuan.runrunv2.PaymentModels|com.zhangxuan.runrunv2.model.payment.PaymentModels|
+|com.zhangxuan.runrunv2.PaymentModels|com.zhangxuan.runrunv2.dto.response.payment.PaymentModels|
 |com.zhangxuan.runrunv2.PaymentService|com.zhangxuan.runrunv2.service.payment.PaymentService|
 |com.zhangxuan.runrunv2.PaymentTestController|com.zhangxuan.runrunv2.controller.payment.PaymentTestController|
 |com.zhangxuan.runrunv2.ServiceConfigService|com.zhangxuan.runrunv2.service.configuration.ServiceConfigService|

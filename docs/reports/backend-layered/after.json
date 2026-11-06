@@ -1,0 +1,4906 @@
+[
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/bootstrap/AdminAccountInitializer.java",
+    "name": "AdminAccountInitializer",
+    "package": "com.zhangxuan.runruncampus.bootstrap",
+    "kind": "main",
+    "lines": 63,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/bootstrap/UserRoleSchemaMigration.java",
+    "name": "UserRoleSchemaMigration",
+    "package": "com.zhangxuan.runruncampus.bootstrap",
+    "kind": "main",
+    "lines": 33,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/config/ManualQrPaymentConfiguration.java",
+    "name": "ManualQrPaymentConfiguration",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/config/ManualQrPaymentProperties.java",
+    "name": "ManualQrPaymentProperties",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/config/PasswordConfig.java",
+    "name": "PasswordConfig",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/config/ProductionConfigurationValidator.java",
+    "name": "ProductionConfigurationValidator",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "main",
+    "lines": 110,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/config/WechatPayConfiguration.java",
+    "name": "WechatPayConfiguration",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "main",
+    "lines": 31,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/config/WechatPayProperties.java",
+    "name": "WechatPayProperties",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/address/AddressController.java",
+    "name": "AddressController",
+    "package": "com.zhangxuan.runruncampus.controller.address",
+    "kind": "main",
+    "lines": 68,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminAccountController.java",
+    "name": "AdminAccountController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 99,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminAuditController.java",
+    "name": "AdminAuditController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 42,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminCommandCenterController.java",
+    "name": "AdminCommandCenterController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 33,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminCourierController.java",
+    "name": "AdminCourierController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 54,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminDashboardController.java",
+    "name": "AdminDashboardController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 31,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminDispatchController.java",
+    "name": "AdminDispatchController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 49,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminFeedbackController.java",
+    "name": "AdminFeedbackController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 61,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminIssueController.java",
+    "name": "AdminIssueController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 69,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminOrderController.java",
+    "name": "AdminOrderController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 107,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminOrderDeliveryProofController.java",
+    "name": "AdminOrderDeliveryProofController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 41,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminOrderLifecycleController.java",
+    "name": "AdminOrderLifecycleController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 58,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminPushDeliveryController.java",
+    "name": "AdminPushDeliveryController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 41,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/AdminUserController.java",
+    "name": "AdminUserController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 95,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/CampusDispatchExperimentController.java",
+    "name": "CampusDispatchExperimentController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 34,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/admin/FulfillmentProvenanceController.java",
+    "name": "FulfillmentProvenanceController",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "main",
+    "lines": 59,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/api/AppVersionController.java",
+    "name": "AppVersionController",
+    "package": "com.zhangxuan.runruncampus.controller.api",
+    "kind": "main",
+    "lines": 46,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/api/HealthController.java",
+    "name": "HealthController",
+    "package": "com.zhangxuan.runruncampus.controller.api",
+    "kind": "main",
+    "lines": 17,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/api/PlatformSettingsController.java",
+    "name": "PlatformSettingsController",
+    "package": "com.zhangxuan.runruncampus.controller.api",
+    "kind": "main",
+    "lines": 46,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/api/ServiceConfigurationController.java",
+    "name": "ServiceConfigurationController",
+    "package": "com.zhangxuan.runruncampus.controller.api",
+    "kind": "main",
+    "lines": 47,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/auth/AdminMfaController.java",
+    "name": "AdminMfaController",
+    "package": "com.zhangxuan.runruncampus.controller.auth",
+    "kind": "main",
+    "lines": 73,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/auth/AuthController.java",
+    "name": "AuthController",
+    "package": "com.zhangxuan.runruncampus.controller.auth",
+    "kind": "main",
+    "lines": 135,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/coupon/CouponController.java",
+    "name": "CouponController",
+    "package": "com.zhangxuan.runruncampus.controller.coupon",
+    "kind": "main",
+    "lines": 30,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/courier/CourierCertificationController.java",
+    "name": "CourierCertificationController",
+    "package": "com.zhangxuan.runruncampus.controller.courier",
+    "kind": "main",
+    "lines": 104,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/courier/CourierOperationsController.java",
+    "name": "CourierOperationsController",
+    "package": "com.zhangxuan.runruncampus.controller.courier",
+    "kind": "main",
+    "lines": 41,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/credit/AdminCreditController.java",
+    "name": "AdminCreditController",
+    "package": "com.zhangxuan.runruncampus.controller.credit",
+    "kind": "main",
+    "lines": 102,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/credit/CreditController.java",
+    "name": "CreditController",
+    "package": "com.zhangxuan.runruncampus.controller.credit",
+    "kind": "main",
+    "lines": 36,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/feedback/FeedbackController.java",
+    "name": "FeedbackController",
+    "package": "com.zhangxuan.runruncampus.controller.feedback",
+    "kind": "main",
+    "lines": 37,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/membership/MembershipController.java",
+    "name": "MembershipController",
+    "package": "com.zhangxuan.runruncampus.controller.membership",
+    "kind": "main",
+    "lines": 41,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/message/OrderMessageController.java",
+    "name": "OrderMessageController",
+    "package": "com.zhangxuan.runruncampus.controller.message",
+    "kind": "main",
+    "lines": 40,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/order/OrderController.java",
+    "name": "OrderController",
+    "package": "com.zhangxuan.runruncampus.controller.order",
+    "kind": "main",
+    "lines": 272,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/payment/PaymentController.java",
+    "name": "PaymentController",
+    "package": "com.zhangxuan.runruncampus.controller.payment",
+    "kind": "main",
+    "lines": 62,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/controller/privacy/PrivacyController.java",
+    "name": "PrivacyController",
+    "package": "com.zhangxuan.runruncampus.controller.privacy",
+    "kind": "main",
+    "lines": 62,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/address/AddressRequest.java",
+    "name": "AddressRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.address",
+    "kind": "main",
+    "lines": 17,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/account/ChangeOwnPasswordRequest.java",
+    "name": "ChangeOwnPasswordRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.account",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/account/ChangeRoleRequest.java",
+    "name": "ChangeRoleRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.account",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/account/CreateAdminRequest.java",
+    "name": "CreateAdminRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.account",
+    "kind": "main",
+    "lines": 14,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/account/ResetPasswordRequest.java",
+    "name": "ResetPasswordRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.account",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/dispatch/DispatchRequest.java",
+    "name": "DispatchRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.dispatch",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/feedback/ResolveFeedbackRequest.java",
+    "name": "ResolveFeedbackRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.feedback",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/issue/ResolveIssueRequest.java",
+    "name": "ResolveIssueRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.issue",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/order/RejectManualPaymentRequest.java",
+    "name": "RejectManualPaymentRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/orderlifecycle/ReasonRequest.java",
+    "name": "ReasonRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.orderlifecycle",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/admin/user/ResetPasswordRequest.java",
+    "name": "ResetPasswordRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.admin.user",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/api/platformsettings/UpdateRequest.java",
+    "name": "UpdateRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.api.platformsettings",
+    "kind": "main",
+    "lines": 15,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/auth/ChangePasswordRequest.java",
+    "name": "ChangePasswordRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.auth",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/auth/LoginRequest.java",
+    "name": "LoginRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.auth",
+    "kind": "main",
+    "lines": 19,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/auth/mfa/LoginRequest.java",
+    "name": "LoginRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.auth.mfa",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/auth/mfa/ReplaceRequest.java",
+    "name": "ReplaceRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.auth.mfa",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/auth/mfa/ResetRequest.java",
+    "name": "ResetRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.auth.mfa",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/auth/mfa/VerifyRequest.java",
+    "name": "VerifyRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.auth.mfa",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/auth/RegisterRequest.java",
+    "name": "RegisterRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.auth",
+    "kind": "main",
+    "lines": 32,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/courier/couriercertification/CertificationRequest.java",
+    "name": "CertificationRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.courier.couriercertification",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/courier/couriercertification/DecisionRequest.java",
+    "name": "DecisionRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.courier.couriercertification",
+    "kind": "main",
+    "lines": 11,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/courier/couriercertification/RejectionRequest.java",
+    "name": "RejectionRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.courier.couriercertification",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/courier/courieroperations/AvailabilityRequest.java",
+    "name": "AvailabilityRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.courier.courieroperations",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/credit/AdjustmentRequest.java",
+    "name": "AdjustmentRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.credit",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/credit/ReasonRequest.java",
+    "name": "ReasonRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.credit",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/feedback/CreateFeedbackRequest.java",
+    "name": "CreateFeedbackRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.feedback",
+    "kind": "main",
+    "lines": 11,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/membership/PurchaseRequest.java",
+    "name": "PurchaseRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.membership",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/ChatRequest.java",
+    "name": "ChatRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/CompleteOrderRequest.java",
+    "name": "CompleteOrderRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/ConfirmPackageSizeRequest.java",
+    "name": "ConfirmPackageSizeRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/CreateIssueRequest.java",
+    "name": "CreateIssueRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 11,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/CreateOrderRequest.java",
+    "name": "CreateOrderRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 41,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/CreateRatingRequest.java",
+    "name": "CreateRatingRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/LocationUpdateRequest.java",
+    "name": "LocationUpdateRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/SubmitManualPaymentRequest.java",
+    "name": "SubmitManualPaymentRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/order/UnableRequest.java",
+    "name": "UnableRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/privacy/AccountDeletionRequest.java",
+    "name": "AccountDeletionRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.privacy",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/privacy/ConsentRequest.java",
+    "name": "ConsentRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.privacy",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/request/provenance/CreateRequest.java",
+    "name": "CreateRequest",
+    "package": "com.zhangxuan.runruncampus.dto.request.provenance",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/account/AdminAccountItem.java",
+    "name": "AdminAccountItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.account",
+    "kind": "main",
+    "lines": 18,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/account/PasswordChangedResponse.java",
+    "name": "PasswordChangedResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.account",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/audit/AdminAuditItem.java",
+    "name": "AdminAuditItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.audit",
+    "kind": "main",
+    "lines": 17,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/audit/AdminAuditPageResponse.java",
+    "name": "AdminAuditPageResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.audit",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/courier/AdminCourierItem.java",
+    "name": "AdminCourierItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.courier",
+    "kind": "main",
+    "lines": 27,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/courier/AdminCourierOrderItem.java",
+    "name": "AdminCourierOrderItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.courier",
+    "kind": "main",
+    "lines": 17,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/courier/AdminCourierOrderPage.java",
+    "name": "AdminCourierOrderPage",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.courier",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/courier/AdminCourierPageResponse.java",
+    "name": "AdminCourierPageResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.courier",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/courier/AdminCourierPerformanceResponse.java",
+    "name": "AdminCourierPerformanceResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.courier",
+    "kind": "main",
+    "lines": 15,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/dashboard/AdminDashboardResponse.java",
+    "name": "AdminDashboardResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.dashboard",
+    "kind": "main",
+    "lines": 14,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/feedback/FeedbackItem.java",
+    "name": "FeedbackItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.feedback",
+    "kind": "main",
+    "lines": 21,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/feedback/FeedbackPageResponse.java",
+    "name": "FeedbackPageResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.feedback",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/issue/AdminIssueItem.java",
+    "name": "AdminIssueItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.issue",
+    "kind": "main",
+    "lines": 28,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/issue/AdminIssuePageResponse.java",
+    "name": "AdminIssuePageResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.issue",
+    "kind": "main",
+    "lines": 12,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/order/AdminOrderDetailResponse.java",
+    "name": "AdminOrderDetailResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.order",
+    "kind": "main",
+    "lines": 32,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/order/AdminOrderListItem.java",
+    "name": "AdminOrderListItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.order",
+    "kind": "main",
+    "lines": 29,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/order/AdminOrderPageResponse.java",
+    "name": "AdminOrderPageResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.order",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/order/OrderEventItem.java",
+    "name": "OrderEventItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.order",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/order/OrderIssueItem.java",
+    "name": "OrderIssueItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/order/OrderProofItem.java",
+    "name": "OrderProofItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.order",
+    "kind": "main",
+    "lines": 14,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/order/UserSummary.java",
+    "name": "UserSummary",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.order",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/orderlifecycle/ActionResult.java",
+    "name": "ActionResult",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.orderlifecycle",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/ProofContent.java",
+    "name": "ProofContent",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin",
+    "kind": "main",
+    "lines": 5,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/PushDeliveryOverview.java",
+    "name": "PushDeliveryOverview",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/user/AdminUserItem.java",
+    "name": "AdminUserItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.user",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/admin/user/AdminUserPageResponse.java",
+    "name": "AdminUserPageResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.admin.user",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/api/appversion/AndroidVersion.java",
+    "name": "AndroidVersion",
+    "package": "com.zhangxuan.runruncampus.dto.response.api.appversion",
+    "kind": "main",
+    "lines": 5,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/api/serviceconfiguration/ConfigurationResponse.java",
+    "name": "ConfigurationResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/api/serviceconfiguration/StationResponse.java",
+    "name": "StationResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/api/serviceconfiguration/ZoneResponse.java",
+    "name": "ZoneResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/auth/AuthResponse.java",
+    "name": "AuthResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.auth",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/auth/mfa/ResetResponse.java",
+    "name": "ResetResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.auth.mfa",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/auth/RevokeResponse.java",
+    "name": "RevokeResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.auth",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/auth/UserResponse.java",
+    "name": "UserResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.auth",
+    "kind": "main",
+    "lines": 18,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/commandcenter/CourierItem.java",
+    "name": "CourierItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.commandcenter",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/commandcenter/Couriers.java",
+    "name": "Couriers",
+    "package": "com.zhangxuan.runruncampus.dto.response.commandcenter",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/commandcenter/OrderItem.java",
+    "name": "OrderItem",
+    "package": "com.zhangxuan.runruncampus.dto.response.commandcenter",
+    "kind": "main",
+    "lines": 13,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/commandcenter/Orders.java",
+    "name": "Orders",
+    "package": "com.zhangxuan.runruncampus.dto.response.commandcenter",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/commandcenter/Snapshot.java",
+    "name": "Snapshot",
+    "package": "com.zhangxuan.runruncampus.dto.response.commandcenter",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/courier/courieroperations/OperationsResponse.java",
+    "name": "OperationsResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.courier.courieroperations",
+    "kind": "main",
+    "lines": 19,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/order/CourierLocationResponse.java",
+    "name": "CourierLocationResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.order",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/order/CourierRatingResponse.java",
+    "name": "CourierRatingResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.order",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/order/DeliveryCodeResponse.java",
+    "name": "DeliveryCodeResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.order",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/order/MineOrderPage.java",
+    "name": "MineOrderPage",
+    "package": "com.zhangxuan.runruncampus.dto.response.order",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/order/OrderEventResponse.java",
+    "name": "OrderEventResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/order/OrderResponse.java",
+    "name": "OrderResponse",
+    "package": "com.zhangxuan.runruncampus.dto.response.order",
+    "kind": "main",
+    "lines": 55,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/provenance/Entry.java",
+    "name": "Entry",
+    "package": "com.zhangxuan.runruncampus.dto.response.provenance",
+    "kind": "main",
+    "lines": 21,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/dto/response/provenance/Summary.java",
+    "name": "Summary",
+    "package": "com.zhangxuan.runruncampus.dto.response.provenance",
+    "kind": "main",
+    "lines": 5,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/admin/AdminAuditAction.java",
+    "name": "AdminAuditAction",
+    "package": "com.zhangxuan.runruncampus.enums.admin",
+    "kind": "main",
+    "lines": 45,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/admin/AdminAuditTargetType.java",
+    "name": "AdminAuditTargetType",
+    "package": "com.zhangxuan.runruncampus.enums.admin",
+    "kind": "main",
+    "lines": 14,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/admin/AdminPermission.java",
+    "name": "AdminPermission",
+    "package": "com.zhangxuan.runruncampus.enums.admin",
+    "kind": "main",
+    "lines": 28,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/admin/AdminRole.java",
+    "name": "AdminRole",
+    "package": "com.zhangxuan.runruncampus.enums.admin",
+    "kind": "main",
+    "lines": 69,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/auth/SessionClientType.java",
+    "name": "SessionClientType",
+    "package": "com.zhangxuan.runruncampus.enums.auth",
+    "kind": "main",
+    "lines": 17,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/commandcenter/Queue.java",
+    "name": "Queue",
+    "package": "com.zhangxuan.runruncampus.enums.commandcenter",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/courier/CourierCertificationStatus.java",
+    "name": "CourierCertificationStatus",
+    "package": "com.zhangxuan.runruncampus.enums.courier",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/credit/CreditEventType.java",
+    "name": "CreditEventType",
+    "package": "com.zhangxuan.runruncampus.enums.credit",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/credit/CreditRiskLevel.java",
+    "name": "CreditRiskLevel",
+    "package": "com.zhangxuan.runruncampus.enums.credit",
+    "kind": "main",
+    "lines": 14,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/credit/RiskSignalStatus.java",
+    "name": "RiskSignalStatus",
+    "package": "com.zhangxuan.runruncampus.enums.credit",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/credit/RiskSignalType.java",
+    "name": "RiskSignalType",
+    "package": "com.zhangxuan.runruncampus.enums.credit",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/feedback/FeedbackHandlingStatus.java",
+    "name": "FeedbackHandlingStatus",
+    "package": "com.zhangxuan.runruncampus.enums.feedback",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/feedback/FeedbackType.java",
+    "name": "FeedbackType",
+    "package": "com.zhangxuan.runruncampus.enums.feedback",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/membership/MembershipPlanType.java",
+    "name": "MembershipPlanType",
+    "package": "com.zhangxuan.runruncampus.enums.membership",
+    "kind": "main",
+    "lines": 39,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/message/OrderMessageType.java",
+    "name": "OrderMessageType",
+    "package": "com.zhangxuan.runruncampus.enums.message",
+    "kind": "main",
+    "lines": 18,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/message/PushDeliveryStatus.java",
+    "name": "PushDeliveryStatus",
+    "package": "com.zhangxuan.runruncampus.enums.message",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/message/PushDestination.java",
+    "name": "PushDestination",
+    "package": "com.zhangxuan.runruncampus.enums.message",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/CourierSettlementStatus.java",
+    "name": "CourierSettlementStatus",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/DeliveryZone.java",
+    "name": "DeliveryZone",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 28,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/ManualPaymentStatus.java",
+    "name": "ManualPaymentStatus",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/OrderIssueHandlingStatus.java",
+    "name": "OrderIssueHandlingStatus",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/OrderIssueType.java",
+    "name": "OrderIssueType",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/OrderPaymentMethod.java",
+    "name": "OrderPaymentMethod",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/OrderPaymentStatus.java",
+    "name": "OrderPaymentStatus",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/OrderProofType.java",
+    "name": "OrderProofType",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/OrderStatus.java",
+    "name": "OrderStatus",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 11,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/PickupStation.java",
+    "name": "PickupStation",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 28,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/order/ServiceType.java",
+    "name": "ServiceType",
+    "package": "com.zhangxuan.runruncampus.enums.order",
+    "kind": "main",
+    "lines": 37,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/payment/PaymentBusinessType.java",
+    "name": "PaymentBusinessType",
+    "package": "com.zhangxuan.runruncampus.enums.payment",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/payment/PaymentStatus.java",
+    "name": "PaymentStatus",
+    "package": "com.zhangxuan.runruncampus.enums.payment",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/payment/RefundStatus.java",
+    "name": "RefundStatus",
+    "package": "com.zhangxuan.runruncampus.enums.payment",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/provenance/Channel.java",
+    "name": "Channel",
+    "package": "com.zhangxuan.runruncampus.enums.provenance",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/enums/user/UserRole.java",
+    "name": "UserRole",
+    "package": "com.zhangxuan.runruncampus.enums.user",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/exception/ApiExceptionHandler.java",
+    "name": "ApiExceptionHandler",
+    "package": "com.zhangxuan.runruncampus.exception",
+    "kind": "main",
+    "lines": 45,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/payment/DisabledWechatPayGateway.java",
+    "name": "DisabledWechatPayGateway",
+    "package": "com.zhangxuan.runruncampus.integration.payment",
+    "kind": "main",
+    "lines": 53,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/payment/WechatPayApiV3Gateway.java",
+    "name": "WechatPayApiV3Gateway",
+    "package": "com.zhangxuan.runruncampus.integration.payment",
+    "kind": "main",
+    "lines": 249,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/payment/WechatPayGateway.java",
+    "name": "WechatPayGateway",
+    "package": "com.zhangxuan.runruncampus.integration.payment",
+    "kind": "main",
+    "lines": 28,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/push/AliyunPushNotificationGateway.java",
+    "name": "AliyunPushNotificationGateway",
+    "package": "com.zhangxuan.runruncampus.integration.push",
+    "kind": "main",
+    "lines": 44,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/push/AliyunPushRequestFactory.java",
+    "name": "AliyunPushRequestFactory",
+    "package": "com.zhangxuan.runruncampus.integration.push",
+    "kind": "main",
+    "lines": 67,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/push/PushNotificationGateway.java",
+    "name": "PushNotificationGateway",
+    "package": "com.zhangxuan.runruncampus.integration.push",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/storage/LocalOrderProofStorage.java",
+    "name": "LocalOrderProofStorage",
+    "package": "com.zhangxuan.runruncampus.integration.storage",
+    "kind": "main",
+    "lines": 51,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/storage/OrderProofStorage.java",
+    "name": "OrderProofStorage",
+    "package": "com.zhangxuan.runruncampus.integration.storage",
+    "kind": "main",
+    "lines": 15,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/integration/storage/OssOrderProofStorage.java",
+    "name": "OssOrderProofStorage",
+    "package": "com.zhangxuan.runruncampus.integration.storage",
+    "kind": "main",
+    "lines": 111,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/mapper/admin/AdminCommandCenterMapper.java",
+    "name": "AdminCommandCenterMapper",
+    "package": "com.zhangxuan.runruncampus.mapper.admin",
+    "kind": "main",
+    "lines": 142,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/mapper/admin/AdminDispatchMapper.java",
+    "name": "AdminDispatchMapper",
+    "package": "com.zhangxuan.runruncampus.mapper.admin",
+    "kind": "main",
+    "lines": 67,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/mapper/admin/FulfillmentProvenanceMapper.java",
+    "name": "FulfillmentProvenanceMapper",
+    "package": "com.zhangxuan.runruncampus.mapper.admin",
+    "kind": "main",
+    "lines": 122,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/mapper/api/PlatformSettingsMapper.java",
+    "name": "PlatformSettingsMapper",
+    "package": "com.zhangxuan.runruncampus.mapper.api",
+    "kind": "main",
+    "lines": 57,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/mapper/credit/RiskSignalMaintenanceMapper.java",
+    "name": "RiskSignalMaintenanceMapper",
+    "package": "com.zhangxuan.runruncampus.mapper.credit",
+    "kind": "main",
+    "lines": 94,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/mapper/identity/UserRoleSchemaMigrationMapper.java",
+    "name": "UserRoleSchemaMigrationMapper",
+    "package": "com.zhangxuan.runruncampus.mapper.identity",
+    "kind": "main",
+    "lines": 45,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/address/UserAddress.java",
+    "name": "UserAddress",
+    "package": "com.zhangxuan.runruncampus.model.address",
+    "kind": "main",
+    "lines": 112,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/admin/AdminAuditLog.java",
+    "name": "AdminAuditLog",
+    "package": "com.zhangxuan.runruncampus.model.admin",
+    "kind": "main",
+    "lines": 90,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/admin/DispatchCandidateRow.java",
+    "name": "DispatchCandidateRow",
+    "package": "com.zhangxuan.runruncampus.model.admin",
+    "kind": "main",
+    "lines": 17,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/auth/AdminMfaCredential.java",
+    "name": "AdminMfaCredential",
+    "package": "com.zhangxuan.runruncampus.model.auth",
+    "kind": "main",
+    "lines": 60,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/auth/Session.java",
+    "name": "Session",
+    "package": "com.zhangxuan.runruncampus.model.auth",
+    "kind": "main",
+    "lines": 112,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/coupon/UserCoupon.java",
+    "name": "UserCoupon",
+    "package": "com.zhangxuan.runruncampus.model.coupon",
+    "kind": "main",
+    "lines": 98,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/courier/CourierCertification.java",
+    "name": "CourierCertification",
+    "package": "com.zhangxuan.runruncampus.model.courier",
+    "kind": "main",
+    "lines": 252,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/credit/CreditEvent.java",
+    "name": "CreditEvent",
+    "package": "com.zhangxuan.runruncampus.model.credit",
+    "kind": "main",
+    "lines": 116,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/credit/CreditProfile.java",
+    "name": "CreditProfile",
+    "package": "com.zhangxuan.runruncampus.model.credit",
+    "kind": "main",
+    "lines": 58,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/credit/RiskSignal.java",
+    "name": "RiskSignal",
+    "package": "com.zhangxuan.runruncampus.model.credit",
+    "kind": "main",
+    "lines": 124,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/feedback/UserFeedback.java",
+    "name": "UserFeedback",
+    "package": "com.zhangxuan.runruncampus.model.feedback",
+    "kind": "main",
+    "lines": 109,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/membership/UserMembership.java",
+    "name": "UserMembership",
+    "package": "com.zhangxuan.runruncampus.model.membership",
+    "kind": "main",
+    "lines": 98,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/message/OrderMessage.java",
+    "name": "OrderMessage",
+    "package": "com.zhangxuan.runruncampus.model.message",
+    "kind": "main",
+    "lines": 90,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/message/OrderPushRequested.java",
+    "name": "OrderPushRequested",
+    "package": "com.zhangxuan.runruncampus.model.message",
+    "kind": "main",
+    "lines": 31,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/message/PushDeliveryTask.java",
+    "name": "PushDeliveryTask",
+    "package": "com.zhangxuan.runruncampus.model.message",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/order/CampusOrder.java",
+    "name": "CampusOrder",
+    "package": "com.zhangxuan.runruncampus.model.order",
+    "kind": "main",
+    "lines": 725,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/order/OrderChatMessage.java",
+    "name": "OrderChatMessage",
+    "package": "com.zhangxuan.runruncampus.model.order",
+    "kind": "main",
+    "lines": 66,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/order/OrderEvent.java",
+    "name": "OrderEvent",
+    "package": "com.zhangxuan.runruncampus.model.order",
+    "kind": "main",
+    "lines": 54,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/order/OrderIssue.java",
+    "name": "OrderIssue",
+    "package": "com.zhangxuan.runruncampus.model.order",
+    "kind": "main",
+    "lines": 117,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/order/OrderProof.java",
+    "name": "OrderProof",
+    "package": "com.zhangxuan.runruncampus.model.order",
+    "kind": "main",
+    "lines": 103,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/payment/AppPayParameters.java",
+    "name": "AppPayParameters",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "main",
+    "lines": 11,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/payment/NotificationHeaders.java",
+    "name": "NotificationHeaders",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "main",
+    "lines": 5,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/payment/RefundNotificationResult.java",
+    "name": "RefundNotificationResult",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/payment/RefundResult.java",
+    "name": "RefundResult",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/payment/TradeResult.java",
+    "name": "TradeResult",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/payment/WechatPayment.java",
+    "name": "WechatPayment",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "main",
+    "lines": 221,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/payment/WechatRefund.java",
+    "name": "WechatRefund",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "main",
+    "lines": 93,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/settings/Settings.java",
+    "name": "Settings",
+    "package": "com.zhangxuan.runruncampus.model.settings",
+    "kind": "main",
+    "lines": 10,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/model/user/AppUser.java",
+    "name": "AppUser",
+    "package": "com.zhangxuan.runruncampus.model.user",
+    "kind": "main",
+    "lines": 230,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/address/AddressRepository.java",
+    "name": "AddressRepository",
+    "package": "com.zhangxuan.runruncampus.repository.address",
+    "kind": "main",
+    "lines": 14,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/admin/AdminAuditLogRepository.java",
+    "name": "AdminAuditLogRepository",
+    "package": "com.zhangxuan.runruncampus.repository.admin",
+    "kind": "main",
+    "lines": 49,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/auth/AdminMfaRepository.java",
+    "name": "AdminMfaRepository",
+    "package": "com.zhangxuan.runruncampus.repository.auth",
+    "kind": "main",
+    "lines": 13,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/auth/SessionRepository.java",
+    "name": "SessionRepository",
+    "package": "com.zhangxuan.runruncampus.repository.auth",
+    "kind": "main",
+    "lines": 24,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/coupon/UserCouponRepository.java",
+    "name": "UserCouponRepository",
+    "package": "com.zhangxuan.runruncampus.repository.coupon",
+    "kind": "main",
+    "lines": 23,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/courier/CourierCertificationRepository.java",
+    "name": "CourierCertificationRepository",
+    "package": "com.zhangxuan.runruncampus.repository.courier",
+    "kind": "main",
+    "lines": 46,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/credit/CreditEventRepository.java",
+    "name": "CreditEventRepository",
+    "package": "com.zhangxuan.runruncampus.repository.credit",
+    "kind": "main",
+    "lines": 17,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/credit/CreditProfileRepository.java",
+    "name": "CreditProfileRepository",
+    "package": "com.zhangxuan.runruncampus.repository.credit",
+    "kind": "main",
+    "lines": 19,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/credit/RiskSignalRepository.java",
+    "name": "RiskSignalRepository",
+    "package": "com.zhangxuan.runruncampus.repository.credit",
+    "kind": "main",
+    "lines": 26,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/feedback/FeedbackRepository.java",
+    "name": "FeedbackRepository",
+    "package": "com.zhangxuan.runruncampus.repository.feedback",
+    "kind": "main",
+    "lines": 76,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/membership/UserMembershipRepository.java",
+    "name": "UserMembershipRepository",
+    "package": "com.zhangxuan.runruncampus.repository.membership",
+    "kind": "main",
+    "lines": 27,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/message/OrderMessageRepository.java",
+    "name": "OrderMessageRepository",
+    "package": "com.zhangxuan.runruncampus.repository.message",
+    "kind": "main",
+    "lines": 16,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/message/PushDeliveryRepository.java",
+    "name": "PushDeliveryRepository",
+    "package": "com.zhangxuan.runruncampus.repository.message",
+    "kind": "main",
+    "lines": 165,
+    "database": true,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/order/OrderChatRepository.java",
+    "name": "OrderChatRepository",
+    "package": "com.zhangxuan.runruncampus.repository.order",
+    "kind": "main",
+    "lines": 40,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/order/OrderEventRepository.java",
+    "name": "OrderEventRepository",
+    "package": "com.zhangxuan.runruncampus.repository.order",
+    "kind": "main",
+    "lines": 12,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/order/OrderIssueRepository.java",
+    "name": "OrderIssueRepository",
+    "package": "com.zhangxuan.runruncampus.repository.order",
+    "kind": "main",
+    "lines": 115,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/order/OrderProofRepository.java",
+    "name": "OrderProofRepository",
+    "package": "com.zhangxuan.runruncampus.repository.order",
+    "kind": "main",
+    "lines": 18,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/order/OrderRepository.java",
+    "name": "OrderRepository",
+    "package": "com.zhangxuan.runruncampus.repository.order",
+    "kind": "main",
+    "lines": 321,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/payment/WechatPaymentRepository.java",
+    "name": "WechatPaymentRepository",
+    "package": "com.zhangxuan.runruncampus.repository.payment",
+    "kind": "main",
+    "lines": 38,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/payment/WechatRefundRepository.java",
+    "name": "WechatRefundRepository",
+    "package": "com.zhangxuan.runruncampus.repository.payment",
+    "kind": "main",
+    "lines": 40,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/repository/user/UserRepository.java",
+    "name": "UserRepository",
+    "package": "com.zhangxuan.runruncampus.repository.user",
+    "kind": "main",
+    "lines": 131,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/RunRunCampusBackendApplication.java",
+    "name": "RunRunCampusBackendApplication",
+    "package": "com.zhangxuan.runruncampus",
+    "kind": "main",
+    "lines": 15,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/security/AdminMfaCrypto.java",
+    "name": "AdminMfaCrypto",
+    "package": "com.zhangxuan.runruncampus.security",
+    "kind": "main",
+    "lines": 159,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/security/ApiRateLimitFilter.java",
+    "name": "ApiRateLimitFilter",
+    "package": "com.zhangxuan.runruncampus.security",
+    "kind": "main",
+    "lines": 94,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/security/ApiRateLimitService.java",
+    "name": "ApiRateLimitService",
+    "package": "com.zhangxuan.runruncampus.security",
+    "kind": "main",
+    "lines": 78,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/address/AddressService.java",
+    "name": "AddressService",
+    "package": "com.zhangxuan.runruncampus.service.address",
+    "kind": "main",
+    "lines": 141,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminAccountService.java",
+    "name": "AdminAccountService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 185,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminAuditService.java",
+    "name": "AdminAuditService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 72,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminCommandCenterService.java",
+    "name": "AdminCommandCenterService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 77,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminCouponService.java",
+    "name": "AdminCouponService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 86,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminCourierService.java",
+    "name": "AdminCourierService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 212,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminDashboardService.java",
+    "name": "AdminDashboardService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 59,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminDispatchService.java",
+    "name": "AdminDispatchService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 305,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminFeedbackService.java",
+    "name": "AdminFeedbackService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 127,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminIssueService.java",
+    "name": "AdminIssueService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 222,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminOrderDeliveryProofService.java",
+    "name": "AdminOrderDeliveryProofService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 54,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminOrderLifecycleService.java",
+    "name": "AdminOrderLifecycleService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 149,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminOrderService.java",
+    "name": "AdminOrderService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 224,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminPushDeliveryService.java",
+    "name": "AdminPushDeliveryService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 26,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/AdminUserService.java",
+    "name": "AdminUserService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 146,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/CampusDispatchExperimentService.java",
+    "name": "CampusDispatchExperimentService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 163,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/admin/FulfillmentProvenanceService.java",
+    "name": "FulfillmentProvenanceService",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "main",
+    "lines": 136,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/api/PlatformSettingsService.java",
+    "name": "PlatformSettingsService",
+    "package": "com.zhangxuan.runruncampus.service.api",
+    "kind": "main",
+    "lines": 72,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/auth/AdminMfaService.java",
+    "name": "AdminMfaService",
+    "package": "com.zhangxuan.runruncampus.service.auth",
+    "kind": "main",
+    "lines": 312,
+    "database": false,
+    "transaction": [
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional(noRollbackFor = ResponseStatusException.class)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/auth/AuthService.java",
+    "name": "AuthService",
+    "package": "com.zhangxuan.runruncampus.service.auth",
+    "kind": "main",
+    "lines": 267,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/auth/LoginAttemptService.java",
+    "name": "LoginAttemptService",
+    "package": "com.zhangxuan.runruncampus.service.auth",
+    "kind": "main",
+    "lines": 77,
+    "database": false,
+    "transaction": [
+      "@Transactional(propagation = Propagation.REQUIRES_NEW)",
+      "@Transactional(propagation = Propagation.REQUIRES_NEW)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/auth/LoginCaptchaService.java",
+    "name": "LoginCaptchaService",
+    "package": "com.zhangxuan.runruncampus.service.auth",
+    "kind": "main",
+    "lines": 141,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/coupon/CouponService.java",
+    "name": "CouponService",
+    "package": "com.zhangxuan.runruncampus.service.coupon",
+    "kind": "main",
+    "lines": 110,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/courier/CourierCertificationMaintenance.java",
+    "name": "CourierCertificationMaintenance",
+    "package": "com.zhangxuan.runruncampus.service.courier",
+    "kind": "main",
+    "lines": 69,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/courier/CourierCertificationService.java",
+    "name": "CourierCertificationService",
+    "package": "com.zhangxuan.runruncampus.service.courier",
+    "kind": "main",
+    "lines": 407,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/courier/CourierOperationsService.java",
+    "name": "CourierOperationsService",
+    "package": "com.zhangxuan.runruncampus.service.courier",
+    "kind": "main",
+    "lines": 99,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/credit/CreditService.java",
+    "name": "CreditService",
+    "package": "com.zhangxuan.runruncampus.service.credit",
+    "kind": "main",
+    "lines": 342,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/credit/RiskSignalMaintenance.java",
+    "name": "RiskSignalMaintenance",
+    "package": "com.zhangxuan.runruncampus.service.credit",
+    "kind": "main",
+    "lines": 40,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/feedback/FeedbackService.java",
+    "name": "FeedbackService",
+    "package": "com.zhangxuan.runruncampus.service.feedback",
+    "kind": "main",
+    "lines": 62,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/membership/MembershipService.java",
+    "name": "MembershipService",
+    "package": "com.zhangxuan.runruncampus.service.membership",
+    "kind": "main",
+    "lines": 157,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/message/OrderMessageService.java",
+    "name": "OrderMessageService",
+    "package": "com.zhangxuan.runruncampus.service.message",
+    "kind": "main",
+    "lines": 87,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/message/OrderPushListener.java",
+    "name": "OrderPushListener",
+    "package": "com.zhangxuan.runruncampus.service.message",
+    "kind": "main",
+    "lines": 25,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/message/PushDeliveryProcessor.java",
+    "name": "PushDeliveryProcessor",
+    "package": "com.zhangxuan.runruncampus.service.message",
+    "kind": "main",
+    "lines": 72,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/order/CourierReassignmentService.java",
+    "name": "CourierReassignmentService",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "main",
+    "lines": 82,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/order/OrderChatService.java",
+    "name": "OrderChatService",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "main",
+    "lines": 115,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/order/OrderIssueService.java",
+    "name": "OrderIssueService",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "main",
+    "lines": 126,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/order/OrderProofService.java",
+    "name": "OrderProofService",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "main",
+    "lines": 197,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/order/OrderService.java",
+    "name": "OrderService",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "main",
+    "lines": 726,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/payment/ManualQrPaymentService.java",
+    "name": "ManualQrPaymentService",
+    "package": "com.zhangxuan.runruncampus.service.payment",
+    "kind": "main",
+    "lines": 263,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/payment/PaymentService.java",
+    "name": "PaymentService",
+    "package": "com.zhangxuan.runruncampus.service.payment",
+    "kind": "main",
+    "lines": 343,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/payment/WechatRefundProcessor.java",
+    "name": "WechatRefundProcessor",
+    "package": "com.zhangxuan.runruncampus.service.payment",
+    "kind": "main",
+    "lines": 79,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/service/privacy/PrivacyService.java",
+    "name": "PrivacyService",
+    "package": "com.zhangxuan.runruncampus.service.privacy",
+    "kind": "main",
+    "lines": 180,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/task/courier/CourierCertificationMaintenanceTask.java",
+    "name": "CourierCertificationMaintenanceTask",
+    "package": "com.zhangxuan.runruncampus.task.courier",
+    "kind": "main",
+    "lines": 27,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(\n      cron = \"${app.courier-certification.maintenance-cron:0 0 9 * * *}\",\n      zone = \"Asia/Shanghai\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/task/credit/RiskSignalMaintenanceTask.java",
+    "name": "RiskSignalMaintenanceTask",
+    "package": "com.zhangxuan.runruncampus.task.credit",
+    "kind": "main",
+    "lines": 25,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(cron = \"${app.risk.scan-cron:0 */10 * * * *}\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/task/message/PushDeliveryProcessorTask.java",
+    "name": "PushDeliveryProcessorTask",
+    "package": "com.zhangxuan.runruncampus.task.message",
+    "kind": "main",
+    "lines": 29,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(\n      fixedDelayString = \"${app.push.retry-poll-millis:30000}\",\n      initialDelayString = \"${app.push.retry-initial-delay-millis:30000}\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runruncampus/task/payment/WechatRefundProcessorTask.java",
+    "name": "WechatRefundProcessorTask",
+    "package": "com.zhangxuan.runruncampus.task.payment",
+    "kind": "main",
+    "lines": 25,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(fixedDelayString = \"${wechat.pay.refund-poll-millis:60000}\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/bootstrap/IdentityAdminCommand.java",
+    "name": "IdentityAdminCommand",
+    "package": "com.zhangxuan.runrunv2.bootstrap",
+    "kind": "main",
+    "lines": 57,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/bootstrap/IdentityStartupGuard.java",
+    "name": "IdentityStartupGuard",
+    "package": "com.zhangxuan.runrunv2.bootstrap",
+    "kind": "main",
+    "lines": 43,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/bootstrap/LocalTestBootstrap.java",
+    "name": "LocalTestBootstrap",
+    "package": "com.zhangxuan.runrunv2.bootstrap",
+    "kind": "main",
+    "lines": 110,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/config/LocalTestCors.java",
+    "name": "LocalTestCors",
+    "package": "com.zhangxuan.runrunv2.config",
+    "kind": "main",
+    "lines": 32,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/config/OrderConfiguration.java",
+    "name": "OrderConfiguration",
+    "package": "com.zhangxuan.runrunv2.config",
+    "kind": "main",
+    "lines": 41,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/config/OrderJson.java",
+    "name": "OrderJson",
+    "package": "com.zhangxuan.runrunv2.config",
+    "kind": "main",
+    "lines": 32,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/courier/CourierCertificationV2Controller.java",
+    "name": "CourierCertificationV2Controller",
+    "package": "com.zhangxuan.runrunv2.controller.courier",
+    "kind": "main",
+    "lines": 117,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/evidence/CourierEvidenceGovernanceController.java",
+    "name": "CourierEvidenceGovernanceController",
+    "package": "com.zhangxuan.runrunv2.controller.evidence",
+    "kind": "main",
+    "lines": 51,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/fulfillment/FulfillmentController.java",
+    "name": "FulfillmentController",
+    "package": "com.zhangxuan.runrunv2.controller.fulfillment",
+    "kind": "main",
+    "lines": 146,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/identity/IdentityController.java",
+    "name": "IdentityController",
+    "package": "com.zhangxuan.runrunv2.controller.identity",
+    "kind": "main",
+    "lines": 82,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/notification/NotificationController.java",
+    "name": "NotificationController",
+    "package": "com.zhangxuan.runrunv2.controller.notification",
+    "kind": "main",
+    "lines": 38,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/order/OrderController.java",
+    "name": "OrderController",
+    "package": "com.zhangxuan.runrunv2.controller.order",
+    "kind": "main",
+    "lines": 128,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/payment/PaymentController.java",
+    "name": "PaymentController",
+    "package": "com.zhangxuan.runrunv2.controller.payment",
+    "kind": "main",
+    "lines": 67,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/controller/payment/PaymentTestController.java",
+    "name": "PaymentTestController",
+    "package": "com.zhangxuan.runrunv2.controller.payment",
+    "kind": "main",
+    "lines": 47,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/courier/CertificationDecisionRequest.java",
+    "name": "CertificationDecisionRequest",
+    "package": "com.zhangxuan.runrunv2.dto.request.courier",
+    "kind": "main",
+    "lines": 5,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/evidence/HoldRequest.java",
+    "name": "HoldRequest",
+    "package": "com.zhangxuan.runrunv2.dto.request.evidence",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/Deliver.java",
+    "name": "Deliver",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 5,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/Location.java",
+    "name": "Location",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 14,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/Pickup.java",
+    "name": "Pickup",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/RegisterProof.java",
+    "name": "RegisterProof",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/Release.java",
+    "name": "Release",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/Respond.java",
+    "name": "Respond",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/Upload.java",
+    "name": "Upload",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/fulfillment/Version.java",
+    "name": "Version",
+    "package": "com.zhangxuan.runrunv2.dto.request.fulfillment",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/identity/BindPhone.java",
+    "name": "BindPhone",
+    "package": "com.zhangxuan.runrunv2.dto.request.identity",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/identity/Logout.java",
+    "name": "Logout",
+    "package": "com.zhangxuan.runrunv2.dto.request.identity",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/identity/PasswordChange.java",
+    "name": "PasswordChange",
+    "package": "com.zhangxuan.runrunv2.dto.request.identity",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/identity/PasswordLogin.java",
+    "name": "PasswordLogin",
+    "package": "com.zhangxuan.runrunv2.dto.request.identity",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/identity/WechatLogin.java",
+    "name": "WechatLogin",
+    "package": "com.zhangxuan.runrunv2.dto.request.identity",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/order/ConfigChange.java",
+    "name": "ConfigChange",
+    "package": "com.zhangxuan.runrunv2.dto.request.order",
+    "kind": "main",
+    "lines": 15,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/order/CreateRequest.java",
+    "name": "CreateRequest",
+    "package": "com.zhangxuan.runrunv2.dto.request.order",
+    "kind": "main",
+    "lines": 18,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/order/PointChange.java",
+    "name": "PointChange",
+    "package": "com.zhangxuan.runrunv2.dto.request.order",
+    "kind": "main",
+    "lines": 12,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/order/QuoteRequest.java",
+    "name": "QuoteRequest",
+    "package": "com.zhangxuan.runrunv2.dto.request.order",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/order/ZoneChange.java",
+    "name": "ZoneChange",
+    "package": "com.zhangxuan.runrunv2.dto.request.order",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/payment/CancelRequest.java",
+    "name": "CancelRequest",
+    "package": "com.zhangxuan.runrunv2.dto.request.payment",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/payment/ResultRequest.java",
+    "name": "ResultRequest",
+    "package": "com.zhangxuan.runrunv2.dto.request.payment",
+    "kind": "main",
+    "lines": 6,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/request/payment/VersionRequest.java",
+    "name": "VersionRequest",
+    "package": "com.zhangxuan.runrunv2.dto.request.payment",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/courier/Certification.java",
+    "name": "Certification",
+    "package": "com.zhangxuan.runrunv2.dto.response.courier",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/evidence/HoldResponse.java",
+    "name": "HoldResponse",
+    "package": "com.zhangxuan.runrunv2.dto.response.evidence",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/evidence/HoldResult.java",
+    "name": "HoldResult",
+    "package": "com.zhangxuan.runrunv2.dto.response.evidence",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/fulfillment/FulfillmentModels.java",
+    "name": "FulfillmentModels",
+    "package": "com.zhangxuan.runrunv2.dto.response.fulfillment",
+    "kind": "main",
+    "lines": 61,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/identity/Account.java",
+    "name": "Account",
+    "package": "com.zhangxuan.runrunv2.dto.response.identity",
+    "kind": "main",
+    "lines": 36,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/identity/LoginResult.java",
+    "name": "LoginResult",
+    "package": "com.zhangxuan.runrunv2.dto.response.identity",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/order/OrderModels.java",
+    "name": "OrderModels",
+    "package": "com.zhangxuan.runrunv2.dto.response.order",
+    "kind": "main",
+    "lines": 84,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/dto/response/payment/PaymentModels.java",
+    "name": "PaymentModels",
+    "package": "com.zhangxuan.runrunv2.dto.response.payment",
+    "kind": "main",
+    "lines": 44,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/enums/fulfillment/Decision.java",
+    "name": "Decision",
+    "package": "com.zhangxuan.runrunv2.enums.fulfillment",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/enums/fulfillment/EventType.java",
+    "name": "EventType",
+    "package": "com.zhangxuan.runrunv2.enums.fulfillment",
+    "kind": "main",
+    "lines": 7,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/enums/fulfillment/Kind.java",
+    "name": "Kind",
+    "package": "com.zhangxuan.runrunv2.enums.fulfillment",
+    "kind": "main",
+    "lines": 8,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/enums/order/ServiceType.java",
+    "name": "ServiceType",
+    "package": "com.zhangxuan.runrunv2.enums.order",
+    "kind": "main",
+    "lines": 26,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/enums/payment/Result.java",
+    "name": "Result",
+    "package": "com.zhangxuan.runrunv2.enums.payment",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/exception/IdentityErrorHandler.java",
+    "name": "IdentityErrorHandler",
+    "package": "com.zhangxuan.runrunv2.exception",
+    "kind": "main",
+    "lines": 78,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/exception/IdentityFailure.java",
+    "name": "IdentityFailure",
+    "package": "com.zhangxuan.runrunv2.exception",
+    "kind": "main",
+    "lines": 27,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/IdentityApplication.java",
+    "name": "IdentityApplication",
+    "package": "com.zhangxuan.runrunv2",
+    "kind": "main",
+    "lines": 37,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/integration/payment/MockPaymentAdapter.java",
+    "name": "MockPaymentAdapter",
+    "package": "com.zhangxuan.runrunv2.integration.payment",
+    "kind": "main",
+    "lines": 55,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/integration/storage/V2StudentCardStorage.java",
+    "name": "V2StudentCardStorage",
+    "package": "com.zhangxuan.runrunv2.integration.storage",
+    "kind": "main",
+    "lines": 37,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/integration/wechat/DisabledWechatGateway.java",
+    "name": "DisabledWechatGateway",
+    "package": "com.zhangxuan.runrunv2.integration.wechat",
+    "kind": "main",
+    "lines": 20,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/integration/wechat/DisabledWechatSubscriptionGateway.java",
+    "name": "DisabledWechatSubscriptionGateway",
+    "package": "com.zhangxuan.runrunv2.integration.wechat",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/integration/wechat/WechatGateway.java",
+    "name": "WechatGateway",
+    "package": "com.zhangxuan.runrunv2.integration.wechat",
+    "kind": "main",
+    "lines": 9,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/integration/wechat/WechatHttpGateway.java",
+    "name": "WechatHttpGateway",
+    "package": "com.zhangxuan.runrunv2.integration.wechat",
+    "kind": "main",
+    "lines": 138,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/integration/wechat/WechatSubscriptionGateway.java",
+    "name": "WechatSubscriptionGateway",
+    "package": "com.zhangxuan.runrunv2.integration.wechat",
+    "kind": "main",
+    "lines": 11,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/configuration/ServiceConfigMapper.java",
+    "name": "ServiceConfigMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.configuration",
+    "kind": "main",
+    "lines": 141,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/courier/CourierCertificationV2Mapper.java",
+    "name": "CourierCertificationV2Mapper",
+    "package": "com.zhangxuan.runrunv2.mapper.courier",
+    "kind": "main",
+    "lines": 203,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/evidence/CourierEvidenceGovernanceMapper.java",
+    "name": "CourierEvidenceGovernanceMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.evidence",
+    "kind": "main",
+    "lines": 196,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/fulfillment/FulfillmentMapper.java",
+    "name": "FulfillmentMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.fulfillment",
+    "kind": "main",
+    "lines": 469,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/fulfillment/FulfillmentQueryMapper.java",
+    "name": "FulfillmentQueryMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.fulfillment",
+    "kind": "main",
+    "lines": 76,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/idempotency/OrderIdempotencyMapper.java",
+    "name": "OrderIdempotencyMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.idempotency",
+    "kind": "main",
+    "lines": 58,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/identity/DeploymentIdentityMapper.java",
+    "name": "DeploymentIdentityMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.identity",
+    "kind": "main",
+    "lines": 106,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/identity/IdentityMapper.java",
+    "name": "IdentityMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.identity",
+    "kind": "main",
+    "lines": 243,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/identity/IdentityStartupMapper.java",
+    "name": "IdentityStartupMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.identity",
+    "kind": "main",
+    "lines": 34,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/identity/LocalTestMapper.java",
+    "name": "LocalTestMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.identity",
+    "kind": "main",
+    "lines": 60,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/notification/NotificationMapper.java",
+    "name": "NotificationMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.notification",
+    "kind": "main",
+    "lines": 44,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/notification/NotificationOutboxMapper.java",
+    "name": "NotificationOutboxMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.notification",
+    "kind": "main",
+    "lines": 68,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/order/OrderMapper.java",
+    "name": "OrderMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.order",
+    "kind": "main",
+    "lines": 65,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/order/OrderStore.java",
+    "name": "OrderStore",
+    "package": "com.zhangxuan.runrunv2.mapper.order",
+    "kind": "main",
+    "lines": 77,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/payment/MockPaymentMapper.java",
+    "name": "MockPaymentMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.payment",
+    "kind": "main",
+    "lines": 62,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/mapper/payment/PaymentMapper.java",
+    "name": "PaymentMapper",
+    "package": "com.zhangxuan.runrunv2.mapper.payment",
+    "kind": "main",
+    "lines": 474,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/fulfillment/TaskRow.java",
+    "name": "TaskRow",
+    "package": "com.zhangxuan.runrunv2.model.fulfillment",
+    "kind": "main",
+    "lines": 16,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/identity/AccessResult.java",
+    "name": "AccessResult",
+    "package": "com.zhangxuan.runrunv2.model.identity",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/identity/IdentityUser.java",
+    "name": "IdentityUser",
+    "package": "com.zhangxuan.runrunv2.model.identity",
+    "kind": "main",
+    "lines": 12,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/notification/Delivery.java",
+    "name": "Delivery",
+    "package": "com.zhangxuan.runrunv2.model.notification",
+    "kind": "main",
+    "lines": 12,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/notification/DeliveryResult.java",
+    "name": "DeliveryResult",
+    "package": "com.zhangxuan.runrunv2.model.notification",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/order/Address.java",
+    "name": "Address",
+    "package": "com.zhangxuan.runrunv2.model.order",
+    "kind": "main",
+    "lines": 14,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/order/Pricing.java",
+    "name": "Pricing",
+    "package": "com.zhangxuan.runrunv2.model.order",
+    "kind": "main",
+    "lines": 12,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/order/Schedule.java",
+    "name": "Schedule",
+    "package": "com.zhangxuan.runrunv2.model.order",
+    "kind": "main",
+    "lines": 4,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/model/ResourceIds.java",
+    "name": "ResourceIds",
+    "package": "com.zhangxuan.runrunv2.model",
+    "kind": "main",
+    "lines": 19,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/security/IdentityPermission.java",
+    "name": "IdentityPermission",
+    "package": "com.zhangxuan.runrunv2.security",
+    "kind": "main",
+    "lines": 18,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/security/IdentitySecrets.java",
+    "name": "IdentitySecrets",
+    "package": "com.zhangxuan.runrunv2.security",
+    "kind": "main",
+    "lines": 76,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/security/IdentityWebConfiguration.java",
+    "name": "IdentityWebConfiguration",
+    "package": "com.zhangxuan.runrunv2.security",
+    "kind": "main",
+    "lines": 97,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/configuration/ServiceConfigService.java",
+    "name": "ServiceConfigService",
+    "package": "com.zhangxuan.runrunv2.service.configuration",
+    "kind": "main",
+    "lines": 288,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/courier/CourierCertificationV2Service.java",
+    "name": "CourierCertificationV2Service",
+    "package": "com.zhangxuan.runrunv2.service.courier",
+    "kind": "main",
+    "lines": 398,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/evidence/CourierEvidenceGovernanceService.java",
+    "name": "CourierEvidenceGovernanceService",
+    "package": "com.zhangxuan.runrunv2.service.evidence",
+    "kind": "main",
+    "lines": 174,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/fulfillment/FulfillmentEvidence.java",
+    "name": "FulfillmentEvidence",
+    "package": "com.zhangxuan.runrunv2.service.fulfillment",
+    "kind": "main",
+    "lines": 23,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/fulfillment/FulfillmentQueries.java",
+    "name": "FulfillmentQueries",
+    "package": "com.zhangxuan.runrunv2.service.fulfillment",
+    "kind": "main",
+    "lines": 176,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/fulfillment/FulfillmentService.java",
+    "name": "FulfillmentService",
+    "package": "com.zhangxuan.runrunv2.service.fulfillment",
+    "kind": "main",
+    "lines": 712,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(propagation = Propagation.MANDATORY)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(propagation = Propagation.MANDATORY)",
+      "@Transactional(propagation = Propagation.MANDATORY)",
+      "@Transactional(propagation = Propagation.MANDATORY)",
+      "@Transactional(propagation = Propagation.MANDATORY)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/fulfillment/PendingFulfillmentEvidence.java",
+    "name": "PendingFulfillmentEvidence",
+    "package": "com.zhangxuan.runrunv2.service.fulfillment",
+    "kind": "main",
+    "lines": 24,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/idempotency/OrderIdempotency.java",
+    "name": "OrderIdempotency",
+    "package": "com.zhangxuan.runrunv2.service.idempotency",
+    "kind": "main",
+    "lines": 55,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/identity/DeploymentIdentityService.java",
+    "name": "DeploymentIdentityService",
+    "package": "com.zhangxuan.runrunv2.service.identity",
+    "kind": "main",
+    "lines": 214,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/identity/IdentityService.java",
+    "name": "IdentityService",
+    "package": "com.zhangxuan.runrunv2.service.identity",
+    "kind": "main",
+    "lines": 242,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/notification/NotificationOutboxWorker.java",
+    "name": "NotificationOutboxWorker",
+    "package": "com.zhangxuan.runrunv2.service.notification",
+    "kind": "main",
+    "lines": 74,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/notification/NotificationService.java",
+    "name": "NotificationService",
+    "package": "com.zhangxuan.runrunv2.service.notification",
+    "kind": "main",
+    "lines": 44,
+    "database": false,
+    "transaction": [
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/order/OrderService.java",
+    "name": "OrderService",
+    "package": "com.zhangxuan.runrunv2.service.order",
+    "kind": "main",
+    "lines": 142,
+    "database": false,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(readOnly = true)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/payment/OriginalPaymentWriter.java",
+    "name": "OriginalPaymentWriter",
+    "package": "com.zhangxuan.runrunv2.service.payment",
+    "kind": "main",
+    "lines": 13,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/service/payment/PaymentService.java",
+    "name": "PaymentService",
+    "package": "com.zhangxuan.runrunv2.service.payment",
+    "kind": "main",
+    "lines": 688,
+    "database": false,
+    "transaction": [
+      "@Transactional(propagation = Propagation.MANDATORY)",
+      "@Transactional(readOnly = true)",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional",
+      "@Transactional(propagation = Propagation.MANDATORY)",
+      "@Transactional(propagation = Propagation.MANDATORY)",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/task/evidence/CourierEvidenceGovernanceServiceTask.java",
+    "name": "CourierEvidenceGovernanceServiceTask",
+    "package": "com.zhangxuan.runrunv2.task.evidence",
+    "kind": "main",
+    "lines": 27,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(\r\n      fixedDelayString = \"${rrc.evidence.cleanup-delay-ms:60000}\",\r\n      initialDelayString = \"${rrc.evidence.cleanup-delay-ms:60000}\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/task/fulfillment/FulfillmentCompletionJob.java",
+    "name": "FulfillmentCompletionJob",
+    "package": "com.zhangxuan.runrunv2.task.fulfillment",
+    "kind": "main",
+    "lines": 28,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(\n      fixedDelayString = \"${rrc.fulfillment.completion-delay-ms:15000}\",\n      initialDelayString = \"${rrc.fulfillment.completion-delay-ms:15000}\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/task/notification/NotificationDeliveryTask.java",
+    "name": "NotificationDeliveryTask",
+    "package": "com.zhangxuan.runrunv2.task.notification",
+    "kind": "main",
+    "lines": 23,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(fixedDelayString = \"${rrc.notifications.worker-delay-ms:15000}\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/main/java/com/zhangxuan/runrunv2/task/payment/PaymentExpiryJob.java",
+    "name": "PaymentExpiryJob",
+    "package": "com.zhangxuan.runrunv2.task.payment",
+    "kind": "main",
+    "lines": 27,
+    "database": false,
+    "transaction": [],
+    "scheduled": [
+      "@Scheduled(\n      fixedDelayString = \"${rrc.payment.expiry-delay-ms:15000}\",\n      initialDelayString = \"${rrc.payment.expiry-delay-ms:15000}\")"
+    ]
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminAuthorizationControllerTest.java",
+    "name": "AdminAuthorizationControllerTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "kind": "test",
+    "lines": 213,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminListPostgresIntegrationTest.java",
+    "name": "AdminListPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "kind": "test",
+    "lines": 241,
+    "database": true,
+    "transaction": [
+      "@Transactional",
+      "@Transactional",
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/admin/AdminPaginationPostgresIntegrationTest.java",
+    "name": "AdminPaginationPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.admin",
+    "kind": "test",
+    "lines": 286,
+    "database": true,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/bootstrap/UserRoleSchemaMigrationTest.java",
+    "name": "UserRoleSchemaMigrationTest",
+    "package": "com.zhangxuan.runruncampus.bootstrap",
+    "kind": "test",
+    "lines": 67,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/config/ProductionConfigurationValidatorTest.java",
+    "name": "ProductionConfigurationValidatorTest",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "test",
+    "lines": 99,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/config/ProductionFoundationTest.java",
+    "name": "ProductionFoundationTest",
+    "package": "com.zhangxuan.runruncampus.config",
+    "kind": "test",
+    "lines": 92,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/admin/AdminCommandCenterPostgresIntegrationTest.java",
+    "name": "AdminCommandCenterPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "test",
+    "lines": 352,
+    "database": true,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(propagation = Propagation.NOT_SUPPORTED)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/admin/AdminIssueResultNotificationTest.java",
+    "name": "AdminIssueResultNotificationTest",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "test",
+    "lines": 64,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/admin/AdminOrderDeliveryProofControllerTest.java",
+    "name": "AdminOrderDeliveryProofControllerTest",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "test",
+    "lines": 83,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/admin/AdminPushDeliveryControllerTest.java",
+    "name": "AdminPushDeliveryControllerTest",
+    "package": "com.zhangxuan.runruncampus.controller.admin",
+    "kind": "test",
+    "lines": 36,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/api/AppVersionControllerTest.java",
+    "name": "AppVersionControllerTest",
+    "package": "com.zhangxuan.runruncampus.controller.api",
+    "kind": "test",
+    "lines": 27,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/auth/AdminMfaCryptoTest.java",
+    "name": "AdminMfaCryptoTest",
+    "package": "com.zhangxuan.runruncampus.controller.auth",
+    "kind": "test",
+    "lines": 86,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/auth/AdminMfaPostgresIntegrationTest.java",
+    "name": "AdminMfaPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.controller.auth",
+    "kind": "test",
+    "lines": 522,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/auth/AuthControllerRateLimitTest.java",
+    "name": "AuthControllerRateLimitTest",
+    "package": "com.zhangxuan.runruncampus.controller.auth",
+    "kind": "test",
+    "lines": 77,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/auth/AuthControllerTest.java",
+    "name": "AuthControllerTest",
+    "package": "com.zhangxuan.runruncampus.controller.auth",
+    "kind": "test",
+    "lines": 30,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/auth/AuthPasswordPostgresIntegrationTest.java",
+    "name": "AuthPasswordPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.controller.auth",
+    "kind": "test",
+    "lines": 100,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/credit/CreditPostgresIntegrationTest.java",
+    "name": "CreditPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.controller.credit",
+    "kind": "test",
+    "lines": 98,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/order/OrderAuthorizationTest.java",
+    "name": "OrderAuthorizationTest",
+    "package": "com.zhangxuan.runruncampus.controller.order",
+    "kind": "test",
+    "lines": 203,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/order/OrderConcurrencyPostgresIntegrationTest.java",
+    "name": "OrderConcurrencyPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.controller.order",
+    "kind": "test",
+    "lines": 698,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/order/OrderMinePostgresIntegrationTest.java",
+    "name": "OrderMinePostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.controller.order",
+    "kind": "test",
+    "lines": 120,
+    "database": false,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/controller/privacy/PrivacyPostgresIntegrationTest.java",
+    "name": "PrivacyPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.controller.privacy",
+    "kind": "test",
+    "lines": 122,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/exception/ApiExceptionHandlerTest.java",
+    "name": "ApiExceptionHandlerTest",
+    "package": "com.zhangxuan.runruncampus.exception",
+    "kind": "test",
+    "lines": 33,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/integration/push/AliyunPushRequestFactoryTest.java",
+    "name": "AliyunPushRequestFactoryTest",
+    "package": "com.zhangxuan.runruncampus.integration.push",
+    "kind": "test",
+    "lines": 66,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/message/PushDeliveryPostgresIntegrationTest.java",
+    "name": "PushDeliveryPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.message",
+    "kind": "test",
+    "lines": 127,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/model/courier/CourierCertificationGovernanceTest.java",
+    "name": "CourierCertificationGovernanceTest",
+    "package": "com.zhangxuan.runruncampus.model.courier",
+    "kind": "test",
+    "lines": 60,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/model/courier/CourierCertificationMaintenanceTest.java",
+    "name": "CourierCertificationMaintenanceTest",
+    "package": "com.zhangxuan.runruncampus.model.courier",
+    "kind": "test",
+    "lines": 111,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/model/courier/CourierCertificationPostgresIntegrationTest.java",
+    "name": "CourierCertificationPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.model.courier",
+    "kind": "test",
+    "lines": 81,
+    "database": true,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/model/courier/CourierCertificationServiceTest.java",
+    "name": "CourierCertificationServiceTest",
+    "package": "com.zhangxuan.runruncampus.model.courier",
+    "kind": "test",
+    "lines": 222,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/model/message/OrderMessageServiceTest.java",
+    "name": "OrderMessageServiceTest",
+    "package": "com.zhangxuan.runruncampus.model.message",
+    "kind": "test",
+    "lines": 121,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/model/payment/WechatPaymentTest.java",
+    "name": "WechatPaymentTest",
+    "package": "com.zhangxuan.runruncampus.model.payment",
+    "kind": "test",
+    "lines": 57,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/security/ApiRateLimitFilterTest.java",
+    "name": "ApiRateLimitFilterTest",
+    "package": "com.zhangxuan.runruncampus.security",
+    "kind": "test",
+    "lines": 70,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/security/ApiRateLimitServiceTest.java",
+    "name": "ApiRateLimitServiceTest",
+    "package": "com.zhangxuan.runruncampus.security",
+    "kind": "test",
+    "lines": 70,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/address/AddressServiceTest.java",
+    "name": "AddressServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.address",
+    "kind": "test",
+    "lines": 114,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminAccountServiceTest.java",
+    "name": "AdminAccountServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 204,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminCouponPostgresIntegrationTest.java",
+    "name": "AdminCouponPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 163,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminCouponServiceTest.java",
+    "name": "AdminCouponServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 98,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminCourierServiceTest.java",
+    "name": "AdminCourierServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 88,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminDispatchServiceTest.java",
+    "name": "AdminDispatchServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 245,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminFeedbackServiceTest.java",
+    "name": "AdminFeedbackServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 72,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminIssueServiceTest.java",
+    "name": "AdminIssueServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 84,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminOrderLifecycleServiceTest.java",
+    "name": "AdminOrderLifecycleServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 203,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminOrderServiceTest.java",
+    "name": "AdminOrderServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 142,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/AdminUserServiceTest.java",
+    "name": "AdminUserServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 84,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/CampusDispatchExperimentServiceTest.java",
+    "name": "CampusDispatchExperimentServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 56,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/admin/FulfillmentProvenanceServiceTest.java",
+    "name": "FulfillmentProvenanceServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.admin",
+    "kind": "test",
+    "lines": 127,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/auth/AuthServiceTest.java",
+    "name": "AuthServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.auth",
+    "kind": "test",
+    "lines": 255,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/auth/LoginAttemptServiceTest.java",
+    "name": "LoginAttemptServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.auth",
+    "kind": "test",
+    "lines": 60,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/auth/LoginCaptchaServiceTest.java",
+    "name": "LoginCaptchaServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.auth",
+    "kind": "test",
+    "lines": 40,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/coupon/CouponServiceTest.java",
+    "name": "CouponServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.coupon",
+    "kind": "test",
+    "lines": 128,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/courier/CourierOperationsServiceTest.java",
+    "name": "CourierOperationsServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.courier",
+    "kind": "test",
+    "lines": 106,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/credit/CreditServiceTest.java",
+    "name": "CreditServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.credit",
+    "kind": "test",
+    "lines": 130,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/feedback/FeedbackServiceTest.java",
+    "name": "FeedbackServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.feedback",
+    "kind": "test",
+    "lines": 100,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/membership/MembershipServiceTest.java",
+    "name": "MembershipServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.membership",
+    "kind": "test",
+    "lines": 147,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/message/PushDeliveryProcessorTest.java",
+    "name": "PushDeliveryProcessorTest",
+    "package": "com.zhangxuan.runruncampus.service.message",
+    "kind": "test",
+    "lines": 66,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/order/CourierReassignmentServiceTest.java",
+    "name": "CourierReassignmentServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "test",
+    "lines": 135,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/order/OrderChatPostgresIntegrationTest.java",
+    "name": "OrderChatPostgresIntegrationTest",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "test",
+    "lines": 169,
+    "database": true,
+    "transaction": [
+      "@Transactional",
+      "@Transactional(propagation = Propagation.NOT_SUPPORTED)"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/order/OrderChatServiceTest.java",
+    "name": "OrderChatServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "test",
+    "lines": 137,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/order/OrderIssueServiceTest.java",
+    "name": "OrderIssueServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "test",
+    "lines": 138,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/order/OrderProofServiceTest.java",
+    "name": "OrderProofServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "test",
+    "lines": 255,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/order/OrderServiceTest.java",
+    "name": "OrderServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.order",
+    "kind": "test",
+    "lines": 1067,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/payment/ManualQrPaymentServiceTest.java",
+    "name": "ManualQrPaymentServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.payment",
+    "kind": "test",
+    "lines": 128,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/payment/PaymentServiceTest.java",
+    "name": "PaymentServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.payment",
+    "kind": "test",
+    "lines": 260,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runruncampus/service/privacy/PrivacyServiceTest.java",
+    "name": "PrivacyServiceTest",
+    "package": "com.zhangxuan.runruncampus.service.privacy",
+    "kind": "test",
+    "lines": 156,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/architecture/BackendLayeringTest.java",
+    "name": "BackendLayeringTest",
+    "package": "com.zhangxuan.runrunv2.architecture",
+    "kind": "test",
+    "lines": 112,
+    "database": true,
+    "transaction": [
+      "@Transactional"
+    ],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/courier/CourierCertificationV2DatabaseE2ETest.java",
+    "name": "CourierCertificationV2DatabaseE2ETest",
+    "package": "com.zhangxuan.runrunv2.controller.courier",
+    "kind": "test",
+    "lines": 78,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/fulfillment/FulfillmentIntegrationTest.java",
+    "name": "FulfillmentIntegrationTest",
+    "package": "com.zhangxuan.runrunv2.controller.fulfillment",
+    "kind": "test",
+    "lines": 1072,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/identity/IdentityIntegrationTest.java",
+    "name": "IdentityIntegrationTest",
+    "package": "com.zhangxuan.runrunv2.controller.identity",
+    "kind": "test",
+    "lines": 572,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/notification/NotificationRuntimeTest.java",
+    "name": "NotificationRuntimeTest",
+    "package": "com.zhangxuan.runrunv2.controller.notification",
+    "kind": "test",
+    "lines": 54,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/order/OrderIntegrationTest.java",
+    "name": "OrderIntegrationTest",
+    "package": "com.zhangxuan.runrunv2.controller.order",
+    "kind": "test",
+    "lines": 635,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/order/OrderRequestJsonContractTest.java",
+    "name": "OrderRequestJsonContractTest",
+    "package": "com.zhangxuan.runrunv2.controller.order",
+    "kind": "test",
+    "lines": 22,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/payment/PaymentEnvironmentTest.java",
+    "name": "PaymentEnvironmentTest",
+    "package": "com.zhangxuan.runrunv2.controller.payment",
+    "kind": "test",
+    "lines": 70,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/controller/payment/PaymentIntegrationTest.java",
+    "name": "PaymentIntegrationTest",
+    "package": "com.zhangxuan.runrunv2.controller.payment",
+    "kind": "test",
+    "lines": 808,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/CourierCertificationAdminListDatabaseTest.java",
+    "name": "CourierCertificationAdminListDatabaseTest",
+    "package": "com.zhangxuan.runrunv2",
+    "kind": "test",
+    "lines": 120,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/integration/wechat/WechatHttpGatewayTest.java",
+    "name": "WechatHttpGatewayTest",
+    "package": "com.zhangxuan.runrunv2.integration.wechat",
+    "kind": "test",
+    "lines": 131,
+    "database": false,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/LocalTestBoundaryTest.java",
+    "name": "LocalTestBoundaryTest",
+    "package": "com.zhangxuan.runrunv2",
+    "kind": "test",
+    "lines": 61,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/service/evidence/CourierEvidenceGovernanceServiceTest.java",
+    "name": "CourierEvidenceGovernanceServiceTest",
+    "package": "com.zhangxuan.runrunv2.service.evidence",
+    "kind": "test",
+    "lines": 69,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/V2FeatureWiringIntegrationTest.java",
+    "name": "V2FeatureWiringIntegrationTest",
+    "package": "com.zhangxuan.runrunv2",
+    "kind": "test",
+    "lines": 431,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  },
+  {
+    "file": "handover-2026-10-24/RunRunCampusBackend/src/test/java/com/zhangxuan/runrunv2/V2JdbcContractDatabaseTest.java",
+    "name": "V2JdbcContractDatabaseTest",
+    "package": "com.zhangxuan.runrunv2",
+    "kind": "test",
+    "lines": 164,
+    "database": true,
+    "transaction": [],
+    "scheduled": []
+  }
+]

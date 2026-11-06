@@ -1,0 +1,2843 @@
+[
+  {
+    "class": "com.zhangxuan.runruncampus.bootstrap.AdminAccountInitializer",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.bootstrap.UserRoleSchemaMigration",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.config.ManualQrPaymentConfiguration",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.config.ManualQrPaymentProperties"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.config.ManualQrPaymentProperties",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.config.PasswordConfig",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.config.ProductionConfigurationValidator",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.config.WechatPayConfiguration",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.config.WechatPayProperties",
+      "com.zhangxuan.runruncampus.integration.payment.DisabledWechatPayGateway",
+      "com.zhangxuan.runruncampus.integration.payment.WechatPayApiV3Gateway",
+      "com.zhangxuan.runruncampus.integration.payment.WechatPayGateway"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.config.WechatPayProperties",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.address.AddressController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.address.AddressRequest",
+      "com.zhangxuan.runruncampus.service.address.AddressService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminAccountController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.admin.account.ChangeOwnPasswordRequest",
+      "com.zhangxuan.runruncampus.dto.request.admin.account.ChangeRoleRequest",
+      "com.zhangxuan.runruncampus.dto.request.admin.account.CreateAdminRequest",
+      "com.zhangxuan.runruncampus.dto.request.admin.account.ResetPasswordRequest",
+      "com.zhangxuan.runruncampus.dto.response.admin.account.AdminAccountItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.account.PasswordChangedResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.AdminAccountService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminAuditController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditPageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminCommandCenterController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.Snapshot",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.commandcenter.Queue",
+      "com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminCourierController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPageResponse",
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.service.admin.AdminCourierService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminDashboardController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.dashboard.AdminDashboardResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.AdminDashboardService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminDispatchController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.admin.dispatch.DispatchRequest",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.AdminDispatchService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminFeedbackController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.admin.feedback.ResolveFeedbackRequest",
+      "com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackPageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackType",
+      "com.zhangxuan.runruncampus.service.admin.AdminFeedbackService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminIssueController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.admin.issue.ResolveIssueRequest",
+      "com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssuePageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.service.admin.AdminIssueService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminOrderController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.admin.order.RejectManualPaymentRequest",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailResponse",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.service.admin.AdminOrderService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminOrderDeliveryProofController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.AdminOrderDeliveryProofService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminOrderLifecycleController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.admin.orderlifecycle.ReasonRequest",
+      "com.zhangxuan.runruncampus.dto.response.admin.orderlifecycle.ActionResult",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminPushDeliveryController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.PushDeliveryOverview",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus",
+      "com.zhangxuan.runruncampus.service.admin.AdminPushDeliveryService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.AdminUserController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.admin.user.ResetPasswordRequest",
+      "com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserPageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.service.admin.AdminCouponService",
+      "com.zhangxuan.runruncampus.service.admin.AdminUserService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.CampusDispatchExperimentController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.CampusDispatchExperimentService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.admin.FulfillmentProvenanceController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest",
+      "com.zhangxuan.runruncampus.dto.response.provenance.Entry",
+      "com.zhangxuan.runruncampus.dto.response.provenance.Summary",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.admin.FulfillmentProvenanceService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.api.AppVersionController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.api.appversion.AndroidVersion"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.api.HealthController",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.api.PlatformSettingsController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.api.platformsettings.UpdateRequest",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.model.settings.Settings",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.api.ServiceConfigurationController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.ConfigurationResponse",
+      "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.StationResponse",
+      "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.ZoneResponse",
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.enums.order.PickupStation",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.auth.AdminMfaController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.auth.mfa.LoginRequest",
+      "com.zhangxuan.runruncampus.dto.request.auth.mfa.ReplaceRequest",
+      "com.zhangxuan.runruncampus.dto.request.auth.mfa.ResetRequest",
+      "com.zhangxuan.runruncampus.dto.request.auth.mfa.VerifyRequest",
+      "com.zhangxuan.runruncampus.dto.response.auth.mfa.ResetResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.security.ApiRateLimitService",
+      "com.zhangxuan.runruncampus.service.auth.AdminMfaService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.auth.AuthController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.auth.ChangePasswordRequest",
+      "com.zhangxuan.runruncampus.dto.request.auth.LoginRequest",
+      "com.zhangxuan.runruncampus.dto.request.auth.RegisterRequest",
+      "com.zhangxuan.runruncampus.dto.response.auth.AuthResponse",
+      "com.zhangxuan.runruncampus.dto.response.auth.RevokeResponse",
+      "com.zhangxuan.runruncampus.dto.response.auth.UserResponse",
+      "com.zhangxuan.runruncampus.model.auth.Session",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.security.ApiRateLimitService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.auth.LoginCaptchaService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.coupon.CouponController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.coupon.CouponService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.courier.CourierCertificationController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.courier.couriercertification.CertificationRequest",
+      "com.zhangxuan.runruncampus.dto.request.courier.couriercertification.DecisionRequest",
+      "com.zhangxuan.runruncampus.dto.request.courier.couriercertification.RejectionRequest",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.courier.CourierCertificationService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.courier.CourierOperationsController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.courier.courieroperations.AvailabilityRequest",
+      "com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.courier.CourierOperationsService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.credit.AdminCreditController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.credit.AdjustmentRequest",
+      "com.zhangxuan.runruncampus.dto.request.credit.ReasonRequest",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.credit.CreditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.credit.CreditController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.credit.CreditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.feedback.FeedbackController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.feedback.CreateFeedbackRequest",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.feedback.FeedbackService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.membership.MembershipController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.membership.PurchaseRequest",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.membership.MembershipService",
+      "com.zhangxuan.runruncampus.service.payment.PaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.message.OrderMessageController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.order.OrderController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.order.ChatRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.CompleteOrderRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.ConfirmPackageSizeRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.CreateIssueRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.CreateRatingRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.LocationUpdateRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.SubmitManualPaymentRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.UnableRequest",
+      "com.zhangxuan.runruncampus.dto.response.order.CourierLocationResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.CourierRatingResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.MineOrderPage",
+      "com.zhangxuan.runruncampus.dto.response.order.OrderEventResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.OrderResponse",
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.order.CourierReassignmentService",
+      "com.zhangxuan.runruncampus.service.order.OrderChatService",
+      "com.zhangxuan.runruncampus.service.order.OrderIssueService",
+      "com.zhangxuan.runruncampus.service.order.OrderProofService",
+      "com.zhangxuan.runruncampus.service.order.OrderService",
+      "com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.payment.PaymentController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.payment.NotificationHeaders",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.payment.PaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.controller.privacy.PrivacyController",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.privacy.AccountDeletionRequest",
+      "com.zhangxuan.runruncampus.dto.request.privacy.ConsentRequest",
+      "com.zhangxuan.runruncampus.service.auth.AuthService",
+      "com.zhangxuan.runruncampus.service.privacy.PrivacyService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.address.AddressRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.account.ChangeOwnPasswordRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.account.ChangeRoleRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.account.CreateAdminRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.account.ResetPasswordRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.dispatch.DispatchRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.feedback.ResolveFeedbackRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.issue.ResolveIssueRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.order.RejectManualPaymentRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.orderlifecycle.ReasonRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.admin.user.ResetPasswordRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.api.platformsettings.UpdateRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.auth.ChangePasswordRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.auth.LoginRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.auth.mfa.LoginRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.auth.mfa.ReplaceRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.auth.mfa.ResetRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.auth.mfa.VerifyRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.auth.RegisterRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.service.privacy.PrivacyService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.courier.couriercertification.CertificationRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.courier.couriercertification.DecisionRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.courier.couriercertification.RejectionRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.courier.courieroperations.AvailabilityRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.credit.AdjustmentRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.credit.ReasonRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.feedback.CreateFeedbackRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.membership.PurchaseRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.membership.MembershipPlanType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.ChatRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.CompleteOrderRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.ConfirmPackageSizeRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.CreateIssueRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.enums.order.PickupStation",
+      "com.zhangxuan.runruncampus.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.CreateRatingRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.LocationUpdateRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.SubmitManualPaymentRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.order.UnableRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.privacy.AccountDeletionRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.privacy.ConsentRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.provenance.Channel"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.account.AdminAccountItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.account.PasswordChangedResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditPageResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderPage",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPageResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderPage"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.dashboard.AdminDashboardResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackPageResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssuePageResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderListItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.OrderEventItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.OrderIssueItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.OrderProofItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderListItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.order.UserSummary",
+      "com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderListItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.order.OrderEventItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.order.UserSummary",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.order.OrderIssueItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.order.UserSummary",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.order.OrderProofItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.order.UserSummary",
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.order.UserSummary",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.user.UserRole"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.orderlifecycle.ActionResult",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.ProofContent",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.PushDeliveryOverview",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.user.UserRole"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserPageResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.api.appversion.AndroidVersion",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.ConfigurationResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.StationResponse",
+      "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.ZoneResponse"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.StationResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.api.serviceconfiguration.ZoneResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.auth.AuthResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.auth.UserResponse"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.auth.mfa.ResetResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.auth.RevokeResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.auth.UserResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole",
+      "com.zhangxuan.runruncampus.enums.user.UserRole"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.commandcenter.CourierItem",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.commandcenter.Couriers",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.CourierItem"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.commandcenter.OrderItem",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.commandcenter.Orders",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.OrderItem",
+      "com.zhangxuan.runruncampus.enums.commandcenter.Queue"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.commandcenter.Snapshot",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.Couriers",
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.Orders"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.order.CourierLocationResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.order.CourierRatingResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.order.MineOrderPage",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.order.OrderResponse"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.order.OrderEventResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.order.OrderResponse",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.order.PickupStation",
+      "com.zhangxuan.runruncampus.enums.order.ServiceType",
+      "com.zhangxuan.runruncampus.service.payment.PaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.provenance.Entry",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.provenance.Channel"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.dto.response.provenance.Summary",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.admin.AdminRole",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.auth.SessionClientType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.commandcenter.Queue",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.credit.CreditEventType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.credit.RiskSignalType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.feedback.FeedbackType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.membership.MembershipPlanType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.message.PushDestination",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.PickupStation",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.order.ServiceType",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.payment.PaymentStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.payment.RefundStatus",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.provenance.Channel",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.enums.user.UserRole",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.exception.ApiExceptionHandler",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.payment.DisabledWechatPayGateway",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.integration.payment.WechatPayGateway",
+      "com.zhangxuan.runruncampus.model.payment.AppPayParameters",
+      "com.zhangxuan.runruncampus.model.payment.NotificationHeaders",
+      "com.zhangxuan.runruncampus.model.payment.RefundNotificationResult",
+      "com.zhangxuan.runruncampus.model.payment.RefundResult",
+      "com.zhangxuan.runruncampus.model.payment.TradeResult"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.payment.WechatPayApiV3Gateway",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.config.WechatPayProperties",
+      "com.zhangxuan.runruncampus.enums.payment.RefundStatus",
+      "com.zhangxuan.runruncampus.integration.payment.WechatPayGateway",
+      "com.zhangxuan.runruncampus.model.payment.AppPayParameters",
+      "com.zhangxuan.runruncampus.model.payment.NotificationHeaders",
+      "com.zhangxuan.runruncampus.model.payment.RefundNotificationResult",
+      "com.zhangxuan.runruncampus.model.payment.RefundResult",
+      "com.zhangxuan.runruncampus.model.payment.TradeResult"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.payment.WechatPayGateway",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.payment.AppPayParameters",
+      "com.zhangxuan.runruncampus.model.payment.NotificationHeaders",
+      "com.zhangxuan.runruncampus.model.payment.RefundNotificationResult",
+      "com.zhangxuan.runruncampus.model.payment.RefundResult",
+      "com.zhangxuan.runruncampus.model.payment.TradeResult"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.push.AliyunPushNotificationGateway",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.integration.push.AliyunPushRequestFactory",
+      "com.zhangxuan.runruncampus.integration.push.PushNotificationGateway",
+      "com.zhangxuan.runruncampus.model.message.OrderPushRequested"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.push.AliyunPushRequestFactory",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.message.OrderPushRequested"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.push.PushNotificationGateway",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.message.OrderPushRequested"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.storage.LocalOrderProofStorage",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.integration.storage.OrderProofStorage"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.storage.OrderProofStorage",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.integration.storage.OssOrderProofStorage",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.integration.storage.OrderProofStorage"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.mapper.admin.AdminCommandCenterMapper",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.CourierItem",
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.OrderItem",
+      "com.zhangxuan.runruncampus.enums.commandcenter.Queue"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.mapper.admin.AdminDispatchMapper",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.admin.DispatchCandidateRow"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.mapper.admin.FulfillmentProvenanceMapper",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.provenance.Entry",
+      "com.zhangxuan.runruncampus.dto.response.provenance.Summary",
+      "com.zhangxuan.runruncampus.enums.provenance.Channel"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.mapper.api.PlatformSettingsMapper",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.settings.Settings"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.mapper.credit.RiskSignalMaintenanceMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.mapper.identity.UserRoleSchemaMigrationMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.address.UserAddress",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.admin.AdminAuditLog",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.admin.DispatchCandidateRow",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.auth.AdminMfaCredential",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.auth.Session",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.auth.SessionClientType",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.coupon.UserCoupon",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.courier.CourierCertification",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.credit.CreditEvent",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.credit.CreditEventType",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.credit.CreditProfile",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.credit.RiskSignal",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus",
+      "com.zhangxuan.runruncampus.enums.credit.RiskSignalType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.feedback.UserFeedback",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackType",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.membership.UserMembership",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.message.OrderMessage",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.message.OrderPushRequested",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.message.PushDestination"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.message.PushDeliveryTask",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.message.OrderPushRequested"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.order.CampusOrder",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.order.PickupStation",
+      "com.zhangxuan.runruncampus.enums.order.ServiceType",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.order.OrderChatMessage",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.order.OrderEvent",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.order.OrderIssue",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.order.OrderProof",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.payment.AppPayParameters",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.payment.NotificationHeaders",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.payment.RefundNotificationResult",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.payment.RefundStatus"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.payment.RefundResult",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.payment.RefundStatus"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.payment.TradeResult",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.payment.WechatPayment",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType",
+      "com.zhangxuan.runruncampus.enums.payment.PaymentStatus",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.payment.AppPayParameters",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.payment.WechatRefund",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.payment.RefundStatus",
+      "com.zhangxuan.runruncampus.model.payment.RefundResult",
+      "com.zhangxuan.runruncampus.model.payment.WechatPayment"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.settings.Settings",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.model.user.AppUser",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole",
+      "com.zhangxuan.runruncampus.enums.user.UserRole"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.address.AddressRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.address.UserAddress",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.admin.AdminAuditLogRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.model.admin.AdminAuditLog"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.auth.AdminMfaRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.auth.AdminMfaCredential"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.auth.SessionRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.auth.Session",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.coupon.UserCoupon",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.model.courier.CourierCertification",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.credit.CreditEventRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.credit.CreditEvent"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.credit.CreditProfileRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.credit.CreditProfile"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.credit.RiskSignalRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus",
+      "com.zhangxuan.runruncampus.model.credit.RiskSignal"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackType",
+      "com.zhangxuan.runruncampus.model.feedback.UserFeedback",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.membership.UserMembershipRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.membership.UserMembership",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.message.OrderMessageRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.message.OrderMessage",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus",
+      "com.zhangxuan.runruncampus.enums.message.PushDestination",
+      "com.zhangxuan.runruncampus.model.message.OrderPushRequested",
+      "com.zhangxuan.runruncampus.model.message.PushDeliveryTask"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.order.OrderChatRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderChatMessage"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.order.OrderEventRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderEvent"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.order.OrderIssueRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderIssue",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.order.OrderProofRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderProof"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.order.ServiceType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType",
+      "com.zhangxuan.runruncampus.enums.payment.PaymentStatus",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.payment.WechatPayment",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.payment.RefundStatus",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.payment.WechatPayment",
+      "com.zhangxuan.runruncampus.model.payment.WechatRefund",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.repository.user.UserRepository",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.user.AppUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.RunRunCampusBackendApplication",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.security.AdminMfaCrypto",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.security.ApiRateLimitFilter",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.security.ApiRateLimitService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.security.ApiRateLimitService",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.address.AddressService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.address.UserAddress",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.address.AddressRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminAccountService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.account.AdminAccountItem",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminAuditService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.audit.AdminAuditPageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.model.admin.AdminAuditLog",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.admin.AdminAuditLogRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.CourierItem",
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.Couriers",
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.OrderItem",
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.Orders",
+      "com.zhangxuan.runruncampus.dto.response.commandcenter.Snapshot",
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole",
+      "com.zhangxuan.runruncampus.enums.commandcenter.Queue",
+      "com.zhangxuan.runruncampus.mapper.admin.AdminCommandCenterMapper",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminCouponService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.coupon.UserCoupon",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminCourierService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierOrderPage",
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPageResponse",
+      "com.zhangxuan.runruncampus.dto.response.admin.courier.AdminCourierPerformanceResponse",
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.courier.CourierCertification",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminDashboardService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.dashboard.AdminDashboardResponse",
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository",
+      "com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminDispatchService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.mapper.admin.AdminDispatchMapper",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderEvent",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.service.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminFeedbackService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.feedback.FeedbackPageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackType",
+      "com.zhangxuan.runruncampus.model.feedback.UserFeedback",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminIssueService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssueItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.issue.AdminIssuePageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderIssue",
+      "com.zhangxuan.runruncampus.model.settings.Settings",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminOrderDeliveryProofService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.ProofContent",
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.integration.storage.OrderProofStorage",
+      "com.zhangxuan.runruncampus.repository.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderEvent",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminOrderService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderDetailResponse",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderListItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.AdminOrderPageResponse",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.OrderEventItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.OrderIssueItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.OrderProofItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.order.UserSummary",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminPushDeliveryService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.PushDeliveryOverview",
+      "com.zhangxuan.runruncampus.enums.message.PushDeliveryStatus",
+      "com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.AdminUserService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserItem",
+      "com.zhangxuan.runruncampus.dto.response.admin.user.AdminUserPageResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.CampusDispatchExperimentService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.admin.AdminDispatchService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.admin.FulfillmentProvenanceService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.request.provenance.CreateRequest",
+      "com.zhangxuan.runruncampus.dto.response.provenance.Entry",
+      "com.zhangxuan.runruncampus.dto.response.provenance.Summary",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.provenance.Channel",
+      "com.zhangxuan.runruncampus.mapper.admin.FulfillmentProvenanceMapper",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.api.PlatformSettingsService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.mapper.api.PlatformSettingsMapper",
+      "com.zhangxuan.runruncampus.model.settings.Settings",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.auth.AdminMfaService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.auth.AuthResponse",
+      "com.zhangxuan.runruncampus.dto.response.auth.UserResponse",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.admin.AdminRole",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.auth.AdminMfaCredential",
+      "com.zhangxuan.runruncampus.model.auth.Session",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.auth.AdminMfaRepository",
+      "com.zhangxuan.runruncampus.repository.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.security.AdminMfaCrypto",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.service.auth.AuthService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.auth.AuthService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminPermission",
+      "com.zhangxuan.runruncampus.enums.auth.SessionClientType",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.auth.Session",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.auth.LoginAttemptService",
+      "com.zhangxuan.runruncampus.service.auth.LoginCaptchaService",
+      "com.zhangxuan.runruncampus.service.privacy.PrivacyService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.auth.LoginAttemptService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.auth.LoginCaptchaService",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.coupon.CouponService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.coupon.UserCoupon",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.coupon.UserCouponRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.courier.CourierCertificationMaintenance",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.integration.storage.OrderProofStorage",
+      "com.zhangxuan.runruncampus.model.courier.CourierCertification",
+      "com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.courier.CourierCertificationService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.courier.CourierCertificationStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.integration.storage.OrderProofStorage",
+      "com.zhangxuan.runruncampus.model.courier.CourierCertification",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.courier.CourierCertificationRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.courier.CourierOperationsService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.dto.response.courier.courieroperations.OperationsResponse",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.service.courier.CourierCertificationService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.credit.CreditService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.credit.CreditEventType",
+      "com.zhangxuan.runruncampus.enums.credit.CreditRiskLevel",
+      "com.zhangxuan.runruncampus.enums.credit.RiskSignalStatus",
+      "com.zhangxuan.runruncampus.enums.credit.RiskSignalType",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.credit.CreditEvent",
+      "com.zhangxuan.runruncampus.model.credit.CreditProfile",
+      "com.zhangxuan.runruncampus.model.credit.RiskSignal",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.credit.CreditEventRepository",
+      "com.zhangxuan.runruncampus.repository.credit.CreditProfileRepository",
+      "com.zhangxuan.runruncampus.repository.credit.RiskSignalRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.credit.RiskSignalMaintenance",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.mapper.credit.RiskSignalMaintenanceMapper",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.feedback.FeedbackService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.feedback.FeedbackType",
+      "com.zhangxuan.runruncampus.model.feedback.UserFeedback",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.feedback.FeedbackRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.membership.MembershipService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.membership.UserMembership",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.membership.UserMembershipRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.message.OrderMessageService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.model.message.OrderMessage",
+      "com.zhangxuan.runruncampus.model.message.OrderPushRequested",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.message.OrderMessageRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.message.OrderPushListener",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.model.message.OrderPushRequested",
+      "com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.message.PushDeliveryProcessor",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.integration.push.PushNotificationGateway",
+      "com.zhangxuan.runruncampus.model.message.PushDeliveryTask",
+      "com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.order.CourierReassignmentService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderEvent",
+      "com.zhangxuan.runruncampus.model.order.OrderIssue",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.order.OrderChatService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderChatMessage",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderChatRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.order.OrderIssueService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueHandlingStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderIssueType",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderIssue",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderIssueRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.order.OrderProofService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.integration.storage.OrderProofStorage",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderProof",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.order.OrderService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.config.ManualQrPaymentProperties",
+      "com.zhangxuan.runruncampus.dto.request.order.CompleteOrderRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.ConfirmPackageSizeRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.CreateOrderRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.CreateRatingRequest",
+      "com.zhangxuan.runruncampus.dto.request.order.LocationUpdateRequest",
+      "com.zhangxuan.runruncampus.dto.response.order.CourierLocationResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.CourierRatingResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.DeliveryCodeResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.MineOrderPage",
+      "com.zhangxuan.runruncampus.dto.response.order.OrderEventResponse",
+      "com.zhangxuan.runruncampus.dto.response.order.OrderResponse",
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.DeliveryZone",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderProofType",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.order.PickupStation",
+      "com.zhangxuan.runruncampus.enums.order.ServiceType",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.order.OrderEvent",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderEventRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderProofRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.api.PlatformSettingsService",
+      "com.zhangxuan.runruncampus.service.coupon.CouponService",
+      "com.zhangxuan.runruncampus.service.courier.CourierCertificationService",
+      "com.zhangxuan.runruncampus.service.membership.MembershipService",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService",
+      "com.zhangxuan.runruncampus.service.payment.PaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.payment.ManualQrPaymentService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditAction",
+      "com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType",
+      "com.zhangxuan.runruncampus.enums.message.OrderMessageType",
+      "com.zhangxuan.runruncampus.enums.order.CourierSettlementStatus",
+      "com.zhangxuan.runruncampus.enums.order.ManualPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.service.admin.AdminAuditService",
+      "com.zhangxuan.runruncampus.service.message.OrderMessageService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.payment.PaymentService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.config.WechatPayProperties",
+      "com.zhangxuan.runruncampus.enums.membership.MembershipPlanType",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentMethod",
+      "com.zhangxuan.runruncampus.enums.order.OrderPaymentStatus",
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.payment.PaymentBusinessType",
+      "com.zhangxuan.runruncampus.enums.payment.PaymentStatus",
+      "com.zhangxuan.runruncampus.enums.payment.RefundStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.integration.payment.WechatPayGateway",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.payment.AppPayParameters",
+      "com.zhangxuan.runruncampus.model.payment.NotificationHeaders",
+      "com.zhangxuan.runruncampus.model.payment.RefundNotificationResult",
+      "com.zhangxuan.runruncampus.model.payment.RefundResult",
+      "com.zhangxuan.runruncampus.model.payment.TradeResult",
+      "com.zhangxuan.runruncampus.model.payment.WechatPayment",
+      "com.zhangxuan.runruncampus.model.payment.WechatRefund",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository",
+      "com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository",
+      "com.zhangxuan.runruncampus.service.membership.MembershipService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.payment.WechatRefundProcessor",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.payment.RefundStatus",
+      "com.zhangxuan.runruncampus.integration.payment.WechatPayGateway",
+      "com.zhangxuan.runruncampus.model.order.CampusOrder",
+      "com.zhangxuan.runruncampus.model.payment.RefundResult",
+      "com.zhangxuan.runruncampus.model.payment.WechatRefund",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository",
+      "com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.service.privacy.PrivacyService",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.enums.order.OrderStatus",
+      "com.zhangxuan.runruncampus.enums.user.UserRole",
+      "com.zhangxuan.runruncampus.model.user.AppUser",
+      "com.zhangxuan.runruncampus.repository.address.AddressRepository",
+      "com.zhangxuan.runruncampus.repository.auth.SessionRepository",
+      "com.zhangxuan.runruncampus.repository.message.OrderMessageRepository",
+      "com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository",
+      "com.zhangxuan.runruncampus.repository.order.OrderRepository",
+      "com.zhangxuan.runruncampus.repository.payment.WechatRefundRepository",
+      "com.zhangxuan.runruncampus.repository.user.UserRepository",
+      "com.zhangxuan.runruncampus.service.courier.CourierCertificationService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.task.courier.CourierCertificationMaintenanceTask",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.courier.CourierCertificationMaintenance"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.task.credit.RiskSignalMaintenanceTask",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.credit.RiskSignalMaintenance"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.task.message.PushDeliveryProcessorTask",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.message.PushDeliveryProcessor"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runruncampus.task.payment.WechatRefundProcessorTask",
+    "dependencies": [
+      "com.zhangxuan.runruncampus.service.payment.WechatRefundProcessor"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.bootstrap.IdentityAdminCommand",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.IdentityApplication",
+      "com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.bootstrap.LocalTestBootstrap",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard",
+      "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
+      "com.zhangxuan.runrunv2.security.IdentitySecrets",
+      "com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.config.LocalTestCors",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.config.OrderConfiguration",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.config.OrderJson",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.courier.CourierCertificationV2Controller",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.courier.CertificationDecisionRequest",
+      "com.zhangxuan.runrunv2.dto.response.courier.Certification",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.evidence.CourierEvidenceGovernanceController",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.evidence.HoldRequest",
+      "com.zhangxuan.runrunv2.dto.response.evidence.HoldResponse",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.fulfillment.FulfillmentController",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Deliver",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Location",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Pickup",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.RegisterProof",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Release",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Respond",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Upload",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Version",
+      "com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.security.IdentityWebConfiguration",
+      "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentQueries",
+      "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.identity.IdentityController",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.identity.BindPhone",
+      "com.zhangxuan.runrunv2.dto.request.identity.Logout",
+      "com.zhangxuan.runrunv2.dto.request.identity.PasswordChange",
+      "com.zhangxuan.runrunv2.dto.request.identity.PasswordLogin",
+      "com.zhangxuan.runrunv2.dto.request.identity.WechatLogin",
+      "com.zhangxuan.runrunv2.dto.response.identity.Account",
+      "com.zhangxuan.runrunv2.dto.response.identity.LoginResult",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.security.IdentityWebConfiguration",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.notification.NotificationController",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.service.notification.NotificationService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.order.OrderController",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.order.ConfigChange",
+      "com.zhangxuan.runrunv2.dto.request.order.CreateRequest",
+      "com.zhangxuan.runrunv2.dto.request.order.QuoteRequest",
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.security.IdentityWebConfiguration",
+      "com.zhangxuan.runrunv2.service.configuration.ServiceConfigService",
+      "com.zhangxuan.runrunv2.service.order.OrderService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.payment.PaymentController",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.payment.CancelRequest",
+      "com.zhangxuan.runrunv2.dto.request.payment.VersionRequest",
+      "com.zhangxuan.runrunv2.dto.response.payment.PaymentModels",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.security.IdentityWebConfiguration",
+      "com.zhangxuan.runrunv2.service.payment.PaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.controller.payment.PaymentTestController",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.payment.ResultRequest",
+      "com.zhangxuan.runrunv2.dto.response.payment.PaymentModels",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.security.IdentityWebConfiguration",
+      "com.zhangxuan.runrunv2.service.payment.PaymentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.courier.CertificationDecisionRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.evidence.HoldRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.Deliver",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.Location",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.fulfillment.EventType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.Pickup",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.RegisterProof",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.fulfillment.Kind"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.Release",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.Respond",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.fulfillment.Decision"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.Upload",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.fulfillment.Kind"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.fulfillment.Version",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.identity.BindPhone",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.identity.Logout",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.identity.PasswordChange",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.identity.PasswordLogin",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.identity.WechatLogin",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.order.ConfigChange",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.order.PointChange",
+      "com.zhangxuan.runrunv2.dto.request.order.ZoneChange",
+      "com.zhangxuan.runrunv2.model.order.Schedule"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.order.CreateRequest",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.request.order.QuoteRequest",
+      "com.zhangxuan.runrunv2.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.order.PointChange",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.order.QuoteRequest",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.order.ZoneChange",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.payment.CancelRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.payment.ResultRequest",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.payment.Result"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.request.payment.VersionRequest",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.courier.Certification",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.evidence.HoldResponse",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.evidence.HoldResult",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.fulfillment.Kind"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.identity.Account",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.identity.LoginResult",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.identity.Account"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.order.ServiceType",
+      "com.zhangxuan.runrunv2.model.order.Address",
+      "com.zhangxuan.runrunv2.model.order.Pricing",
+      "com.zhangxuan.runrunv2.model.order.Schedule"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.dto.response.payment.PaymentModels",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.enums.fulfillment.Decision",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.enums.fulfillment.EventType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.enums.fulfillment.Kind",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.enums.order.ServiceType",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.enums.payment.Result",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.exception.IdentityErrorHandler",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.exception.IdentityFailure",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.IdentityApplication",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.payment.PaymentModels",
+      "com.zhangxuan.runrunv2.enums.payment.Result",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.integration.wechat.DisabledWechatGateway",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.integration.wechat.WechatGateway"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.integration.wechat.DisabledWechatSubscriptionGateway",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.integration.wechat.WechatSubscriptionGateway",
+      "com.zhangxuan.runrunv2.model.notification.Delivery",
+      "com.zhangxuan.runrunv2.model.notification.DeliveryResult"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.integration.wechat.WechatGateway",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.integration.wechat.WechatHttpGateway",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.integration.wechat.WechatGateway"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.integration.wechat.WechatSubscriptionGateway",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.model.notification.Delivery",
+      "com.zhangxuan.runrunv2.model.notification.DeliveryResult"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentQueryMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.model.fulfillment.TaskRow"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.model.identity.IdentityUser"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.notification.NotificationMapper",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.model.notification.Delivery"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.order.OrderMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.order.OrderStore",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.config.OrderJson",
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+      "com.zhangxuan.runrunv2.enums.order.ServiceType",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.model.order.Address",
+      "com.zhangxuan.runrunv2.model.order.Pricing",
+      "com.zhangxuan.runrunv2.model.ResourceIds"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.payment.PaymentModels"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.payment.PaymentModels"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.fulfillment.TaskRow",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.identity.AccessResult",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.identity.IdentityUser",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.notification.Delivery",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.notification.DeliveryResult",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.order.Address",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.order.Pricing",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.enums.order.ServiceType"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.order.Schedule",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.model.ResourceIds",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.security.IdentityPermission",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.security.IdentitySecrets",
+    "dependencies": []
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.security.IdentityWebConfiguration",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.security.IdentityPermission",
+      "com.zhangxuan.runrunv2.security.IdentitySecrets",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.configuration.ServiceConfigService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.config.OrderJson",
+      "com.zhangxuan.runrunv2.dto.request.order.ConfigChange",
+      "com.zhangxuan.runrunv2.dto.request.order.PointChange",
+      "com.zhangxuan.runrunv2.dto.request.order.QuoteRequest",
+      "com.zhangxuan.runrunv2.dto.request.order.ZoneChange",
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+      "com.zhangxuan.runrunv2.enums.order.ServiceType",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
+      "com.zhangxuan.runrunv2.model.order.Pricing",
+      "com.zhangxuan.runrunv2.model.order.Schedule",
+      "com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService",
+      "com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.courier.Certification",
+      "com.zhangxuan.runrunv2.dto.response.identity.Account",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage",
+      "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
+      "com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService",
+      "com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.evidence.HoldResult",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage",
+      "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
+      "com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentEvidence",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels",
+      "com.zhangxuan.runrunv2.enums.fulfillment.Kind"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentQueries",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentQueryMapper",
+      "com.zhangxuan.runrunv2.model.fulfillment.TaskRow",
+      "com.zhangxuan.runrunv2.model.ResourceIds",
+      "com.zhangxuan.runrunv2.security.IdentitySecrets",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.config.OrderJson",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Deliver",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Location",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Pickup",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.RegisterProof",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Release",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Respond",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Upload",
+      "com.zhangxuan.runrunv2.dto.request.fulfillment.Version",
+      "com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels",
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+      "com.zhangxuan.runrunv2.enums.fulfillment.Decision",
+      "com.zhangxuan.runrunv2.enums.fulfillment.EventType",
+      "com.zhangxuan.runrunv2.enums.fulfillment.Kind",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
+      "com.zhangxuan.runrunv2.mapper.order.OrderStore",
+      "com.zhangxuan.runrunv2.model.ResourceIds",
+      "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentEvidence",
+      "com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.fulfillment.PendingFulfillmentEvidence",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentEvidence"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.config.OrderJson",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper",
+      "com.zhangxuan.runrunv2.security.IdentitySecrets",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
+      "com.zhangxuan.runrunv2.model.identity.AccessResult",
+      "com.zhangxuan.runrunv2.model.identity.IdentityUser",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.identity.IdentityService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.identity.Account",
+      "com.zhangxuan.runrunv2.dto.response.identity.LoginResult",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.integration.wechat.WechatGateway",
+      "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
+      "com.zhangxuan.runrunv2.model.identity.IdentityUser",
+      "com.zhangxuan.runrunv2.security.IdentitySecrets"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.notification.NotificationOutboxWorker",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.integration.wechat.WechatSubscriptionGateway",
+      "com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper",
+      "com.zhangxuan.runrunv2.model.notification.Delivery",
+      "com.zhangxuan.runrunv2.model.notification.DeliveryResult"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.notification.NotificationService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.mapper.notification.NotificationMapper",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.order.OrderService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.config.OrderJson",
+      "com.zhangxuan.runrunv2.dto.request.order.CreateRequest",
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.mapper.order.OrderMapper",
+      "com.zhangxuan.runrunv2.mapper.order.OrderStore",
+      "com.zhangxuan.runrunv2.model.order.Address",
+      "com.zhangxuan.runrunv2.model.order.Pricing",
+      "com.zhangxuan.runrunv2.service.configuration.ServiceConfigService",
+      "com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService",
+      "com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.service.payment.PaymentService",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.config.OrderJson",
+      "com.zhangxuan.runrunv2.dto.request.payment.CancelRequest",
+      "com.zhangxuan.runrunv2.dto.request.payment.ResultRequest",
+      "com.zhangxuan.runrunv2.dto.request.payment.VersionRequest",
+      "com.zhangxuan.runrunv2.dto.response.order.OrderModels",
+      "com.zhangxuan.runrunv2.dto.response.payment.PaymentModels",
+      "com.zhangxuan.runrunv2.enums.payment.Result",
+      "com.zhangxuan.runrunv2.exception.IdentityFailure",
+      "com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter",
+      "com.zhangxuan.runrunv2.mapper.order.OrderStore",
+      "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
+      "com.zhangxuan.runrunv2.model.ResourceIds",
+      "com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency",
+      "com.zhangxuan.runrunv2.service.identity.IdentityService",
+      "com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.task.evidence.CourierEvidenceGovernanceServiceTask",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.task.fulfillment.FulfillmentCompletionJob",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.service.fulfillment.FulfillmentService"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.task.notification.NotificationDeliveryTask",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.service.notification.NotificationOutboxWorker"
+    ]
+  },
+  {
+    "class": "com.zhangxuan.runrunv2.task.payment.PaymentExpiryJob",
+    "dependencies": [
+      "com.zhangxuan.runrunv2.service.payment.PaymentService"
+    ]
+  }
+]
