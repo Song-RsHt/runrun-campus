@@ -29,12 +29,12 @@ public class PushDeliveryRepository {
     public void enqueue(OrderPushRequested event) {
         jdbc.update(
                 """
-insert into push_delivery_tasks
-    (recipient_id, order_id, title, content, idempotent_token, destination, status, attempts,
-     next_attempt_at, created_at, updated_at)
-values (?, ?, ?, ?, ?, ?, 'PENDING', 0, now(), now(), now())
-on conflict (idempotent_token) do nothing
-""",
+                insert into push_delivery_tasks
+                    (recipient_id, order_id, title, content, idempotent_token, destination, status, attempts,
+                     next_attempt_at, created_at, updated_at)
+                values (?, ?, ?, ?, ?, ?, 'PENDING', 0, now(), now(), now())
+                on conflict (idempotent_token) do nothing
+                """,
                 event.recipientId(),
                 event.orderId(),
                 event.title(),
@@ -48,20 +48,20 @@ on conflict (idempotent_token) do nothing
         return jdbc
                 .query(
                         """
-with candidate as (
-    select id from push_delivery_tasks
-    where (status = 'PENDING' and next_attempt_at <= now())
-       or (status = 'PROCESSING' and locked_until <= now())
-    order by next_attempt_at, id
-    for update skip locked
-    limit 1
-)
-update push_delivery_tasks task
-set status = 'PROCESSING', locked_until = now() + interval '2 minutes', updated_at = now()
-from candidate where task.id = candidate.id
-returning task.id, task.recipient_id, task.order_id, task.title, task.content,
-          task.idempotent_token, task.destination, task.attempts, task.created_at
-""",
+                        with candidate as (
+                            select id from push_delivery_tasks
+                            where (status = 'PENDING' and next_attempt_at <= now())
+                               or (status = 'PROCESSING' and locked_until <= now())
+                            order by next_attempt_at, id
+                            for update skip locked
+                            limit 1
+                        )
+                        update push_delivery_tasks task
+                        set status = 'PROCESSING', locked_until = now() + interval '2 minutes', updated_at = now()
+                        from candidate where task.id = candidate.id
+                        returning task.id, task.recipient_id, task.order_id, task.title, task.content,
+                                  task.idempotent_token, task.destination, task.attempts, task.created_at
+                        """,
                         (rs, row) ->
                                 new PushDeliveryTask(
                                         rs.getLong("id"),
@@ -81,9 +81,9 @@ returning task.id, task.recipient_id, task.order_id, task.title, task.content,
     public void markSent(Long id) {
         jdbc.update(
                 """
-update push_delivery_tasks set status = 'SENT', locked_until = null, last_error = null,
-    sent_at = now(), updated_at = now() where id = ? and status = 'PROCESSING'
-""",
+                update push_delivery_tasks set status = 'SENT', locked_until = null, last_error = null,
+                    sent_at = now(), updated_at = now() where id = ? and status = 'PROCESSING'
+                """,
                 id);
     }
 
@@ -91,9 +91,9 @@ update push_delivery_tasks set status = 'SENT', locked_until = null, last_error 
             Long id, int attempts, String error, Instant nextAttemptAt, boolean dead) {
         jdbc.update(
                 """
-update push_delivery_tasks set status = ?, attempts = ?, last_error = ?, next_attempt_at = ?,
-    locked_until = null, updated_at = now() where id = ? and status = 'PROCESSING'
-""",
+                update push_delivery_tasks set status = ?, attempts = ?, last_error = ?, next_attempt_at = ?,
+                    locked_until = null, updated_at = now() where id = ? and status = 'PROCESSING'
+                """,
                 dead ? PushDeliveryStatus.DEAD.name() : PushDeliveryStatus.PENDING.name(),
                 attempts,
                 error,
@@ -119,11 +119,11 @@ update push_delivery_tasks set status = ?, attempts = ?, last_error = ?, next_at
         List<PushDeliveryItemVO> items =
                 jdbc.query(
                         """
-select id, recipient_id, order_id, title, destination, status, attempts, next_attempt_at,
-       last_error, created_at, updated_at, sent_at
-from push_delivery_tasks where status = ?
-order by created_at desc, id desc limit ? offset ?
-""",
+                        select id, recipient_id, order_id, title, destination, status, attempts, next_attempt_at,
+                               last_error, created_at, updated_at, sent_at
+                        from push_delivery_tasks where status = ?
+                        order by created_at desc, id desc limit ? offset ?
+                        """,
                         (rs, row) ->
                                 new PushDeliveryItemVO(
                                         rs.getLong("id"),

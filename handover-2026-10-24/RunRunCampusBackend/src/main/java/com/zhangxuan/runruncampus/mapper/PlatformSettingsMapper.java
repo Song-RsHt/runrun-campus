@@ -41,10 +41,10 @@ public class PlatformSettingsMapper {
             int issueProcessingMinutes) {
         return jdbc.update(
                 """
-update platform_settings set business_hours = ?, wait_minutes = ?, delivery_minutes = ?,
-    max_active_orders = ?, issue_pending_minutes = ?, issue_processing_minutes = ?,
-    updated_at = now() where id = 1
-""",
+                update platform_settings set business_hours = ?, wait_minutes = ?, delivery_minutes = ?,
+                    max_active_orders = ?, issue_pending_minutes = ?, issue_processing_minutes = ?,
+                    updated_at = now() where id = 1
+                """,
                 hours,
                 waitMinutes,
                 deliveryMinutes,

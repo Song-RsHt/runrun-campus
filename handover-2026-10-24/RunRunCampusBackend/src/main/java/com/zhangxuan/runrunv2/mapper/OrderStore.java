@@ -52,8 +52,8 @@ public class OrderStore {
                         """
                                 + (locked
                                         ? """
-                                          FOR UPDATE
-                                          """
+                                            FOR UPDATE
+                                            """
                                         : ""),
                         (r, n) ->
                                 new OrderVO(

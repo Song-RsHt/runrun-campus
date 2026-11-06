@@ -78,15 +78,15 @@ public class FulfillmentProvenanceMapper {
     public FulfillmentProvenanceSummaryVO summarizeVerifiedProvenance() {
         return jdbc.queryForObject(
                 """
-select count(*) as recorded_count,
-       count(*) filter (where verified_at is not null) as verified_count,
-       count(*) filter (where verified_at is not null and platform_revenue_cents is not null)
-           as verified_revenue_count,
-       sum(platform_revenue_cents) filter
-           (where verified_at is not null and platform_revenue_cents is not null)
-           as verified_revenue_cents
-from fulfillment_provenance
-""",
+                select count(*) as recorded_count,
+                       count(*) filter (where verified_at is not null) as verified_count,
+                       count(*) filter (where verified_at is not null and platform_revenue_cents is not null)
+                           as verified_revenue_count,
+                       sum(platform_revenue_cents) filter
+                           (where verified_at is not null and platform_revenue_cents is not null)
+                           as verified_revenue_cents
+                from fulfillment_provenance
+                """,
                 (rs, row) ->
                         new FulfillmentProvenanceSummaryVO(
                                 rs.getLong("recorded_count"),

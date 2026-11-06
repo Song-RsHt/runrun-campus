@@ -256,10 +256,10 @@ public class CourierCertificationV2Mapper {
                 """
                         + where
                         + """
-                          \sORDER BY u.id
-                          LIMIT ?
-                          OFFSET ?
-                          """,
+                            \sORDER BY u.id
+                            LIMIT ?
+                            OFFSET ?
+                            """,
                 statusFilter,
                 status,
                 phoneFilter,
@@ -317,10 +317,10 @@ public class CourierCertificationV2Mapper {
                 """
                         + base
                         + """
-                          \sORDER BY t.delivered_at DESC
-                          LIMIT ?
-                          OFFSET ?
-                          """,
+                            \sORDER BY t.delivered_at DESC
+                            LIMIT ?
+                            OFFSET ?
+                            """,
                 courierId,
                 limit,
                 offset);

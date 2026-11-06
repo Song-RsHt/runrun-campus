@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-/** 信用分及风险信号资料 JPA 仓储；只定义持久化查询和写入，不承担权限及业务决策。 */
+/** 用户信用分及信用事件分页 JPA 仓储；只定义持久化查询和写入，不承担权限及业务决策。 */
 public interface CreditProfileRepository extends JpaRepository<CreditProfile, Long> {
 
     Optional<CreditProfile> findByUserId(Long userId);

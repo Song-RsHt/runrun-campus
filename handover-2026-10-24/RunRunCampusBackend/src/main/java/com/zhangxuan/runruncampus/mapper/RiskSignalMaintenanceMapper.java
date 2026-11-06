@@ -75,17 +75,17 @@ public class RiskSignalMaintenanceMapper {
     public int recordOverdueCourierOrders(int deliveryMinutes) {
         return jdbc.update(
                 """
-insert into risk_signals
-    (subject_user_id, signal_type, status, source_key, order_id, details, created_at)
-select orders.courier_id, 'ORDER_TIMEOUT', 'PENDING', concat('ORDER_TIMEOUT:', orders.id),
-       orders.id, concat('订单', orders.order_no, '超过配送提醒阈值，请人工核实'), now()
-from campus_orders orders
-join app_users courier on courier.id = orders.courier_id
-where orders.status in ('ACCEPTED', 'PICKED_UP')
-  and orders.updated_at < now() - (? * interval '1 minute')
-  and courier.deleted_at is null
-on conflict (source_key) do nothing
-""",
+                insert into risk_signals
+                    (subject_user_id, signal_type, status, source_key, order_id, details, created_at)
+                select orders.courier_id, 'ORDER_TIMEOUT', 'PENDING', concat('ORDER_TIMEOUT:', orders.id),
+                       orders.id, concat('订单', orders.order_no, '超过配送提醒阈值，请人工核实'), now()
+                from campus_orders orders
+                join app_users courier on courier.id = orders.courier_id
+                where orders.status in ('ACCEPTED', 'PICKED_UP')
+                  and orders.updated_at < now() - (? * interval '1 minute')
+                  and courier.deleted_at is null
+                on conflict (source_key) do nothing
+                """,
                 deliveryMinutes);
     }
 }

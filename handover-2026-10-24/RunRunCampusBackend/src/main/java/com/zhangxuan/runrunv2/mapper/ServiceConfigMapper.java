@@ -30,8 +30,8 @@ public class ServiceConfigMapper {
                 """
                         + (forUpdate
                                 ? """
-                                  UPDATE
-                                  """
+                                    UPDATE
+                                    """
                                 : "SHARE"));
     }
 
@@ -44,11 +44,11 @@ public class ServiceConfigMapper {
                         + (includeDisabled
                                 ? ""
                                 : """
-                                  WHERE enabled
-                                  """)
+                                    WHERE enabled
+                                    """)
                         + """
-                          \sORDER BY id
-                          """,
+                            \sORDER BY id
+                            """,
                 (r, n) ->
                         new DeliveryZoneVO(
                                 r.getString("id"),
@@ -69,11 +69,11 @@ public class ServiceConfigMapper {
                         + (includeDisabled
                                 ? ""
                                 : """
-                                  WHERE enabled
-                                  """)
+                                    WHERE enabled
+                                    """)
                         + """
-                          \sORDER BY id
-                          """,
+                            \sORDER BY id
+                            """,
                 (r, n) ->
                         new ServicePointVO(
                                 r.getString("id"),
@@ -103,9 +103,9 @@ public class ServiceConfigMapper {
                 """
                         + table
                         + """
-                          \sWHERE code = ?
-                              AND enabled
-                          """,
+                            \sWHERE code = ?
+                                AND enabled
+                            """,
                 code);
     }
 

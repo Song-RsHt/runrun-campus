@@ -48,10 +48,10 @@ public class FulfillmentQueryMapper {
                 """
                         + where
                         + """
-                          \sORDER BY t.created_at DESC,
-                              t.id DESC
-                          LIMIT ?
-                          """,
+                            \sORDER BY t.created_at DESC,
+                                t.id DESC
+                            LIMIT ?
+                            """,
                 (row, index) ->
                         new FulfillmentTaskRow(
                                 row.getString("id"),
@@ -93,10 +93,10 @@ public class FulfillmentQueryMapper {
                 """
                         + where
                         + """
-                          \sORDER BY o.created_at DESC,
-                              o.id DESC
-                          LIMIT ?
-                          """,
+                            \sORDER BY o.created_at DESC,
+                                o.id DESC
+                            LIMIT ?
+                            """,
                 parameters.toArray());
     }
 }

@@ -55,44 +55,44 @@ public interface UserRepository extends JpaRepository<AppUser, Long> {
     @Query(
             value =
                     """
-select u from AppUser u
-where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
-  and (:query is null
-    or lower(u.displayName) like lower(concat('%', :query, '%'))
-    or u.phone like concat('%', :query, '%')
-    or exists (select c from CourierCertification c where c.courier = u and (
-        lower(c.realName) like lower(concat('%', :query, '%'))
-        or lower(c.studentId) like lower(concat('%', :query, '%'))
-        or lower(c.campus) like lower(concat('%', :query, '%')))))
-  and (:status is null
-    or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
-        and u.courierApproved = false
-        and not exists (select c from CourierCertification c where c.courier = u))
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
-        and (u.courierApproved = true or u.courierApproved is null)
-        and not exists (select c from CourierCertification c where c.courier = u)))
-""",
+                    select u from AppUser u
+                    where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
+                      and (:query is null
+                        or lower(u.displayName) like lower(concat('%', :query, '%'))
+                        or u.phone like concat('%', :query, '%')
+                        or exists (select c from CourierCertification c where c.courier = u and (
+                            lower(c.realName) like lower(concat('%', :query, '%'))
+                            or lower(c.studentId) like lower(concat('%', :query, '%'))
+                            or lower(c.campus) like lower(concat('%', :query, '%')))))
+                      and (:status is null
+                        or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
+                            and u.courierApproved = false
+                            and not exists (select c from CourierCertification c where c.courier = u))
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
+                            and (u.courierApproved = true or u.courierApproved is null)
+                            and not exists (select c from CourierCertification c where c.courier = u)))
+                    """,
             countQuery =
                     """
-select count(u) from AppUser u
-where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
-  and (:query is null
-    or lower(u.displayName) like lower(concat('%', :query, '%'))
-    or u.phone like concat('%', :query, '%')
-    or exists (select c from CourierCertification c where c.courier = u and (
-        lower(c.realName) like lower(concat('%', :query, '%'))
-        or lower(c.studentId) like lower(concat('%', :query, '%'))
-        or lower(c.campus) like lower(concat('%', :query, '%')))))
-  and (:status is null
-    or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
-        and u.courierApproved = false
-        and not exists (select c from CourierCertification c where c.courier = u))
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
-        and (u.courierApproved = true or u.courierApproved is null)
-        and not exists (select c from CourierCertification c where c.courier = u)))
-""")
+                    select count(u) from AppUser u
+                    where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
+                      and (:query is null
+                        or lower(u.displayName) like lower(concat('%', :query, '%'))
+                        or u.phone like concat('%', :query, '%')
+                        or exists (select c from CourierCertification c where c.courier = u and (
+                            lower(c.realName) like lower(concat('%', :query, '%'))
+                            or lower(c.studentId) like lower(concat('%', :query, '%'))
+                            or lower(c.campus) like lower(concat('%', :query, '%')))))
+                      and (:status is null
+                        or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
+                            and u.courierApproved = false
+                            and not exists (select c from CourierCertification c where c.courier = u))
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
+                            and (u.courierApproved = true or u.courierApproved is null)
+                            and not exists (select c from CourierCertification c where c.courier = u)))
+                    """)
     Page<AppUser> searchCouriersForAdmin(
             @Param("query") String query,
             @Param("status") CourierCertificationStatus status,
@@ -101,30 +101,30 @@ where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
     @Query(
             value =
                     """
-select u from AppUser u
-where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
-  and (:status is null
-    or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
-        and u.courierApproved = false
-        and not exists (select c from CourierCertification c where c.courier = u))
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
-        and (u.courierApproved = true or u.courierApproved is null)
-        and not exists (select c from CourierCertification c where c.courier = u)))
-""",
+                    select u from AppUser u
+                    where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
+                      and (:status is null
+                        or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
+                            and u.courierApproved = false
+                            and not exists (select c from CourierCertification c where c.courier = u))
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
+                            and (u.courierApproved = true or u.courierApproved is null)
+                            and not exists (select c from CourierCertification c where c.courier = u)))
+                    """,
             countQuery =
                     """
-select count(u) from AppUser u
-where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
-  and (:status is null
-    or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
-        and u.courierApproved = false
-        and not exists (select c from CourierCertification c where c.courier = u))
-    or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
-        and (u.courierApproved = true or u.courierApproved is null)
-        and not exists (select c from CourierCertification c where c.courier = u)))
-""")
+                    select count(u) from AppUser u
+                    where u.role = com.zhangxuan.runruncampus.enums.UserRole.COURIER
+                      and (:status is null
+                        or exists (select c from CourierCertification c where c.courier = u and c.status = :status)
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.NOT_APPLIED
+                            and u.courierApproved = false
+                            and not exists (select c from CourierCertification c where c.courier = u))
+                        or (:status = com.zhangxuan.runruncampus.enums.CourierCertificationStatus.APPROVED
+                            and (u.courierApproved = true or u.courierApproved is null)
+                            and not exists (select c from CourierCertification c where c.courier = u)))
+                    """)
     Page<AppUser> filterCouriersForAdmin(
             @Param("status") CourierCertificationStatus status, Pageable pageable);
 

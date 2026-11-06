@@ -630,11 +630,11 @@ public class FulfillmentMapper {
                 """
                         + assignment
                         + """
-                          \s,
-                              version = version + 1,
-                              updated_at = ?
-                          WHERE id = ?
-                          """,
+                            \s,
+                                version = version + 1,
+                                updated_at = ?
+                            WHERE id = ?
+                            """,
                 updatedAt,
                 orderId);
     }

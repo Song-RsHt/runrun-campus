@@ -489,8 +489,8 @@ public class PaymentMapper {
                 """
                         + (lock
                                 ? """
-                                  FOR UPDATE
-                                  """
+                                    FOR UPDATE
+                                    """
                                 : ""),
                 (r, n) ->
                         new PaymentOrderVO(

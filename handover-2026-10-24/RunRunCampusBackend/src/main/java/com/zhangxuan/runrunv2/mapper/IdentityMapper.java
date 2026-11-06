@@ -373,8 +373,8 @@ public class IdentityMapper {
                 """
                         + (locked
                                 ? """
-                                  FOR UPDATE
-                                  """
+                                    FOR UPDATE
+                                    """
                                 : ""),
                 USER,
                 id);
