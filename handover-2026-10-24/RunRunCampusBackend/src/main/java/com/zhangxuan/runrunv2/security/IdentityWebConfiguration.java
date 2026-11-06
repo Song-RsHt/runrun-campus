@@ -1,7 +1,7 @@
 package com.zhangxuan.runrunv2.security;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.concurrent.ConcurrentHashMap;

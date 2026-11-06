@@ -1,13 +1,22 @@
 package com.zhangxuan.runrunv2;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runrunv2.dto.response.identity.Account;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.vo.Account;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;

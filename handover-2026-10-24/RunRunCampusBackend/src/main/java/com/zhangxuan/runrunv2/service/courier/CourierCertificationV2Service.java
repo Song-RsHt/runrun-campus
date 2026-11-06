@@ -1,16 +1,17 @@
 package com.zhangxuan.runrunv2.service.courier;
 
 import com.zhangxuan.runrunv2.dto.response.courier.Certification;
-import com.zhangxuan.runrunv2.dto.response.identity.Account;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
 import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.vo.Account;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
@@ -151,7 +152,7 @@ public class CourierCertificationV2Service {
       throw new IdentityFailure(409, "CERTIFICATION_STATE_CONFLICT");
     if (oldResource != null && !oldResource.equals(resource))
       governance.requestCertificationDeletion(
-          id, oldResource, oldKey, Instant.now().plus(java.time.Duration.ofDays(30)));
+          id, oldResource, oldKey, Instant.now().plus(Duration.ofDays(30)));
     event(id, courier, "COURIER", "PHOTO_UPLOADED", requestId);
     Certification result = get(courier, id);
     idempotency.finish(
@@ -202,7 +203,7 @@ public class CourierCertificationV2Service {
             id,
             oldApprovedResource,
             oldApprovedKey,
-            Instant.now().plus(java.time.Duration.ofDays(30)));
+            Instant.now().plus(Duration.ofDays(30)));
     } else {
       if (reason == null || reason.isBlank()) throw new IdentityFailure(400, "INVALID_REQUEST");
       mapper.rejectCertification(reason, id, expectedVersion);
@@ -286,7 +287,7 @@ public class CourierCertificationV2Service {
           row.remove("submitted_photo_resource_id");
           row.remove("approved_photo_resource_id");
         });
-    return java.util.Map.of(
+    return Map.of(
         "items",
         items,
         "page",
@@ -320,7 +321,7 @@ public class CourierCertificationV2Service {
     result.put("extraLargeCompletedPackageOrders", counts.get("extralarge"));
     result.put(
         "orders",
-        java.util.Map.of(
+        Map.of(
             "items",
             orders,
             "page",

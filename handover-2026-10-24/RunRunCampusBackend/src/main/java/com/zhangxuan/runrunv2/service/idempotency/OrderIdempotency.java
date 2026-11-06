@@ -3,8 +3,8 @@ package com.zhangxuan.runrunv2.service.idempotency;
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper;
+import com.zhangxuan.runrunv2.model.InputValidation;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ public class OrderIdempotency {
   }
 
   public <T> T replay(String actor, String scope, String key, Object content, Class<T> response) {
-    IdentityService.text(key, 128);
+    InputValidation.text(key, 128);
     String hash = secrets.hash("write:" + scope, json.write(content));
     // The caller holds its actor row lock, serializing even requests from other instances.
     List<Map<String, Object>> rows = mapper.findRequestForUpdate(Long.valueOf(actor), scope, key);

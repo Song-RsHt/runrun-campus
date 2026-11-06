@@ -1,19 +1,23 @@
 package com.zhangxuan.runrunv2;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import com.zhangxuan.runrunv2.dto.response.identity.Account;
 import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
 import com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.vo.Account;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -66,7 +70,7 @@ class V2JdbcContractDatabaseTest {
     assertEquals(
         Map.of(
             "items",
-            java.util.List.of(),
+            List.of(),
             "page",
             0,
             "size",

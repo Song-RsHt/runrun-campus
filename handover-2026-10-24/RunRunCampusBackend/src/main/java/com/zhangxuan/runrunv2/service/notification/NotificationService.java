@@ -1,7 +1,7 @@
 package com.zhangxuan.runrunv2.service.notification;
 
 import com.zhangxuan.runrunv2.mapper.notification.NotificationMapper;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;

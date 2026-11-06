@@ -1,11 +1,21 @@
 package com.zhangxuan.runrunv2.controller.order;
 
-import static com.zhangxuan.runrunv2.dto.response.order.OrderModels.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
@@ -14,36 +24,57 @@ import com.zhangxuan.runrunv2.dto.request.order.CreateRequest;
 import com.zhangxuan.runrunv2.dto.request.order.PointChange;
 import com.zhangxuan.runrunv2.dto.request.order.QuoteRequest;
 import com.zhangxuan.runrunv2.dto.request.order.ZoneChange;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Config;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Created;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Order;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.OriginalPayment;
 import com.zhangxuan.runrunv2.enums.order.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
 import com.zhangxuan.runrunv2.mapper.order.OrderStore;
 import com.zhangxuan.runrunv2.model.order.Schedule;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
+import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
 import com.zhangxuan.runrunv2.service.configuration.ServiceConfigService;
-import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
 import com.zhangxuan.runrunv2.service.order.OrderService;
 import com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter;
 import java.math.BigDecimal;
-import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.DriverManager;
-import java.time.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.*;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.*;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest(
     classes = IdentityApplication.class,
@@ -55,10 +86,10 @@ import org.testcontainers.junit.jupiter.*;
       "spring.flyway.enabled=false"
     })
 @AutoConfigureMockMvc(
-    print = org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
+    print = MockMvcPrint.NONE)
 // Close scheduled workers and JDBC pools with the class-scoped database fixture.
-@org.springframework.test.annotation.DirtiesContext(
-    classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(
+    classMode = ClassMode.AFTER_CLASS)
 @Testcontainers
 class OrderIntegrationTest {
 
@@ -90,7 +121,7 @@ class OrderIntegrationTest {
             Base64.getEncoder()
                 .encodeToString(
                     "synthetic-different-hash-key-000001"
-                        .getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+                        .getBytes(StandardCharsets.UTF_8)));
   }
 
   @Autowired JdbcTemplate db;
@@ -195,7 +226,7 @@ class OrderIntegrationTest {
     return new ConfigChange(version, version, enabled, null, null, zones, points, "合成配置测试原因");
   }
 
-  private void failure(String code, org.junit.jupiter.api.function.Executable action) {
+  private void failure(String code, Executable action) {
     assertEquals(code, assertThrows(IdentityFailure.class, action).code);
   }
 
@@ -612,13 +643,13 @@ class OrderIntegrationTest {
             "original_fee_cents=1,version=1",
             "pending_payment_deadline=now(),version=1"))
       assertThrows(
-          org.springframework.dao.DataAccessException.class,
+          DataAccessException.class,
           () ->
               db.update(
                   "UPDATE runrun_v2.v2_orders SET " + mutation + " WHERE id=?", Long.valueOf(id)));
     assertEquals(0, orders.get(user, id).version());
     assertThrows(
-        org.springframework.dao.DataAccessException.class,
+        DataAccessException.class,
         () ->
             db.update(
                 "INSERT INTO"

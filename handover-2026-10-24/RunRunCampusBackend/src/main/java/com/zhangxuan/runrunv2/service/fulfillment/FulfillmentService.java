@@ -1,7 +1,5 @@
 package com.zhangxuan.runrunv2.service.fulfillment;
 
-import static com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.*;
-
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.dto.request.fulfillment.Deliver;
 import com.zhangxuan.runrunv2.dto.request.fulfillment.Location;
@@ -11,21 +9,35 @@ import com.zhangxuan.runrunv2.dto.request.fulfillment.Release;
 import com.zhangxuan.runrunv2.dto.request.fulfillment.Respond;
 import com.zhangxuan.runrunv2.dto.request.fulfillment.Upload;
 import com.zhangxuan.runrunv2.dto.request.fulfillment.Version;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Event;
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Proof;
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Result;
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Task;
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Ticket;
 import com.zhangxuan.runrunv2.enums.fulfillment.Decision;
 import com.zhangxuan.runrunv2.enums.fulfillment.EventType;
 import com.zhangxuan.runrunv2.enums.fulfillment.Kind;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper;
 import com.zhangxuan.runrunv2.mapper.order.OrderStore;
+import com.zhangxuan.runrunv2.model.InputValidation;
+import com.zhangxuan.runrunv2.model.ResourceIds;
+import com.zhangxuan.runrunv2.service.IdentityService;
+import com.zhangxuan.runrunv2.service.fulfillment.FulfillmentEvidence.Binding;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import java.math.BigDecimal;
-import java.time.*;
-import java.util.*;
+import java.time.Clock;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.*;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 协调 v2 接单、邀请、凭证和完成确认。状态判定、幂等与事务保留在本层，Mapper 保留原行锁与更新条件。 凭证未接入时继续拒绝推进，不把占位适配器视为已验证证据。参见《订单与履约规则》。
@@ -105,7 +117,7 @@ public class FulfillmentService {
       String reason,
       String key) {
     var actor = identity.authorizeForWrite(token, "ADMIN", false);
-    IdentityService.text(reason, 500);
+    InputValidation.text(reason, 500);
     var targets = mapper.lockActiveCourier(id(courierId));
     if (targets.isEmpty()) throw missing();
     var order = lock(orderId);
@@ -172,7 +184,7 @@ public class FulfillmentService {
     if (body == null) throw IdentityFailure.invalid();
     var order = lock(orderId);
     Task task = ownInOrder(body.taskId(), actor.id(), orderId);
-    IdentityService.text(body.reason(), 500);
+    InputValidation.text(body.reason(), 500);
     Result replay =
         requests.replay(
             actor.id(), "fulfillment:release", key, List.of(orderId, body), Result.class);
@@ -235,7 +247,7 @@ public class FulfillmentService {
     var order = lock(orderId);
     Task task = ownInOrder(body.taskId(), actor.id(), orderId);
     proofPermission(task, order, body.kind());
-    IdentityService.text(body.uploadTicket(), 512);
+    InputValidation.text(body.uploadTicket(), 512);
     Proof replay =
         requests.replay(actor.id(), "fulfillment:proof", key, List.of(orderId, body), Proof.class);
     if (replay != null) return replay;
@@ -405,18 +417,18 @@ public class FulfillmentService {
   }
 
   @Transactional
-  public Order confirm(String token, String orderId, String key, Version body) {
+  public com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order confirm(String token, String orderId, String key, Version body) {
     var actor = identity.authorizeForWrite(token, "USER", false);
     var order = lock(orderId);
     if (!actor.id().equals(order.userId())) throw missing();
     required(body == null ? null : body.expectedVersion());
-    Order replay =
+    com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order replay =
         requests.replay(
-            actor.id(), "fulfillment:confirm", key, List.of(orderId, body), Order.class);
+            actor.id(), "fulfillment:confirm", key, List.of(orderId, body), com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order.class);
     if (replay != null) return replay;
     version(order.version(), body.expectedVersion());
     complete(orderId, false, actor.id(), key);
-    Order result = order(orderId);
+    com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order result = order(orderId);
     finish(actor.id(), "confirm", key, orderId, result);
     return result;
   }
@@ -427,7 +439,7 @@ public class FulfillmentService {
     var ids = mapper.findOrdersDueForConfirmation(now());
     for (String orderId : ids) {
       lock(orderId);
-      Order order = order(orderId);
+      com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order order = order(orderId);
       if (order.rawStatus().equals("DELIVERED_PENDING_CONFIRMATION")
           && order.confirmDeadline() != null
           && !now().isBefore(order.confirmDeadline())
@@ -447,7 +459,7 @@ public class FulfillmentService {
   public void blockCompletion(String orderId, String type, String sourceId) {
     var order = lock(orderId);
     blockType(type);
-    IdentityService.text(sourceId, 128);
+    InputValidation.text(sourceId, 128);
     state(!Set.of("COMPLETED", "CANCELLED").contains(order.status()));
     if (mapper.insertCompletionBlock(id(orderId), type, sourceId) > 0)
       mapper.clearOrderConfirmation(now(), id(orderId));
@@ -464,7 +476,7 @@ public class FulfillmentService {
   @Transactional(propagation = Propagation.MANDATORY)
   public void restartWindow(String orderId) {
     lock(orderId);
-    Order order = order(orderId);
+    com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order order = order(orderId);
     if (order.rawStatus().equals("DELIVERED_PENDING_CONFIRMATION")
         && order.confirmStartedAt() == null
         && !blocked(orderId))
@@ -487,7 +499,7 @@ public class FulfillmentService {
   }
 
   private void complete(String orderId, boolean automatic, String actor, String requestId) {
-    Order order = order(orderId);
+    com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order order = order(orderId);
     state(
         order.rawStatus().equals("DELIVERED_PENDING_CONFIRMATION") && order.deliveredAt() != null);
     if (adjustmentBlocked(orderId)) throw new IdentityFailure(409, "ADJUSTMENT_UNRESOLVED");
@@ -524,7 +536,7 @@ public class FulfillmentService {
       throw new IdentityFailure(409, "COURIER_CAPACITY_EXCEEDED");
   }
 
-  private OrderModels.Order lock(String order) {
+  private com.zhangxuan.runrunv2.dto.response.order.OrderModels.Order lock(String order) {
     // Same recipient-before-order lock order as M03 callbacks/cancellation.
     mapper.lockOrderUser(id(order));
     return orders.read(order, true);
@@ -558,14 +570,14 @@ public class FulfillmentService {
     return mapper.isTaskUnsuperseded(id(task));
   }
 
-  private void active(Task task, OrderModels.Order order) {
+  private void active(Task task, com.zhangxuan.runrunv2.dto.response.order.OrderModels.Order order) {
     state(
         task.status().equals("ACTIVE")
             && unsuperseded(task.id())
             && Set.of("ACCEPTED", "PICKED_UP").contains(order.status()));
   }
 
-  private void proofPermission(Task task, OrderModels.Order order, Kind kind) {
+  private void proofPermission(Task task, com.zhangxuan.runrunv2.dto.response.order.OrderModels.Order order, Kind kind) {
     if (kind == Kind.SPECIFICATION && task.status().equals("DELIVERED")) {
       state(
           order.status().equals("DELIVERED_PENDING_CONFIRMATION")
@@ -583,8 +595,8 @@ public class FulfillmentService {
       throw new IdentityFailure(409, "PROOF_NOT_READY");
   }
 
-  private FulfillmentEvidence.Binding binding(Task task, Kind kind) {
-    return new FulfillmentEvidence.Binding(task.orderId(), task.id(), task.courierId(), kind);
+  private Binding binding(Task task, Kind kind) {
+    return new Binding(task.orderId(), task.id(), task.courierId(), kind);
   }
 
   private void supersede(String order, String keep) {
@@ -600,9 +612,9 @@ public class FulfillmentService {
     mapper.endTask(status, now(), id(task));
   }
 
-  private Order order(String order) {
+  private com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order order(String order) {
     var row = mapper.findOrder(id(order));
-    return new Order(
+    return new com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order(
         row.id(),
         row.orderNo(),
         row.flowVersion(),
@@ -624,7 +636,7 @@ public class FulfillmentService {
   }
 
   private Result result(String order, String task) {
-    Order o = order(order);
+    com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order o = order(order);
     return new Result(o, task == null ? null : task(task), o.confirmDeadline());
   }
 
@@ -649,10 +661,10 @@ public class FulfillmentService {
         || b.longitude() == null
         || b.latitude().scale() > 7
         || b.longitude().scale() > 7
-        || b.latitude().abs().compareTo(java.math.BigDecimal.valueOf(90)) > 0
-        || b.longitude().abs().compareTo(java.math.BigDecimal.valueOf(180)) > 0
+        || b.latitude().abs().compareTo(BigDecimal.valueOf(90)) > 0
+        || b.longitude().abs().compareTo(BigDecimal.valueOf(180)) > 0
         || !"GCJ02".equals(b.coordinateSystem())) throw IdentityFailure.invalid();
-    IdentityService.text(b.requestId(), 128);
+    InputValidation.text(b.requestId(), 128);
     required(b.expectedVersion());
   }
 
@@ -679,12 +691,12 @@ public class FulfillmentService {
   private OffsetDateTime now() {
     return clock
         .instant()
-        .truncatedTo(java.time.temporal.ChronoUnit.MICROS)
+        .truncatedTo(ChronoUnit.MICROS)
         .atOffset(ZoneOffset.UTC);
   }
 
   private static Long id(String value) {
-    return com.zhangxuan.runrunv2.model.ResourceIds.parse(value);
+    return ResourceIds.parse(value);
   }
 
   private static void required(Long value) {

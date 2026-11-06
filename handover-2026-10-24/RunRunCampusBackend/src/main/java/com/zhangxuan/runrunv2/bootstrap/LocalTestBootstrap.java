@@ -1,8 +1,8 @@
 package com.zhangxuan.runrunv2.bootstrap;
 
-import com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper;
+import com.zhangxuan.runrunv2.mapper.LocalTestMapper;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
 import java.nio.charset.StandardCharsets;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /** Host-authorized synthetic fixtures only; never available as an HTTP bootstrap. */
@@ -32,7 +33,7 @@ public class LocalTestBootstrap implements ApplicationRunner {
       Environment env,
       IdentitySecrets secrets,
       DeploymentIdentityService deployment,
-      org.springframework.transaction.PlatformTransactionManager manager,
+      PlatformTransactionManager manager,
       IdentityStartupGuard guard) {
     this.mapper = mapper;
     this.env = env;

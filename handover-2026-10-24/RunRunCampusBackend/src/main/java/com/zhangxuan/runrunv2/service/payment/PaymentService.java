@@ -1,24 +1,40 @@
 package com.zhangxuan.runrunv2.service.payment;
 
-import static com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.*;
-
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.dto.request.payment.CancelRequest;
 import com.zhangxuan.runrunv2.dto.request.payment.ResultRequest;
 import com.zhangxuan.runrunv2.dto.request.payment.VersionRequest;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Order;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.OriginalPayment;
+import com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.AdjustmentFunds;
+import com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.Attempt;
+import com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.Cancelled;
+import com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.Payment;
+import com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.Refund;
+import com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.Started;
+import com.zhangxuan.runrunv2.dto.response.payment.PaymentModels.Summary;
 import com.zhangxuan.runrunv2.enums.payment.Result;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.payment.MockPaymentAdapter;
 import com.zhangxuan.runrunv2.mapper.order.OrderStore;
 import com.zhangxuan.runrunv2.mapper.payment.PaymentMapper;
+import com.zhangxuan.runrunv2.model.InputValidation;
+import com.zhangxuan.runrunv2.model.ResourceIds;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
-import java.time.*;
-import java.util.*;
+import java.math.BigInteger;
+import java.time.Clock;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.*;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /** 编排隔离支付、退款和资金事件。行锁、渠道事件幂等与并发版本共同防止重复推进；金额继续使用整数分。 渠道交互通过适配器完成，Mapper 不承担状态机。参见《支付与退款规则》。 */
 @Service
@@ -61,7 +77,7 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   @Transactional(propagation = Propagation.MANDATORY)
-  public OrderModels.OriginalPayment create(
+  public OriginalPayment create(
       String orderId, long amountCents, OffsetDateTime deadline) {
     var order = orders.read(orderId, true);
     if (!order.status().equals("PENDING_PAYMENT")
@@ -69,7 +85,7 @@ public class PaymentService implements OriginalPaymentWriter {
         || !deadline.toInstant().equals(order.pendingPaymentDeadline().toInstant()))
       throw conflict();
     String id = mapper.insertOriginalPayment(Long.valueOf(orderId), amountCents, deadline);
-    return new OrderModels.OriginalPayment(
+    return new OriginalPayment(
         id, orderId, "ORIGINAL", amountCents, "UNPAID", deadline, 0);
   }
 
@@ -201,7 +217,7 @@ public class PaymentService implements OriginalPaymentWriter {
     var order = orders.read(id, true);
     own(actor.id(), order);
     if (body == null) throw IdentityFailure.invalid();
-    IdentityService.text(body.reason(), 500);
+    InputValidation.text(body.reason(), 500);
     String reason = body.reason();
     Cancelled replay =
         requests.replay(actor.id(), "payments:cancel", key, List.of(id, body), Cancelled.class);
@@ -239,7 +255,7 @@ public class PaymentService implements OriginalPaymentWriter {
   public Refund retryRefund(
       String token, String id, long expectedVersion, String reason, String key) {
     var actor = identity.authorizeForWrite(token, "ADMIN", false);
-    IdentityService.text(reason, 500);
+    InputValidation.text(reason, 500);
     Refund r = refund(id);
     lockPayment(r.paymentOrderId(), null);
     r = refund(id);
@@ -277,8 +293,8 @@ public class PaymentService implements OriginalPaymentWriter {
     var actor = identity.authorizeForWrite(token, "ADMIN", false);
     lockNotificationRecipient(orderId);
     var order = orders.read(orderId, true);
-    IdentityService.text(reason, 500);
-    com.zhangxuan.runrunv2.model.ResourceIds.parse(adjustmentId);
+    InputValidation.text(reason, 500);
+    ResourceIds.parse(adjustmentId);
     if (deltaCents == 0 || deltaCents == Long.MIN_VALUE) throw IdentityFailure.invalid();
     var content = List.of(orderId, adjustmentId, deltaCents, expectedOrderVersion, reason);
     AdjustmentFunds replay =
@@ -516,7 +532,7 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private void lockNotificationRecipient(String orderId) {
-    mapper.lockOrderNotificationRecipient(com.zhangxuan.runrunv2.model.ResourceIds.parse(orderId));
+    mapper.lockOrderNotificationRecipient(ResourceIds.parse(orderId));
   }
 
   private void paymentStatus(String id, String status) {
@@ -524,19 +540,19 @@ public class PaymentService implements OriginalPaymentWriter {
   }
 
   private Payment payment(String id, boolean lock) {
-    var rows = mapper.findPayment(lock, com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows = mapper.findPayment(lock, ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
 
   private Attempt attempt(String id) {
-    var rows = mapper.findAttempt(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows = mapper.findAttempt(ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
 
   private Refund refund(String id) {
-    var rows = mapper.findRefund(com.zhangxuan.runrunv2.model.ResourceIds.parse(id));
+    var rows = mapper.findRefund(ResourceIds.parse(id));
     if (rows.isEmpty()) throw missing();
     return rows.get(0);
   }
@@ -570,14 +586,14 @@ public class PaymentService implements OriginalPaymentWriter {
             .toList());
   }
 
-  private void own(String actor, OrderModels.Order order) {
+  private void own(String actor, Order order) {
     if (!actor.equals(order.userId())) throw missing();
   }
 
   private OffsetDateTime now() {
     return clock
         .instant()
-        .truncatedTo(java.time.temporal.ChronoUnit.MICROS)
+        .truncatedTo(ChronoUnit.MICROS)
         .atOffset(ZoneOffset.UTC);
   }
 
@@ -604,7 +620,7 @@ public class PaymentService implements OriginalPaymentWriter {
         || body.result() == null
         || body.expectedVersion() == null
         || body.expectedVersion() < 0) throw IdentityFailure.invalid();
-    IdentityService.text(body.eventId(), 128);
+    InputValidation.text(body.eventId(), 128);
   }
 
   private boolean seen(String type, String id, Result result, String eventId) {
@@ -634,9 +650,9 @@ public class PaymentService implements OriginalPaymentWriter {
     long total = mapper.sumSucceededRefundCents(Long.valueOf(source));
     long originalPlatform = received / 100 * 30 + (received % 100) * 30 / 100;
     long target =
-        java.math.BigInteger.valueOf(total)
-            .multiply(java.math.BigInteger.valueOf(originalPlatform))
-            .divide(java.math.BigInteger.valueOf(received))
+        BigInteger.valueOf(total)
+            .multiply(BigInteger.valueOf(originalPlatform))
+            .divide(BigInteger.valueOf(received))
             .longValueExact();
     long previous = mapper.sumRecordedPlatformRefundCents(source);
     long platform = target - previous;

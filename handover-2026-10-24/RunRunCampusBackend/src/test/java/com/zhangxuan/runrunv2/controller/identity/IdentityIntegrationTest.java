@@ -1,34 +1,54 @@
 package com.zhangxuan.runrunv2.controller.identity;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
-import com.zhangxuan.runrunv2.dto.response.identity.LoginResult;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
-import com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper;
+import com.zhangxuan.runrunv2.mapper.IdentityStartupMapper;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.IdentityService;
+import com.zhangxuan.runrunv2.vo.LoginResult;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.DriverManager;
 import java.util.Base64;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -51,11 +71,11 @@ import org.testcontainers.junit.jupiter.Testcontainers;
       "spring.flyway.enabled=false"
     })
 @AutoConfigureMockMvc(
-    print = org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint.NONE)
+    print = MockMvcPrint.NONE)
 @Import(IdentityIntegrationTest.Probes.class)
 // Close scheduled workers and JDBC pools with the class-scoped database fixture.
-@org.springframework.test.annotation.DirtiesContext(
-    classMode = org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(
+    classMode = ClassMode.AFTER_CLASS)
 @Testcontainers
 class IdentityIntegrationTest {
 
@@ -87,7 +107,7 @@ class IdentityIntegrationTest {
             Base64.getEncoder()
                 .encodeToString(
                     "synthetic-different-hash-key-000001"
-                        .getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+                        .getBytes(StandardCharsets.UTF_8)));
   }
 
   @Autowired IdentityService identity;
@@ -130,7 +150,7 @@ class IdentityIntegrationTest {
     return identity.login("admin");
   }
 
-  private IdentityFailure failure(String code, org.junit.jupiter.api.function.Executable action) {
+  private IdentityFailure failure(String code, Executable action) {
     IdentityFailure failure = assertThrows(IdentityFailure.class, action);
     assertEquals(code, failure.code);
     return failure;
@@ -383,7 +403,7 @@ class IdentityIntegrationTest {
             + " EXECUTE FUNCTION runrun_v2.test_fail_audit()");
     try {
       assertThrows(
-          org.springframework.dao.DataAccessException.class,
+          DataAccessException.class,
           () ->
               deployment.changeAccess(
                   actor, id, true, 1, "reason", "ENABLE " + id, "failing-audit"));

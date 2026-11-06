@@ -1,13 +1,15 @@
 package com.zhangxuan.runrunv2;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
 import com.zhangxuan.runrunv2.bootstrap.LocalTestBootstrap;
-import com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper;
+import com.zhangxuan.runrunv2.mapper.LocalTestMapper;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
+import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -42,7 +44,7 @@ class LocalTestBoundaryTest {
             .withProperty("rrc.identity.app-id", "synthetic-local-app")
             .withProperty("RRC_V2_ADMIN_PHONE", "test-admin")
             .withProperty("RRC_V2_BOOTSTRAP_CONFIRM", "CREATE_ISOLATED_TEST_ADMIN")
-            .withProperty("RRC_V2_ADMIN_PASSWORD", java.util.UUID.randomUUID().toString())
+            .withProperty("RRC_V2_ADMIN_PASSWORD", UUID.randomUUID().toString())
             .withProperty(key, value);
     var db = mock(JdbcTemplate.class);
     var deployment = mock(DeploymentIdentityService.class);

@@ -1,7 +1,8 @@
 package com.zhangxuan.runrunv2.bootstrap;
 
-import com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper;
+import com.zhangxuan.runrunv2.mapper.IdentityStartupMapper;
 import java.util.Set;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IdentityStartupGuard
-    implements ApplicationRunner, org.springframework.beans.factory.InitializingBean {
+    implements ApplicationRunner, InitializingBean {
 
   private final IdentityStartupMapper mapper;
 

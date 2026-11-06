@@ -1,16 +1,24 @@
 package com.zhangxuan.runrunv2.service.fulfillment;
 
-import static com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.*;
-
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Order;
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.Page;
+import com.zhangxuan.runrunv2.dto.response.fulfillment.FulfillmentModels.TaskItem;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentQueryMapper;
+import com.zhangxuan.runrunv2.model.ResourceIds;
 import com.zhangxuan.runrunv2.model.fulfillment.TaskRow;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,7 +100,7 @@ public class FulfillmentQueries {
     OffsetDateTime created =
         last == null
             ? null
-            : ((Timestamp) last.get("created_at")).toInstant().atOffset(java.time.ZoneOffset.UTC);
+            : ((Timestamp) last.get("created_at")).toInstant().atOffset(ZoneOffset.UTC);
     return new Page<>(items, more ? encode(scope, created, last.get("id").toString()) : null);
   }
 
@@ -156,7 +164,7 @@ public class FulfillmentQueries {
       if (value.length() > 512) throw IdentityFailure.invalid();
       String[] parts = value.split("\\.", -1);
       if (parts.length != 2
-          || !java.security.MessageDigest.isEqual(
+          || !MessageDigest.isEqual(
               secrets
                   .hash("fulfillment-cursor:" + scope, parts[0])
                   .getBytes(StandardCharsets.UTF_8),
@@ -166,7 +174,7 @@ public class FulfillmentQueries {
               .split("\\|", -1);
       if (payload.length != 2) throw IdentityFailure.invalid();
       OffsetDateTime.parse(payload[0]);
-      com.zhangxuan.runrunv2.model.ResourceIds.parse(payload[1]);
+      ResourceIds.parse(payload[1]);
       return new Cursor(payload[0], payload[1]);
     } catch (RuntimeException ex) {
       throw IdentityFailure.invalid();

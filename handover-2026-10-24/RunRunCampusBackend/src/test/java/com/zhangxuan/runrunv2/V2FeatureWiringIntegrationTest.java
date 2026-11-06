@@ -1,27 +1,42 @@
 package com.zhangxuan.runrunv2;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zhangxuan.runrunv2.dto.response.identity.LoginResult;
 import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
 import com.zhangxuan.runrunv2.integration.wechat.WechatSubscriptionGateway;
 import com.zhangxuan.runrunv2.model.notification.DeliveryResult;
+import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.courier.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
-import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import com.zhangxuan.runrunv2.service.notification.NotificationOutboxWorker;
 import com.zhangxuan.runrunv2.service.notification.NotificationService;
+import com.zhangxuan.runrunv2.vo.LoginResult;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.DriverManager;
@@ -39,6 +54,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -63,7 +79,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
       "rrc.evidence.cleanup-delay-ms=86400000"
     })
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 @Testcontainers
 class V2FeatureWiringIntegrationTest {
 
@@ -95,7 +111,7 @@ class V2FeatureWiringIntegrationTest {
             Base64.getEncoder()
                 .encodeToString(
                     "synthetic-different-hash-key-000001"
-                        .getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+                        .getBytes(StandardCharsets.UTF_8)));
     registry.add("rrc.evidence.root", () -> evidenceRoot.toString());
   }
 

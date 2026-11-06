@@ -1,28 +1,35 @@
 package com.zhangxuan.runrunv2.service.configuration;
 
-import static com.zhangxuan.runrunv2.dto.response.order.OrderModels.*;
-
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.dto.request.order.ConfigChange;
 import com.zhangxuan.runrunv2.dto.request.order.PointChange;
 import com.zhangxuan.runrunv2.dto.request.order.QuoteRequest;
 import com.zhangxuan.runrunv2.dto.request.order.ZoneChange;
-import com.zhangxuan.runrunv2.dto.response.order.OrderModels;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Config;
+import com.zhangxuan.runrunv2.dto.response.order.OrderModels.Quote;
 import com.zhangxuan.runrunv2.enums.order.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper;
+import com.zhangxuan.runrunv2.model.InputValidation;
 import com.zhangxuan.runrunv2.model.order.Pricing;
 import com.zhangxuan.runrunv2.model.order.Schedule;
+import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.idempotency.OrderIdempotency;
-import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import com.zhangxuan.runrunv2.service.payment.OriginalPaymentWriter;
+import java.math.BigDecimal;
 import java.sql.Time;
-import java.time.*;
-import java.util.*;
-import org.springframework.stereotype.Service;
+import java.time.Clock;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
+@org.springframework.stereotype.Service
 public class ServiceConfigService {
 
   private final ServiceConfigMapper mapper;
@@ -66,9 +73,9 @@ public class ServiceConfigService {
   }
 
   private Config view(Map<String, Object> settings, boolean includeDisabled) {
-    List<OrderModels.Service> services =
+    List<com.zhangxuan.runrunv2.dto.response.order.OrderModels.Service> services =
         Arrays.stream(ServiceType.values())
-            .map(s -> new OrderModels.Service(s.name(), s.name, s.baseCents, s.zoneSurcharge))
+            .map(s -> new com.zhangxuan.runrunv2.dto.response.order.OrderModels.Service(s.name(), s.name, s.baseCents, s.zoneSurcharge))
             .toList();
     var zones = mapper.findZones(includeDisabled);
     var points = mapper.findServicePoints(includeDisabled);
@@ -113,7 +120,7 @@ public class ServiceConfigService {
     if (request == null || request.serviceType() == null) throw IdentityFailure.invalid();
     code(request.zoneCode());
     code(request.servicePointCode());
-    IdentityService.text(request.destination(), 500);
+    InputValidation.text(request.destination(), 500);
   }
 
   public Map<String, Object> zone(String code) {
@@ -185,7 +192,7 @@ public class ServiceConfigService {
         || change.configVersion() < 0
         || change.expectedVersion() == null
         || change.expectedVersion() < 0) throw IdentityFailure.invalid();
-    IdentityService.text(change.reason(), 1000);
+    InputValidation.text(change.reason(), 1000);
     Config replay = requests.replay(actor.id(), "service-config:patch", key, change, Config.class);
     if (replay != null) return replay;
     Map<String, Object> settings = settings(true);
@@ -212,7 +219,7 @@ public class ServiceConfigService {
       for (ZoneChange zone : change.zones()) {
         if (zone == null) throw IdentityFailure.invalid();
         code(zone.code());
-        IdentityService.text(zone.name(), 100);
+        InputValidation.text(zone.name(), 100);
         if (!codes.add(zone.code())
             || zone.enabled() == null
             || zone.packageSurchargeCents() == null
@@ -228,7 +235,7 @@ public class ServiceConfigService {
       for (PointChange point : change.servicePoints()) {
         if (point == null) throw IdentityFailure.invalid();
         code(point.code());
-        IdentityService.text(point.name(), 100);
+        InputValidation.text(point.name(), 100);
         if (!codes.add(point.code())
             || point.enabled() == null
             || !"GCJ02".equals(point.coordinateSystem())
@@ -237,8 +244,8 @@ public class ServiceConfigService {
         if (point.latitude() != null
             && (point.latitude().scale() > 7
                 || point.longitude().scale() > 7
-                || point.latitude().abs().compareTo(java.math.BigDecimal.valueOf(90)) > 0
-                || point.longitude().abs().compareTo(java.math.BigDecimal.valueOf(180)) > 0))
+                || point.latitude().abs().compareTo(BigDecimal.valueOf(90)) > 0
+                || point.longitude().abs().compareTo(BigDecimal.valueOf(180)) > 0))
           throw IdentityFailure.invalid();
         mapper.upsertServicePoint(
             point.code(),
