@@ -4,12 +4,24 @@ import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.enums.Queue;
 import com.zhangxuan.runruncampus.service.AdminCommandCenterService;
 import com.zhangxuan.runruncampus.service.AuthService;
-import com.zhangxuan.runruncampus.vo.Snapshot;
+import com.zhangxuan.runruncampus.vo.CommandCenterSnapshotVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -37,7 +49,7 @@ public class AdminCommandCenterController {
     }
 
     @GetMapping
-    public Snapshot snapshot(@RequestHeader("Authorization") String authorization, @RequestParam(defaultValue = "LATE_WAITING") Queue queue, @RequestParam(defaultValue = "0") int orderPage, @RequestParam(defaultValue = "0") int courierPage) {
+    public CommandCenterSnapshotVO snapshot(@RequestHeader("Authorization") String authorization, @RequestParam(defaultValue = "LATE_WAITING") Queue queue, @RequestParam(defaultValue = "0") int orderPage, @RequestParam(defaultValue = "0") int courierPage) {
         var admin = authService.requirePermission(authorization, AdminPermission.DASHBOARD_VIEW);
         return service.snapshot(admin.getAdminRole(), queue, orderPage, courierPage);
     }

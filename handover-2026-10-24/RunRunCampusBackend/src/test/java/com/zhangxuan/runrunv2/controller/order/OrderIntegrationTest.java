@@ -2,16 +2,16 @@ package com.zhangxuan.runrunv2.controller.order;
 
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
-import com.zhangxuan.runrunv2.dto.ConfigChange;
-import com.zhangxuan.runrunv2.dto.CreateRequest;
-import com.zhangxuan.runrunv2.dto.PointChange;
-import com.zhangxuan.runrunv2.dto.QuoteRequest;
-import com.zhangxuan.runrunv2.dto.ZoneChange;
+import com.zhangxuan.runrunv2.dto.CreateOrderRequest;
+import com.zhangxuan.runrunv2.dto.DeliveryZoneChangeRequest;
+import com.zhangxuan.runrunv2.dto.OrderQuoteRequest;
+import com.zhangxuan.runrunv2.dto.ServiceConfigChangeRequest;
+import com.zhangxuan.runrunv2.dto.ServicePointChangeRequest;
 import com.zhangxuan.runrunv2.enums.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
 import com.zhangxuan.runrunv2.mapper.OrderStore;
-import com.zhangxuan.runrunv2.model.Schedule;
+import com.zhangxuan.runrunv2.model.OrderSchedule;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
 import com.zhangxuan.runrunv2.service.OrderService;
@@ -74,6 +74,82 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -365,17 +441,17 @@ class OrderIntegrationTest {
     when(clock.instant()).thenReturn(Instant.parse(value));
   }
 
-  private CreateRequest request(ServiceType service, String zone, long version) {
-    return new CreateRequest(service, zone, "TEST_POINT", "合成目的地梅园字样", version);
+  private CreateOrderRequest request(ServiceType service, String zone, long version) {
+    return new CreateOrderRequest(service, zone, "TEST_POINT", "合成目的地梅园字样", version);
   }
 
-  private CreateRequest request() {
+  private CreateOrderRequest request() {
     return request(ServiceType.PACKAGE_SMALL, "MEIYUAN", 0);
   }
 
-  private ConfigChange change(
-      long version, Boolean enabled, List<ZoneChange> zones, List<PointChange> points) {
-    return new ConfigChange(version, version, enabled, null, null, zones, points, "合成配置测试原因");
+  private ServiceConfigChangeRequest change(
+      long version, Boolean enabled, List<DeliveryZoneChangeRequest> zones, List<ServicePointChangeRequest> points) {
+    return new ServiceConfigChangeRequest(version, version, enabled, null, null, zones, points, "合成配置测试原因");
   }
 
   private void failure(String code, Executable action) {
@@ -429,7 +505,7 @@ class OrderIntegrationTest {
     config.patch(
         admin,
         "new-price",
-        change(0, null, List.of(new ZoneChange("MEIYUAN", "修改后区域", 700L, true)), null));
+        change(0, null, List.of(new DeliveryZoneChangeRequest("MEIYUAN", "修改后区域", 700L, true)), null));
     assertEquals(order, orders.get(user, order.id()));
     failure("CONFIG_VERSION_CONFLICT", () -> orders.create(user, "stale", request()));
     failure("RESOURCE_NOT_FOUND", () -> orders.get(other, order.id()));
@@ -546,7 +622,7 @@ class OrderIntegrationTest {
     config.patch(
         admin,
         "disable-zone",
-        change(0, null, List.of(new ZoneChange("MEIYUAN", "梅园", 200L, false)), null));
+        change(0, null, List.of(new DeliveryZoneChangeRequest("MEIYUAN", "梅园", 200L, false)), null));
     failure(
         "VALIDATION_ERROR",
         () ->
@@ -554,7 +630,7 @@ class OrderIntegrationTest {
     failure(
         "VALIDATION_ERROR",
         () ->
-            config.quote(user, new QuoteRequest(ServiceType.LOBBY, "UNKNOWN", "TEST_POINT", "地址")));
+            config.quote(user, new OrderQuoteRequest(ServiceType.LOBBY, "UNKNOWN", "TEST_POINT", "地址")));
     failure(
         "VALIDATION_ERROR",
         () ->
@@ -566,7 +642,7 @@ class OrderIntegrationTest {
                     null,
                     null,
                     List.of(
-                        new PointChange(
+                        new ServicePointChangeRequest(
                             "BAD", "测试", BigDecimal.valueOf(91), BigDecimal.ONE, "GCJ02", true)))));
     failure(
         "VALIDATION_ERROR",
@@ -578,7 +654,7 @@ class OrderIntegrationTest {
                     1,
                     null,
                     null,
-                    List.of(new PointChange("BAD", "测试", null, BigDecimal.ONE, "GCJ02", true)))));
+                    List.of(new ServicePointChangeRequest("BAD", "测试", null, BigDecimal.ONE, "GCJ02", true)))));
     config.patch(
         admin,
         "no-coordinates",
@@ -586,7 +662,7 @@ class OrderIntegrationTest {
             1,
             null,
             null,
-            List.of(new PointChange("NULL_POINT", "待核实测试点", null, null, "GCJ02", true))));
+            List.of(new ServicePointChangeRequest("NULL_POINT", "待核实测试点", null, null, "GCJ02", true))));
     assertNull(
         config.config(user).servicePoints().stream()
             .filter(p -> p.code().equals("NULL_POINT"))
@@ -600,7 +676,7 @@ class OrderIntegrationTest {
             2,
             null,
             null,
-            List.of(new PointChange("TEST_POINT", "测试点", null, null, "GCJ02", false))));
+            List.of(new ServicePointChangeRequest("TEST_POINT", "测试点", null, null, "GCJ02", false))));
     failure(
         "VALIDATION_ERROR",
         () -> orders.create(user, "disabled-point", request(ServiceType.LOBBY, "STANDARD", 3)));
@@ -609,8 +685,8 @@ class OrderIntegrationTest {
 
   @Test
   void configPatchHasVersionConflictIdempotencyAuditAndOwnerValidation() throws Exception {
-    ConfigChange change =
-        change(0, null, List.of(new ZoneChange("MEIYUAN", "梅园", 300L, true)), null);
+    ServiceConfigChangeRequest change =
+        change(0, null, List.of(new DeliveryZoneChangeRequest("MEIYUAN", "梅园", 300L, true)), null);
     ServiceConfigVO first = config.patch(admin, "config-once", change);
     assertEquals(first, config.patch(admin, "config-once", change));
     assertEquals(1, count("admin_audit_logs"));
@@ -625,19 +701,19 @@ class OrderIntegrationTest {
             config.patch(
                 admin,
                 "bad-owner",
-                new ConfigChange(1L, 1L, true, "1", null, null, null, "无效负责人")));
+                new ServiceConfigChangeRequest(1L, 1L, true, "1", null, null, null, "无效负责人")));
     failure(
         "VALIDATION_ERROR",
         () ->
             config.patch(
                 admin,
                 "bad-hours",
-                new ConfigChange(
+                new ServiceConfigChangeRequest(
                     1L,
                     1L,
                     null,
                     null,
-                    new Schedule("UTC", "09:00", "23:00"),
+                    new OrderSchedule("UTC", "09:00", "23:00"),
                     null,
                     null,
                     "错误时区")));
@@ -647,7 +723,7 @@ class OrderIntegrationTest {
             config.patch(
                 admin,
                 "wrong-version",
-                new ConfigChange(1L, 0L, null, null, null, null, null, "过期并发版本")));
+                new ServiceConfigChangeRequest(1L, 0L, null, null, null, null, null, "过期并发版本")));
     http.perform(
             patch("/api/v2/admin/service-config")
                 .header("Authorization", "Bearer " + user)
@@ -665,7 +741,7 @@ class OrderIntegrationTest {
         config.patch(
             admin,
             "unassigned-disabled-config",
-            new ConfigChange(0L, 0L, null, null, null, null, null, "合成未分配负责人配置"));
+            new ServiceConfigChangeRequest(0L, 0L, null, null, null, null, null, "合成未分配负责人配置"));
     assertFalse(updated.newOrderEnabled());
     assertNull(updated.reviewOwnerId());
     assertEquals(1, updated.configVersion());
@@ -675,7 +751,7 @@ class OrderIntegrationTest {
             config.patch(
                 admin,
                 "unassigned-enable-rejected",
-                new ConfigChange(1L, 1L, true, null, null, null, null, "合成开启接单")));
+                new ServiceConfigChangeRequest(1L, 1L, true, null, null, null, null, "合成开启接单")));
     assertEquals(1, count("admin_audit_logs"));
     assertEquals(updated, config.config(admin));
   }
@@ -707,7 +783,7 @@ class OrderIntegrationTest {
         db.queryForObject(
             "SELECT id::text FROM runrun_v2.app_users WHERE phone='13800000005'", String.class);
     config.patch(
-        admin, "replace-owner", new ConfigChange(0L, 0L, null, next, null, null, null, "先更换值班负责人"));
+        admin, "replace-owner", new ServiceConfigChangeRequest(0L, 0L, null, next, null, null, null, "先更换值班负责人"));
     assertFalse(
         deployment
             .changeAccess(deployer, owner, false, 0, "合成停用", "DISABLE " + owner, "disable-owner")
@@ -724,7 +800,7 @@ class OrderIntegrationTest {
                     admin,
                     "config-race",
                     change(
-                        0, null, List.of(new ZoneChange("MEIYUAN", "新测试价格", 700L, true)), null)));
+                        0, null, List.of(new DeliveryZoneChangeRequest("MEIYUAN", "新测试价格", 700L, true)), null)));
     assertTrue(results.get(1) instanceof ServiceConfigVO);
     if (results.get(0) instanceof CreatedOrderVO created) {
       assertEquals(0, created.order().pricingSnapshot().configVersion());

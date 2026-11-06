@@ -1,10 +1,17 @@
 package com.zhangxuan.runruncampus.service;
 
-import com.zhangxuan.runruncampus.dto.CreateRequest;
+import com.zhangxuan.runruncampus.dto.FulfillmentProvenanceCreateRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
-import com.zhangxuan.runruncampus.vo.Entry;
-import com.zhangxuan.runruncampus.vo.Summary;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceEntryVO;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceSummaryVO;
 import java.util.List;
+
+
+
+
+
+
+
 
 
 
@@ -32,11 +39,11 @@ import java.util.List;
  */
 public interface FulfillmentProvenanceService {
 
-    Entry record(AppUser administrator, CreateRequest request);
+    FulfillmentProvenanceEntryVO record(AppUser administrator, FulfillmentProvenanceCreateRequest request);
 
-    Entry verify(AppUser administrator, long id);
+    FulfillmentProvenanceEntryVO verify(AppUser administrator, long id);
 
-    List<Entry> list(int page);
+    List<FulfillmentProvenanceEntryVO> list(int page);
 
-    Summary summary();
+    FulfillmentProvenanceSummaryVO summary();
 }

@@ -20,7 +20,6 @@ import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.model.CouponApplication;
 import com.zhangxuan.runruncampus.model.MembershipApplication;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.OrderProofRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
@@ -36,6 +35,7 @@ import com.zhangxuan.runruncampus.service.impl.OrderServiceImpl;
 import com.zhangxuan.runruncampus.vo.CourierRatingResponse;
 import com.zhangxuan.runruncampus.vo.DeliveryCodeResponse;
 import com.zhangxuan.runruncampus.vo.OrderResponse;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
@@ -63,6 +63,71 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -498,7 +563,7 @@ class OrderServiceTest {
     when(orderRepository.countByCourierAndStatusIn(
             courier, List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
         .thenReturn(2L);
-    when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
+    when(settingsService.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 2, 30, 120));
     BusinessFailure failure =
         assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
     assertEquals(HttpStatus.CONFLICT.value(), failure.status());
@@ -513,7 +578,7 @@ class OrderServiceTest {
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(courier));
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(orderRepository.countByCourierAndStatusIn(eq(courier), any())).thenReturn(9L);
-    when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 10, 30, 120));
+    when(settingsService.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 10, 30, 120));
     orderService.accept(courier, 11L);
     assertEquals(OrderStatus.ACCEPTED, order.getStatus());
     assertEquals(courier, order.getCourier());
@@ -526,7 +591,7 @@ class OrderServiceTest {
     when(userRepository.findLockedById(2L)).thenReturn(Optional.of(courier));
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(orderRepository.countByCourierAndStatusIn(eq(courier), any())).thenReturn(10L);
-    when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 10, 30, 120));
+    when(settingsService.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 10, 30, 120));
     BusinessFailure failure =
         assertThrows(BusinessFailure.class, () -> orderService.accept(courier, 11L));
     assertEquals(HttpStatus.CONFLICT.value(), failure.status());
@@ -860,7 +925,7 @@ class OrderServiceTest {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(userRepository.findLockedById(3L)).thenReturn(Optional.of(courier));
-    when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
+    when(settingsService.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 2, 30, 120));
     orderService.accept(courier, 11L);
     verify(messageService)
         .send(
@@ -943,7 +1008,7 @@ class OrderServiceTest {
     AppUser courier = user(3L, "13800000003", UserRole.COURIER);
     when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
     when(userRepository.findLockedById(3L)).thenReturn(Optional.of(courier));
-    when(settingsService.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 10, 30, 120));
+    when(settingsService.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 10, 30, 120));
     OrderResponse response = orderService.accept(courier, 11L);
     assertEquals(OrderStatus.ACCEPTED, response.status());
     assertEquals(OrderPaymentMethod.CASH_ON_DELIVERY, response.paymentMethod());

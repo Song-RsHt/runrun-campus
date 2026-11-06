@@ -8,8 +8,8 @@ import com.zhangxuan.runrunv2.model.UploadSource;
 import com.zhangxuan.runrunv2.service.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.CourierEvidenceGovernanceService;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.vo.Account;
-import com.zhangxuan.runrunv2.vo.Certification;
+import com.zhangxuan.runrunv2.vo.CourierCertificationVO;
+import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.sql.Timestamp;
@@ -21,6 +21,29 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -73,11 +96,11 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
 
     @Transactional
     @Override
-    public Certification apply(String token, IdentityService identity, String requestId) {
-        Account a = identity.authorizeForWrite(token, "COURIER", false);
+    public CourierCertificationVO apply(String token, IdentityService identity, String requestId) {
+        IdentityAccountVO a = identity.authorizeForWrite(token, "COURIER", false);
         long courier = Long.parseLong(a.id());
         lockActor(courier);
-        Certification replay = idempotency.replay(Long.toString(courier), "courier-certification:apply", requestId, "apply", Certification.class);
+        CourierCertificationVO replay = idempotency.replay(Long.toString(courier), "courier-certification:apply", requestId, "apply", CourierCertificationVO.class);
         if (replay != null)
             return replay;
         var rows = mapper.lockCourierCertification(courier);
@@ -91,15 +114,15 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
         }
         long id = mapper.findCertificationId(courier);
         event(id, courier, "COURIER", "SUBMITTED", requestId);
-        Certification result = get(courier, id);
+        CourierCertificationVO result = get(courier, id);
         idempotency.finish(Long.toString(courier), "courier-certification:apply", requestId, "COURIER_CERTIFICATION", Long.toString(id), result);
         return result;
     }
 
     @Transactional
     @Override
-    public Certification upload(String token, IdentityService identity, long id, long expectedVersion, String requestId, UploadSource file) {
-        Account a = identity.authorizeForWrite(token, "COURIER", false);
+    public CourierCertificationVO upload(String token, IdentityService identity, long id, long expectedVersion, String requestId, UploadSource file) {
+        IdentityAccountVO a = identity.authorizeForWrite(token, "COURIER", false);
         long courier = Long.parseLong(a.id());
         lockActor(courier);
         byte[] bytes;
@@ -109,7 +132,7 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
             throw new IdentityFailure(400, "UPLOAD_INVALID");
         }
         String contentHash = digest(bytes);
-        Certification replay = idempotency.replay(Long.toString(courier), "courier-certification:upload", requestId, id + ":" + expectedVersion + ":" + contentHash, Certification.class);
+        CourierCertificationVO replay = idempotency.replay(Long.toString(courier), "courier-certification:upload", requestId, id + ":" + expectedVersion + ":" + contentHash, CourierCertificationVO.class);
         if (replay != null)
             return replay;
         var row = locked(id);
@@ -135,20 +158,20 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
         if (oldResource != null && !oldResource.equals(resource))
             governance.requestCertificationDeletion(id, oldResource, oldKey, Instant.now().plus(Duration.ofDays(30)));
         event(id, courier, "COURIER", "PHOTO_UPLOADED", requestId);
-        Certification result = get(courier, id);
+        CourierCertificationVO result = get(courier, id);
         idempotency.finish(Long.toString(courier), "courier-certification:upload", requestId, "COURIER_CERTIFICATION", Long.toString(id), result);
         return result;
     }
 
     @Transactional
     @Override
-    public Certification decide(String token, IdentityService identity, long id, long expectedVersion, String resource, String decision, String reason, String requestId) {
-        Account a = identity.authorizeForWrite(token, "ADMIN", false);
+    public CourierCertificationVO decide(String token, IdentityService identity, long id, long expectedVersion, String resource, String decision, String reason, String requestId) {
+        IdentityAccountVO a = identity.authorizeForWrite(token, "ADMIN", false);
         long admin = Long.parseLong(a.id());
         lockActor(admin);
         if (!"APPROVE".equals(decision) && !"REJECT".equals(decision))
             throw new IdentityFailure(400, "INVALID_REQUEST");
-        Certification replay = idempotency.replay(Long.toString(admin), "courier-certification:decide", requestId, id + ":" + expectedVersion + ":" + resource + ":" + decision + ":" + reason, Certification.class);
+        CourierCertificationVO replay = idempotency.replay(Long.toString(admin), "courier-certification:decide", requestId, id + ":" + expectedVersion + ":" + resource + ":" + decision + ":" + reason, CourierCertificationVO.class);
         if (replay != null)
             return replay;
         var row = locked(id);
@@ -167,7 +190,7 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
             mapper.rejectCertification(reason, id, expectedVersion);
         }
         event(id, admin, "ADMIN", "REVIEWED", requestId);
-        Certification result = get(admin, id);
+        CourierCertificationVO result = get(admin, id);
         idempotency.finish(Long.toString(admin), "courier-certification:decide", requestId, "COURIER_CERTIFICATION", Long.toString(id), result);
         return result;
     }
@@ -175,7 +198,7 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
     @Transactional
     @Override
     public byte[] read(String token, IdentityService identity, long id, String resource, String requestId) {
-        Account a = identity.requireRole(token, "ADMIN", false);
+        IdentityAccountVO a = identity.requireRole(token, "ADMIN", false);
         var row = locked(id);
         String actual = resource != null ? resource : (String) row.get("approved_photo_resource_id");
         if (actual == null)
@@ -196,7 +219,7 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
     @Transactional(readOnly = true)
     @Override
     public Map<String, Object> adminList(String token, String status, String query, int page, int size) {
-        Account a = identity.requireRole(token, "ADMIN", false);
+        IdentityAccountVO a = identity.requireRole(token, "ADMIN", false);
         int safePage = Math.max(0, page), safeSize = Math.max(1, Math.min(size, 100));
         String filter = (status == null || status.isBlank()) ? null : status;
         String q = (query == null || query.isBlank()) ? null : "%" + query.trim() + "%";
@@ -243,13 +266,13 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
     }
 
     @Override
-    public Certification get(long subject, long id) {
+    public CourierCertificationVO get(long subject, long id) {
         var r = locked(id);
         return map(r);
     }
 
     @Override
-    public Certification getMine(long courier) {
+    public CourierCertificationVO getMine(long courier) {
         var rows = mapper.findCourierCertification(courier);
         if (rows.isEmpty())
             return null;
@@ -263,8 +286,8 @@ public class CourierCertificationV2ServiceImpl implements CourierCertificationV2
         return rows.get(0);
     }
 
-    private Certification map(Map<String, Object> r) {
-        return new Certification(((Number) r.get("id")).longValue(), ((Number) r.get("courier_id")).longValue(), (String) r.get("status"), Boolean.TRUE.equals(r.get("eligible")), ((Number) r.get("version")).longValue(), instant(r.get("submitted_at")), instant(r.get("reviewed_at")), r.get("submitted_photo_resource_id") != null || r.get("approved_photo_resource_id") != null, (String) (r.get("status").equals("APPROVED") ? r.get("approved_photo_resource_id") : r.get("submitted_photo_resource_id")), (String) r.get("rejection_reason"));
+    private CourierCertificationVO map(Map<String, Object> r) {
+        return new CourierCertificationVO(((Number) r.get("id")).longValue(), ((Number) r.get("courier_id")).longValue(), (String) r.get("status"), Boolean.TRUE.equals(r.get("eligible")), ((Number) r.get("version")).longValue(), instant(r.get("submitted_at")), instant(r.get("reviewed_at")), r.get("submitted_photo_resource_id") != null || r.get("approved_photo_resource_id") != null, (String) (r.get("status").equals("APPROVED") ? r.get("approved_photo_resource_id") : r.get("submitted_photo_resource_id")), (String) r.get("rejection_reason"));
     }
 
     private static Instant instant(Object value) {

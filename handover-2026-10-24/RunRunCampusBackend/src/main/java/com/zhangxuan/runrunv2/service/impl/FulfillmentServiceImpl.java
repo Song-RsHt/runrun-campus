@@ -1,14 +1,14 @@
 package com.zhangxuan.runrunv2.service.impl;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
-import com.zhangxuan.runrunv2.dto.Deliver;
-import com.zhangxuan.runrunv2.dto.Location;
-import com.zhangxuan.runrunv2.dto.Pickup;
-import com.zhangxuan.runrunv2.dto.RegisterProof;
-import com.zhangxuan.runrunv2.dto.Release;
-import com.zhangxuan.runrunv2.dto.Respond;
-import com.zhangxuan.runrunv2.dto.Upload;
-import com.zhangxuan.runrunv2.dto.Version;
+import com.zhangxuan.runrunv2.dto.FulfillmentDeliverRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentLocationRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentPickupRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentReleaseRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentRespondRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentUploadRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentVersionRequest;
+import com.zhangxuan.runrunv2.dto.RegisterFulfillmentProofRequest;
 import com.zhangxuan.runrunv2.enums.Decision;
 import com.zhangxuan.runrunv2.enums.EventType;
 import com.zhangxuan.runrunv2.enums.Kind;
@@ -42,6 +42,50 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -124,7 +168,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public FulfillmentResultVO accept(String token, String orderId, String key, Version body) {
+    public FulfillmentResultVO accept(String token, String orderId, String key, FulfillmentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "COURIER", true);
         var order = lock(orderId);
         required(body == null ? null : body.expectedVersion());
@@ -177,7 +221,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public FulfillmentResultVO respond(String token, String taskId, String key, Respond body) {
+    public FulfillmentResultVO respond(String token, String taskId, String key, FulfillmentRespondRequest body) {
         // A declined invitation needs no eligibility, but accepting it always does.
         if (body == null || body.decision() == null)
             throw IdentityFailure.invalid();
@@ -208,7 +252,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public FulfillmentResultVO release(String token, String orderId, String key, Release body) {
+    public FulfillmentResultVO release(String token, String orderId, String key, FulfillmentReleaseRequest body) {
         var actor = identity.authorizeForWrite(token, "COURIER", true);
         if (body == null)
             throw IdentityFailure.invalid();
@@ -234,7 +278,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public UploadTicketVO upload(String token, String orderId, String key, Upload body) {
+    public UploadTicketVO upload(String token, String orderId, String key, FulfillmentUploadRequest body) {
         var actor = identity.authorizeForWrite(token, "COURIER", true);
         if (body == null || body.kind() == null || body.sizeBytes() == null || body.sizeBytes() < 1 || body.sizeBytes() > 8L * 1024 * 1024 || !Set.of("image/jpeg", "image/png").contains(body.contentType() == null ? "" : body.contentType()))
             throw new IdentityFailure(400, "UPLOAD_INVALID");
@@ -261,7 +305,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public OrderProofVO proof(String token, String orderId, String key, RegisterProof body) {
+    public OrderProofVO proof(String token, String orderId, String key, RegisterFulfillmentProofRequest body) {
         var actor = identity.authorizeForWrite(token, "COURIER", true);
         if (body == null || body.kind() == null)
             throw IdentityFailure.invalid();
@@ -291,7 +335,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public LocationEventVO location(String token, String orderId, String key, Location body) {
+    public LocationEventVO location(String token, String orderId, String key, FulfillmentLocationRequest body) {
         var actor = identity.authorizeForWrite(token, "COURIER", true);
         validate(body);
         var order = lock(orderId);
@@ -331,7 +375,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public FulfillmentResultVO pickup(String token, String orderId, String key, Pickup body) {
+    public FulfillmentResultVO pickup(String token, String orderId, String key, FulfillmentPickupRequest body) {
         var actor = identity.authorizeForWrite(token, "COURIER", true);
         if (body == null)
             throw IdentityFailure.invalid();
@@ -354,7 +398,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public FulfillmentResultVO deliver(String token, String orderId, String key, Deliver body) {
+    public FulfillmentResultVO deliver(String token, String orderId, String key, FulfillmentDeliverRequest body) {
         var actor = identity.authorizeForWrite(token, "COURIER", true);
         if (body == null)
             throw IdentityFailure.invalid();
@@ -383,7 +427,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
 
     @Transactional
     @Override
-    public FulfillmentOrderVO confirm(String token, String orderId, String key, Version body) {
+    public FulfillmentOrderVO confirm(String token, String orderId, String key, FulfillmentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "USER", false);
         var order = lock(orderId);
         if (!actor.id().equals(order.userId()))
@@ -607,7 +651,7 @@ public class FulfillmentServiceImpl implements FulfillmentService {
         return 6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0, 1 - a)));
     }
 
-    private void validate(Location b) {
+    private void validate(FulfillmentLocationRequest b) {
         if (b == null || b.eventType() == null || b.latitude() == null || b.longitude() == null || b.latitude().scale() > 7 || b.longitude().scale() > 7 || b.latitude().abs().compareTo(BigDecimal.valueOf(90)) > 0 || b.longitude().abs().compareTo(BigDecimal.valueOf(180)) > 0 || !"GCJ02".equals(b.coordinateSystem()))
             throw IdentityFailure.invalid();
         InputValidation.text(b.requestId(), 128);

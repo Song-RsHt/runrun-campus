@@ -1,14 +1,14 @@
 package com.zhangxuan.runrunv2.service.impl;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
-import com.zhangxuan.runrunv2.dto.CreateRequest;
+import com.zhangxuan.runrunv2.dto.CreateOrderRequest;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.mapper.OrderMapper;
 import com.zhangxuan.runrunv2.mapper.OrderStore;
-import com.zhangxuan.runrunv2.model.Address;
+import com.zhangxuan.runrunv2.model.OrderAddress;
 import com.zhangxuan.runrunv2.model.OrderInput;
-import com.zhangxuan.runrunv2.model.Pricing;
+import com.zhangxuan.runrunv2.model.OrderPricing;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.OrderService;
 import com.zhangxuan.runrunv2.service.OriginalPaymentWriter;
@@ -25,6 +25,33 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -88,7 +115,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public CreatedOrderVO create(String token, String key, CreateRequest request) {
+    public CreatedOrderVO create(String token, String key, CreateOrderRequest request) {
         var actor = identity.authorizeForWrite(token, "USER", false);
         if (request == null || request.configVersion() == null || request.configVersion() < 0)
             throw IdentityFailure.invalid();
@@ -104,10 +131,10 @@ public class OrderServiceImpl implements OrderService {
         if (OrderInput.number(settings, "config_version") != request.configVersion())
             throw new IdentityFailure(409, "CONFIG_VERSION_CONFLICT");
         config.allowNewOrder(settings);
-        Pricing price = config.price(request.quote(), settings);
+        OrderPricing price = config.price(request.quote(), settings);
         Map<String, Object> zone = config.zone(request.zoneCode());
         Map<String, Object> point = config.point(request.servicePointCode());
-        Address address = new Address(request.destination(), request.zoneCode(), zone.get("name").toString(), request.servicePointCode(), point.get("name").toString(), (BigDecimal) point.get("latitude"), (BigDecimal) point.get("longitude"), point.get("coordinate_system").toString());
+        OrderAddress address = new OrderAddress(request.destination(), request.zoneCode(), zone.get("name").toString(), request.servicePointCode(), point.get("name").toString(), (BigDecimal) point.get("latitude"), (BigDecimal) point.get("longitude"), point.get("coordinate_system").toString());
         // PostgreSQL timestamps have microsecond precision; use the same instant
         // for the order, payment deadline and replay snapshot without DB rounding drift.
         OffsetDateTime created = clock.instant().truncatedTo(ChronoUnit.MICROS).atOffset(ZoneOffset.UTC);

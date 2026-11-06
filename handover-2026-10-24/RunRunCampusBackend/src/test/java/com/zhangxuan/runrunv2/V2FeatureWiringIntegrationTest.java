@@ -12,7 +12,7 @@ import com.zhangxuan.runrunv2.service.CourierEvidenceGovernanceService;
 import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.NotificationService;
-import com.zhangxuan.runrunv2.vo.LoginResult;
+import com.zhangxuan.runrunv2.vo.IdentityLoginVO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,6 +62,70 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -422,7 +486,7 @@ class V2FeatureWiringIntegrationTest {
     userToken = register("user", "13800000003", "USER").token();
   }
 
-  private LoginResult register(String code, String phone, String role) {
+  private IdentityLoginVO register(String code, String phone, String role) {
     return identity.bindPhone(identity.login(code).loginTicket(), phone, role);
   }
 

@@ -6,7 +6,7 @@ import com.zhangxuan.runrunv2.integration.web.MultipartUploads;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.service.CourierCertificationV2Service;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.vo.Certification;
+import com.zhangxuan.runrunv2.vo.CourierCertificationVO;
 import java.util.Map;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -21,6 +21,29 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -59,27 +82,27 @@ public class CourierCertificationV2Controller {
 
     @IdentityPermission(role = "COURIER")
     @GetMapping({ "", "/me" })
-    public Certification me(@RequestHeader("Authorization") String auth) {
+    public CourierCertificationVO me(@RequestHeader("Authorization") String auth) {
         var a = identity.authenticate(token(auth));
         return service.getMine(Long.parseLong(a.id()));
     }
 
     @IdentityPermission(role = "COURIER")
     @PostMapping("/applications")
-    public Certification apply(@RequestHeader("Authorization") String auth, @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
+    public CourierCertificationVO apply(@RequestHeader("Authorization") String auth, @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
         return service.apply(token(auth), identity, key);
     }
 
     @IdentityPermission(role = "COURIER")
     @PostMapping(value = "/applications/{id}/student-card", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public // A38 defines expectedVersion as a multipart text field, not a JSON request part.
-    Certification upload(@RequestHeader("Authorization") String auth, @PathVariable long id, @RequestPart MultipartFile file, @RequestParam("expectedVersion") long expectedVersion, @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
+    CourierCertificationVO upload(@RequestHeader("Authorization") String auth, @PathVariable long id, @RequestPart MultipartFile file, @RequestParam("expectedVersion") long expectedVersion, @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
         return service.upload(token(auth), identity, id, expectedVersion, key, MultipartUploads.adapt(file));
     }
 
     @IdentityPermission(role = "ADMIN")
     @PostMapping("/{id}/decision")
-    public Certification decision(@RequestHeader("Authorization") String auth, @PathVariable long id, @RequestBody CertificationDecisionRequest body, @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
+    public CourierCertificationVO decision(@RequestHeader("Authorization") String auth, @PathVariable long id, @RequestBody CertificationDecisionRequest body, @RequestHeader(value = "Idempotency-Key", defaultValue = "missing") String key) {
         return service.decide(token(auth), identity, id, body.expectedVersion(), body.photoResourceId(), body.decision(), body.reason(), key);
     }
 

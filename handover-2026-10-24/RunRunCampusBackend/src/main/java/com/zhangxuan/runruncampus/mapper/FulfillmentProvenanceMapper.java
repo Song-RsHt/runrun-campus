@@ -1,14 +1,25 @@
 package com.zhangxuan.runruncampus.mapper;
 
 import com.zhangxuan.runruncampus.enums.Channel;
-import com.zhangxuan.runruncampus.vo.Entry;
-import com.zhangxuan.runruncampus.vo.Summary;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceEntryVO;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceSummaryVO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -51,13 +62,13 @@ public class FulfillmentProvenanceMapper {
             """, verifierId, provenanceId, excludedRecorderId);
     }
 
-    public List<Entry> pageProvenance(int offset) {
+    public List<FulfillmentProvenanceEntryVO> pageProvenance(int offset) {
         return jdbc.query("""
             select * from fulfillment_provenance order by id desc limit 100 offset ?
             """, (rs, row) -> map(rs), offset);
     }
 
-    public Summary summarizeVerifiedProvenance() {
+    public FulfillmentProvenanceSummaryVO summarizeVerifiedProvenance() {
         return jdbc.queryForObject("""
             select count(*) as recorded_count,
                    count(*) filter (where verified_at is not null) as verified_count,
@@ -67,10 +78,10 @@ public class FulfillmentProvenanceMapper {
                        (where verified_at is not null and platform_revenue_cents is not null)
                        as verified_revenue_cents
             from fulfillment_provenance
-            """, (rs, row) -> new Summary(rs.getLong("recorded_count"), rs.getLong("verified_count"), rs.getLong("verified_revenue_count"), rs.getBigDecimal("verified_revenue_cents") == null ? null : rs.getBigDecimal("verified_revenue_cents").longValueExact()));
+            """, (rs, row) -> new FulfillmentProvenanceSummaryVO(rs.getLong("recorded_count"), rs.getLong("verified_count"), rs.getLong("verified_revenue_count"), rs.getBigDecimal("verified_revenue_cents") == null ? null : rs.getBigDecimal("verified_revenue_cents").longValueExact()));
     }
 
-    public Entry findProvenance(long id) {
+    public FulfillmentProvenanceEntryVO findProvenance(long id) {
         return jdbc.queryForObject("""
             select *
             from fulfillment_provenance
@@ -78,7 +89,7 @@ public class FulfillmentProvenanceMapper {
             """, (rs, row) -> map(rs), id);
     }
 
-    private static Entry map(ResultSet rs) throws SQLException {
-        return new Entry(rs.getLong("id"), rs.getString("source_ref"), Channel.valueOf(rs.getString("channel")), (Long) rs.getObject("app_order_id"), rs.getTimestamp("completed_at").toInstant(), (Long) rs.getObject("customer_paid_cents"), (Long) rs.getObject("platform_revenue_cents"), (Long) rs.getObject("courier_settlement_cents"), rs.getString("completion_evidence_sha256"), rs.getString("financial_evidence_sha256"), rs.getLong("recorded_by"), rs.getTimestamp("recorded_at").toInstant(), (Long) rs.getObject("verified_by"), rs.getTimestamp("verified_at") == null ? null : rs.getTimestamp("verified_at").toInstant());
+    private static FulfillmentProvenanceEntryVO map(ResultSet rs) throws SQLException {
+        return new FulfillmentProvenanceEntryVO(rs.getLong("id"), rs.getString("source_ref"), Channel.valueOf(rs.getString("channel")), (Long) rs.getObject("app_order_id"), rs.getTimestamp("completed_at").toInstant(), (Long) rs.getObject("customer_paid_cents"), (Long) rs.getObject("platform_revenue_cents"), (Long) rs.getObject("courier_settlement_cents"), rs.getString("completion_evidence_sha256"), rs.getString("financial_evidence_sha256"), rs.getLong("recorded_by"), rs.getTimestamp("recorded_at").toInstant(), (Long) rs.getObject("verified_by"), rs.getTimestamp("verified_at") == null ? null : rs.getTimestamp("verified_at").toInstant());
     }
 }

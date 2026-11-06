@@ -1,8 +1,13 @@
 package com.zhangxuan.runrunv2.service;
 
-import com.zhangxuan.runrunv2.dto.CreateRequest;
+import com.zhangxuan.runrunv2.dto.CreateOrderRequest;
 import com.zhangxuan.runrunv2.vo.CreatedOrderVO;
 import com.zhangxuan.runrunv2.vo.OrderVO;
+
+
+
+
+
 
 
 
@@ -32,7 +37,7 @@ import com.zhangxuan.runrunv2.vo.OrderVO;
  */
 public interface OrderService {
 
-    CreatedOrderVO create(String token, String key, CreateRequest request);
+    CreatedOrderVO create(String token, String key, CreateOrderRequest request);
 
     OrderVO get(String token, String id);
 }

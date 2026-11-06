@@ -9,7 +9,6 @@ import com.zhangxuan.runruncampus.enums.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.enums.OrderIssueType;
 import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.AdminIssueService;
@@ -17,6 +16,7 @@ import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
 import com.zhangxuan.runruncampus.vo.AdminIssueItem;
 import com.zhangxuan.runruncampus.vo.AdminIssuePageResponse;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import java.time.Duration;
 import java.time.Instant;
 import org.springframework.data.domain.Page;
@@ -25,6 +25,33 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -82,7 +109,7 @@ public class AdminIssueServiceImpl implements AdminIssueService {
     @Override
     public AdminIssuePageResponse list(String query, OrderIssueType type, OrderIssueHandlingStatus handlingStatus, boolean overdueOnly, int page, int size) {
         String normalizedQuery = normalize(query);
-        Settings settings = settingsService.get();
+        PlatformSettingsVO settings = settingsService.get();
         Instant now = Instant.now();
         Instant pendingCutoff = now.minusSeconds(settings.issuePendingMinutes() * 60L);
         Instant processingCutoff = now.minusSeconds(settings.issueProcessingMinutes() * 60L);
@@ -127,7 +154,7 @@ public class AdminIssueServiceImpl implements AdminIssueService {
         return item(issue, Instant.now(), settingsService.get());
     }
 
-    private AdminIssueItem item(OrderIssue issue, Instant now, Settings settings) {
+    private AdminIssueItem item(OrderIssue issue, Instant now, PlatformSettingsVO settings) {
         CampusOrder order = issue.getOrder();
         AppUser reporter = issue.getReporter();
         AppUser assignee = issue.getAssignee();

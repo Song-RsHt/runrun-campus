@@ -8,17 +8,38 @@ import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.mapper.AdminCommandCenterMapper;
 import com.zhangxuan.runruncampus.service.AdminCommandCenterService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.vo.CommandCenterCouriersVO;
+import com.zhangxuan.runruncampus.vo.CommandCenterOrdersVO;
+import com.zhangxuan.runruncampus.vo.CommandCenterSnapshotVO;
 import com.zhangxuan.runruncampus.vo.CourierItem;
-import com.zhangxuan.runruncampus.vo.Couriers;
 import com.zhangxuan.runruncampus.vo.OrderItem;
-import com.zhangxuan.runruncampus.vo.Orders;
-import com.zhangxuan.runruncampus.vo.Snapshot;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -59,32 +80,32 @@ public class AdminCommandCenterServiceImpl implements AdminCommandCenterService 
 
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     @Override
-    public Snapshot snapshot(AdminRole role, Queue queue, int orderPage, int courierPage) {
+    public CommandCenterSnapshotVO snapshot(AdminRole role, Queue queue, int orderPage, int courierPage) {
         if (orderPage < 0 || courierPage < 0 || orderPage > 100000 || courierPage > 100000) {
             throw new BusinessFailure(400, "页码超出范围");
         }
         Instant now = Instant.now();
         var settings = settingsService.get();
-        Orders orders = role.permits(AdminPermission.ORDER_VIEW) ? orders(queue, orderPage, now, settings.waitMinutes(), settings.deliveryMinutes()) : null;
-        Couriers couriers = role.permits(AdminPermission.COURIER_VIEW) ? couriers(courierPage) : null;
-        return new Snapshot(now, settings.waitMinutes(), settings.deliveryMinutes(), orders, couriers);
+        CommandCenterOrdersVO orders = role.permits(AdminPermission.ORDER_VIEW) ? orders(queue, orderPage, now, settings.waitMinutes(), settings.deliveryMinutes()) : null;
+        CommandCenterCouriersVO couriers = role.permits(AdminPermission.COURIER_VIEW) ? couriers(courierPage) : null;
+        return new CommandCenterSnapshotVO(now, settings.waitMinutes(), settings.deliveryMinutes(), orders, couriers);
     }
 
-    private Orders orders(Queue queue, int requestedPage, Instant now, int waitMinutes, int deliveryMinutes) {
+    private CommandCenterOrdersVO orders(Queue queue, int requestedPage, Instant now, int waitMinutes, int deliveryMinutes) {
         Timestamp waitCutoff = Timestamp.from(now.minusSeconds(waitMinutes * 60L));
         Timestamp deliveryCutoff = Timestamp.from(now.minusSeconds(deliveryMinutes * 60L));
         long[] counts = mapper.countOrderQueues(waitCutoff, deliveryCutoff);
         long total = counts[queue.ordinal()];
         int page = clampPage(requestedPage, total);
         List<OrderItem> items = mapper.pageOrderQueue(queue, waitCutoff, deliveryCutoff, AdminCommandCenterConstants.PAGE_SIZE, page * AdminCommandCenterConstants.PAGE_SIZE);
-        return new Orders(counts[0], counts[1], counts[2], counts[3], queue, items, page, AdminCommandCenterConstants.PAGE_SIZE, total);
+        return new CommandCenterOrdersVO(counts[0], counts[1], counts[2], counts[3], queue, items, page, AdminCommandCenterConstants.PAGE_SIZE, total);
     }
 
-    private Couriers couriers(int requestedPage) {
+    private CommandCenterCouriersVO couriers(int requestedPage) {
         long[] counts = mapper.countOnlineCouriers();
         int page = clampPage(requestedPage, counts[0]);
         List<CourierItem> items = mapper.pageOnlineCouriers(AdminCommandCenterConstants.PAGE_SIZE, page * AdminCommandCenterConstants.PAGE_SIZE);
-        return new Couriers(counts[0], counts[1], items, page, AdminCommandCenterConstants.PAGE_SIZE);
+        return new CommandCenterCouriersVO(counts[0], counts[1], items, page, AdminCommandCenterConstants.PAGE_SIZE);
     }
 
     private int clampPage(int page, long total) {

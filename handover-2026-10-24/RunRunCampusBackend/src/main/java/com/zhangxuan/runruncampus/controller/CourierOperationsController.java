@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.controller;
 
-import com.zhangxuan.runruncampus.dto.AvailabilityRequest;
+import com.zhangxuan.runruncampus.dto.CourierAvailabilityRequest;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.CourierOperationsService;
 import com.zhangxuan.runruncampus.vo.OperationsResponse;
@@ -10,6 +10,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -42,7 +54,7 @@ public class CourierOperationsController {
     }
 
     @PutMapping("/me/availability")
-    public OperationsResponse updateAvailability(@RequestHeader("Authorization") String authorization, @RequestBody AvailabilityRequest request) {
+    public OperationsResponse updateAvailability(@RequestHeader("Authorization") String authorization, @RequestBody CourierAvailabilityRequest request) {
         return operationsService.updateAvailability(authService.requireUser(authorization), request.acceptingOrders());
     }
 }

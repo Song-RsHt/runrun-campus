@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.controller;
 
-import com.zhangxuan.runruncampus.dto.CertificationRequest;
-import com.zhangxuan.runruncampus.dto.DecisionRequest;
-import com.zhangxuan.runruncampus.dto.RejectionRequest;
+import com.zhangxuan.runruncampus.dto.CertificationRejectionRequest;
+import com.zhangxuan.runruncampus.dto.CourierCertificationRequest;
+import com.zhangxuan.runruncampus.dto.CreditSignalDecisionRequest;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
 import com.zhangxuan.runruncampus.service.AuthService;
@@ -46,6 +46,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @RestController
 @RequestMapping("/api/v2/courier/certification")
 public class CourierCertificationController {
@@ -65,7 +89,7 @@ public class CourierCertificationController {
     }
 
     @PostMapping("/apply")
-    public CertificationResponse submit(@RequestHeader("Authorization") String authorization, @RequestBody(required = false) CertificationRequest request) {
+    public CertificationResponse submit(@RequestHeader("Authorization") String authorization, @RequestBody(required = false) CourierCertificationRequest request) {
         return certificationService.submit(authService.requireUser(authorization));
     }
 
@@ -92,7 +116,7 @@ public class CourierCertificationController {
     }
 
     @PostMapping("/{id}/decision")
-    public CertificationResponse decision(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody DecisionRequest request) {
+    public CertificationResponse decision(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody CreditSignalDecisionRequest request) {
         var admin = authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW);
         if ("APPROVE".equals(request.decision())) {
             return certificationService.approve(admin, id, request.expectedVersion(), request.photoResourceId());
@@ -101,7 +125,7 @@ public class CourierCertificationController {
     }
 
     @PostMapping("/{id}/reject")
-    public CertificationResponse reject(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody RejectionRequest request) {
+    public CertificationResponse reject(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody CertificationRejectionRequest request) {
         return certificationService.reject(authService.requirePermission(authorization, AdminPermission.COURIER_REVIEW), id, request.reason());
     }
 }

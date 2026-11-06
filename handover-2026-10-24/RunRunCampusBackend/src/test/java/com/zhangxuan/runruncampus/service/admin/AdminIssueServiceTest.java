@@ -7,13 +7,13 @@ import com.zhangxuan.runruncampus.enums.OrderIssueHandlingStatus;
 import com.zhangxuan.runruncampus.enums.OrderIssueType;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.AdminIssueService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.impl.AdminIssueServiceImpl;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -26,6 +26,34 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -150,7 +178,7 @@ class AdminIssueServiceTest {
     OrderIssue issue = new OrderIssue(order, customer, OrderIssueType.CANNOT_CONTACT, "联系不上对方");
     ReflectionTestUtils.setField(issue, "id", 12L);
     ReflectionTestUtils.setField(issue, "createdAt", Instant.now().minus(40, ChronoUnit.MINUTES));
-    when(settings.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 10, 30, 120));
+    when(settings.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 10, 30, 120));
     when(repository.filterForAdmin(
             eq(null),
             eq(OrderIssueHandlingStatus.PENDING),

@@ -5,11 +5,23 @@ import com.zhangxuan.runruncampus.enums.AdminAuditAction;
 import com.zhangxuan.runruncampus.enums.AdminAuditTargetType;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.mapper.PlatformSettingsMapper;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -38,13 +50,13 @@ public class PlatformSettingsServiceImpl implements PlatformSettingsService {
 
     @Transactional(readOnly = true)
     @Override
-    public Settings get() {
+    public PlatformSettingsVO get() {
         return mapper.findSettings();
     }
 
     @Transactional
     @Override
-    public Settings update(AppUser administrator, Settings requested) {
+    public PlatformSettingsVO update(AppUser administrator, PlatformSettingsVO requested) {
         String hours = requested.businessHours() == null ? "" : requested.businessHours().trim();
         if (hours.isBlank() || hours.length() > 80 || requested.waitMinutes() < 1 || requested.waitMinutes() > 1440 || requested.deliveryMinutes() < 1 || requested.deliveryMinutes() > 1440 || requested.maxActiveOrders() < 1 || requested.maxActiveOrders() > 10 || requested.issuePendingMinutes() < 1 || requested.issuePendingMinutes() > 1440 || requested.issueProcessingMinutes() < 1 || requested.issueProcessingMinutes() > 1440) {
             throw new BusinessFailure(400, "营业时间不能为空，阈值需为1–1440分钟，接单上限需为1–10单");

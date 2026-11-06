@@ -1,18 +1,18 @@
 package com.zhangxuan.runrunv2.service.impl;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
-import com.zhangxuan.runrunv2.dto.ConfigChange;
-import com.zhangxuan.runrunv2.dto.PointChange;
-import com.zhangxuan.runrunv2.dto.QuoteRequest;
-import com.zhangxuan.runrunv2.dto.ZoneChange;
+import com.zhangxuan.runrunv2.dto.DeliveryZoneChangeRequest;
+import com.zhangxuan.runrunv2.dto.OrderQuoteRequest;
+import com.zhangxuan.runrunv2.dto.ServiceConfigChangeRequest;
+import com.zhangxuan.runrunv2.dto.ServicePointChangeRequest;
 import com.zhangxuan.runrunv2.enums.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
 import com.zhangxuan.runrunv2.mapper.ServiceConfigMapper;
 import com.zhangxuan.runrunv2.model.InputValidation;
 import com.zhangxuan.runrunv2.model.OrderInput;
-import com.zhangxuan.runrunv2.model.Pricing;
-import com.zhangxuan.runrunv2.model.Schedule;
+import com.zhangxuan.runrunv2.model.OrderPricing;
+import com.zhangxuan.runrunv2.model.OrderSchedule;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.OriginalPaymentWriter;
 import com.zhangxuan.runrunv2.service.ServiceConfigService;
@@ -32,6 +32,40 @@ import java.util.Map;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -110,25 +144,25 @@ public class ServiceConfigServiceImpl implements ServiceConfigService {
         List<ServiceOptionVO> services = Arrays.stream(ServiceType.values()).map(s -> new ServiceOptionVO(s.name(), s.name, s.baseCents, s.zoneSurcharge)).toList();
         var zones = mapper.findZones(includeDisabled);
         var points = mapper.findServicePoints(includeDisabled);
-        return new ServiceConfigVO(services, zones, points, new Schedule("Asia/Shanghai", "09:00", "23:00"), Boolean.TRUE.equals(settings.get("new_order_enabled")) && payments.available(), includeDisabled && settings.get("review_owner_id") != null ? settings.get("review_owner_id").toString() : null, OrderInput.number(settings, "config_version"), "1", OrderInput.number(settings, "version"));
+        return new ServiceConfigVO(services, zones, points, new OrderSchedule("Asia/Shanghai", "09:00", "23:00"), Boolean.TRUE.equals(settings.get("new_order_enabled")) && payments.available(), includeDisabled && settings.get("review_owner_id") != null ? settings.get("review_owner_id").toString() : null, OrderInput.number(settings, "config_version"), "1", OrderInput.number(settings, "version"));
     }
 
     @Transactional
     @Override
-    public OrderQuoteVO quote(String token, QuoteRequest request) {
+    public OrderQuoteVO quote(String token, OrderQuoteRequest request) {
         identity.requireRole(token, "USER", false);
         Map<String, Object> settings = settings(false);
         return new OrderQuoteVO(price(request, settings), OrderInput.number(settings, "config_version"));
     }
 
     @Override
-    public Pricing price(QuoteRequest request, Map<String, Object> settings) {
+    public OrderPricing price(OrderQuoteRequest request, Map<String, Object> settings) {
         OrderInput.validate(request);
         Map<String, Object> zone = zone(request.zoneCode());
         point(request.servicePointCode());
         // 基线§4：区域加价只适用于包裹；目的地文字不能推断区域或覆盖服务端金额。
         long surcharge = request.serviceType().zoneSurcharge ? OrderInput.number(zone, "package_surcharge_cents") : 0;
-        return new Pricing(request.serviceType(), request.serviceType().baseCents, request.zoneCode(), surcharge, Math.addExact(request.serviceType().baseCents, surcharge), OrderInput.number(settings, "config_version"));
+        return new OrderPricing(request.serviceType(), request.serviceType().baseCents, request.zoneCode(), surcharge, Math.addExact(request.serviceType().baseCents, surcharge), OrderInput.number(settings, "config_version"));
     }
 
     @Override
@@ -163,7 +197,7 @@ public class ServiceConfigServiceImpl implements ServiceConfigService {
     public Map<String, Object> policy(Map<String, Object> settings) {
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("configVersion", OrderInput.number(settings, "config_version"));
-        result.put("businessSchedule", new Schedule("Asia/Shanghai", "09:00", "23:00"));
+        result.put("businessSchedule", new OrderSchedule("Asia/Shanghai", "09:00", "23:00"));
         for (String key : List.of("pending_payment_minutes", "delivery_confirm_minutes", "arrival_radius_m", "arrival_window_minutes", "arrival_subsidy_cents", "adjust_pay_timeout_minutes", "adjustment_review_remind_minutes", "adjustment_review_escalate_minutes", "overdue_debt_closure_days", "platform_share_percent")) {
             StringBuilder camel = new StringBuilder();
             boolean upper = false;
@@ -183,7 +217,7 @@ public class ServiceConfigServiceImpl implements ServiceConfigService {
 
     @Transactional
     @Override
-    public ServiceConfigVO patch(String token, String key, ConfigChange change) {
+    public ServiceConfigVO patch(String token, String key, ServiceConfigChangeRequest change) {
         // 契约M47：更换负责人和停用资格共用锁，避免并发留下失效接收人。
         identity.lock("review-owner-policy");
         var actor = identity.authorizeForWrite(token, "ADMIN", false);
@@ -199,7 +233,7 @@ public class ServiceConfigServiceImpl implements ServiceConfigService {
             throw new IdentityFailure(409, "CONFIG_VERSION_CONFLICT");
         if (OrderInput.number(settings, "version") != change.expectedVersion())
             throw new IdentityFailure(409, "ORDER_STATE_CONFLICT");
-        if (change.businessSchedule() != null && !new Schedule("Asia/Shanghai", "09:00", "23:00").equals(change.businessSchedule()))
+        if (change.businessSchedule() != null && !new OrderSchedule("Asia/Shanghai", "09:00", "23:00").equals(change.businessSchedule()))
             throw IdentityFailure.invalid();
         Long owner = change.reviewOwnerId() == null ? (Long) settings.get("review_owner_id") : Long.valueOf(OrderInput.id(change.reviewOwnerId()));
         boolean enabled = change.newOrderEnabled() == null ? Boolean.TRUE.equals(settings.get("new_order_enabled")) : change.newOrderEnabled();
@@ -209,7 +243,7 @@ public class ServiceConfigServiceImpl implements ServiceConfigService {
             Set<String> codes = new HashSet<>();
             if (change.zones().size() > 100)
                 throw IdentityFailure.invalid();
-            for (ZoneChange zone : change.zones()) {
+            for (DeliveryZoneChangeRequest zone : change.zones()) {
                 if (zone == null)
                     throw IdentityFailure.invalid();
                 OrderInput.code(zone.code());
@@ -223,7 +257,7 @@ public class ServiceConfigServiceImpl implements ServiceConfigService {
             Set<String> codes = new HashSet<>();
             if (change.servicePoints().size() > 100)
                 throw IdentityFailure.invalid();
-            for (PointChange point : change.servicePoints()) {
+            for (ServicePointChangeRequest point : change.servicePoints()) {
                 if (point == null)
                     throw IdentityFailure.invalid();
                 OrderInput.code(point.code());

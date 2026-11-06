@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.service.impl;
 
-import com.zhangxuan.runruncampus.dto.CreateRequest;
+import com.zhangxuan.runruncampus.dto.FulfillmentProvenanceCreateRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.enums.Channel;
 import com.zhangxuan.runruncampus.enums.OrderPaymentMethod;
@@ -10,8 +10,8 @@ import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.mapper.FulfillmentProvenanceMapper;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.service.FulfillmentProvenanceService;
-import com.zhangxuan.runruncampus.vo.Entry;
-import com.zhangxuan.runruncampus.vo.Summary;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceEntryVO;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceSummaryVO;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -19,6 +19,27 @@ import java.util.Locale;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -59,7 +80,7 @@ public class FulfillmentProvenanceServiceImpl implements FulfillmentProvenanceSe
 
     @Transactional
     @Override
-    public Entry record(AppUser administrator, CreateRequest request) {
+    public FulfillmentProvenanceEntryVO record(AppUser administrator, FulfillmentProvenanceCreateRequest request) {
         if (request == null || request.channel() == null || request.completedAt() == null || request.completedAt().isAfter(Instant.now()) || request.sourceRef() == null || !request.sourceRef().matches("[A-Za-z0-9][A-Za-z0-9._-]{0,79}") || !isHash(request.completionEvidenceSha256()) || !optionalHash(request.financialEvidenceSha256()) || negative(request.customerPaidCents()) || negative(request.platformRevenueCents()) || negative(request.courierSettlementCents())) {
             throw new BusinessFailure(400, "溯源字段格式无效");
         }
@@ -89,7 +110,7 @@ public class FulfillmentProvenanceServiceImpl implements FulfillmentProvenanceSe
 
     @Transactional
     @Override
-    public Entry verify(AppUser administrator, long id) {
+    public FulfillmentProvenanceEntryVO verify(AppUser administrator, long id) {
         int updated = mapper.verifyByIndependentAdministrator(administrator.getId(), id, administrator.getId());
         if (updated != 1) {
             throw new BusinessFailure(409, "记录不存在、已核验或不能由录入人自行核验");
@@ -99,7 +120,7 @@ public class FulfillmentProvenanceServiceImpl implements FulfillmentProvenanceSe
 
     @Transactional(readOnly = true)
     @Override
-    public List<Entry> list(int page) {
+    public List<FulfillmentProvenanceEntryVO> list(int page) {
         if (page < 0 || page > 10000) {
             throw new BusinessFailure(400, "页码超出范围");
         }
@@ -108,11 +129,11 @@ public class FulfillmentProvenanceServiceImpl implements FulfillmentProvenanceSe
 
     @Transactional(readOnly = true)
     @Override
-    public Summary summary() {
+    public FulfillmentProvenanceSummaryVO summary() {
         return mapper.summarizeVerifiedProvenance();
     }
 
-    private Entry find(long id) {
+    private FulfillmentProvenanceEntryVO find(long id) {
         return mapper.findProvenance(id);
     }
 

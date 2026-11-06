@@ -1,7 +1,7 @@
 package com.zhangxuan.runruncampus.controller;
 
 import com.zhangxuan.runruncampus.dto.AccountDeletionRequest;
-import com.zhangxuan.runruncampus.dto.ConsentRequest;
+import com.zhangxuan.runruncampus.dto.PrivacyConsentRequest;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.PrivacyService;
 import com.zhangxuan.runruncampus.vo.PrivacyConsentVO;
@@ -14,6 +14,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -55,7 +71,7 @@ public class PrivacyController {
     }
 
     @PostMapping("/consent")
-    public PrivacyConsentVO consent(@RequestHeader("Authorization") String authorization, @Valid @RequestBody ConsentRequest request) {
+    public PrivacyConsentVO consent(@RequestHeader("Authorization") String authorization, @Valid @RequestBody PrivacyConsentRequest request) {
         return privacy.consent(auth.requireUser(authorization), request.version());
     }
 

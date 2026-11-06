@@ -7,8 +7,8 @@ import com.zhangxuan.runrunv2.model.IdentityUser;
 import com.zhangxuan.runrunv2.model.InputValidation;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.vo.Account;
-import com.zhangxuan.runrunv2.vo.LoginResult;
+import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
+import com.zhangxuan.runrunv2.vo.IdentityLoginVO;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +17,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -65,7 +84,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Transactional
     @Override
-    public LoginResult login(String code) {
+    public IdentityLoginVO login(String code) {
         InputValidation.text(code, 512);
         String openid = wechat.exchangeLoginCode(code);
         String digest = secrets.hash("openid:" + appId, openid);
@@ -75,12 +94,12 @@ public class IdentityServiceImpl implements IdentityService {
             return issue(users.get(0));
         String ticket = secrets.token();
         mapper.insertWechatTicket(secrets.hash("ticket", ticket), appId, digest, secrets.encrypt(appId, openid));
-        return new LoginResult(ticket, null, null);
+        return new IdentityLoginVO(ticket, null, null);
     }
 
     @Transactional
     @Override
-    public LoginResult bindPhone(String loginTicket, String phoneCode, String requestedRole) {
+    public IdentityLoginVO bindPhone(String loginTicket, String phoneCode, String requestedRole) {
         InputValidation.text(loginTicket, 128);
         InputValidation.text(phoneCode, 512);
         if (!"USER".equals(requestedRole) && !"COURIER".equals(requestedRole))
@@ -114,7 +133,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Transactional
     @Override
-    public LoginResult passwordLogin(String phone, String password) {
+    public IdentityLoginVO passwordLogin(String phone, String password) {
         InputValidation.text(phone, 32);
         InputValidation.text(password, 72);
         List<IdentityUser> users = mapper.findPasswordUsersForUpdate(phone);
@@ -128,7 +147,7 @@ public class IdentityServiceImpl implements IdentityService {
     }
 
     @Override
-    public Account authenticate(String token) {
+    public IdentityAccountVO authenticate(String token) {
         textToken(token);
         List<IdentityUser> users = mapper.findActiveSessionUser(secrets.hash("session", token));
         if (users.size() != 1)
@@ -138,8 +157,8 @@ public class IdentityServiceImpl implements IdentityService {
     }
 
     @Override
-    public Account requireRole(String token, String role, boolean needsCourierEligibility) {
-        Account account = authenticate(token);
+    public IdentityAccountVO requireRole(String token, String role, boolean needsCourierEligibility) {
+        IdentityAccountVO account = authenticate(token);
         if (!role.equals(account.role()))
             throw new IdentityFailure(403, "FORBIDDEN");
         if ("ADMIN".equals(role) && !account.adminEnabled())
@@ -152,7 +171,7 @@ public class IdentityServiceImpl implements IdentityService {
     @Transactional
     @Override
     public void revoke(String token, boolean all, String key) {
-        Account account = authenticate(token);
+        IdentityAccountVO account = authenticate(token);
         user(Long.parseLong(account.id()), true);
         authenticate(token);
         // Bind single-session logout idempotency to the exact session being revoked.
@@ -172,7 +191,7 @@ public class IdentityServiceImpl implements IdentityService {
     @Transactional
     @Override
     public void setPassword(String token, String password, String key) {
-        Account account = authenticate(token);
+        IdentityAccountVO account = authenticate(token);
         if (password == null || password.length() < 12 || password.getBytes(StandardCharsets.UTF_8).length > 72)
             throw IdentityFailure.invalid();
         IdentityUser user = user(Long.parseLong(account.id()), true);
@@ -192,10 +211,10 @@ public class IdentityServiceImpl implements IdentityService {
      * commit.
      */
     @Override
-    public Account authorizeForWrite(String token, String role, boolean courierEligibility) {
+    public IdentityAccountVO authorizeForWrite(String token, String role, boolean courierEligibility) {
         if (!TransactionSynchronizationManager.isActualTransactionActive())
             throw new IllegalStateException("Business authorization requires a transaction");
-        Account account = authenticate(token);
+        IdentityAccountVO account = authenticate(token);
         user(Long.parseLong(account.id()), true);
         return requireRole(token, role, courierEligibility);
     }
@@ -225,16 +244,16 @@ public class IdentityServiceImpl implements IdentityService {
         return users.get(0);
     }
 
-    private LoginResult issue(IdentityUser user) {
+    private IdentityLoginVO issue(IdentityUser user) {
         active(user);
         String token = secrets.token();
         mapper.insertSession(user.id(), secrets.hash("session", token), user.securityVersion());
-        return new LoginResult(null, token, account(user));
+        return new IdentityLoginVO(null, token, account(user));
     }
 
-    private Account account(IdentityUser user) {
+    private IdentityAccountVO account(IdentityUser user) {
         boolean eligible = "COURIER".equals(user.role()) && Boolean.TRUE.equals(mapper.isCourierEligible(user.id()));
-        return new Account(Long.toString(user.id()), user.role(), user.status(), user.enabled(), user.securityVersion(), eligible);
+        return new IdentityAccountVO(Long.toString(user.id()), user.role(), user.status(), user.enabled(), user.securityVersion(), eligible);
     }
 
     private Map<String, Object> ticket(String token, String kind) {

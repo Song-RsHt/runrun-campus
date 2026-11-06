@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.service.admin;
 
-import com.zhangxuan.runruncampus.dto.CreateRequest;
+import com.zhangxuan.runruncampus.dto.FulfillmentProvenanceCreateRequest;
 import com.zhangxuan.runruncampus.entity.AppUser;
 import com.zhangxuan.runruncampus.entity.CampusOrder;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
@@ -157,6 +157,39 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @ExtendWith(MockitoExtension.class)
 class FulfillmentProvenanceServiceTest {
 
@@ -180,7 +213,7 @@ class FulfillmentProvenanceServiceTest {
   @Test
   void moneyWithoutIndependentEvidenceIsRejectedBeforeDatabaseAccess() {
     var request =
-        new CreateRequest(
+        new FulfillmentProvenanceCreateRequest(
             "manual-001",
             Channel.MANUAL_OFFLINE,
             null,
@@ -199,7 +232,7 @@ class FulfillmentProvenanceServiceTest {
   @Test
   void endToEndClaimWithoutAppOrderIsRejected() {
     var request =
-        new CreateRequest(
+        new FulfillmentProvenanceCreateRequest(
             "app-001",
             Channel.APP_END_TO_END,
             null,
@@ -220,7 +253,7 @@ class FulfillmentProvenanceServiceTest {
     when(order.getPaymentMethod()).thenReturn(OrderPaymentMethod.CASH_ON_DELIVERY);
     when(orders.findById(17L)).thenReturn(Optional.of(order));
     var request =
-        new CreateRequest(
+        new FulfillmentProvenanceCreateRequest(
             "app-017",
             Channel.APP_END_TO_END,
             17L,

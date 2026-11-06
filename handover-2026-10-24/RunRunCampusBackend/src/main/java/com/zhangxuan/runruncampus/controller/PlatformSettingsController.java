@@ -1,10 +1,10 @@
 package com.zhangxuan.runruncampus.controller;
 
-import com.zhangxuan.runruncampus.dto.UpdateRequest;
+import com.zhangxuan.runruncampus.dto.PlatformSettingsUpdateRequest;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,6 +12,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -41,14 +55,14 @@ public class PlatformSettingsController {
     }
 
     @GetMapping
-    public Settings get(@RequestHeader("Authorization") String authorization) {
+    public PlatformSettingsVO get(@RequestHeader("Authorization") String authorization) {
         auth.requirePermission(authorization, AdminPermission.PLATFORM_SETTINGS_MANAGE);
         return settings.get();
     }
 
     @PutMapping
-    public Settings update(@RequestHeader("Authorization") String authorization, @Valid @RequestBody UpdateRequest request) {
+    public PlatformSettingsVO update(@RequestHeader("Authorization") String authorization, @Valid @RequestBody PlatformSettingsUpdateRequest request) {
         var admin = auth.requirePermission(authorization, AdminPermission.PLATFORM_SETTINGS_MANAGE);
-        return settings.update(admin, new Settings(request.businessHours(), request.waitMinutes(), request.deliveryMinutes(), request.maxActiveOrders(), request.issuePendingMinutes(), request.issueProcessingMinutes()));
+        return settings.update(admin, new PlatformSettingsVO(request.businessHours(), request.waitMinutes(), request.deliveryMinutes(), request.maxActiveOrders(), request.issuePendingMinutes(), request.issueProcessingMinutes()));
     }
 }

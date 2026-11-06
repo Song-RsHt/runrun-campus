@@ -3,9 +3,9 @@ package com.zhangxuan.runruncampus.repository;
 import com.zhangxuan.runruncampus.enums.PushDeliveryStatus;
 import com.zhangxuan.runruncampus.enums.PushDestination;
 import com.zhangxuan.runruncampus.model.OrderPushRequested;
-import com.zhangxuan.runruncampus.model.PushDeliveryItem;
-import com.zhangxuan.runruncampus.model.PushDeliveryPage;
 import com.zhangxuan.runruncampus.model.PushDeliveryTask;
+import com.zhangxuan.runruncampus.vo.PushDeliveryItemVO;
+import com.zhangxuan.runruncampus.vo.PushDeliveryPageVO;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +13,21 @@ import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -90,15 +105,15 @@ public class PushDeliveryRepository {
         return jdbc.update("delete from push_delivery_tasks where recipient_id = ?", recipientId);
     }
 
-    public PushDeliveryPage page(PushDeliveryStatus status, int page, int size) {
+    public PushDeliveryPageVO page(PushDeliveryStatus status, int page, int size) {
         long total = count(status);
-        List<PushDeliveryItem> items = jdbc.query("""
+        List<PushDeliveryItemVO> items = jdbc.query("""
             select id, recipient_id, order_id, title, destination, status, attempts, next_attempt_at,
                    last_error, created_at, updated_at, sent_at
             from push_delivery_tasks where status = ?
             order by created_at desc, id desc limit ? offset ?
-            """, (rs, row) -> new PushDeliveryItem(rs.getLong("id"), rs.getLong("recipient_id"), rs.getObject("order_id", Long.class), rs.getString("title"), destination(rs.getString("destination")), PushDeliveryStatus.valueOf(rs.getString("status")), rs.getInt("attempts"), instant(rs.getTimestamp("next_attempt_at")), rs.getString("last_error"), instant(rs.getTimestamp("created_at")), instant(rs.getTimestamp("updated_at")), instant(rs.getTimestamp("sent_at"))), status.name(), size, page * size);
-        return new PushDeliveryPage(items, page, size, total, (int) Math.ceil((double) total / size));
+            """, (rs, row) -> new PushDeliveryItemVO(rs.getLong("id"), rs.getLong("recipient_id"), rs.getObject("order_id", Long.class), rs.getString("title"), destination(rs.getString("destination")), PushDeliveryStatus.valueOf(rs.getString("status")), rs.getInt("attempts"), instant(rs.getTimestamp("next_attempt_at")), rs.getString("last_error"), instant(rs.getTimestamp("created_at")), instant(rs.getTimestamp("updated_at")), instant(rs.getTimestamp("sent_at"))), status.name(), size, page * size);
+        return new PushDeliveryPageVO(items, page, size, total, (int) Math.ceil((double) total / size));
     }
 
     private Instant instant(Timestamp timestamp) {

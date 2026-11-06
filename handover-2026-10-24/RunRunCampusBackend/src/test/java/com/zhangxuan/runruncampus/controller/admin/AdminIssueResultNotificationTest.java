@@ -7,12 +7,12 @@ import com.zhangxuan.runruncampus.enums.OrderIssueType;
 import com.zhangxuan.runruncampus.enums.OrderMessageType;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderIssueRepository;
 import com.zhangxuan.runruncampus.service.AdminAuditService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.impl.AdminIssueServiceImpl;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -22,6 +22,30 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -137,7 +161,7 @@ class AdminIssueResultNotificationTest {
     issue.claim(administrator);
     when(repository.findLockedById(12L)).thenReturn(Optional.of(issue));
     PlatformSettingsService settings = mock(PlatformSettingsService.class);
-    when(settings.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 10, 30, 120));
+    when(settings.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 10, 30, 120));
     var result =
         new AdminIssueServiceImpl(repository, audit, messages, settings)
             .resolve(administrator, 12L, "已联系骑手重新送达");

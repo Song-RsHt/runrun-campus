@@ -1,13 +1,13 @@
 package com.zhangxuan.runrunv2.service;
 
-import com.zhangxuan.runrunv2.dto.Deliver;
-import com.zhangxuan.runrunv2.dto.Location;
-import com.zhangxuan.runrunv2.dto.Pickup;
-import com.zhangxuan.runrunv2.dto.RegisterProof;
-import com.zhangxuan.runrunv2.dto.Release;
-import com.zhangxuan.runrunv2.dto.Respond;
-import com.zhangxuan.runrunv2.dto.Upload;
-import com.zhangxuan.runrunv2.dto.Version;
+import com.zhangxuan.runrunv2.dto.FulfillmentDeliverRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentLocationRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentPickupRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentReleaseRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentRespondRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentUploadRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentVersionRequest;
+import com.zhangxuan.runrunv2.dto.RegisterFulfillmentProofRequest;
 import com.zhangxuan.runrunv2.vo.FulfillmentOrderVO;
 import com.zhangxuan.runrunv2.vo.FulfillmentResultVO;
 import com.zhangxuan.runrunv2.vo.FulfillmentTaskVO;
@@ -57,12 +57,28 @@ import com.zhangxuan.runrunv2.vo.UploadTicketVO;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * 业务服务契约；由实现类维护事务与并发边界。
  */
 public interface FulfillmentService {
 
-    FulfillmentResultVO accept(String token, String orderId, String key, Version body);
+    FulfillmentResultVO accept(String token, String orderId, String key, FulfillmentVersionRequest body);
 
     /**
      * M05 invokes this only after an audited exception/refulfillment decision. It creates a fresh
@@ -70,21 +86,21 @@ public interface FulfillmentService {
      */
     FulfillmentTaskVO invite(String token, String orderId, String courierId, long expectedVersion, String reason, String key);
 
-    FulfillmentResultVO respond(String token, String taskId, String key, Respond body);
+    FulfillmentResultVO respond(String token, String taskId, String key, FulfillmentRespondRequest body);
 
-    FulfillmentResultVO release(String token, String orderId, String key, Release body);
+    FulfillmentResultVO release(String token, String orderId, String key, FulfillmentReleaseRequest body);
 
-    UploadTicketVO upload(String token, String orderId, String key, Upload body);
+    UploadTicketVO upload(String token, String orderId, String key, FulfillmentUploadRequest body);
 
-    OrderProofVO proof(String token, String orderId, String key, RegisterProof body);
+    OrderProofVO proof(String token, String orderId, String key, RegisterFulfillmentProofRequest body);
 
-    LocationEventVO location(String token, String orderId, String key, Location body);
+    LocationEventVO location(String token, String orderId, String key, FulfillmentLocationRequest body);
 
-    FulfillmentResultVO pickup(String token, String orderId, String key, Pickup body);
+    FulfillmentResultVO pickup(String token, String orderId, String key, FulfillmentPickupRequest body);
 
-    FulfillmentResultVO deliver(String token, String orderId, String key, Deliver body);
+    FulfillmentResultVO deliver(String token, String orderId, String key, FulfillmentDeliverRequest body);
 
-    FulfillmentOrderVO confirm(String token, String orderId, String key, Version body);
+    FulfillmentOrderVO confirm(String token, String orderId, String key, FulfillmentVersionRequest body);
 
     int autoComplete();
 

@@ -1,14 +1,14 @@
 package com.zhangxuan.runruncampus.controller;
 
-import com.zhangxuan.runruncampus.dto.ChatRequest;
 import com.zhangxuan.runruncampus.dto.CompleteOrderRequest;
 import com.zhangxuan.runruncampus.dto.ConfirmPackageSizeRequest;
+import com.zhangxuan.runruncampus.dto.CourierUnableRequest;
 import com.zhangxuan.runruncampus.dto.CreateIssueRequest;
 import com.zhangxuan.runruncampus.dto.CreateOrderRequest;
 import com.zhangxuan.runruncampus.dto.CreateRatingRequest;
 import com.zhangxuan.runruncampus.dto.LocationUpdateRequest;
+import com.zhangxuan.runruncampus.dto.OrderChatRequest;
 import com.zhangxuan.runruncampus.dto.SubmitManualPaymentRequest;
-import com.zhangxuan.runruncampus.dto.UnableRequest;
 import com.zhangxuan.runruncampus.enums.OrderProofType;
 import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
@@ -47,6 +47,55 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -175,7 +224,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/unable")
-    public TaskReleaseVO reportUnable(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody UnableRequest request) {
+    public TaskReleaseVO reportUnable(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody CourierUnableRequest request) {
         return reassignmentService.reportUnable(authService.requireUser(authorization), id, request.reason());
     }
 
@@ -260,7 +309,7 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/chat")
-    public OrderChatVO sendChat(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody ChatRequest request) {
+    public OrderChatVO sendChat(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody OrderChatRequest request) {
         return chatService.send(authService.requireUser(authorization), id, request.content());
     }
 

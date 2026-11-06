@@ -5,8 +5,8 @@ import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
 import com.zhangxuan.runrunv2.mapper.CourierEvidenceGovernanceMapper;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.impl.CourierEvidenceGovernanceServiceImpl;
-import com.zhangxuan.runrunv2.vo.Account;
-import com.zhangxuan.runrunv2.vo.HoldResult;
+import com.zhangxuan.runrunv2.vo.EvidenceHoldResultVO;
+import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -108,6 +108,28 @@ import static org.mockito.Mockito.when;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class CourierEvidenceGovernanceServiceTest {
 
   @Test
@@ -116,10 +138,10 @@ class CourierEvidenceGovernanceServiceTest {
     IdentityService identity = mock(IdentityService.class);
     OrderIdempotency idem = mock(OrderIdempotency.class);
     when(identity.authorizeForWrite("t", "ADMIN", false))
-        .thenReturn(new Account("9", "ADMIN", "ACTIVE", true, 0, false));
+        .thenReturn(new IdentityAccountVO("9", "ADMIN", "ACTIVE", true, 0, false));
     when(db.queryForObject(contains("v2_orders"), eq(Long.class), eq(4L))).thenReturn(1L);
-    var expected = new HoldResult(12L);
-    when(idem.replay(eq("9"), eq("evidence-hold:create"), eq("k"), any(), eq(HoldResult.class)))
+    var expected = new EvidenceHoldResultVO(12L);
+    when(idem.replay(eq("9"), eq("evidence-hold:create"), eq("k"), any(), eq(EvidenceHoldResultVO.class)))
         .thenReturn(expected);
     var service =
         new CourierEvidenceGovernanceServiceImpl(
@@ -138,15 +160,15 @@ class CourierEvidenceGovernanceServiceTest {
     IdentityService identity = mock(IdentityService.class);
     OrderIdempotency idem = mock(OrderIdempotency.class);
     when(identity.authorizeForWrite("t", "ADMIN", false))
-        .thenReturn(new Account("9", "ADMIN", "ACTIVE", true, 0, false));
+        .thenReturn(new IdentityAccountVO("9", "ADMIN", "ACTIVE", true, 0, false));
     var hold = new HashMap<String, Object>();
     hold.put("order_id", 4L);
     hold.put("certification_id", null);
     hold.put("released_at", null);
     when(db.queryForList(contains("evidence_holds"), eq(7L))).thenReturn(List.of(hold));
     when(db.queryForObject(contains("v2_orders"), eq(Long.class), eq(4L))).thenReturn(1L);
-    var expected = new HoldResult(7L);
-    when(idem.replay(eq("9"), eq("evidence-hold:release"), eq("k"), eq("7"), eq(HoldResult.class)))
+    var expected = new EvidenceHoldResultVO(7L);
+    when(idem.replay(eq("9"), eq("evidence-hold:release"), eq("k"), eq("7"), eq(EvidenceHoldResultVO.class)))
         .thenReturn(expected);
     var service =
         new CourierEvidenceGovernanceServiceImpl(

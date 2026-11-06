@@ -11,7 +11,6 @@ import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.mapper.AdminDispatchMapper;
 import com.zhangxuan.runruncampus.model.DispatchScoreCalculator;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
@@ -21,6 +20,7 @@ import com.zhangxuan.runruncampus.service.CourierCertificationService;
 import com.zhangxuan.runruncampus.service.OrderMessageService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.impl.AdminDispatchServiceImpl;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +42,50 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -246,7 +290,7 @@ class AdminDispatchServiceTest {
             certifications);
     Mockito.lenient()
         .when(settings.get())
-        .thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
+        .thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 2, 30, 120));
     Mockito.lenient()
         .when(certifications.isEligible(ArgumentMatchers.any(AppUser.class)))
         .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
@@ -326,7 +370,7 @@ class AdminDispatchServiceTest {
     when(orders.countByCourierAndStatusIn(
             courier, List.of(OrderStatus.ACCEPTED, OrderStatus.PICKED_UP)))
         .thenReturn(2L);
-    when(settings.get()).thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
+    when(settings.get()).thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 2, 30, 120));
     BusinessFailure failure =
         assertThrows(BusinessFailure.class, () -> service.dispatch(administrator, 11L, 3L));
     assertEquals(HttpStatus.CONFLICT.value(), failure.status());

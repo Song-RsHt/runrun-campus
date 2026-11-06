@@ -1,8 +1,8 @@
 package com.zhangxuan.runruncampus.controller;
 
 import com.zhangxuan.runruncampus.dto.AdminAccountPasswordResetRequest;
-import com.zhangxuan.runruncampus.dto.ChangeOwnPasswordRequest;
-import com.zhangxuan.runruncampus.dto.ChangeRoleRequest;
+import com.zhangxuan.runruncampus.dto.AdminOwnPasswordChangeRequest;
+import com.zhangxuan.runruncampus.dto.AdminRoleChangeRequest;
 import com.zhangxuan.runruncampus.dto.CreateAdminRequest;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.service.AdminAccountService;
@@ -41,6 +41,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @RestController
 @RequestMapping("/api/v1/admin/accounts")
 public class AdminAccountController {
@@ -55,7 +76,7 @@ public class AdminAccountController {
     }
 
     @PutMapping("/me/password")
-    public PasswordChangedResponse changeOwnPassword(@RequestHeader("Authorization") String authorization, @Valid @RequestBody ChangeOwnPasswordRequest request) {
+    public PasswordChangedResponse changeOwnPassword(@RequestHeader("Authorization") String authorization, @Valid @RequestBody AdminOwnPasswordChangeRequest request) {
         accountService.changeOwnPassword(authService.requireAdmin(authorization), request.currentPassword(), request.newPassword());
         return new PasswordChangedResponse(true);
     }
@@ -72,7 +93,7 @@ public class AdminAccountController {
     }
 
     @PutMapping("/{id}/role")
-    public AdminAccountItem changeRole(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody ChangeRoleRequest request) {
+    public AdminAccountItem changeRole(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody AdminRoleChangeRequest request) {
         return accountService.changeRole(authService.requirePermission(authorization, AdminPermission.ADMIN_MANAGE), id, request.adminRole());
     }
 

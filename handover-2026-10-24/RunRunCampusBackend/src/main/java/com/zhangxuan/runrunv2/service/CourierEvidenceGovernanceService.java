@@ -1,7 +1,11 @@
 package com.zhangxuan.runrunv2.service;
 
-import com.zhangxuan.runrunv2.vo.HoldResult;
+import com.zhangxuan.runrunv2.vo.EvidenceHoldResultVO;
 import java.time.Instant;
+
+
+
+
 
 
 
@@ -22,9 +26,9 @@ import java.time.Instant;
  */
 public interface CourierEvidenceGovernanceService {
 
-    HoldResult hold(String token, Long orderId, Long certificationId, String reason, Instant due, String requestId);
+    EvidenceHoldResultVO hold(String token, Long orderId, Long certificationId, String reason, Instant due, String requestId);
 
-    HoldResult release(String token, long holdId, String requestId);
+    EvidenceHoldResultVO release(String token, long holdId, String requestId);
 
     void requestCertificationDeletion(long certificationId, String resourceId, String storageKey, Instant deleteAfter);
 

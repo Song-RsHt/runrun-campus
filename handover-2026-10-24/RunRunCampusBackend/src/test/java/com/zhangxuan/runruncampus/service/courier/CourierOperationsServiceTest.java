@@ -5,7 +5,6 @@ import com.zhangxuan.runruncampus.enums.OrderStatus;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.model.CourierBusinessStats;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.service.CourierCertificationService;
@@ -13,6 +12,7 @@ import com.zhangxuan.runruncampus.service.CourierOperationsService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
 import com.zhangxuan.runruncampus.service.impl.CourierOperationsServiceImpl;
 import com.zhangxuan.runruncampus.vo.OperationsResponse;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +33,41 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -189,7 +224,7 @@ class CourierOperationsServiceTest {
         .thenAnswer(call -> ((AppUser) call.getArgument(0)).isCourierApproved());
     Mockito.lenient()
         .when(settingsService.get())
-        .thenReturn(new Settings("09:00–23:00", 10, 30, 2, 30, 120));
+        .thenReturn(new PlatformSettingsVO("09:00–23:00", 10, 30, 2, 30, 120));
     courier = new AppUser("13800000003", "hash", "骑手", UserRole.COURIER);
     ReflectionTestUtils.setField(courier, "id", 1L);
     courier.approveCourier();

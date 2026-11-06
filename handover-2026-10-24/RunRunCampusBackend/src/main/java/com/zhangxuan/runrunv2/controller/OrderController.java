@@ -3,9 +3,9 @@ package com.zhangxuan.runrunv2.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zhangxuan.runrunv2.dto.ConfigChange;
-import com.zhangxuan.runrunv2.dto.CreateRequest;
-import com.zhangxuan.runrunv2.dto.QuoteRequest;
+import com.zhangxuan.runrunv2.dto.CreateOrderRequest;
+import com.zhangxuan.runrunv2.dto.OrderQuoteRequest;
+import com.zhangxuan.runrunv2.dto.ServiceConfigChangeRequest;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
@@ -27,6 +27,35 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -89,7 +118,7 @@ public class OrderController {
         try {
             JsonNode body = json.readTree(rawBody);
             validateFields(body, QUOTE_FIELDS);
-            return config.quote(IdentityWebConfiguration.bearer(request), json.treeToValue(body, QuoteRequest.class));
+            return config.quote(IdentityWebConfiguration.bearer(request), json.treeToValue(body, OrderQuoteRequest.class));
         } catch (Exception e) {
             throw IdentityFailure.invalid();
         }
@@ -111,7 +140,7 @@ public class OrderController {
         if (!body.has("configVersion") || !body.get("configVersion").isIntegralNumber())
             throw IdentityFailure.invalid();
         try {
-            return orders.create(IdentityWebConfiguration.bearer(request), key, json.treeToValue(body, CreateRequest.class));
+            return orders.create(IdentityWebConfiguration.bearer(request), key, json.treeToValue(body, CreateOrderRequest.class));
         } catch (IllegalArgumentException | JsonProcessingException e) {
             throw IdentityFailure.invalid();
         }
@@ -140,7 +169,7 @@ public class OrderController {
                 throw IdentityFailure.invalid();
             for (JsonNode zone : body.withArray("zones")) if (zone.has("packageSurchargeCents") && !zone.get("packageSurchargeCents").isIntegralNumber())
                 throw IdentityFailure.invalid();
-            return config.patch(IdentityWebConfiguration.bearer(request), key, json.treeToValue(body, ConfigChange.class));
+            return config.patch(IdentityWebConfiguration.bearer(request), key, json.treeToValue(body, ServiceConfigChangeRequest.class));
         } catch (IdentityFailure e) {
             throw e;
         } catch (Exception e) {

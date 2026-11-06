@@ -1,6 +1,6 @@
 package com.zhangxuan.runrunv2.controller;
 
-import com.zhangxuan.runrunv2.dto.ResultRequest;
+import com.zhangxuan.runrunv2.dto.PaymentResultRequest;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
 import com.zhangxuan.runrunv2.service.PaymentService;
@@ -33,6 +33,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @RestController
 @RequestMapping("/api/v2/test")
 @IdentityPermission(role = "ADMIN")
@@ -47,12 +64,12 @@ public class PaymentTestController {
     }
 
     @PostMapping("/payment-attempts/{id}/result")
-    public PaymentAttemptVO payment(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody ResultRequest body) {
+    public PaymentAttemptVO payment(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody PaymentResultRequest body) {
         return service.paymentResult(IdentityWebConfiguration.bearer(request), id, key, body);
     }
 
     @PostMapping("/refunds/{id}/result")
-    public RefundOrderVO refund(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody ResultRequest body) {
+    public RefundOrderVO refund(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody PaymentResultRequest body) {
         return service.refundResult(IdentityWebConfiguration.bearer(request), id, key, body);
     }
 }

@@ -1,7 +1,11 @@
 package com.zhangxuan.runruncampus.service;
 
 import com.zhangxuan.runruncampus.entity.AppUser;
-import com.zhangxuan.runruncampus.model.Settings;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
+
+
+
+
 
 
 
@@ -19,7 +23,7 @@ import com.zhangxuan.runruncampus.model.Settings;
  */
 public interface PlatformSettingsService {
 
-    Settings get();
+    PlatformSettingsVO get();
 
-    Settings update(AppUser administrator, Settings requested);
+    PlatformSettingsVO update(AppUser administrator, PlatformSettingsVO requested);
 }

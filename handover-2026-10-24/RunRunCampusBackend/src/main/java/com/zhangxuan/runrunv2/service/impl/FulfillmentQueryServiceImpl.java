@@ -2,8 +2,8 @@ package com.zhangxuan.runrunv2.service.impl;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.FulfillmentQueryMapper;
+import com.zhangxuan.runrunv2.model.FulfillmentTaskRow;
 import com.zhangxuan.runrunv2.model.ResourceIds;
-import com.zhangxuan.runrunv2.model.TaskRow;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.FulfillmentQueryService;
 import com.zhangxuan.runrunv2.service.IdentityService;
@@ -22,6 +22,30 @@ import java.util.Objects;
 import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -100,7 +124,7 @@ public class FulfillmentQueryServiceImpl implements FulfillmentQueryService {
     }
 
     // C01: task history is readable without eligibility; write actions require current eligibility.
-    private CourierTaskVO taskItem(TaskRow row, boolean eligible) {
+    private CourierTaskVO taskItem(FulfillmentTaskRow row, boolean eligible) {
         var actions = new ArrayList<String>();
         if (!row.superseded()) {
             if (row.taskStatus().equals("OFFERED") && row.orderStatus().equals("EXCEPTION")) {

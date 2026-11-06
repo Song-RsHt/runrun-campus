@@ -1,8 +1,13 @@
 package com.zhangxuan.runrunv2.model;
 
-import com.zhangxuan.runrunv2.dto.QuoteRequest;
+import com.zhangxuan.runrunv2.dto.OrderQuoteRequest;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import java.util.Map;
+
+
+
+
+
 
 
 
@@ -38,7 +43,7 @@ public final class OrderInput {
     private OrderInput() {
     }
 
-    public static void validate(QuoteRequest request) {
+    public static void validate(OrderQuoteRequest request) {
         if (request == null || request.serviceType() == null)
             throw IdentityFailure.invalid();
         OrderInput.code(request.zoneCode());

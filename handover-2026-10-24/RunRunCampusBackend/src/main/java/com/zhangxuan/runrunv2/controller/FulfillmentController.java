@@ -1,13 +1,13 @@
 package com.zhangxuan.runrunv2.controller;
 
-import com.zhangxuan.runrunv2.dto.Deliver;
-import com.zhangxuan.runrunv2.dto.Location;
-import com.zhangxuan.runrunv2.dto.Pickup;
-import com.zhangxuan.runrunv2.dto.RegisterProof;
-import com.zhangxuan.runrunv2.dto.Release;
-import com.zhangxuan.runrunv2.dto.Respond;
-import com.zhangxuan.runrunv2.dto.Upload;
-import com.zhangxuan.runrunv2.dto.Version;
+import com.zhangxuan.runrunv2.dto.FulfillmentDeliverRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentLocationRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentPickupRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentReleaseRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentRespondRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentUploadRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentVersionRequest;
+import com.zhangxuan.runrunv2.dto.RegisterFulfillmentProofRequest;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
 import com.zhangxuan.runrunv2.service.FulfillmentQueryService;
@@ -28,6 +28,36 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -86,55 +116,55 @@ public class FulfillmentController {
 
     @PostMapping("/orders/{id}/accept")
     @IdentityPermission(role = "COURIER", courierEligible = true)
-    public FulfillmentResultVO accept(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Version body) {
+    public FulfillmentResultVO accept(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentVersionRequest body) {
         return service.accept(token(r), id, key, body);
     }
 
     @PostMapping("/tasks/{id}/respond")
     @IdentityPermission(role = "COURIER")
-    public FulfillmentResultVO respond(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Respond body) {
+    public FulfillmentResultVO respond(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentRespondRequest body) {
         return service.respond(token(r), id, key, body);
     }
 
     @PostMapping("/orders/{id}/release")
     @IdentityPermission(role = "COURIER", courierEligible = true)
-    public FulfillmentResultVO release(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Release body) {
+    public FulfillmentResultVO release(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentReleaseRequest body) {
         return service.release(token(r), id, key, body);
     }
 
     @PostMapping("/orders/{id}/uploads")
     @IdentityPermission(role = "COURIER", courierEligible = true)
-    public UploadTicketVO upload(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Upload body) {
+    public UploadTicketVO upload(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentUploadRequest body) {
         return service.upload(token(r), id, key, body);
     }
 
     @PostMapping("/orders/{id}/proofs")
     @IdentityPermission(role = "COURIER", courierEligible = true)
-    public OrderProofVO proof(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody RegisterProof body) {
+    public OrderProofVO proof(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody RegisterFulfillmentProofRequest body) {
         return service.proof(token(r), id, key, body);
     }
 
     @PostMapping("/orders/{id}/locations")
     @IdentityPermission(role = "COURIER", courierEligible = true)
-    public LocationEventVO location(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Location body) {
+    public LocationEventVO location(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentLocationRequest body) {
         return service.location(token(r), id, key, body);
     }
 
     @PostMapping("/orders/{id}/pickup")
     @IdentityPermission(role = "COURIER", courierEligible = true)
-    public FulfillmentResultVO pickup(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Pickup body) {
+    public FulfillmentResultVO pickup(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentPickupRequest body) {
         return service.pickup(token(r), id, key, body);
     }
 
     @PostMapping("/orders/{id}/deliver")
     @IdentityPermission(role = "COURIER", courierEligible = true)
-    public FulfillmentResultVO deliver(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Deliver body) {
+    public FulfillmentResultVO deliver(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentDeliverRequest body) {
         return service.deliver(token(r), id, key, body);
     }
 
     @PostMapping("/orders/{id}/confirm")
     @IdentityPermission(role = "USER")
-    public FulfillmentOrderVO confirm(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody Version body) {
+    public FulfillmentOrderVO confirm(HttpServletRequest r, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody FulfillmentVersionRequest body) {
         return service.confirm(token(r), id, key, body);
     }
 

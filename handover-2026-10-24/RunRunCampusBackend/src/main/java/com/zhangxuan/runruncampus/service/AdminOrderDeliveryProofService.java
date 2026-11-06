@@ -1,6 +1,9 @@
 package com.zhangxuan.runruncampus.service;
 
-import com.zhangxuan.runruncampus.vo.ProofContent;
+import com.zhangxuan.runruncampus.model.ProofContent;
+
+
+
 
 
 

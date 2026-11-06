@@ -3,17 +3,17 @@ package com.zhangxuan.runrunv2.controller.fulfillment;
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.dto.CancelRequest;
-import com.zhangxuan.runrunv2.dto.CreateRequest;
-import com.zhangxuan.runrunv2.dto.Deliver;
-import com.zhangxuan.runrunv2.dto.Location;
-import com.zhangxuan.runrunv2.dto.Pickup;
-import com.zhangxuan.runrunv2.dto.RegisterProof;
-import com.zhangxuan.runrunv2.dto.Release;
-import com.zhangxuan.runrunv2.dto.Respond;
-import com.zhangxuan.runrunv2.dto.ResultRequest;
-import com.zhangxuan.runrunv2.dto.Upload;
-import com.zhangxuan.runrunv2.dto.Version;
-import com.zhangxuan.runrunv2.dto.VersionRequest;
+import com.zhangxuan.runrunv2.dto.CreateOrderRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentDeliverRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentLocationRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentPickupRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentReleaseRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentRespondRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentUploadRequest;
+import com.zhangxuan.runrunv2.dto.FulfillmentVersionRequest;
+import com.zhangxuan.runrunv2.dto.PaymentResultRequest;
+import com.zhangxuan.runrunv2.dto.PaymentVersionRequest;
+import com.zhangxuan.runrunv2.dto.RegisterFulfillmentProofRequest;
 import com.zhangxuan.runrunv2.enums.Decision;
 import com.zhangxuan.runrunv2.enums.EventType;
 import com.zhangxuan.runrunv2.enums.Kind;
@@ -100,6 +100,108 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -416,12 +518,12 @@ class FulfillmentIntegrationTest {
 
   CreatedOrderVO create() {
     return orders.create(
-        user, key(), new CreateRequest(ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
+        user, key(), new CreateOrderRequest(ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
   }
 
   StartedPaymentVO start(String id) {
     return payments.start(
-        user, id, key(), new VersionRequest(payments.get(user, id).payment().version()));
+        user, id, key(), new PaymentVersionRequest(payments.get(user, id).payment().version()));
   }
 
   PaymentAttemptVO result(String id, Result result) {
@@ -431,7 +533,7 @@ class FulfillmentIntegrationTest {
             Long.class,
             Long.valueOf(id));
     return payments.paymentResult(
-        admin, id, key(), new ResultRequest(version, result, "event-" + key()));
+        admin, id, key(), new PaymentResultRequest(version, result, "event-" + key()));
   }
 
   RefundOrderVO resultRefund(String id, Result result) {
@@ -439,7 +541,7 @@ class FulfillmentIntegrationTest {
         db.queryForObject(
             "SELECT version FROM runrun_v2.refund_orders WHERE id=?", Long.class, Long.valueOf(id));
     return payments.refundResult(
-        admin, id, key(), new ResultRequest(version, result, "event-" + key()));
+        admin, id, key(), new PaymentResultRequest(version, result, "event-" + key()));
   }
 
   CreatedOrderVO paid() {
@@ -515,12 +617,12 @@ class FulfillmentIntegrationTest {
   }
 
   String accept(String order) {
-    return fulfillment.accept(courier, order, key(), new Version(v(order))).task().id();
+    return fulfillment.accept(courier, order, key(), new FulfillmentVersionRequest(v(order))).task().id();
   }
 
   OrderProofVO proof(String token, String order, String task, Kind kind) {
     return fulfillment.proof(
-        token, order, key(), new RegisterProof(v(order), kind, task, "synthetic-ticket-" + key()));
+        token, order, key(), new RegisterFulfillmentProofRequest(v(order), kind, task, "synthetic-ticket-" + key()));
   }
 
   LocationEventVO location(
@@ -529,14 +631,14 @@ class FulfillmentIntegrationTest {
         token,
         order,
         key(),
-        new Location(
+        new FulfillmentLocationRequest(
             v(order), task, kind, new BigDecimal("30"), new BigDecimal("120"), "GCJ02", request));
   }
 
   String picked(String order) {
     String task = accept(order);
     var p = proof(courier, order, task, Kind.PICKUP);
-    fulfillment.pickup(courier, order, key(), new Pickup(v(order), task, p.id()));
+    fulfillment.pickup(courier, order, key(), new FulfillmentPickupRequest(v(order), task, p.id()));
     return task;
   }
 
@@ -544,7 +646,7 @@ class FulfillmentIntegrationTest {
     var photo = proof(courier, order, task, Kind.DELIVERY);
     var gps = location(courier, order, task, EventType.DELIVERY, key());
     return fulfillment.deliver(
-        courier, order, key(), new Deliver(v(order), task, photo.id(), gps.eventId()));
+        courier, order, key(), new FulfillmentDeliverRequest(v(order), task, photo.id(), gps.eventId()));
   }
 
   @Test
@@ -590,7 +692,7 @@ class FulfillmentIntegrationTest {
 
   Object attemptAccept(String token, String order, long version, String key, AtomicInteger wins) {
     try {
-      var result = fulfillment.accept(token, order, key, new Version(version));
+      var result = fulfillment.accept(token, order, key, new FulfillmentVersionRequest(version));
       wins.incrementAndGet();
       return result;
     } catch (IdentityFailure ex) {
@@ -618,7 +720,7 @@ class FulfillmentIntegrationTest {
 
   Object capacityAccept(String order, String key, AtomicInteger wins) {
     try {
-      var result = fulfillment.accept(courier, order, key, new Version(v(order)));
+      var result = fulfillment.accept(courier, order, key, new FulfillmentVersionRequest(v(order)));
       wins.incrementAndGet();
       return result;
     } catch (IdentityFailure ex) {
@@ -630,27 +732,27 @@ class FulfillmentIntegrationTest {
   @Test
   void duplicateAcceptPickupAndDeliveryAreIdempotentButNewWritesConflict() {
     String order = paid().order().id();
-    var accept = new Version(v(order));
+    var accept = new FulfillmentVersionRequest(v(order));
     var first = fulfillment.accept(courier, order, "accept-repeat", accept);
     assertEquals(first, fulfillment.accept(courier, order, "accept-repeat", accept));
     String task = first.task().id();
     var p = proof(courier, order, task, Kind.PICKUP);
-    var pickup = new Pickup(v(order), task, p.id());
+    var pickup = new FulfillmentPickupRequest(v(order), task, p.id());
     var picked = fulfillment.pickup(courier, order, "pickup-repeat", pickup);
     assertEquals(picked, fulfillment.pickup(courier, order, "pickup-repeat", pickup));
     failure(
         "ORDER_STATE_CONFLICT",
-        () -> fulfillment.pickup(courier, order, key(), new Pickup(v(order), task, p.id())));
+        () -> fulfillment.pickup(courier, order, key(), new FulfillmentPickupRequest(v(order), task, p.id())));
     var d = proof(courier, order, task, Kind.DELIVERY);
     var gps = location(courier, order, task, EventType.DELIVERY, "delivery-location");
-    var body = new Deliver(v(order), task, d.id(), gps.eventId());
+    var body = new FulfillmentDeliverRequest(v(order), task, d.id(), gps.eventId());
     var done = fulfillment.deliver(courier, order, "deliver-repeat", body);
     assertEquals(done, fulfillment.deliver(courier, order, "deliver-repeat", body));
     failure(
         "ORDER_STATE_CONFLICT",
         () ->
             fulfillment.deliver(
-                courier, order, key(), new Deliver(v(order), task, d.id(), gps.eventId())));
+                courier, order, key(), new FulfillmentDeliverRequest(v(order), task, d.id(), gps.eventId())));
     assertEquals(done.order().version(), v(order));
     assertEquals(
         1L,
@@ -665,11 +767,11 @@ class FulfillmentIntegrationTest {
     String a = paid().order().id(), b = paid().order().id(), ta = accept(a), tb = accept(b);
     failure(
         "PROOF_NOT_READY",
-        () -> fulfillment.pickup(courier, a, key(), new Pickup(v(a), ta, "999")));
+        () -> fulfillment.pickup(courier, a, key(), new FulfillmentPickupRequest(v(a), ta, "999")));
     var p = proof(courier, b, tb, Kind.PICKUP);
     failure(
         "PROOF_NOT_READY",
-        () -> fulfillment.pickup(courier, a, key(), new Pickup(v(a), ta, p.id())));
+        () -> fulfillment.pickup(courier, a, key(), new FulfillmentPickupRequest(v(a), ta, p.id())));
     assertEquals("ACCEPTED", orders.get(user, a).status());
   }
 
@@ -680,7 +782,7 @@ class FulfillmentIntegrationTest {
     var gps = location(courier, b, tb, EventType.DELIVERY, "loc-b");
     failure(
         "PROOF_NOT_READY",
-        () -> fulfillment.deliver(courier, a, key(), new Deliver(v(a), ta, p.id(), gps.eventId())));
+        () -> fulfillment.deliver(courier, a, key(), new FulfillmentDeliverRequest(v(a), ta, p.id(), gps.eventId())));
     assertEquals("PICKED_UP", orders.get(user, a).status());
   }
 
@@ -688,7 +790,7 @@ class FulfillmentIntegrationTest {
   void locationRequestIdDeduplicatesEvenWithNewHttpKeyAndOldVersion() {
     String order = paid().order().id(), task = accept(order);
     var body =
-        new Location(
+        new FulfillmentLocationRequest(
             v(order),
             task,
             EventType.ARRIVAL,
@@ -703,7 +805,7 @@ class FulfillmentIntegrationTest {
     assertEquals(version, v(order));
     assertEquals(1, count("location_events"));
     var changed =
-        new Location(
+        new FulfillmentLocationRequest(
             v(order),
             task,
             EventType.ARRIVAL,
@@ -719,7 +821,7 @@ class FulfillmentIntegrationTest {
   void concurrentLocationRetryInsertsOnlyOneEvent() throws Exception {
     String order = paid().order().id(), task = accept(order);
     var body =
-        new Location(
+        new FulfillmentLocationRequest(
             v(order),
             task,
             EventType.ARRIVAL,
@@ -746,14 +848,14 @@ class FulfillmentIntegrationTest {
         "PROOF_NOT_READY",
         () ->
             fulfillment.deliver(
-                courier, order, key(), new Deliver(v(order), task, p.id(), second.eventId())));
+                courier, order, key(), new FulfillmentDeliverRequest(v(order), task, p.id(), second.eventId())));
   }
 
   @Test
   void releaseImmediatelyRecoversCapacityAndRevokesAllOldWrites() {
     String order = paid().order().id(), task = accept(order);
     proof(courier, order, task, Kind.SPECIFICATION);
-    var body = new Release(v(order), task, "合成释放原因");
+    var body = new FulfillmentReleaseRequest(v(order), task, "合成释放原因");
     var released = fulfillment.release(courier, order, "release-key", body);
     assertEquals("RELEASED", released.task().status());
     assertEquals(released, fulfillment.release(courier, order, "release-key", body));
@@ -761,7 +863,7 @@ class FulfillmentIntegrationTest {
     failure(
         "ORDER_STATE_CONFLICT", () -> location(courier, order, task, EventType.ARRIVAL, "late"));
     String other = nextCourier();
-    fulfillment.accept(other, order, key(), new Version(v(order)));
+    fulfillment.accept(other, order, key(), new FulfillmentVersionRequest(v(order)));
     failure("ORDER_STATE_CONFLICT", () -> proof(courier, order, task, Kind.SPECIFICATION));
     accept(paid().order().id());
     accept(paid().order().id());
@@ -773,7 +875,7 @@ class FulfillmentIntegrationTest {
     proof(courier, order, task, Kind.PICKUP);
     failure(
         "ORDER_STATE_CONFLICT",
-        () -> fulfillment.release(courier, order, key(), new Release(v(order), task, "矛盾情形")));
+        () -> fulfillment.release(courier, order, key(), new FulfillmentReleaseRequest(v(order), task, "矛盾情形")));
     assertEquals("ACCEPTED", orders.get(user, order).status());
   }
 
@@ -853,13 +955,13 @@ class FulfillmentIntegrationTest {
             });
     failure(
         "ADJUSTMENT_UNRESOLVED",
-        () -> fulfillment.confirm(user, order, key(), new Version(v(order))));
+        () -> fulfillment.confirm(user, order, key(), new FulfillmentVersionRequest(v(order))));
     assertEquals(0, fulfillment.autoComplete());
     new TransactionTemplate(transactions)
         .executeWithoutResult(s -> fulfillment.unblockCompletion(order, "ADJUSTMENT", "a1"));
     failure(
         "AFTER_SALES_UNRESOLVED",
-        () -> fulfillment.confirm(user, order, key(), new Version(v(order))));
+        () -> fulfillment.confirm(user, order, key(), new FulfillmentVersionRequest(v(order))));
     now("2026-10-27T01:25:00Z");
     new TransactionTemplate(transactions)
         .executeWithoutResult(s -> fulfillment.unblockCompletion(order, "AFTER_SALES", "c1"));
@@ -914,7 +1016,7 @@ class FulfillmentIntegrationTest {
     failure("ORDER_STATE_CONFLICT", () -> proof(courier, order, old, Kind.SPECIFICATION));
     var accepted =
         fulfillment.respond(
-            courier, offered.id(), key(), new Respond(offered.version(), Decision.ACCEPT));
+            courier, offered.id(), key(), new FulfillmentRespondRequest(offered.version(), Decision.ACCEPT));
     assertEquals("ACTIVE", accepted.task().status());
     assertNotEquals(old, accepted.task().id());
     failure("ORDER_STATE_CONFLICT", () -> proof(courier, order, old, Kind.PICKUP));
@@ -929,7 +1031,7 @@ class FulfillmentIntegrationTest {
     race(
         () -> {
           try {
-            return fulfillment.confirm(user, order, "confirm-race", new Version(version));
+            return fulfillment.confirm(user, order, "confirm-race", new FulfillmentVersionRequest(version));
           } catch (IdentityFailure ex) {
             assertEquals("ORDER_STATE_CONFLICT", ex.code);
             return null;
@@ -1036,7 +1138,7 @@ class FulfillmentIntegrationTest {
     String order = paid().order().id(), task = accept(order);
     var ticket =
         fulfillment.upload(
-            courier, order, key(), new Upload(v(order), Kind.PICKUP, "image/jpeg", 100L));
+            courier, order, key(), new FulfillmentUploadRequest(v(order), Kind.PICKUP, "image/jpeg", 100L));
     db.update(
         "UPDATE runrun_v2.fulfillment_tasks SET"
             + " status='HANDED_OVER',ended_at=now(),version=version+1 WHERE id=?",
@@ -1048,7 +1150,7 @@ class FulfillmentIntegrationTest {
                 courier,
                 order,
                 key(),
-                new RegisterProof(v(order), Kind.PICKUP, task, ticket.uploadTicket())));
+                new RegisterFulfillmentProofRequest(v(order), Kind.PICKUP, task, ticket.uploadTicket())));
     verify(evidence, never()).verify(any(), eq(ticket.uploadTicket()), any());
   }
 
@@ -1072,11 +1174,11 @@ class FulfillmentIntegrationTest {
         "COURIER_NOT_APPROVED",
         () ->
             fulfillment.respond(
-                courier, offered.id(), key(), new Respond(offered.version(), Decision.ACCEPT)));
+                courier, offered.id(), key(), new FulfillmentRespondRequest(offered.version(), Decision.ACCEPT)));
     assertEquals(
         "RELEASED",
         fulfillment
-            .respond(courier, offered.id(), key(), new Respond(offered.version(), Decision.DECLINE))
+            .respond(courier, offered.id(), key(), new FulfillmentRespondRequest(offered.version(), Decision.DECLINE))
             .task()
             .status());
   }
@@ -1085,13 +1187,13 @@ class FulfillmentIntegrationTest {
   void concurrentDuplicatePickupAndDeliveryOnlyAdvanceOnce() throws Exception {
     String order = paid().order().id(), task = accept(order);
     var p = proof(courier, order, task, Kind.PICKUP);
-    var pickup = new Pickup(v(order), task, p.id());
+    var pickup = new FulfillmentPickupRequest(v(order), task, p.id());
     race(
         () -> fulfillment.pickup(courier, order, "concurrent-pickup", pickup),
         () -> fulfillment.pickup(courier, order, "concurrent-pickup", pickup));
     var d = proof(courier, order, task, Kind.DELIVERY);
     var gps = location(courier, order, task, EventType.DELIVERY, "delivery-race");
-    var delivery = new Deliver(v(order), task, d.id(), gps.eventId());
+    var delivery = new FulfillmentDeliverRequest(v(order), task, d.id(), gps.eventId());
     race(
         () -> fulfillment.deliver(courier, order, "concurrent-delivery", delivery),
         () -> fulfillment.deliver(courier, order, "concurrent-delivery", delivery));
@@ -1164,9 +1266,9 @@ class FulfillmentIntegrationTest {
   void releaseAndLocationRetrySerializeWithoutRestoringOldTask() throws Exception {
     String order = paid().order().id(), task = accept(order);
     long version = v(order);
-    var release = new Release(version, task, "合成并发释放");
+    var release = new FulfillmentReleaseRequest(version, task, "合成并发释放");
     var gps =
-        new Location(
+        new FulfillmentLocationRequest(
             version,
             task,
             EventType.ARRIVAL,
@@ -1193,7 +1295,7 @@ class FulfillmentIntegrationTest {
         });
     if (orders.get(user, order).status().equals("ACCEPTED"))
       fulfillment.release(
-          courier, order, "release-after-gps", new Release(v(order), task, "合成刷新后释放"));
+          courier, order, "release-after-gps", new FulfillmentReleaseRequest(v(order), task, "合成刷新后释放"));
     long before = count("location_events");
     failure(
         "ORDER_STATE_CONFLICT",
@@ -1221,7 +1323,7 @@ class FulfillmentIntegrationTest {
         () -> {
           try {
             return fulfillment.pickup(
-                courier, order, "pickup-cancel-race", new Pickup(version, task, p.id()));
+                courier, order, "pickup-cancel-race", new FulfillmentPickupRequest(version, task, p.id()));
           } catch (IdentityFailure ex) {
             assertEquals("ORDER_STATE_CONFLICT", ex.code);
             return null;
@@ -1261,7 +1363,7 @@ class FulfillmentIntegrationTest {
             courier,
             order,
             key(),
-            new Location(
+            new FulfillmentLocationRequest(
                 v(order),
                 task,
                 EventType.ARRIVAL,

@@ -9,7 +9,7 @@ import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentitySecrets;
 import com.zhangxuan.runrunv2.service.DeploymentIdentityService;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.vo.LoginResult;
+import com.zhangxuan.runrunv2.vo.IdentityLoginVO;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,6 +59,67 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -193,7 +254,7 @@ class IdentityIntegrationTest {
     when(wechat.exchangePhoneCode(anyString())).thenAnswer(i -> i.getArgument(0));
   }
 
-  LoginResult register(String code, String phone, String role) {
+  IdentityLoginVO register(String code, String phone, String role) {
     return identity.bindPhone(identity.login(code).loginTicket(), phone, role);
   }
 
@@ -203,7 +264,7 @@ class IdentityIntegrationTest {
             "synthetic deployment setup", "CREATE DEPLOYMENT IDENTITY", "bootstrap"));
   }
 
-  private LoginResult admin(long actor) {
+  private IdentityLoginVO admin(long actor) {
     var account = register("admin", "13800000003", "USER");
     long id = Long.parseLong(account.account().id());
     deployment.provisionAdmin(

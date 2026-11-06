@@ -4,7 +4,7 @@ import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.mapper.CourierCertificationV2Mapper;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.impl.CourierCertificationV2ServiceImpl;
-import com.zhangxuan.runrunv2.vo.Account;
+import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -27,6 +27,35 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -144,7 +173,7 @@ class CourierCertificationAdminListDatabaseTest {
   void emptyAndPopulatedListsUseV2SchemaAndAdminDto() {
     var identity = mock(IdentityService.class);
     when(identity.requireRole("test-session", "ADMIN", false))
-        .thenReturn(new Account("999", "ADMIN", "ACTIVE", true, 0, false));
+        .thenReturn(new IdentityAccountVO("999", "ADMIN", "ACTIVE", true, 0, false));
     var service =
         new CourierCertificationV2ServiceImpl(
             new CourierCertificationV2Mapper(db), identity, null, null, null);

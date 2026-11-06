@@ -1,9 +1,9 @@
 package com.zhangxuan.runruncampus.controller;
 
 import com.zhangxuan.runruncampus.dto.AdminMfaLoginRequest;
-import com.zhangxuan.runruncampus.dto.ReplaceRequest;
-import com.zhangxuan.runruncampus.dto.ResetRequest;
-import com.zhangxuan.runruncampus.dto.VerifyRequest;
+import com.zhangxuan.runruncampus.dto.AdminMfaReplaceRequest;
+import com.zhangxuan.runruncampus.dto.AdminMfaResetRequest;
+import com.zhangxuan.runruncampus.dto.AdminMfaVerifyRequest;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.model.AdminMfaVerification;
 import com.zhangxuan.runruncampus.model.SessionMetadata;
@@ -21,6 +21,29 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -91,20 +114,20 @@ public class AdminMfaController {
     }
 
     @PostMapping("/auth/admin/verify")
-    public AdminMfaVerification verify(@Valid @RequestBody VerifyRequest request) {
+    public AdminMfaVerification verify(@Valid @RequestBody AdminMfaVerifyRequest request) {
         limit("admin-mfa-challenge", request.challengeToken());
         return mfa.verify(request.challengeToken(), request.code().trim(), SessionMetadata.of(request.clientType(), request.deviceName()));
     }
 
     @PostMapping("/admin/accounts/me/mfa/replace")
-    public AdminMfaChallengeVO replace(@RequestHeader("Authorization") String authorization, @Valid @RequestBody ReplaceRequest request) {
+    public AdminMfaChallengeVO replace(@RequestHeader("Authorization") String authorization, @Valid @RequestBody AdminMfaReplaceRequest request) {
         var user = auth.requireAdmin(authorization);
         limit("admin-mfa-replace-account", user.getId().toString());
         return mfa.replace(user, request.password(), request.code().trim());
     }
 
     @PostMapping("/admin/accounts/{id}/mfa/reset")
-    public ResetResponse reset(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody ResetRequest request) {
+    public ResetResponse reset(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody AdminMfaResetRequest request) {
         var user = auth.requirePermission(authorization, AdminPermission.ADMIN_MANAGE);
         limit("admin-mfa-reset-account", user.getId().toString());
         return new ResetResponse(mfa.reset(user, id, request.reason()));

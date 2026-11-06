@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.controller;
 
-import com.zhangxuan.runruncampus.dto.PurchaseRequest;
+import com.zhangxuan.runruncampus.dto.MembershipPurchaseRequest;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.MembershipService;
 import com.zhangxuan.runruncampus.service.PaymentService;
@@ -13,6 +13,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -51,7 +66,7 @@ public class MembershipController {
     }
 
     @PostMapping("/purchase")
-    public PaymentResponse purchase(@RequestHeader("Authorization") String authorization, @Valid @RequestBody PurchaseRequest request) {
+    public PaymentResponse purchase(@RequestHeader("Authorization") String authorization, @Valid @RequestBody MembershipPurchaseRequest request) {
         return paymentService.createMembershipPayment(authService.requireUser(authorization), request.plan());
     }
 }

@@ -1,9 +1,15 @@
 package com.zhangxuan.runrunv2.controller.order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zhangxuan.runrunv2.dto.CreateRequest;
+import com.zhangxuan.runrunv2.dto.CreateOrderRequest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+
+
+
+
+
 
 
 
@@ -28,6 +34,6 @@ class OrderRequestJsonContractTest {
         () ->
             mapper.readValue(
                 "{\"serviceType\":\"PACKAGE_SMALL\",\"zoneCode\":\"MEIYUAN\",\"servicePointCode\":\"TEST_POINT\",\"destination\":\"x\",\"configVersion\":0,\"originalFeeCents\":1}",
-                CreateRequest.class));
+                CreateOrderRequest.class));
   }
 }

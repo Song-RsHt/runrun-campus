@@ -1,12 +1,21 @@
 package com.zhangxuan.runrunv2.mapper;
 
-import com.zhangxuan.runrunv2.model.TaskRow;
+import com.zhangxuan.runrunv2.model.FulfillmentTaskRow;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+
+
+
+
+
+
+
+
 
 
 
@@ -29,7 +38,7 @@ public class FulfillmentQueryMapper {
         this.jdbc = jdbc;
     }
 
-    public List<TaskRow> findCourierTasks(long courierId, String status, OffsetDateTime afterCreatedAt, Long afterId, int limit) {
+    public List<FulfillmentTaskRow> findCourierTasks(long courierId, String status, OffsetDateTime afterCreatedAt, Long afterId, int limit) {
         var parameters = new ArrayList<Object>();
         parameters.add(courierId);
         String where = "t.courier_id=?";
@@ -56,7 +65,7 @@ public class FulfillmentQueryMapper {
             \sORDER BY t.created_at DESC,
                 t.id DESC
             LIMIT ?
-            """, (row, index) -> new TaskRow(row.getString("id"), row.getString("status"), row.getLong("version"), row.getString("order_id"), row.getString("order_no"), row.getString("order_status"), row.getLong("order_version"), row.getObject("created_at", OffsetDateTime.class), row.getObject("superseded_at") != null), parameters.toArray());
+            """, (row, index) -> new FulfillmentTaskRow(row.getString("id"), row.getString("status"), row.getLong("version"), row.getString("order_id"), row.getString("order_no"), row.getString("order_status"), row.getLong("order_version"), row.getObject("created_at", OffsetDateTime.class), row.getObject("superseded_at") != null), parameters.toArray());
     }
 
     public List<Map<String, Object>> findPaidOrderPool(OffsetDateTime afterCreatedAt, Long afterId, int limit) {

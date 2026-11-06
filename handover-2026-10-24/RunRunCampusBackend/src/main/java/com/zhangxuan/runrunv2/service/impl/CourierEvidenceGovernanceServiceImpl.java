@@ -6,7 +6,7 @@ import com.zhangxuan.runrunv2.integration.storage.V2StudentCardStorage;
 import com.zhangxuan.runrunv2.mapper.CourierEvidenceGovernanceMapper;
 import com.zhangxuan.runrunv2.service.CourierEvidenceGovernanceService;
 import com.zhangxuan.runrunv2.service.IdentityService;
-import com.zhangxuan.runrunv2.vo.HoldResult;
+import com.zhangxuan.runrunv2.vo.EvidenceHoldResultVO;
 import java.sql.Types;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -14,6 +14,22 @@ import java.util.Map;
 import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -54,13 +70,13 @@ public class CourierEvidenceGovernanceServiceImpl implements CourierEvidenceGove
 
     @Transactional
     @Override
-    public HoldResult hold(String token, Long orderId, Long certificationId, String reason, Instant due, String requestId) {
+    public EvidenceHoldResultVO hold(String token, Long orderId, Long certificationId, String reason, Instant due, String requestId) {
         long owner = Long.parseLong(identity.authorizeForWrite(token, "ADMIN", false).id());
         if ((orderId == null) == (certificationId == null) || reason == null || reason.isBlank() || due == null)
             throw new IdentityFailure(400, "INVALID_REQUEST");
         lockAggregate(orderId, certificationId);
         String content = String.valueOf(orderId) + ":" + certificationId + ":" + reason + ":" + due;
-        HoldResult replay = idempotency.replay(Long.toString(owner), "evidence-hold:create", requestId, content, HoldResult.class);
+        EvidenceHoldResultVO replay = idempotency.replay(Long.toString(owner), "evidence-hold:create", requestId, content, EvidenceHoldResultVO.class);
         if (replay != null)
             return replay;
         if (orderId != null && mapper.countOrderById(orderId) == 0)
@@ -72,28 +88,28 @@ public class CourierEvidenceGovernanceServiceImpl implements CourierEvidenceGove
         // jsonb_build_object cannot infer a nullable polymorphic parameter's type; both references are
         // BIGINT.
         mapper.insertHoldCreatedAudit(owner, id, requestId, "evidence hold created", new SqlParameterValue(Types.BIGINT, orderId), new SqlParameterValue(Types.BIGINT, certificationId));
-        HoldResult result = new HoldResult(id);
+        EvidenceHoldResultVO result = new EvidenceHoldResultVO(id);
         idempotency.finish(Long.toString(owner), "evidence-hold:create", requestId, "EVIDENCE_HOLD", Long.toString(id), result);
         return result;
     }
 
     @Transactional
     @Override
-    public HoldResult release(String token, long holdId, String requestId) {
+    public EvidenceHoldResultVO release(String token, long holdId, String requestId) {
         long owner = Long.parseLong(identity.authorizeForWrite(token, "ADMIN", false).id());
         var rows = mapper.lockEvidenceHold(holdId);
         if (rows.isEmpty())
             throw new IdentityFailure(404, "RESOURCE_NOT_FOUND");
         var hold = rows.get(0);
         lockAggregate((Number) hold.get("order_id"), (Number) hold.get("certification_id"));
-        HoldResult replay = idempotency.replay(Long.toString(owner), "evidence-hold:release", requestId, Long.toString(holdId), HoldResult.class);
+        EvidenceHoldResultVO replay = idempotency.replay(Long.toString(owner), "evidence-hold:release", requestId, Long.toString(holdId), EvidenceHoldResultVO.class);
         if (replay != null)
             return replay;
         if (hold.get("released_at") != null)
             throw new IdentityFailure(409, "EVIDENCE_HOLD_ALREADY_RELEASED");
         mapper.releaseEvidenceHold(holdId);
         mapper.insertHoldReleasedAudit(owner, holdId, requestId, "evidence hold released");
-        HoldResult result = new HoldResult(holdId);
+        EvidenceHoldResultVO result = new EvidenceHoldResultVO(holdId);
         idempotency.finish(Long.toString(owner), "evidence-hold:release", requestId, "EVIDENCE_HOLD", Long.toString(holdId), result);
         return result;
     }

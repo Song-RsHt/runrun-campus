@@ -1,11 +1,19 @@
 package com.zhangxuan.runrunv2.service;
 
-import com.zhangxuan.runrunv2.dto.ConfigChange;
-import com.zhangxuan.runrunv2.dto.QuoteRequest;
-import com.zhangxuan.runrunv2.model.Pricing;
+import com.zhangxuan.runrunv2.dto.OrderQuoteRequest;
+import com.zhangxuan.runrunv2.dto.ServiceConfigChangeRequest;
+import com.zhangxuan.runrunv2.model.OrderPricing;
 import com.zhangxuan.runrunv2.vo.OrderQuoteVO;
 import com.zhangxuan.runrunv2.vo.ServiceConfigVO;
 import java.util.Map;
+
+
+
+
+
+
+
+
 
 
 
@@ -48,9 +56,9 @@ public interface ServiceConfigService {
 
     ServiceConfigVO config(String token);
 
-    OrderQuoteVO quote(String token, QuoteRequest request);
+    OrderQuoteVO quote(String token, OrderQuoteRequest request);
 
-    Pricing price(QuoteRequest request, Map<String, Object> settings);
+    OrderPricing price(OrderQuoteRequest request, Map<String, Object> settings);
 
     Map<String, Object> zone(String code);
 
@@ -60,5 +68,5 @@ public interface ServiceConfigService {
 
     Map<String, Object> policy(Map<String, Object> settings);
 
-    ServiceConfigVO patch(String token, String key, ConfigChange change);
+    ServiceConfigVO patch(String token, String key, ServiceConfigChangeRequest change);
 }

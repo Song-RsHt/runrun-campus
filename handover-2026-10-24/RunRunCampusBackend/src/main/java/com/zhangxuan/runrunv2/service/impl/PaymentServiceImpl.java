@@ -2,8 +2,8 @@ package com.zhangxuan.runrunv2.service.impl;
 
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.dto.CancelRequest;
-import com.zhangxuan.runrunv2.dto.ResultRequest;
-import com.zhangxuan.runrunv2.dto.VersionRequest;
+import com.zhangxuan.runrunv2.dto.PaymentResultRequest;
+import com.zhangxuan.runrunv2.dto.PaymentVersionRequest;
 import com.zhangxuan.runrunv2.enums.Result;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.idempotency.OrderIdempotency;
@@ -36,6 +36,44 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -133,7 +171,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public StartedPaymentVO start(String token, String paymentId, String key, VersionRequest body) {
+    public StartedPaymentVO start(String token, String paymentId, String key, PaymentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "USER", false);
         PaymentOrderVO p = lockPayment(paymentId, actor.id());
         var content = List.of(paymentId, required(body));
@@ -160,7 +198,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public PaymentSummaryVO queryPayment(String token, String id, String key, VersionRequest body) {
+    public PaymentSummaryVO queryPayment(String token, String id, String key, PaymentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "USER", false);
         PaymentOrderVO p = lockPayment(id, actor.id());
         PaymentSummaryVO replay = requests.replay(actor.id(), "payments:query", key, List.of(id, required(body)), PaymentSummaryVO.class);
@@ -177,7 +215,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public PaymentAttemptVO paymentResult(String token, String id, String key, ResultRequest body) {
+    public PaymentAttemptVO paymentResult(String token, String id, String key, PaymentResultRequest body) {
         var actor = identity.authorizeForWrite(token, "ADMIN", false);
         PaymentAttemptVO a = attempt(id);
         PaymentOrderVO p = lockPayment(a.paymentOrderId(), null);
@@ -199,7 +237,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public RefundOrderVO refundResult(String token, String id, String key, ResultRequest body) {
+    public RefundOrderVO refundResult(String token, String id, String key, PaymentResultRequest body) {
         var actor = identity.authorizeForWrite(token, "ADMIN", false);
         RefundOrderVO r = refund(id);
         lockPayment(r.paymentOrderId(), null);
@@ -221,7 +259,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Transactional
     @Override
-    public RefundOrderVO queryRefund(String token, String id, String key, VersionRequest body) {
+    public RefundOrderVO queryRefund(String token, String id, String key, PaymentVersionRequest body) {
         var actor = identity.authorizeForWrite(token, "USER", false);
         RefundOrderVO r = refund(id);
         lockPayment(r.paymentOrderId(), actor.id());
@@ -571,13 +609,13 @@ public class PaymentServiceImpl implements PaymentService {
             throw conflict();
     }
 
-    private static VersionRequest required(VersionRequest body) {
+    private static PaymentVersionRequest required(PaymentVersionRequest body) {
         if (body == null || body.expectedVersion() == null)
             throw IdentityFailure.invalid();
         return body;
     }
 
-    private void validateResult(ResultRequest body) {
+    private void validateResult(PaymentResultRequest body) {
         if (body == null || body.result() == null || body.expectedVersion() == null || body.expectedVersion() < 0)
             throw IdentityFailure.invalid();
         InputValidation.text(body.eventId(), 128);

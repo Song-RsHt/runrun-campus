@@ -1,6 +1,6 @@
 package com.zhangxuan.runruncampus.controller;
 
-import com.zhangxuan.runruncampus.dto.AdjustmentRequest;
+import com.zhangxuan.runruncampus.dto.CreditAdjustmentRequest;
 import com.zhangxuan.runruncampus.dto.CreditReasonRequest;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.enums.RiskSignalStatus;
@@ -47,6 +47,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @Validated
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -68,7 +92,7 @@ public class AdminCreditController {
     }
 
     @PostMapping("/users/{id}/credit/adjustments")
-    public CreditChangeVO adjust(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody AdjustmentRequest request) {
+    public CreditChangeVO adjust(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody CreditAdjustmentRequest request) {
         return credit.adjust(auth.requirePermission(authorization, AdminPermission.USER_MANAGE), id, request.delta(), request.reason());
     }
 
@@ -84,7 +108,7 @@ public class AdminCreditController {
     }
 
     @PostMapping("/risk-signals/{id}/confirm")
-    public CreditChangeVO confirm(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody AdjustmentRequest request) {
+    public CreditChangeVO confirm(@RequestHeader("Authorization") String authorization, @PathVariable Long id, @Valid @RequestBody CreditAdjustmentRequest request) {
         return credit.confirmSignal(auth.requirePermission(authorization, AdminPermission.USER_MANAGE), id, request.delta(), request.reason());
     }
 

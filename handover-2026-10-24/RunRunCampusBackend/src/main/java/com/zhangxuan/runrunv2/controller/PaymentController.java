@@ -1,7 +1,7 @@
 package com.zhangxuan.runrunv2.controller;
 
 import com.zhangxuan.runrunv2.dto.CancelRequest;
-import com.zhangxuan.runrunv2.dto.VersionRequest;
+import com.zhangxuan.runrunv2.dto.PaymentVersionRequest;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.security.IdentityWebConfiguration;
 import com.zhangxuan.runrunv2.service.PaymentService;
@@ -18,6 +18,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -57,17 +77,17 @@ public class PaymentController {
     }
 
     @PostMapping("/payments/{id}/attempts")
-    public StartedPaymentVO start(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody VersionRequest body) {
+    public StartedPaymentVO start(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody PaymentVersionRequest body) {
         return service.start(IdentityWebConfiguration.bearer(request), id, key, body);
     }
 
     @PostMapping("/payments/{id}/query")
-    public PaymentSummaryVO query(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody VersionRequest body) {
+    public PaymentSummaryVO query(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody PaymentVersionRequest body) {
         return service.queryPayment(IdentityWebConfiguration.bearer(request), id, key, body);
     }
 
     @PostMapping("/refunds/{id}/query")
-    public RefundOrderVO queryRefund(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody VersionRequest body) {
+    public RefundOrderVO queryRefund(HttpServletRequest request, @PathVariable String id, @RequestHeader("Idempotency-Key") String key, @RequestBody PaymentVersionRequest body) {
         return service.queryRefund(IdentityWebConfiguration.bearer(request), id, key, body);
     }
 

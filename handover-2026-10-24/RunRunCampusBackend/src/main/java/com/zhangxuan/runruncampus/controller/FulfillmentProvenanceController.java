@@ -1,11 +1,11 @@
 package com.zhangxuan.runruncampus.controller;
 
-import com.zhangxuan.runruncampus.dto.CreateRequest;
+import com.zhangxuan.runruncampus.dto.FulfillmentProvenanceCreateRequest;
 import com.zhangxuan.runruncampus.enums.AdminPermission;
 import com.zhangxuan.runruncampus.service.AuthService;
 import com.zhangxuan.runruncampus.service.FulfillmentProvenanceService;
-import com.zhangxuan.runruncampus.vo.Entry;
-import com.zhangxuan.runruncampus.vo.Summary;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceEntryVO;
+import com.zhangxuan.runruncampus.vo.FulfillmentProvenanceSummaryVO;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +15,23 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -47,23 +64,23 @@ public class FulfillmentProvenanceController {
     }
 
     @PostMapping
-    public Entry record(@RequestHeader("Authorization") String authorization, @RequestBody CreateRequest request) {
+    public FulfillmentProvenanceEntryVO record(@RequestHeader("Authorization") String authorization, @RequestBody FulfillmentProvenanceCreateRequest request) {
         return service.record(auth.requirePermission(authorization, AdminPermission.PROVENANCE_RECORD), request);
     }
 
     @PostMapping("/{id}/verify")
-    public Entry verify(@RequestHeader("Authorization") String authorization, @PathVariable long id) {
+    public FulfillmentProvenanceEntryVO verify(@RequestHeader("Authorization") String authorization, @PathVariable long id) {
         return service.verify(auth.requirePermission(authorization, AdminPermission.PROVENANCE_VERIFY), id);
     }
 
     @GetMapping
-    public List<Entry> list(@RequestHeader("Authorization") String authorization, @RequestParam(defaultValue = "0") int page) {
+    public List<FulfillmentProvenanceEntryVO> list(@RequestHeader("Authorization") String authorization, @RequestParam(defaultValue = "0") int page) {
         auth.requirePermission(authorization, AdminPermission.PROVENANCE_VIEW);
         return service.list(page);
     }
 
     @GetMapping("/summary")
-    public Summary summary(@RequestHeader("Authorization") String authorization) {
+    public FulfillmentProvenanceSummaryVO summary(@RequestHeader("Authorization") String authorization) {
         auth.requirePermission(authorization, AdminPermission.PROVENANCE_VIEW);
         return service.summary();
     }

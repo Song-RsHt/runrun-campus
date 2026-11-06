@@ -2,7 +2,12 @@ package com.zhangxuan.runruncampus.service;
 
 import com.zhangxuan.runruncampus.enums.AdminRole;
 import com.zhangxuan.runruncampus.enums.Queue;
-import com.zhangxuan.runruncampus.vo.Snapshot;
+import com.zhangxuan.runruncampus.vo.CommandCenterSnapshotVO;
+
+
+
+
+
 
 
 
@@ -29,5 +34,5 @@ import com.zhangxuan.runruncampus.vo.Snapshot;
  */
 public interface AdminCommandCenterService {
 
-    Snapshot snapshot(AdminRole role, Queue queue, int orderPage, int courierPage);
+    CommandCenterSnapshotVO snapshot(AdminRole role, Queue queue, int orderPage, int courierPage);
 }

@@ -1,8 +1,13 @@
 package com.zhangxuan.runrunv2.service;
 
 import com.zhangxuan.runrunv2.model.UploadSource;
-import com.zhangxuan.runrunv2.vo.Certification;
+import com.zhangxuan.runrunv2.vo.CourierCertificationVO;
 import java.util.Map;
+
+
+
+
+
 
 
 
@@ -29,11 +34,11 @@ import java.util.Map;
  */
 public interface CourierCertificationV2Service {
 
-    Certification apply(String token, IdentityService identity, String requestId);
+    CourierCertificationVO apply(String token, IdentityService identity, String requestId);
 
-    Certification upload(String token, IdentityService identity, long id, long expectedVersion, String requestId, UploadSource file);
+    CourierCertificationVO upload(String token, IdentityService identity, long id, long expectedVersion, String requestId, UploadSource file);
 
-    Certification decide(String token, IdentityService identity, long id, long expectedVersion, String resource, String decision, String reason, String requestId);
+    CourierCertificationVO decide(String token, IdentityService identity, long id, long expectedVersion, String resource, String decision, String reason, String requestId);
 
     byte[] read(String token, IdentityService identity, long id, String resource, String requestId);
 
@@ -41,7 +46,7 @@ public interface CourierCertificationV2Service {
 
     Map<String, Object> performance(String token, long courier, int page, int size);
 
-    Certification get(long subject, long id);
+    CourierCertificationVO get(long subject, long id);
 
-    Certification getMine(long courier);
+    CourierCertificationVO getMine(long courier);
 }

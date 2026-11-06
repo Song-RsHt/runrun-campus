@@ -3,9 +3,9 @@ package com.zhangxuan.runrunv2.controller.payment;
 import com.zhangxuan.runrunv2.IdentityApplication;
 import com.zhangxuan.runrunv2.config.OrderJson;
 import com.zhangxuan.runrunv2.dto.CancelRequest;
-import com.zhangxuan.runrunv2.dto.CreateRequest;
-import com.zhangxuan.runrunv2.dto.ResultRequest;
-import com.zhangxuan.runrunv2.dto.VersionRequest;
+import com.zhangxuan.runrunv2.dto.CreateOrderRequest;
+import com.zhangxuan.runrunv2.dto.PaymentResultRequest;
+import com.zhangxuan.runrunv2.dto.PaymentVersionRequest;
 import com.zhangxuan.runrunv2.enums.Result;
 import com.zhangxuan.runrunv2.enums.ServiceType;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
@@ -67,6 +67,75 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -307,12 +376,12 @@ class PaymentIntegrationTest {
 
   CreatedOrderVO create() {
     return orders.create(
-        user, key(), new CreateRequest(ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
+        user, key(), new CreateOrderRequest(ServiceType.PACKAGE_XL, "STANDARD", "TEST", "合成目的地", 0L));
   }
 
   StartedPaymentVO start(String id) {
     return payments.start(
-        user, id, key(), new VersionRequest(payments.get(user, id).payment().version()));
+        user, id, key(), new PaymentVersionRequest(payments.get(user, id).payment().version()));
   }
 
   PaymentAttemptVO result(String id, Result result) {
@@ -322,7 +391,7 @@ class PaymentIntegrationTest {
             Long.class,
             Long.valueOf(id));
     return payments.paymentResult(
-        admin, id, key(), new ResultRequest(version, result, "event-" + key()));
+        admin, id, key(), new PaymentResultRequest(version, result, "event-" + key()));
   }
 
   RefundOrderVO resultRefund(String id, Result result) {
@@ -330,7 +399,7 @@ class PaymentIntegrationTest {
         db.queryForObject(
             "SELECT version FROM runrun_v2.refund_orders WHERE id=?", Long.class, Long.valueOf(id));
     return payments.refundResult(
-        admin, id, key(), new ResultRequest(version, result, "event-" + key()));
+        admin, id, key(), new PaymentResultRequest(version, result, "event-" + key()));
   }
 
   CreatedOrderVO paid() {
@@ -426,12 +495,12 @@ class PaymentIntegrationTest {
     Callable<StartedPaymentVO> start =
         () ->
             payments.start(
-                user, c.originalPayment().id(), "same-concurrent-key", new VersionRequest(0L));
+                user, c.originalPayment().id(), "same-concurrent-key", new PaymentVersionRequest(0L));
     race(start, start);
     assertEquals(1, count("payment_attempts"));
     failure(
         "PAYMENT_RESULT_PENDING",
-        () -> payments.start(user, c.originalPayment().id(), key(), new VersionRequest(1L)));
+        () -> payments.start(user, c.originalPayment().id(), key(), new PaymentVersionRequest(1L)));
   }
 
   @Test
@@ -441,7 +510,7 @@ class PaymentIntegrationTest {
     new TransactionTemplate(transactions)
         .executeWithoutResult(s -> adapter.record("PAYMENT", first.attempt().id(), Result.FAILED));
     payments.queryPayment(
-        user, c.originalPayment().id(), key(), new VersionRequest(summary(c).payment().version()));
+        user, c.originalPayment().id(), key(), new PaymentVersionRequest(summary(c).payment().version()));
     var second = start(c.originalPayment().id());
     result(first.attempt().id(), Result.FAILED);
     assertEquals("PROCESSING", summary(c).payment().status());
@@ -462,7 +531,7 @@ class PaymentIntegrationTest {
             user,
             c.originalPayment().id(),
             key(),
-            new VersionRequest(summary(c).payment().version()));
+            new PaymentVersionRequest(summary(c).payment().version()));
     assertEquals("UNKNOWN", pending.payment().status());
     assertEquals(1, count("payment_attempts"));
     // Channel has received success but the callback was lost, then the process restarts.
@@ -470,7 +539,7 @@ class PaymentIntegrationTest {
         .executeWithoutResult(s -> adapter.record("PAYMENT", a.attempt().id(), Result.SUCCESS));
     var reconciled =
         payments.queryPayment(
-            user, c.originalPayment().id(), key(), new VersionRequest(pending.payment().version()));
+            user, c.originalPayment().id(), key(), new PaymentVersionRequest(pending.payment().version()));
     assertEquals("PAID", reconciled.payment().status());
     assertEquals(1, count("payment_financial_events"));
     assertEquals("PENDING_ASSIGNMENT", orders.get(user, c.order().id()).status());
@@ -480,13 +549,13 @@ class PaymentIntegrationTest {
   void duplicateRequestEventAndRegressiveResultsNeverDoubleBook() {
     var c = create();
     String id = c.originalPayment().id();
-    var request = new VersionRequest(0L);
+    var request = new PaymentVersionRequest(0L);
     StartedPaymentVO first = payments.start(user, id, "attempt-key", request);
     assertEquals(first, payments.start(user, id, "attempt-key", request));
     failure(
         "IDEMPOTENCY_KEY_CONFLICT",
-        () -> payments.start(user, id, "attempt-key", new VersionRequest(1L)));
-    var body = new ResultRequest(0L, Result.SUCCESS, "same-event");
+        () -> payments.start(user, id, "attempt-key", new PaymentVersionRequest(1L)));
+    var body = new PaymentResultRequest(0L, Result.SUCCESS, "same-event");
     var result = payments.paymentResult(admin, first.attempt().id(), "callback-key", body);
     assertEquals(result, payments.paymentResult(admin, first.attempt().id(), "callback-key", body));
     assertEquals(
@@ -502,7 +571,7 @@ class PaymentIntegrationTest {
                 admin,
                 first.attempt().id(),
                 key(),
-                new ResultRequest(0L, Result.FAILED, "same-event")));
+                new PaymentResultRequest(0L, Result.FAILED, "same-event")));
   }
 
   @Test
@@ -519,7 +588,7 @@ class PaymentIntegrationTest {
                 admin,
                 a.attempt().id(),
                 "global-one",
-                new ResultRequest(0L, Result.SUCCESS, "global-shared-event"));
+                new PaymentResultRequest(0L, Result.SUCCESS, "global-shared-event"));
           } catch (IdentityFailure failure) {
             assertEquals("IDEMPOTENCY_KEY_CONFLICT", failure.code);
             return null;
@@ -532,7 +601,7 @@ class PaymentIntegrationTest {
                 otherAdmin,
                 b.attempt().id(),
                 "global-two",
-                new ResultRequest(0L, Result.SUCCESS, "global-shared-event"));
+                new PaymentResultRequest(0L, Result.SUCCESS, "global-shared-event"));
           } catch (IdentityFailure failure) {
             assertEquals("IDEMPOTENCY_KEY_CONFLICT", failure.code);
             return null;
@@ -575,7 +644,7 @@ class PaymentIntegrationTest {
             user,
             c.originalPayment().id(),
             key(),
-            new VersionRequest(summary(c).payment().version()));
+            new PaymentVersionRequest(summary(c).payment().version()));
     assertEquals("CLOSED", reconciled.payment().status());
     assertEquals(1, reconciled.refunds().size());
   }
@@ -618,7 +687,7 @@ class PaymentIntegrationTest {
     new TransactionTemplate(transactions)
         .executeWithoutResult(
             s -> adapter.record("REFUND", cancelled.refunds().get(0).id(), Result.SUCCESS));
-    r = payments.queryRefund(user, r.id(), key(), new VersionRequest(r.version()));
+    r = payments.queryRefund(user, r.id(), key(), new PaymentVersionRequest(r.version()));
     assertEquals("SUCCEEDED", r.status());
     assertNotNull(r.succeededAt());
     resultRefund(r.id(), Result.SUCCESS);
@@ -843,7 +912,7 @@ class PaymentIntegrationTest {
                   admin,
                   a.attempt().id(),
                   callbackKey,
-                  new ResultRequest(0L, Result.SUCCESS, eventId)),
+                  new PaymentResultRequest(0L, Result.SUCCESS, eventId)),
           () -> {
             try {
               return payments.cancel(
@@ -869,7 +938,7 @@ class PaymentIntegrationTest {
                 admin,
                 a.attempt().id(),
                 "race-callback",
-                new ResultRequest(0L, Result.SUCCESS, "race-event")),
+                new PaymentResultRequest(0L, Result.SUCCESS, "race-event")),
         () -> {
           try {
             return payments.cancel(
@@ -908,7 +977,7 @@ class PaymentIntegrationTest {
     var c = create();
     var a = start(c.originalPayment().id());
     String url = "/api/v2/test/payment-attempts/" + a.attempt().id() + "/result";
-    String content = json.write(new ResultRequest(0L, Result.SUCCESS, "http-event"));
+    String content = json.write(new PaymentResultRequest(0L, Result.SUCCESS, "http-event"));
     http.perform(
             post(url)
                 .header("Authorization", "Bearer " + user)

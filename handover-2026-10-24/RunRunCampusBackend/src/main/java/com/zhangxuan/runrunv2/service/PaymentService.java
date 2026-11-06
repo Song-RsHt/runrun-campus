@@ -1,8 +1,8 @@
 package com.zhangxuan.runrunv2.service;
 
 import com.zhangxuan.runrunv2.dto.CancelRequest;
-import com.zhangxuan.runrunv2.dto.ResultRequest;
-import com.zhangxuan.runrunv2.dto.VersionRequest;
+import com.zhangxuan.runrunv2.dto.PaymentResultRequest;
+import com.zhangxuan.runrunv2.dto.PaymentVersionRequest;
 import com.zhangxuan.runrunv2.vo.AdjustmentFundsVO;
 import com.zhangxuan.runrunv2.vo.CancelledOrderVO;
 import com.zhangxuan.runrunv2.vo.OriginalPaymentVO;
@@ -11,6 +11,19 @@ import com.zhangxuan.runrunv2.vo.PaymentSummaryVO;
 import com.zhangxuan.runrunv2.vo.RefundOrderVO;
 import com.zhangxuan.runrunv2.vo.StartedPaymentVO;
 import java.time.OffsetDateTime;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -59,15 +72,15 @@ public interface PaymentService extends OriginalPaymentWriter {
 
     PaymentSummaryVO get(String token, String paymentId);
 
-    StartedPaymentVO start(String token, String paymentId, String key, VersionRequest body);
+    StartedPaymentVO start(String token, String paymentId, String key, PaymentVersionRequest body);
 
-    PaymentSummaryVO queryPayment(String token, String id, String key, VersionRequest body);
+    PaymentSummaryVO queryPayment(String token, String id, String key, PaymentVersionRequest body);
 
-    PaymentAttemptVO paymentResult(String token, String id, String key, ResultRequest body);
+    PaymentAttemptVO paymentResult(String token, String id, String key, PaymentResultRequest body);
 
-    RefundOrderVO refundResult(String token, String id, String key, ResultRequest body);
+    RefundOrderVO refundResult(String token, String id, String key, PaymentResultRequest body);
 
-    RefundOrderVO queryRefund(String token, String id, String key, VersionRequest body);
+    RefundOrderVO queryRefund(String token, String id, String key, PaymentVersionRequest body);
 
     CancelledOrderVO cancel(String token, String id, String key, CancelRequest body);
 

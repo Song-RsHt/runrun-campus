@@ -1,6 +1,6 @@
 package com.zhangxuan.runrunv2.vo;
 
-import com.zhangxuan.runrunv2.model.Pricing;
+import com.zhangxuan.runrunv2.model.OrderPricing;
 
 
 
@@ -12,5 +12,8 @@ import com.zhangxuan.runrunv2.model.Pricing;
 
 
 
-public record OrderQuoteVO(Pricing pricingSnapshot, long configVersion) {
+
+
+
+public record OrderQuoteVO(OrderPricing pricingSnapshot, long configVersion) {
 }

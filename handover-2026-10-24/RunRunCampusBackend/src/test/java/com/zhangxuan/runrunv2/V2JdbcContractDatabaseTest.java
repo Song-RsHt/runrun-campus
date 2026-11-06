@@ -6,7 +6,7 @@ import com.zhangxuan.runrunv2.mapper.CourierEvidenceGovernanceMapper;
 import com.zhangxuan.runrunv2.service.IdentityService;
 import com.zhangxuan.runrunv2.service.impl.CourierCertificationV2ServiceImpl;
 import com.zhangxuan.runrunv2.service.impl.CourierEvidenceGovernanceServiceImpl;
-import com.zhangxuan.runrunv2.vo.Account;
+import com.zhangxuan.runrunv2.vo.IdentityAccountVO;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -27,6 +27,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -177,7 +206,7 @@ class V2JdbcContractDatabaseTest {
   void performanceExecutesAgainstTheDeliveredSchema() {
     var identity = mock(IdentityService.class);
     when(identity.requireRole("admin-session", "ADMIN", false))
-        .thenReturn(new Account("999", "ADMIN", "ACTIVE", true, 0, false));
+        .thenReturn(new IdentityAccountVO("999", "ADMIN", "ACTIVE", true, 0, false));
     var service =
         new CourierCertificationV2ServiceImpl(
             new CourierCertificationV2Mapper(db), identity, null, null, null);
@@ -218,7 +247,7 @@ class V2JdbcContractDatabaseTest {
             courier);
     var identity = mock(IdentityService.class);
     when(identity.authorizeForWrite("admin-session", "ADMIN", false))
-        .thenReturn(new Account(Long.toString(admin), "ADMIN", "ACTIVE", true, 0, false));
+        .thenReturn(new IdentityAccountVO(Long.toString(admin), "ADMIN", "ACTIVE", true, 0, false));
     var service =
         new CourierEvidenceGovernanceServiceImpl(
             new CourierEvidenceGovernanceMapper(db), null, identity, mock(OrderIdempotency.class));

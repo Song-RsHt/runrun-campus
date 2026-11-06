@@ -7,12 +7,12 @@ import com.zhangxuan.runruncampus.enums.Queue;
 import com.zhangxuan.runruncampus.enums.ServiceType;
 import com.zhangxuan.runruncampus.enums.UserRole;
 import com.zhangxuan.runruncampus.exception.BusinessFailure;
-import com.zhangxuan.runruncampus.model.Settings;
 import com.zhangxuan.runruncampus.repository.OrderRepository;
 import com.zhangxuan.runruncampus.repository.UserRepository;
 import com.zhangxuan.runruncampus.service.AdminCommandCenterService;
 import com.zhangxuan.runruncampus.service.AdminDispatchService;
 import com.zhangxuan.runruncampus.service.PlatformSettingsService;
+import com.zhangxuan.runruncampus.vo.PlatformSettingsVO;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
@@ -38,6 +38,46 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mockStatic;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -316,7 +356,7 @@ class AdminCommandCenterPostgresIntegrationTest {
     long id = order(customer, "PENDING_ASSIGNMENT", "PAID", NOW.minusSeconds(3600));
     payment(id, customer, NOW.minusSeconds(420));
     AppUser administrator = user(UserRole.ADMIN);
-    settings.update(administrator, new Settings("10:00–22:00", 5, 30, 2, 30, 120));
+    settings.update(administrator, new PlatformSettingsVO("10:00–22:00", 5, 30, 2, 30, 120));
     try (var time = mockStatic(Instant.class, CALLS_REAL_METHODS)) {
       time.when(Instant::now).thenReturn(NOW);
       var result = service.snapshot(AdminRole.OPERATIONS, Queue.LATE_WAITING, 0, 0);
@@ -337,7 +377,7 @@ class AdminCommandCenterPostgresIntegrationTest {
     long active = order(customer, "ACCEPTED", "PAID", NOW);
     jdbc.update("update campus_orders set courier_id = ? where id = ?", busy.getId(), active);
     long waiting = order(customer, "PENDING_ASSIGNMENT", "PAID", NOW);
-    settings.update(user(UserRole.ADMIN), new Settings("09:00–23:00", 10, 30, 1, 30, 120));
+    settings.update(user(UserRole.ADMIN), new PlatformSettingsVO("09:00–23:00", 10, 30, 1, 30, 120));
     var result = dispatchService.candidates(waiting, 0);
     assertEquals(1, result.totalElements());
     assertEquals(idle.getId(), result.items().get(0).courierId());
