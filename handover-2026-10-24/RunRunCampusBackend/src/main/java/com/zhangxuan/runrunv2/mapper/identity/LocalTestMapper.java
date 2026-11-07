@@ -1,99 +1,33 @@
 package com.zhangxuan.runrunv2.mapper.identity;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import com.zhangxuan.runrunv2.config.SingleRowRequired;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
-/** LocalTestBootstrap数据访问；使用调用方事务绑定的 JDBC 连接，不开启或提交事务。 */
-@Repository
-public class LocalTestMapper {
+/** 身份与会话持久化映射；事务、锁顺序及业务校验由原调用方保持。 */
+@Mapper
+public interface LocalTestMapper {
 
-    private final JdbcTemplate jdbc;
+    void initializeIsolatedFixtures();
 
-    public LocalTestMapper(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+    List<Map<String, Object>> findLocalTestAdmin();
 
-    public void initializeIsolatedFixtures() {
-        jdbc.execute(
-                """
-                SELECT pg_advisory_xact_lock(7082001)
-                """);
-    }
+    @SingleRowRequired
+    Boolean hasLocalTestEnableAudit();
 
-    public List<Map<String, Object>> findLocalTestAdmin() {
-        return jdbc.queryForList(
-                """
-                SELECT password_hash,
-                    role,
-                    v2_admin_enabled
-                FROM runrun_v2.app_users
-                WHERE phone = 'test-admin'
-                """);
-    }
+    @SingleRowRequired
+    Long countUsers();
 
-    public Boolean hasLocalTestEnableAudit() {
-        return jdbc.queryForObject(
-                """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM runrun_v2.admin_audit_logs
-                    WHERE request_id = 'local-test-enable'
-                        AND reason = 'Isolated synthetic local test fixture')
-                """,
-                Boolean.class);
-    }
+    @SingleRowRequired
+    Long insertLocalTestAdmin(@Param("passwordHash") String passwordHash);
 
-    public Long countUsers() {
-        return jdbc.queryForObject(
-                """
-                SELECT count(*)
-                FROM runrun_v2.app_users
-                """,
-                Long.class);
-    }
-
-    public Long insertLocalTestAdmin(String passwordHash) {
-        return jdbc.queryForObject(
-                """
-                INSERT INTO runrun_v2.app_users (
-                    phone,
-                    role,
-                    password_hash
-                )
-                VALUES (
-                    'test-admin',
-                    'USER',
-                    ?
-                )
-                RETURNING id
-                """,
-                Long.class,
-                passwordHash);
-    }
-
-    public int insertWechatIdentity(
-            long userId, String appId, String openidHash, String openidCiphertext) {
-        return jdbc.update(
-                """
-                INSERT INTO runrun_v2.wechat_identities (
-                    user_id,
-                    app_id,
-                    openid_hash,
-                    openid_ciphertext
-                )
-                VALUES (
-                    ?,
-                    ?,
-                    ?,
-                    ?
-                )
-                """,
-                userId,
-                appId,
-                openidHash,
-                openidCiphertext);
-    }
+    int insertWechatIdentity(
+            @Param("userId") long userId,
+            @Param("appId") String appId,
+            @Param("openidHash") String openidHash,
+            @Param("openidCiphertext") String openidCiphertext);
 }

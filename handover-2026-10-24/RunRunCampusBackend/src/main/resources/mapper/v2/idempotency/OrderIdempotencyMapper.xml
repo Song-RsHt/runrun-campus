@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper">
+
+    <select id="findRequestForUpdate" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT request_hash,
+            response_snapshot,
+            status
+        FROM runrun_v2.idempotency_requests
+        WHERE actor_id = #{actor,jdbcType=BIGINT}
+            AND scope = #{scope,jdbcType=VARCHAR}
+            AND key = #{key,jdbcType=VARCHAR}
+        FOR UPDATE
+    </select>
+
+    <insert id="insertRequest">
+        INSERT INTO runrun_v2.idempotency_requests (
+            actor_id,
+            scope,
+            key,
+            request_hash,
+            status
+        )
+        VALUES (
+            #{actorId,jdbcType=BIGINT},
+            #{scope,jdbcType=VARCHAR},
+            #{key,jdbcType=VARCHAR},
+            #{requestHash,jdbcType=VARCHAR},
+            'PROCESSING'
+        )
+    </insert>
+
+    <update id="completeRequest">
+        UPDATE runrun_v2.idempotency_requests
+        SET status = 'SUCCEEDED',
+            resource_type = #{resourceType,jdbcType=VARCHAR},
+            resource_id = #{resourceId,jdbcType=VARCHAR},
+            response_snapshot = #{responseJson,jdbcType=VARCHAR}::jsonb,
+            updated_at = now()
+        WHERE actor_id = #{actor,jdbcType=BIGINT}
+            AND scope = #{scope,jdbcType=VARCHAR}
+            AND key = #{key,jdbcType=VARCHAR}
+    </update>
+</mapper>

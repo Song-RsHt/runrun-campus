@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.identity.IdentityMapper">
+    <resultMap id="IdentityUserResult" type="com.zhangxuan.runrunv2.model.identity.IdentityUser">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="role" javaType="java.lang.String"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="v2_admin_enabled" javaType="_boolean"/>
+            <arg column="v2_admin_security_version" javaType="_long"/>
+            <arg column="controlled_identity" javaType="_boolean"/>
+            <arg column="password_hash" javaType="java.lang.String"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findWechatUsersForUpdate" resultMap="IdentityUserResult" useCache="false" flushCache="true">
+        SELECT u.*
+        FROM runrun_v2.app_users u
+        JOIN runrun_v2.wechat_identities w
+        ON w.user_id = u.id
+        WHERE w.app_id = #{appId,jdbcType=VARCHAR}
+            AND w.openid_hash = #{digest,jdbcType=VARCHAR}
+        FOR UPDATE OF u
+    </select>
+
+    <insert id="insertWechatTicket">
+        INSERT INTO runrun_v2.identity_tickets (
+            token_hash,
+            kind,
+            app_id,
+            openid_hash,
+            openid_ciphertext,
+            expires_at
+        )
+        VALUES (
+            #{tokenHash,jdbcType=VARCHAR},
+            'WECHAT_LOGIN',
+            #{appId,jdbcType=VARCHAR},
+            #{openidHash,jdbcType=VARCHAR},
+            #{openidCiphertext,jdbcType=VARCHAR},
+            now() + interval '5 minutes'
+        )
+    </insert>
+
+    <select id="countWechatIdentity" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.wechat_identities
+        WHERE app_id = #{appId,jdbcType=VARCHAR}
+            AND openid_hash = #{openidHash,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findPhoneUsersForUpdate" resultMap="IdentityUserResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.app_users
+        WHERE phone = #{phone,jdbcType=VARCHAR}
+        FOR UPDATE
+    </select>
+
+
+    <insert id="insertPendingCertification">
+        INSERT INTO runrun_v2.courier_certifications (
+            courier_id
+        )
+        VALUES (
+            #{courierId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="countUserWechatBindings" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.wechat_identities
+        WHERE app_id = #{appId,jdbcType=VARCHAR}
+            AND user_id = #{userId,jdbcType=BIGINT}
+    </select>
+
+    <insert id="insertWechatBinding">
+        INSERT INTO runrun_v2.wechat_identities (
+            user_id,
+            app_id,
+            openid_hash,
+            openid_ciphertext
+        )
+        VALUES (
+            #{userId,jdbcType=BIGINT},
+            #{appId,jdbcType=VARCHAR},
+            #{openidHash,jdbcType=VARCHAR},
+            #{openidCiphertext,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <insert id="insertWechatBoundEvent">
+        INSERT INTO runrun_v2.identity_audit_events (
+            actor_id,
+            event_type,
+            subject_id
+        )
+        VALUES (
+            #{actorId,jdbcType=BIGINT},
+            'WECHAT_BOUND',
+            #{subjectId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="findPasswordUsersForUpdate" resultMap="IdentityUserResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.app_users
+        WHERE phone = #{phone,jdbcType=VARCHAR}
+        FOR UPDATE
+    </select>
+
+    <select id="countPasswordUserBindings" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.wechat_identities
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+            AND app_id = #{appId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findActiveSessionUser" resultMap="IdentityUserResult" useCache="false" flushCache="true">
+        SELECT u.*
+        FROM runrun_v2.user_sessions s
+        JOIN runrun_v2.app_users u
+        ON u.id = s.user_id
+        WHERE s.token_hash = #{hash,jdbcType=VARCHAR}
+            AND s.invalidated_at IS NULL
+            AND s.expires_at &gt; now()
+            AND s.security_version = u.v2_admin_security_version
+    </select>
+
+    <update id="invalidateUserSessions">
+        UPDATE runrun_v2.user_sessions
+        SET invalidated_at = now()
+        WHERE user_id = #{accountId,jdbcType=BIGINT}
+            AND invalidated_at IS NULL
+    </update>
+
+    <update id="invalidateSession">
+        UPDATE runrun_v2.user_sessions
+        SET invalidated_at = now()
+        WHERE token_hash = #{hash,jdbcType=VARCHAR}
+            AND invalidated_at IS NULL
+    </update>
+
+    <insert id="insertRevocationEvent">
+        INSERT INTO runrun_v2.identity_audit_events (
+            actor_id,
+            event_type,
+            subject_id
+        )
+        VALUES (
+            #{actorId,jdbcType=BIGINT},
+            'SESSION_REVOKED',
+            #{subjectId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <update id="updatePassword">
+        UPDATE runrun_v2.app_users
+        SET password_hash = #{passwordHash,jdbcType=VARCHAR},
+            version = version + 1,
+            updated_at = now()
+        WHERE id = #{userId,jdbcType=BIGINT}
+    </update>
+
+    <update id="invalidatePasswordUserSessions">
+        UPDATE runrun_v2.user_sessions
+        SET invalidated_at = now()
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+            AND invalidated_at IS NULL
+    </update>
+
+    <insert id="insertPasswordRevocationEvent">
+        INSERT INTO runrun_v2.identity_audit_events (
+            actor_id,
+            event_type,
+            subject_id
+        )
+        VALUES (
+            #{actorId,jdbcType=BIGINT},
+            'SESSION_REVOKED',
+            #{subjectId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="findIdentityRequestHashes" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT request_hash
+        FROM runrun_v2.idempotency_requests
+        WHERE actor_id = #{id,jdbcType=BIGINT}
+            AND scope = #{scope,jdbcType=VARCHAR}
+            AND key = #{key,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertIdentityRequest">
+        INSERT INTO runrun_v2.idempotency_requests (
+            actor_id,
+            scope,
+            key,
+            request_hash,
+            status
+        )
+        VALUES (
+            #{actorId,jdbcType=BIGINT},
+            #{scope,jdbcType=VARCHAR},
+            #{key,jdbcType=VARCHAR},
+            #{requestHash,jdbcType=VARCHAR},
+            'PROCESSING'
+        )
+    </insert>
+
+    <update id="completeIdentityRequest">
+        UPDATE runrun_v2.idempotency_requests
+        SET status = 'SUCCEEDED',
+            updated_at = now()
+        WHERE actor_id = #{id,jdbcType=BIGINT}
+            AND scope = #{scope,jdbcType=VARCHAR}
+            AND key = #{key,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findUser" resultMap="IdentityUserResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.app_users
+        WHERE id = #{id,jdbcType=BIGINT}
+        
+        <if test="locked">
+        FOR UPDATE
+        </if>
+    </select>
+
+    <insert id="insertSession">
+        INSERT INTO runrun_v2.user_sessions (
+            user_id,
+            token_hash,
+            expires_at,
+            security_version
+        )
+        VALUES (
+            #{userId,jdbcType=BIGINT},
+            #{tokenHash,jdbcType=VARCHAR},
+            now() + interval '24 hours',
+            #{securityVersion,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <select id="isCourierEligible" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.courier_certifications
+            WHERE courier_id = #{userId,jdbcType=BIGINT}
+                AND eligible)
+    </select>
+
+    <select id="findTicketForUpdate" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.identity_tickets
+        WHERE token_hash = #{hash,jdbcType=VARCHAR}
+            AND kind = #{kind,jdbcType=VARCHAR}
+            AND consumed_at IS NULL
+            AND expires_at &gt; now()
+        FOR UPDATE
+    </select>
+
+    <update id="consumeTicket">
+        UPDATE runrun_v2.identity_tickets
+        SET consumed_at = now()
+        WHERE token_hash = #{hash,jdbcType=VARCHAR}
+    </update>
+
+    <select id="lockIdentityScope" resultType="java.lang.Object" useCache="false" flushCache="true">
+        SELECT pg_advisory_xact_lock(hashtextextended(#{key,jdbcType=VARCHAR}, 0))
+    </select>
+</mapper>

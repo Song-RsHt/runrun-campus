@@ -1,47 +1,19 @@
 package com.zhangxuan.runrunv2.mapper.identity;
 
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
+import com.zhangxuan.runrunv2.config.SingleRowRequired;
 
-/** IdentityStartupGuard数据访问；使用调用方事务绑定的 JDBC 连接，不开启或提交事务。 */
-@Repository
-public class IdentityStartupMapper {
+import org.apache.ibatis.annotations.Mapper;
 
-    private final JdbcTemplate jdbc;
+/** 身份与会话持久化映射；事务、锁顺序及业务校验由原调用方保持。 */
+@Mapper
+public interface IdentityStartupMapper {
 
-    public IdentityStartupMapper(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
-    }
+    @SingleRowRequired
+    Boolean isIdentitySchemaInstalled();
 
-    public Boolean isIdentitySchemaInstalled() {
-        return jdbc.queryForObject(
-                """
-                SELECT EXISTS (
-                    SELECT 1
-                    FROM pg_class c
-                    JOIN pg_namespace n
-                    ON n.oid = c.relnamespace
-                    WHERE n.nspname = 'public'
-                        AND c.relkind IN ('r', 'p', 'v', 'm', 'S', 'f'))
-                """,
-                Boolean.class);
-    }
+    @SingleRowRequired
+    Long countUsersWithControlledIdentityFlag();
 
-    public Long countUsersWithControlledIdentityFlag() {
-        return jdbc.queryForObject(
-                """
-                SELECT count(controlled_identity)
-                FROM runrun_v2.app_users
-                """,
-                Long.class);
-    }
-
-    public Long countIdentityTickets() {
-        return jdbc.queryForObject(
-                """
-                SELECT count(*)
-                FROM runrun_v2.identity_tickets
-                """,
-                Long.class);
-    }
+    @SingleRowRequired
+    Long countIdentityTickets();
 }

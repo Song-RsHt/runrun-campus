@@ -13,7 +13,6 @@ import com.zhangxuan.runrunv2.service.identity.DeploymentIdentityService;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -49,17 +48,17 @@ class LocalTestBoundaryTest {
                         .withProperty("RRC_V2_BOOTSTRAP_CONFIRM", "CREATE_ISOLATED_TEST_ADMIN")
                         .withProperty("RRC_V2_ADMIN_PASSWORD", UUID.randomUUID().toString())
                         .withProperty(key, value);
-        var db = mock(JdbcTemplate.class);
+        var mapper = mock(LocalTestMapper.class);
         var deployment = mock(DeploymentIdentityService.class);
         var bootstrap =
                 new LocalTestBootstrap(
-                        new LocalTestMapper(db),
+                        mapper,
                         env,
                         mock(IdentitySecrets.class),
                         deployment,
                         mock(PlatformTransactionManager.class),
                         mock(IdentityStartupGuard.class));
         assertThrows(IllegalStateException.class, () -> bootstrap.run(null));
-        verifyNoInteractions(db, deployment);
+        verifyNoInteractions(mapper, deployment);
     }
 }

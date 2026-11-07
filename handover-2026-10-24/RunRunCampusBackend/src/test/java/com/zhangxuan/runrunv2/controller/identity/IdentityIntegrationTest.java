@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.zhangxuan.runrunv2.IdentityApplication;
+import com.zhangxuan.runrunv2.V2MapperFixture;
 import com.zhangxuan.runrunv2.bootstrap.IdentityStartupGuard;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
@@ -35,8 +36,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -562,7 +563,9 @@ class IdentityIntegrationTest {
             assertThrows(
                     IllegalStateException.class,
                     () ->
-                            new IdentityStartupGuard(new IdentityStartupMapper(db), "test")
+                            new IdentityStartupGuard(
+                                            V2MapperFixture.mapper(db, IdentityStartupMapper.class),
+                                            "test")
                                     .run(null));
         } finally {
             db.execute("DROP TABLE public.app_users");
@@ -618,7 +621,9 @@ class IdentityIntegrationTest {
         assertThrows(
                 IllegalStateException.class,
                 () ->
-                        new IdentityStartupGuard(new IdentityStartupMapper(db), "production")
+                        new IdentityStartupGuard(
+                                        V2MapperFixture.mapper(db, IdentityStartupMapper.class),
+                                        "production")
                                 .run(null));
         assertThrows(
                 IllegalStateException.class,

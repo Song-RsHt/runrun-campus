@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper">
+
+    <select id="isIdentitySchemaInstalled" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM pg_class c
+            JOIN pg_namespace n
+            ON n.oid = c.relnamespace
+            WHERE n.nspname = 'public'
+                AND c.relkind IN ('r', 'p', 'v', 'm', 'S', 'f'))
+    </select>
+
+    <select id="countUsersWithControlledIdentityFlag" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(controlled_identity)
+        FROM runrun_v2.app_users
+    </select>
+
+    <select id="countIdentityTickets" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.identity_tickets
+    </select>
+</mapper>
