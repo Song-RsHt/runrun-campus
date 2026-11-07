@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper">
+
+    <resultMap id="ServicePointVOResult" type="com.zhangxuan.runrunv2.vo.order.ServicePointVO">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="code" javaType="java.lang.String"/>
+            <arg column="name" javaType="java.lang.String"/>
+            <arg column="latitude" javaType="java.math.BigDecimal"/>
+            <arg column="longitude" javaType="java.math.BigDecimal"/>
+            <arg column="coordinate_system" javaType="java.lang.String"/>
+            <arg column="enabled" javaType="_boolean"/>
+            <arg column="config_version" javaType="_long"/>
+            <arg column="version" javaType="_long"/>
+        </constructor>
+    </resultMap>
+
+    <select id="lockSettings" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.platform_settings
+        WHERE id = 1
+        FOR
+        
+        <choose>
+        <when test="forUpdate">
+        UPDATE
+        </when>
+        <otherwise>
+        SHARE</otherwise>
+        </choose>
+    </select>
+
+
+    <select id="findServicePoints" resultMap="ServicePointVOResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.service_points
+        
+        <if test="!(includeDisabled)">
+        WHERE enabled
+        </if>
+         ORDER BY id
+    </select>
+
+
+    <select id="findEnabledServicePoint" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.service_points
+        WHERE code = #{code,jdbcType=VARCHAR}
+            AND enabled
+    </select>
+
+    <insert id="upsertZone">
+        INSERT INTO runrun_v2.delivery_zones (
+            code,
+            name,
+            package_surcharge_cents,
+            enabled,
+            config_version
+        )
+        VALUES (
+            #{code,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR},
+            #{packageSurchargeCents,jdbcType=BIGINT},
+            #{enabled,jdbcType=BOOLEAN},
+            #{configVersion,jdbcType=BIGINT}
+        )
+        ON CONFLICT (
+            code
+        ) DO UPDATE
+        SET name = excluded.name,
+            package_surcharge_cents = excluded.package_surcharge_cents,
+            enabled = excluded.enabled,
+            config_version = excluded.config_version,
+            version = delivery_zones.version + 1,
+            updated_at = now (
+        
+        )
+    </insert>
+
+    <insert id="upsertServicePoint">
+        INSERT INTO runrun_v2.service_points (
+            code,
+            name,
+            latitude,
+            longitude,
+            coordinate_system,
+            enabled,
+            config_version
+        )
+        VALUES (
+            #{code,jdbcType=VARCHAR},
+            #{name,jdbcType=VARCHAR},
+            #{latitude,jdbcType=NUMERIC},
+            #{longitude,jdbcType=NUMERIC},
+            #{coordinateSystem,jdbcType=VARCHAR},
+            #{enabled,jdbcType=BOOLEAN},
+            #{configVersion,jdbcType=BIGINT}
+        )
+        ON CONFLICT (
+            code
+        ) DO UPDATE
+        SET name = excluded.name,
+            latitude = excluded.latitude,
+            longitude = excluded.longitude,
+            coordinate_system = excluded.coordinate_system,
+            enabled = excluded.enabled,
+            config_version = excluded.config_version,
+            version = service_points.version + 1,
+            updated_at = now (
+        
+        )
+    </insert>
+
+    <update id="updateSettings">
+        UPDATE runrun_v2.platform_settings
+        SET new_order_enabled = #{enabled,jdbcType=BOOLEAN},
+            review_owner_id = #{reviewOwnerId,jdbcType=BIGINT},
+            config_version = config_version + 1,
+            version = version + 1,
+            updated_at = now()
+        WHERE id = 1
+    </update>
+
+    <insert id="insertConfigChangeAudit">
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            #{administratorId,jdbcType=BIGINT},
+            'SERVICE_CONFIG_CHANGED',
+            'SERVICE_CONFIG',
+            1,
+            #{requestId,jdbcType=VARCHAR},
+            #{reason,jdbcType=VARCHAR},
+            #{metadata,jdbcType=VARCHAR}::jsonb
+        )
+    </insert>
+
+    <select id="isEligibleReviewOwner" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.app_users
+            WHERE id = #{userId,jdbcType=BIGINT}
+                AND role = 'ADMIN'
+                AND status = 'ACTIVE'
+                AND v2_admin_enabled
+                AND NOT controlled_identity)
+    </select>
+</mapper>
