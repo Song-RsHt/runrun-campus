@@ -1,0 +1,16 @@
+BOOT-INF/classes/mapper/v2/configuration/ServiceConfigMapper.xml
+BOOT-INF/classes/mapper/v2/courier/CourierCertificationV2Mapper.xml
+BOOT-INF/classes/mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml
+BOOT-INF/classes/mapper/v2/fulfillment/FulfillmentMapper.xml
+BOOT-INF/classes/mapper/v2/fulfillment/FulfillmentQueryMapper.xml
+BOOT-INF/classes/mapper/v2/idempotency/OrderIdempotencyMapper.xml
+BOOT-INF/classes/mapper/v2/identity/DeploymentIdentityMapper.xml
+BOOT-INF/classes/mapper/v2/identity/IdentityMapper.xml
+BOOT-INF/classes/mapper/v2/identity/IdentityStartupMapper.xml
+BOOT-INF/classes/mapper/v2/identity/LocalTestMapper.xml
+BOOT-INF/classes/mapper/v2/notification/NotificationMapper.xml
+BOOT-INF/classes/mapper/v2/notification/NotificationOutboxMapper.xml
+BOOT-INF/classes/mapper/v2/order/OrderMapper.xml
+BOOT-INF/classes/mapper/v2/order/OrderReadMapper.xml
+BOOT-INF/classes/mapper/v2/payment/MockPaymentMapper.xml
+BOOT-INF/classes/mapper/v2/payment/PaymentMapper.xml

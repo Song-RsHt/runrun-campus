@@ -57,7 +57,15 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/configuration/ServiceConfigMapper.xml#lockSettings`",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -123,7 +131,15 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "BaseMapper<DeliveryZoneEntity>.selectList + LambdaQueryWrapper：按 id 升序，按原 includeDisabled 过滤，再映射原 VO",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -189,7 +205,15 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/configuration/ServiceConfigMapper.xml#findServicePoints`",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -245,7 +269,15 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "固定分为 findEnabledZone（BaseMapper.selectMaps + LambdaQueryWrapper）和 findEnabledServicePoint（XML），不接受表名参数",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -325,7 +357,15 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/configuration/ServiceConfigMapper.xml#upsertZone`",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -421,7 +461,15 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/configuration/ServiceConfigMapper.xml#upsertServicePoint`",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -484,7 +532,15 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/configuration/ServiceConfigMapper.xml#updateSettings`",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -556,7 +612,15 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/configuration/ServiceConfigMapper.xml#insertConfigChangeAudit`",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper",
@@ -607,7 +671,15 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/configuration/ServiceConfigMapper.xml#isEligibleReviewOwner`",
+        "tests": [
+          "OrderIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -673,7 +745,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#lockCourierCertification`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -747,7 +829,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "BaseMapper<CourierCertificationEntity>.insert：仅 courierId，保留 NOT_APPLIED/false/version=0 数据库默认值",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -811,7 +903,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#resubmitCertification`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -878,7 +980,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#findCertificationId`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -966,7 +1078,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#updateSubmittedPhoto`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1038,7 +1160,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#touchCertificationIfVersionMatches`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1110,7 +1242,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#approveCertification`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1190,7 +1332,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#rejectCertification`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1265,7 +1417,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#countPhotoDeletionsInProgress`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1361,7 +1523,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#insertPhotoReadAudit`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1458,7 +1630,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#countCertifications`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1574,7 +1756,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#pageCertifications`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1647,7 +1839,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#countDeliveredTasks`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1717,7 +1919,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#summarizeDeliveredTasks`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1809,7 +2021,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#pageDeliveredTasks`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1873,7 +2095,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#findCourierCertification`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -1948,7 +2180,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#lockCertification`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -2017,7 +2259,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#lockActor`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper",
@@ -2121,7 +2373,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/courier/CourierCertificationV2Mapper.xml#insertCertificationEvent`",
+        "tests": [
+          "CourierCertificationV2DatabaseE2ETest",
+          "CourierCertificationAdminListDatabaseTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2173,7 +2435,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#countOrderById`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2225,7 +2496,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#countCertificationById`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2309,7 +2589,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#insertEvidenceHold`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2398,7 +2687,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#insertHoldCreatedAudit`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2449,7 +2747,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#lockEvidenceHold`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2498,7 +2805,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#releaseEvidenceHold`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2571,7 +2887,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#insertHoldReleasedAudit`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2623,7 +2948,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#countActiveCertificationHolds`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2712,7 +3046,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#insertDeletionRequestIfAbsent`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2754,7 +3097,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#lockDueDeletions`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2794,7 +3146,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#findExpiredApprovedPhotos`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2846,7 +3207,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#countActiveHoldsBeforeDeletion`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2895,7 +3265,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#markDeletionInProgress`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -2974,7 +3353,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#clearSubmittedPhoto`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -3037,7 +3425,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#clearApprovedPhoto`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -3086,7 +3483,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#markDeletionSucceeded`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -3143,7 +3549,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#markDeletionFailed`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -3197,7 +3612,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#lockOrder`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper",
@@ -3262,7 +3686,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/evidence/CourierEvidenceGovernanceMapper.xml#lockCertification`",
+        "tests": [
+          "CourierEvidenceGovernanceServiceTest",
+          "V2JdbcContractDatabaseTest",
+          "V2FeatureWiringIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3349,7 +3782,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#insertActiveTask`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3409,7 +3851,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#lockActiveCourier`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3472,7 +3923,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countActiveTasksForInvitation`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3535,7 +3995,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#findLatestTaskId`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3622,7 +4091,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#insertTaskOffer`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3685,7 +4163,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countActiveTasksForResponse`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3753,7 +4240,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#acceptTaskOffer`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3816,7 +4312,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countPickupProofs`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3887,7 +4392,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countTaskProofs`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -3950,7 +4464,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countProofsByStorageKey`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4045,7 +4568,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#insertOrderProof`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4121,7 +4653,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#findLocationRequest`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4184,7 +4725,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countAcceptedDeliveryLocations`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4327,7 +4877,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#insertLocationEvent`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4395,7 +4954,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#markTaskPickedUp`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4482,7 +5050,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countValidDeliveryLocations`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4558,7 +5135,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#markTaskDelivered`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4650,7 +5236,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#markOrderDelivered`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4713,7 +5308,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#findOrdersDueForConfirmation`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4789,7 +5393,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#insertCompletionBlock`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4865,7 +5478,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#deleteCompletionBlock`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -4949,7 +5571,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#restartConfirmationWindow`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5025,7 +5656,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#markOrderCompleted`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5096,7 +5736,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#hasAdjustmentCompletionBlock`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5159,7 +5808,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#hasAfterSalesCompletionBlock`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5222,7 +5880,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countActiveCourierTasks`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5282,7 +5949,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#lockOrderUser`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5353,7 +6029,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#findLatestCourierTaskId`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5416,7 +6101,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#findTask`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5479,7 +6173,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#isTaskUnsuperseded`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5550,7 +6253,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#isLatestOrderTask`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5637,7 +6349,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#countAvailableTaskProofs`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5713,7 +6434,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#supersedeOtherTasks`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5797,7 +6527,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#cancelOtherOffers`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -5873,7 +6612,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#endTask`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -6041,7 +6789,16 @@
           ],
           "calls": []
         }
-      ]
+      ],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "原六个受控委托分别展开为 markOrderAccepted、clearOrderConfirmation、acceptOrderAndClearConfirmation、markOrderPendingAssignment、advanceOrderVersion、markOrderPickedUp XML；无动态 SET 拼接",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -6104,7 +6861,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#findOrder`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -6167,7 +6933,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#hasPendingSupplement`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -6235,7 +7010,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "原方法默认适配 readLocationEvent XML → LocationEventRow，再附加调用方 orderVersion；数据库 SQL 不变",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -6335,7 +7119,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#insertOrderEvent`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",
@@ -6411,7 +7204,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentMapper.xml#insertNotificationIfAbsent`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentQueryMapper",
@@ -6493,7 +7295,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentQueryMapper.xml#findCourierTasks`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentQueryMapper",
@@ -6562,7 +7373,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/fulfillment/FulfillmentQueryMapper.xml#findPaidOrderPool`",
+        "tests": [
+          "FulfillmentIntegrationTest",
+          "CourierCertificationV2DatabaseE2ETest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper",
@@ -6624,7 +7444,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/idempotency/OrderIdempotencyMapper.xml#findRequestForUpdate`",
+        "tests": [
+          "OrderIntegrationTest",
+          "PaymentIntegrationTest",
+          "FulfillmentIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper",
@@ -6692,7 +7521,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/idempotency/OrderIdempotencyMapper.xml#insertRequest`",
+        "tests": [
+          "OrderIntegrationTest",
+          "PaymentIntegrationTest",
+          "FulfillmentIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.idempotency.OrderIdempotencyMapper",
@@ -6776,7 +7614,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/idempotency/OrderIdempotencyMapper.xml#completeRequest`",
+        "tests": [
+          "OrderIntegrationTest",
+          "PaymentIntegrationTest",
+          "FulfillmentIntegrationTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -6818,7 +7665,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#deploymentIdentityExists`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -6860,7 +7717,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#insertDeploymentIdentity`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -6911,7 +7778,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#hasWechatBinding`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -6967,7 +7844,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#promoteToDisabledAdmin`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -7009,7 +7896,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#settingsInstalled`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -7060,7 +7957,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#isReviewOwner`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -7124,7 +8031,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#updateAdminAccess`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -7172,7 +8089,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#invalidateAdminSessions`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -7260,7 +8187,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#insertAccessAudit`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper",
@@ -7324,7 +8261,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/DeploymentIdentityMapper.xml#findAccessAudit`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7394,7 +8341,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#findWechatUsersForUpdate`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7475,7 +8432,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#insertWechatTicket`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7543,7 +8510,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#countWechatIdentity`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7605,7 +8582,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#findPhoneUsersForUpdate`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7673,7 +8660,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "BaseMapper<AppUserEntity>.insert：只写 phone/role，IdType.AUTO 返回数据库 identity",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7741,7 +8738,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "IdentityServiceImpl 同事务调用 CourierCertificationV2Mapper.insertPendingCertification → BaseMapper<CourierCertificationEntity>.insert",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7809,7 +8816,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#countUserWechatBindings`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7890,7 +8907,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#insertWechatBinding`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -7955,7 +8982,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#insertWechatBoundEvent`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8017,7 +9054,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#findPasswordUsersForUpdate`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8085,7 +9132,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#countPasswordUserBindings`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8145,7 +9202,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#findActiveSessionUser`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8202,7 +9269,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#invalidateUserSessions`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8259,7 +9336,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#invalidateSession`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8324,7 +9411,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#insertRevocationEvent`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8389,7 +9486,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#updatePassword`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8446,7 +9553,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#invalidatePasswordUserSessions`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8511,7 +9628,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#insertPasswordRevocationEvent`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8587,7 +9714,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#findIdentityRequestHashes`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8668,7 +9805,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#insertIdentityRequest`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8741,7 +9888,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#completeIdentityRequest`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8820,7 +9977,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#findUser`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8893,7 +10060,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#insertSession`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -8953,7 +10130,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#isCourierEligible`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -9020,7 +10207,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#findTicketForUpdate`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -9077,7 +10274,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#consumeTicket`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityMapper",
@@ -9137,7 +10344,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityMapper.xml#lockIdentityScope`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper",
@@ -9175,7 +10392,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityStartupMapper.xml#isIdentitySchemaInstalled`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper",
@@ -9213,7 +10440,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityStartupMapper.xml#countUsersWithControlledIdentityFlag`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.IdentityStartupMapper",
@@ -9251,7 +10488,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/IdentityStartupMapper.xml#countIdentityTickets`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
@@ -9286,7 +10533,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/LocalTestMapper.xml#initializeIsolatedFixtures`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
@@ -9321,7 +10578,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/LocalTestMapper.xml#findLocalTestAdmin`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
@@ -9359,7 +10626,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/LocalTestMapper.xml#hasLocalTestEnableAudit`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
@@ -9397,7 +10674,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/LocalTestMapper.xml#countUsers`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
@@ -9444,7 +10731,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/LocalTestMapper.xml#insertLocalTestAdmin`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper",
@@ -9512,7 +10809,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/identity/LocalTestMapper.xml#insertWechatIdentity`",
+        "tests": [
+          "IdentityIntegrationTest",
+          "LocalTestBoundaryTest",
+          "V2FeatureWiringIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationMapper",
@@ -9561,7 +10868,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationMapper.xml#findUserNotifications`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationMapper",
@@ -9618,7 +10934,16 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationMapper.xml#markNotificationRead`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationMapper",
@@ -9671,7 +10996,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationMapper.xml#claimOutboxDeliveries`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationMapper",
@@ -9743,7 +11077,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationMapper.xml#completeDelivery`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper",
@@ -9799,7 +11142,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationOutboxMapper.xml#claimOutboxDeliveries`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper",
@@ -9871,7 +11223,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationOutboxMapper.xml#completeDelivery`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper",
@@ -9909,7 +11270,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationOutboxMapper.xml#runReviewTimers`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper",
@@ -9947,7 +11317,16 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/notification/NotificationOutboxMapper.xml#isNotificationRuntimeInstalled`",
+        "tests": [
+          "V2FeatureWiringIntegrationTest",
+          "NotificationRuntimeTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.order.OrderMapper",
@@ -10093,7 +11472,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/order/OrderMapper.xml#insertOrder`",
+        "tests": [
+          "OrderIntegrationTest",
+          "PaymentIntegrationTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.order.OrderMapper",
@@ -10164,7 +11553,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/order/OrderMapper.xml#insertOrderCreatedEvent`",
+        "tests": [
+          "OrderIntegrationTest",
+          "PaymentIntegrationTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.order.OrderStore",
@@ -10332,7 +11731,17 @@
         "src/test/java/com/zhangxuan/runruncampus/controller/admin/AdminOrderDeliveryProofControllerTest.java",
         "src/test/java/com/zhangxuan/runruncampus/service/courier/CourierCertificationServiceTest.java",
         "src/test/java/com/zhangxuan/runruncampus/service/message/OrderMessageServiceTest.java"
-      ]
+      ],
+      "migration": {
+        "implementation": "BaseMapper/Wrapper/明确委托",
+        "target": "OrderStore.read → OrderReadMapper.findOrder → mapper/v2/order/OrderReadMapper.xml#findOrder；参数解析/404/事务与版本校验仍留原组件",
+        "tests": [
+          "OrderIntegrationTest",
+          "PaymentIntegrationTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper",
@@ -10384,7 +11793,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/MockPaymentMapper.xml#insertProcessingResult`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper",
@@ -10436,7 +11855,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/MockPaymentMapper.xml#findResult`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper",
@@ -10491,7 +11920,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/MockPaymentMapper.xml#findResultVersion`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper",
@@ -10551,7 +11990,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/MockPaymentMapper.xml#updateResultUnlessSuccessful`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper",
@@ -10595,7 +12044,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/MockPaymentMapper.xml#retryFailedRefund`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -10670,7 +12129,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertOriginalPayment`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -10729,7 +12198,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findNextAttemptNumber`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -10804,7 +12283,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertPaymentAttempt`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -10868,7 +12357,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#cancelPendingAdjustments`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -10924,7 +12423,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#markRefundProcessing`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -10983,7 +12492,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#countAdjustmentById`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11042,7 +12561,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#countPendingAdjustments`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11146,7 +12675,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertApprovedAdjustment`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11218,7 +12757,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#updateEffectiveFeeAndClearConfirmation`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11301,7 +12850,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertSupplementPayment`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11360,7 +12919,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findExpiredUnpaidOrderIds`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11424,7 +12993,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#closeUnpaidOriginalPayments`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11496,7 +13075,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#updateAttemptResult`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11576,7 +13165,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#markPaymentPaid`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11660,7 +13259,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#markOrderPendingAssignment`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11732,7 +13341,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#updateRefundResult`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11791,7 +13410,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#countUnfinishedAdjustmentRefunds`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11850,7 +13479,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findRefundIdsByBusinessKey`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -11973,7 +13612,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertRefund`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12037,7 +13686,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#completePendingAdjustment`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12096,7 +13755,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findAdjustmentOrderId`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12155,7 +13824,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#isSupplementPending`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12214,7 +13893,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#sumReservedRefundCents`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12273,7 +13962,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findCreditedAttemptId`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12345,7 +14044,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#cancelOrderAndClearConfirmation`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12401,7 +14110,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#lockOrderNotificationRecipient`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12481,7 +14200,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#updatePaymentStatusIfDifferent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12559,7 +14288,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findPayment`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12618,7 +14357,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findAttempt`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12677,7 +14426,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findRefund`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12736,7 +14495,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findAttemptIds`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12795,7 +14564,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findPaymentIdsByOrder`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12854,7 +14633,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findRefundIdsByOrder`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12934,7 +14723,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertResultEvent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -12993,7 +14792,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#lockResultEvent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13049,7 +14858,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findResultEvent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13108,7 +14927,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#findRefundSourceAttemptId`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13167,7 +14996,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#sumSucceededRefundCents`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13226,7 +15065,17 @@
       },
       "rowCount": "queryForObject/queryForMap 必须恰一行，列表保留空列表及顺序",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#sumRecordedPlatformRefundCents`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13330,7 +15179,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertRefundFinancialEvent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13418,7 +15277,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertOrderEventIfAbsent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13522,7 +15391,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertFinancialEventIfAbsent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13594,7 +15473,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertOrderNotificationIfAbsent`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.payment.PaymentMapper",
@@ -13682,7 +15571,17 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "migration": {
+        "implementation": "Mapper XML",
+        "target": "`mapper/v2/payment/PaymentMapper.xml#insertAdminAudit`",
+        "tests": [
+          "PaymentIntegrationTest",
+          "PaymentEnvironmentTest",
+          "FulfillmentIntegrationTest",
+          "MybatisPersistenceDatabaseTest"
+        ]
+      }
     }
   ]
 }

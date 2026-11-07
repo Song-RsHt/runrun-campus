@@ -1,0 +1,173 @@
+{
+  "date": "2026-11-07",
+  "branch": "refactor/v2-mybatis-plus",
+  "baseline": "3ff3cfeea48890f03177e29fd997c6dfbe3b5b69",
+  "finalSource": "6b2ff0c1e126e26210fa738290ed129f377928b4",
+  "evidenceDirectory": "D:/biancheng/rrc-mybatis-evidence/",
+  "clones": {
+    "baseline": {
+      "path": "D:/biancheng/rrc-mybatis-evidence/baseline-source",
+      "project": "rrc-mp-baseline-20261107"
+    },
+    "final": {
+      "path": "D:/biancheng/rrc-mybatis-evidence/final-source",
+      "project": "rrc-mp-final-20261107"
+    }
+  },
+  "checks": [
+    {
+      "log": "baseline-compile.log",
+      "sha256": "642a0142d094afae106526b92831c7bf72de1748c7ee96f4f9a91ce30a8858c0",
+      "command": "mvn -B -ntp -DskipTests test-compile",
+      "exitCode": 0
+    },
+    {
+      "log": "baseline-test.log",
+      "sha256": "9112da5700e0ea077cccd6e3a7f804abe8de4a5ad56eb502829ef14c0e7a162a",
+      "command": "mvn -B -ntp clean test",
+      "exitCode": 0,
+      "count": 500,
+      "countUnit": "tests",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "baseline-isolated.log",
+      "sha256": "5e53cf937f4a4a46c341ea7ddd964ad8edf6223cbd0bd6357c4c08a046cf47c9",
+      "command": "pwsh -NoProfile -File tools/run-v2-isolated-tests.ps1",
+      "exitCode": 0,
+      "count": 128,
+      "countUnit": "tests",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "baseline-compose.log",
+      "sha256": "ed5faceb09e6913b81f2fa721b64391b98845f34e10bcb3198aa0cd3b6898e0b",
+      "command": "docker compose --env-file .env.v2-test -f compose.v2-test.yml up --build -d",
+      "exitCode": 0
+    },
+    {
+      "log": "baseline-environment.log",
+      "sha256": "1ed3b99949968224129115b4581459b35cf2cd18d46bd443ebc4e7aff2ecad5c",
+      "command": "pwsh -NoProfile -File tools/verify-v2-environment.ps1",
+      "exitCode": 0,
+      "count": 41,
+      "countUnit": "PASS checks"
+    },
+    {
+      "log": "final-compile.log",
+      "sha256": "0695644be76e118dd26328b2680d57d119794f42ba8d13173c8b4da9c8fd04af",
+      "command": "mvn -B -ntp -DskipTests test-compile",
+      "exitCode": 0
+    },
+    {
+      "log": "final-test.log",
+      "sha256": "7d2f4279b07e1fe376492319f0d7fcabbab549fbaf860a0af9a42cb623bd432f",
+      "command": "mvn -B -ntp clean test",
+      "exitCode": 0,
+      "count": 506,
+      "countUnit": "tests",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "final-package.log",
+      "sha256": "3cb1a7d514a40782adfd2ab8a301d4da346ba5991950c5a26cf3f7f72c19bd16",
+      "command": "mvn -B -ntp -Pv2-identity -DskipTests package",
+      "exitCode": 0
+    },
+    {
+      "log": "final-isolated.log",
+      "sha256": "094f308fb97d210ffd69c758e86c5b6a6dada0171738ab5c39645d4d88ff4d70",
+      "command": "pwsh -NoProfile -File tools/run-v2-isolated-tests.ps1",
+      "exitCode": 0,
+      "count": 134,
+      "countUnit": "tests",
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "log": "final-migrations.log",
+      "sha256": "75388d3f60fa72e0efbb8313194f743044f5661fec40c27ce5dbe427082bcbc5",
+      "command": "pwsh -NoProfile -File tools/verify-v2-local-migrations.ps1",
+      "exitCode": 0,
+      "count": 30,
+      "countUnit": "PASS checks"
+    },
+    {
+      "log": "final-compose.log",
+      "sha256": "5b6bf6a5e1bb3ba744c830ba786b91d9b43c5d28194450084fc157fc12f86d85",
+      "command": "docker compose --env-file .env.v2-test -f compose.v2-test.yml up --build -d",
+      "exitCode": 0
+    },
+    {
+      "log": "final-environment.log",
+      "sha256": "0d26ed7d81dd1dd1ef9c3e8b5cd2f05c07bdd465a77c4d52b81b1038d637a302",
+      "command": "pwsh -NoProfile -File tools/verify-v2-environment.ps1",
+      "exitCode": 0,
+      "count": 41,
+      "countUnit": "PASS checks"
+    },
+    {
+      "log": "sql-delivery.log",
+      "sha256": "5ef144dee1b1273ae55fbe0e4bbdd716028e25e136dd130bad5ebf2cb051c8d2",
+      "command": "node tools/verify-v2-persistence-sql.cjs",
+      "exitCode": 0,
+      "count": 404,
+      "countUnit": "SQL expansions"
+    }
+  ],
+  "contracts": {
+    "hostJarXml": 16,
+    "dockerJarXml": 16,
+    "transactionAndScheduledDeclarationsUnchanged": 59,
+    "sqlExpansions": 404,
+    "baseMapperWrapperDelegationEntries": 5,
+    "originalJdbcExecutionPoints": 199,
+    "originalPersistenceClasses": 16,
+    "baselineMainSources": 518,
+    "baselineTestSources": 78,
+    "finalMainSources": 533,
+    "finalTestSources": 81,
+    "protectedPathsChanged": 0,
+    "v2MainJdbcResiduals": 0,
+    "dependencyArtifactsAdded": 8,
+    "existingDependencyVersionsChanged": 0
+  },
+  "exploratoryFailures": [
+    {
+      "log": "config-tests.log",
+      "issue": "Wrapper default method missing; fixed; 15 order tests passed"
+    },
+    {
+      "log": "fulfillment-tests.log",
+      "issue": "29 constructor mapping errors; explicit maps fixed; 31 passed"
+    },
+    {
+      "log": "mapping-tests.log",
+      "issue": "3 test accessor compile errors; corrected"
+    },
+    {
+      "log": "mapping-tests-run.log",
+      "issue": "advisory void PGobject versus null; scoped handler fixed; 3 passed"
+    }
+  ],
+  "knownWarnings": [
+    "Baseline and final Surefire fork shutdown warning after System.exit; build exit 0.",
+    "Background datasource connection warnings during context shutdown."
+  ],
+  "notRun": [
+    "Independent QA",
+    "Client builds",
+    "Real external WeChat/payment integration",
+    "Preproduction/production deployment"
+  ],
+  "deliveryRecheck": {
+    "status": "pending; documentation commit will be checked in clean clone with identical backend tree"
+  }
+}

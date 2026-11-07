@@ -1,0 +1,9 @@
+com.zhangxuan:runrun-campus-backend:jar:0.0.1-SNAPSHOT
+\- com.baomidou:mybatis-plus-spring-boot3-starter:jar:3.5.12:compile
+   +- com.baomidou:mybatis-plus:jar:3.5.12:compile
+   |  +- com.baomidou:mybatis-plus-core:jar:3.5.12:compile
+   |  +- com.baomidou:mybatis-plus-annotation:jar:3.5.12:compile
+   |  +- com.baomidou:mybatis-plus-spring:jar:3.5.12:compile
+   |  |  \- com.baomidou:mybatis-plus-extension:jar:3.5.12:compile
+   |  \- org.mybatis:mybatis:jar:3.5.19:compile
+   \- org.mybatis:mybatis-spring:jar:3.0.4:compile
