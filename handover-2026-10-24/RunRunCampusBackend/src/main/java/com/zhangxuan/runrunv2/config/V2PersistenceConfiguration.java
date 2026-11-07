@@ -2,6 +2,7 @@ package com.zhangxuan.runrunv2.config;
 
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.LocalCacheScope;
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.dao.DataAccessException;
 
+import java.util.Map;
+
 import javax.sql.DataSource;
 
 /** 仅由 v2 扫描装配，复用 Spring 数据源与事务；不影响 legacy JPA。 */
@@ -24,7 +27,8 @@ import javax.sql.DataSource;
         sqlSessionTemplateRef = "v2SqlSessionTemplate")
 public class V2PersistenceConfiguration {
     @Bean
-    public SqlSessionFactory v2SqlSessionFactory(DataSource dataSource) throws Exception {
+    public SqlSessionFactory v2SqlSessionFactory(DataSource dataSource, ObjectMapper json)
+            throws Exception {
         MybatisConfiguration configuration = new MybatisConfiguration();
         // JDBC 原来每次访问数据库；不能缓存锁查询或同事务中的可变投影。
         configuration.setLocalCacheScope(LocalCacheScope.STATEMENT);
@@ -32,6 +36,10 @@ public class V2PersistenceConfiguration {
         configuration.setCallSettersOnNulls(true);
         configuration.setReturnInstanceForEmptyRow(true);
         configuration.addInterceptor(new SingleRowInterceptor());
+        // null Java 类型只登记处理器实例，不替换 Map/Object 默认映射；仅 XML 显式引用。
+        configuration
+                .getTypeHandlerRegistry()
+                .register((Class<Map<String, Object>>) null, new OutboxPayloadTypeHandler(json));
         MybatisSqlSessionFactoryBean factory = new MybatisSqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setConfiguration(configuration);

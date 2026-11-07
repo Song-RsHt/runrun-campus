@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper">
+    <resultMap id="DeliveryResult" type="com.zhangxuan.runrunv2.model.notification.Delivery">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="recipient_id" javaType="_long"/>
+            <arg column="event_key" javaType="java.lang.String"/>
+            <arg column="channel" javaType="java.lang.String"/>
+            <arg column="payload" javaType="java.util.Map" typeHandler="com.zhangxuan.runrunv2.config.OutboxPayloadTypeHandler"/>
+            <arg column="attempt_count" javaType="_int"/>
+        </constructor>
+    </resultMap>
+
+    <select id="claimOutboxDeliveries" resultMap="DeliveryResult" useCache="false" flushCache="true" affectData="true">
+        SELECT id,
+            recipient_id,
+            event_key,
+            channel,
+            payload,
+            attempt_count
+        FROM runrun_v2.claim_notification_outbox(#{limit,jdbcType=INTEGER})
+    </select>
+
+    <select id="completeDelivery" resultType="java.lang.Object" useCache="false" flushCache="true" affectData="true">
+        SELECT runrun_v2.complete_notification_outbox(#{outboxId,jdbcType=BIGINT}, #{success,jdbcType=BOOLEAN}, #{error,jdbcType=VARCHAR})
+    </select>
+
+    <select id="runReviewTimers" resultType="java.lang.Integer" useCache="false" flushCache="true" affectData="true">
+        SELECT runrun_v2.run_notification_review_timers()
+    </select>
+
+    <select id="isNotificationRuntimeInstalled" resultType="java.lang.Boolean" useCache="false" flushCache="true" affectData="true">
+        SELECT to_regprocedure('runrun_v2.claim_notification_outbox(integer)') IS NOT NULL
+            AND to_regprocedure('runrun_v2.run_notification_review_timers()') IS NOT NULL
+    </select>
+</mapper>
