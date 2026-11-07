@@ -3,6 +3,8 @@ package com.zhangxuan.runrunv2.config;
 import com.baomidou.mybatisplus.core.MybatisConfiguration;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zhangxuan.runrunv2.model.order.OrderAddress;
+import com.zhangxuan.runrunv2.model.order.OrderPricing;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.session.LocalCacheScope;
@@ -40,6 +42,16 @@ public class V2PersistenceConfiguration {
         configuration
                 .getTypeHandlerRegistry()
                 .register((Class<Map<String, Object>>) null, new OutboxPayloadTypeHandler(json));
+        OrderJson orderJson = new OrderJson(json);
+        configuration
+                .getTypeHandlerRegistry()
+                .register((Class<OrderAddress>) null, new OrderAddressTypeHandler(orderJson));
+        configuration
+                .getTypeHandlerRegistry()
+                .register((Class<OrderPricing>) null, new OrderPricingTypeHandler(orderJson));
+        configuration
+                .getTypeHandlerRegistry()
+                .register((Class<Map<String, Object>>) null, new OrderPolicyTypeHandler(orderJson));
         MybatisSqlSessionFactoryBean factory = new MybatisSqlSessionFactoryBean();
         factory.setDataSource(dataSource);
         factory.setConfiguration(configuration);
