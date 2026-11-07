@@ -65,7 +65,11 @@ class CourierCertificationAdminListDatabaseTest {
                 .thenReturn(new IdentityAccountVO("999", "ADMIN", "ACTIVE", true, 0, false));
         var service =
                 new CourierCertificationV2ServiceImpl(
-                        new CourierCertificationV2Mapper(db), identity, null, null, null);
+                        V2MapperFixture.mapper(db, CourierCertificationV2Mapper.class),
+                        identity,
+                        null,
+                        null,
+                        null);
         assertEquals(0L, service.adminList("test-session", null, null, 0, 20).get("totalElements"));
         long first =
                 db.queryForObject(

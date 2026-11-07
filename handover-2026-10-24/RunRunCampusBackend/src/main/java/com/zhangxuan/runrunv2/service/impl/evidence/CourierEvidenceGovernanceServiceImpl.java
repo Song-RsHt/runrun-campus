@@ -8,11 +8,9 @@ import com.zhangxuan.runrunv2.service.evidence.CourierEvidenceGovernanceService;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import com.zhangxuan.runrunv2.vo.evidence.EvidenceHoldResultVO;
 
-import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Types;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Map;
@@ -81,12 +79,7 @@ public class CourierEvidenceGovernanceServiceImpl implements CourierEvidenceGove
                         orderId, certificationId, reason, owner, due.atOffset(ZoneOffset.UTC));
         // jsonb_build_object 无法推断可空多态参数类型；两个引用均显式转为 BIGINT。
         mapper.insertHoldCreatedAudit(
-                owner,
-                id,
-                requestId,
-                "evidence hold created",
-                new SqlParameterValue(Types.BIGINT, orderId),
-                new SqlParameterValue(Types.BIGINT, certificationId));
+                owner, id, requestId, "evidence hold created", orderId, certificationId);
         EvidenceHoldResultVO result = new EvidenceHoldResultVO(id);
         idempotency.finish(
                 Long.toString(owner),

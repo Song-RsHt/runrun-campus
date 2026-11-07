@@ -69,7 +69,11 @@ class V2JdbcContractDatabaseTest {
                 .thenReturn(new IdentityAccountVO("999", "ADMIN", "ACTIVE", true, 0, false));
         var service =
                 new CourierCertificationV2ServiceImpl(
-                        new CourierCertificationV2Mapper(db), identity, null, null, null);
+                        V2MapperFixture.mapper(db, CourierCertificationV2Mapper.class),
+                        identity,
+                        null,
+                        null,
+                        null);
         Map<String, Object> result = service.performance("admin-session", 999, 0, 20);
         assertEquals(0L, result.get("totalCompletedPackageOrders"));
         assertEquals(
@@ -113,7 +117,7 @@ class V2JdbcContractDatabaseTest {
                                 Long.toString(admin), "ADMIN", "ACTIVE", true, 0, false));
         var service =
                 new CourierEvidenceGovernanceServiceImpl(
-                        new CourierEvidenceGovernanceMapper(db),
+                        V2MapperFixture.mapper(db, CourierEvidenceGovernanceMapper.class),
                         null,
                         identity,
                         mock(OrderIdempotency.class));
@@ -161,7 +165,10 @@ class V2JdbcContractDatabaseTest {
                         courier);
         var service =
                 new CourierEvidenceGovernanceServiceImpl(
-                        new CourierEvidenceGovernanceMapper(db), null, null, null);
+                        V2MapperFixture.mapper(db, CourierEvidenceGovernanceMapper.class),
+                        null,
+                        null,
+                        null);
         Instant due = Instant.parse("2030-02-03T04:05:06.654321Z");
         tx.executeWithoutResult(
                 status ->

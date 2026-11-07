@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper">
+
+    <select id="countOrderById" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.v2_orders
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </select>
+
+    <select id="countCertificationById" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.courier_certifications
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+    </select>
+
+    <select id="insertEvidenceHold" resultType="java.lang.Long" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.evidence_holds (
+            order_id,
+            certification_id,
+            reason,
+            owner_id,
+            review_due_at
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{certificationId,jdbcType=BIGINT},
+            #{reason,jdbcType=VARCHAR},
+            #{ownerId,jdbcType=BIGINT},
+            #{reviewDueAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        )
+        RETURNING id
+    </select>
+
+    <insert id="insertHoldCreatedAudit">
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            #{administratorId,jdbcType=BIGINT},
+            'EVIDENCE_HOLD_CREATED',
+            'EVIDENCE_HOLD',
+            #{holdId,jdbcType=BIGINT},
+            #{requestId,jdbcType=VARCHAR},
+            #{reason,jdbcType=VARCHAR},
+            jsonb_build_object('orderId', #{orderIdParameter,jdbcType=BIGINT}, 'certificationId', #{certificationIdParameter,jdbcType=BIGINT})
+        )
+    </insert>
+
+    <select id="lockEvidenceHold" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT order_id,
+            certification_id,
+            released_at
+        FROM runrun_v2.evidence_holds
+        WHERE id = #{holdId,jdbcType=BIGINT}
+        FOR UPDATE
+    </select>
+
+    <update id="releaseEvidenceHold">
+        UPDATE runrun_v2.evidence_holds
+        SET released_at = now()
+        WHERE id = #{holdId,jdbcType=BIGINT}
+    </update>
+
+    <insert id="insertHoldReleasedAudit">
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            #{administratorId,jdbcType=BIGINT},
+            'EVIDENCE_HOLD_RELEASED',
+            'EVIDENCE_HOLD',
+            #{targetId,jdbcType=BIGINT},
+            #{requestId,jdbcType=VARCHAR},
+            #{reason,jdbcType=VARCHAR},
+            '{}'::jsonb
+        )
+    </insert>
+
+    <select id="countActiveCertificationHolds" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.evidence_holds
+        WHERE certification_id = #{certificationId,jdbcType=BIGINT}
+            AND released_at IS NULL
+    </select>
+
+    <insert id="insertDeletionRequestIfAbsent">
+        INSERT INTO runrun_v2.evidence_deletion_audits (
+            certification_id,
+            resource_type,
+            resource_id,
+            resource_storage_key,
+            delete_after,
+            policy_snapshot,
+            status
+        )
+        SELECT #{certificationId,jdbcType=BIGINT},
+            'STUDENT_CARD',
+            #{resourceId,jdbcType=VARCHAR},
+            #{storageKey,jdbcType=VARCHAR},
+            #{deleteAfter,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            jsonb_build_object (
+            'retentionDays',
+            30
+        ),
+            'REQUESTED'
+        WHERE NOT EXISTS (
+        
+            SELECT 1
+            FROM runrun_v2.evidence_deletion_audits
+            WHERE certification_id = #{existingCertificationId,jdbcType=BIGINT}
+                AND resource_id = #{existingResourceId,jdbcType=VARCHAR}
+                AND status IN ('REQUESTED', 'DELETING', 'SUCCEEDED')
+        )
+    </insert>
+
+    <select id="lockDueDeletions" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT id,
+            certification_id,
+            resource_id,
+            resource_storage_key
+        FROM runrun_v2.evidence_deletion_audits
+        WHERE status IN ('REQUESTED', 'FAILED')
+            AND delete_after &lt;= now()
+        ORDER BY id
+        FOR UPDATE SKIP LOCKED
+    </select>
+
+    <select id="findExpiredApprovedPhotos" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT c.id,
+            c.approved_photo_resource_id,
+            c.approved_photo_storage_key,
+            c.approved_photo_at
+        FROM runrun_v2.courier_certifications c
+        WHERE c.approved_photo_resource_id IS NOT NULL
+            AND c.approved_photo_at &lt;= now() - interval '30 days'
+            AND NOT EXISTS (
+            SELECT 1
+            FROM runrun_v2.evidence_deletion_audits d
+            WHERE d.certification_id = c.id
+                AND d.resource_id = c.approved_photo_resource_id
+                AND d.status IN ('REQUESTED', 'DELETING', 'SUCCEEDED'))
+    </select>
+
+    <select id="countActiveHoldsBeforeDeletion" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.evidence_holds
+        WHERE certification_id = #{certificationId,jdbcType=BIGINT}
+            AND released_at IS NULL
+    </select>
+
+    <update id="markDeletionInProgress">
+        UPDATE runrun_v2.evidence_deletion_audits
+        SET status = 'DELETING',
+            attempt_no = attempt_no + 1
+        WHERE id = #{deletionAuditId,jdbcType=BIGINT}
+    </update>
+
+    <update id="clearSubmittedPhoto">
+        UPDATE runrun_v2.courier_certifications
+        SET submitted_photo_resource_id = NULL,
+            submitted_photo_storage_key = NULL
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+            AND submitted_photo_resource_id = #{resourceId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="clearApprovedPhoto">
+        UPDATE runrun_v2.courier_certifications
+        SET approved_photo_resource_id = NULL,
+            approved_photo_storage_key = NULL,
+            approved_photo_at = NULL
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+            AND approved_photo_resource_id = #{resourceId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="markDeletionSucceeded">
+        UPDATE runrun_v2.evidence_deletion_audits
+        SET status = 'SUCCEEDED',
+            finished_at = now(),
+            resource_storage_key = NULL
+        WHERE id = #{deletionAuditId,jdbcType=BIGINT}
+    </update>
+
+    <update id="markDeletionFailed">
+        UPDATE runrun_v2.evidence_deletion_audits
+        SET status = 'FAILED',
+            error_code = #{errorCode,jdbcType=VARCHAR},
+            finished_at = now()
+        WHERE id = #{deletionAuditId,jdbcType=BIGINT}
+    </update>
+
+    <select id="lockOrder" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT id
+        FROM runrun_v2.v2_orders
+        WHERE id = #{orderId,jdbcType=BIGINT}
+        FOR UPDATE
+    </select>
+
+    <select id="lockCertification" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT id
+        FROM runrun_v2.courier_certifications
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+        FOR UPDATE
+    </select>
+</mapper>
