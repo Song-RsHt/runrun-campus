@@ -120,6 +120,26 @@
       "exitCode": 0,
       "count": 404,
       "countUnit": "SQL expansions"
+    },
+    {
+      "log": "delivery-compose.log",
+      "sha256": "eb92e2ed6774517b971a553e64215f293bef4e1f45a849639add42aa75b50452",
+      "command": "docker compose --env-file .env.v2-test -f compose.v2-test.yml up --build -d",
+      "exitCode": 0
+    },
+    {
+      "log": "delivery-environment.log",
+      "sha256": "ec6f213799d349848d94da0ff1058ef7e46a76e48ddb0159bdfa8aaa1970d529",
+      "command": "pwsh -NoProfile -File tools/verify-v2-environment.ps1",
+      "exitCode": 0,
+      "count": 41,
+      "countUnit": "PASS checks"
+    },
+    {
+      "log": "delivery-compose-stop.log",
+      "sha256": "daf6592b80c494fe9b33e8a1f3405a9833c5936d3093f4d5b07f2514b9bfca01",
+      "command": "docker compose --env-file .env.v2-test -f compose.v2-test.yml down",
+      "exitCode": 0
     }
   ],
   "contracts": {
@@ -168,6 +188,16 @@
     "Preproduction/production deployment"
   ],
   "deliveryRecheck": {
-    "status": "pending; documentation commit will be checked in clean clone with identical backend tree"
+    "status": "passed",
+    "verifiedDocumentationCommit": "4356b3e",
+    "backendTree": "d21074d89600ecdf2d727292450fb29133e879cb",
+    "matchesFinalSourceTree": true,
+    "cloneTrackedStateClean": true,
+    "composeExitCode": 0,
+    "environmentExitCode": 0,
+    "environmentPassChecks": 41,
+    "note": "Subsequent delivery changes are evidence documents only; backend tree is unchanged.",
+    "composeStopped": true,
+    "volumesPreserved": true
   }
 }

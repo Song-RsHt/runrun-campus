@@ -6,7 +6,7 @@
 
 参考工作区 `rrc-refactor-backend-sky` 起始干净，HEAD `3ff3cfeea48890f03177e29fd997c6dfbe3b5b69` 直接继承 `0dadf2ee5c30c3634ef5154639a31d6baf9427d4`。核对祖先关系及 origin 后，以前者创建本 worktree 和分支。保留最新业务子包、Service 接口/Impl 配对及 AGENTS 中文编码约束。未覆盖其他工作区或未提交工作。
 
-最终源码提交：`6b2ff0c1e126e26210fa738290ed129f377928b4`。其后只更新交付文档；最终交付提交为本报告所在提交，可运行 `git log -1 --format=%H -- docs/reports/V2-mybatis-plus-migration.md` 定位。最终交付与该源码的后端 Git tree 应相同，复验记录见附件 verification.json。
+最终源码提交：`6b2ff0c1e126e26210fa738290ed129f377928b4`。其后只更新交付文档；最终交付提交为本报告所在提交，可运行 `git log -1 --format=%H -- docs/reports/V2-mybatis-plus-migration.md` 定位。最终交付与该源码的后端 Git tree 相同，复验记录见附件 verification.json。
 
 |提交|阶段与验证|
 |---|---|
@@ -128,7 +128,7 @@ V2PersistenceConfiguration 仅在原 v2 ComponentScan 内装配；MapperScan 限
 |事务/调度 AST 对照|0；59 个方法声明完全一致|
 |`git diff 3ff3cfe --check`、`git diff --check`、受保护路径差异与 v2 JDBC 扫描|0；无空白错误，受保护路径零修改，v2 main 无计划迁移 JDBC 残留|
 
-基线 clone：`D:/biancheng/rrc-mybatis-evidence/baseline-source`，Compose 项目 `rrc-mp-baseline-20261107`。最终源码 clone：`D:/biancheng/rrc-mybatis-evidence/final-source`，项目 `rrc-mp-final-20261107`；没有复制 host target 参与 Docker 构建。两轮凭据均由原脚本生成到 Git 忽略的 env；验证后 down 保留隔离卷，不清空其他环境。最终文档提交复验时核对后端 tree 与 6b2ff0c 一致，再使用同一 clean clone 重建/复验。
+基线 clone：`D:/biancheng/rrc-mybatis-evidence/baseline-source`，Compose 项目 `rrc-mp-baseline-20261107`。最终源码 clone：`D:/biancheng/rrc-mybatis-evidence/final-source`，项目 `rrc-mp-final-20261107`；没有复制 host target 参与 Docker 构建。两轮凭据均由原脚本生成到 Git 忽略的 env；验证后 down 保留隔离卷，不清空其他环境。文档提交 4356b3e 已在同一干净 clone 核对后端 tree 与 6b2ff0c 一致（d21074d89600ecdf2d727292450fb29133e879cb），Compose 重建退出码 0，环境复验再次 41 条 PASS、退出码 0。其后仅补记交付证据，后端 tree 不变。
 
 探索性失败均保留在外部日志，没有算作通过：配置阶段遗漏一个 Wrapper 方法（修复后订单 15 项通过）；履约首轮 29 个构造映射错误（显式映射后 31 项通过）；新增测试首次有三个 accessor 编译错误，以及首次数据库测试揭示咨询锁 void 对象/null 不等价（专用处理器后 3 项通过）。最终完整回归全部通过，不删测试、不跳过、不降低断言。
 
