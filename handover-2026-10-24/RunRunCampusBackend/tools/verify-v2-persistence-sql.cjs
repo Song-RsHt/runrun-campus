@@ -7,61 +7,105 @@ const inventory = JSON.parse(fs.readFileSync(path.join(root,
     'docs/reports/v2-mybatis-plus/persistence-inventory.json'), 'utf8'));
 let checked = 0;
 const exceptions = [];
-function expression(value, constants, flags) {
+function expression(value, constants, flags, variables = {}) {
     if (value.text !== undefined) {
         return value.text;
     }
     if (value.op === '+') {
-        return expression(value.left, constants, flags) + expression(value.right, constants, flags);
+        return expression(value.left, constants, flags, variables) + expression(value.right, constants, flags, variables);
     }
     if (value.condition) {
-        return expression(flags ? value.then : value.else, constants, flags);
+        return expression(flags ? value.then : value.else, constants, flags, variables);
     }
     const constant = constants.find(field => field.name === value.java);
     if (constant) {
-        return expression(constant.value, constants, flags);
+        return expression(constant.value, constants, flags, variables);
+    }
+    if (variables[value.java] !== undefined) {
+        return variables[value.java];
     }
     throw new Error('需人工核对的动态 SQL: ' + value.java);
 }
-function xmlSql(value, flag) {
+function xmlSql(value, flag, status = flag) {
     return value.replace(/<choose>\s*<when test="[^"]+">([\s\S]*?)<\/when>\s*<otherwise>([\s\S]*?)<\/otherwise>\s*<\/choose>/g,
         (_, yes, no) => flag ? yes : no)
         .replace(/<if test="([^"]+)">([\s\S]*?)<\/if>/g,
-            (_, test, body) => (test.startsWith('!') ? !flag : flag) ? body : '')
+            (_, test, body) => (test.startsWith('!') ? !flag : test === 'status != null' ? status : flag) ? body : '')
         .replaceAll('&lt;', '<').replaceAll('&gt;', '>').replaceAll('&amp;', '&');
 }
 function tokens(sql) {
     return sql.match(/'(?:''|[^'])*'|"(?:""|[^"])*"|\|\||::|<=|>=|<>|!=|[a-zA-Z_][\w$]*|\d+(?:\.\d+)?|[^\s]/g);
 }
-for (const item of inventory.items) {
+const items = inventory.items.flatMap(item => {
+    if (item.method === 'findEnabled' && item.mapper.endsWith('ServiceConfigMapper')) {
+        return ['Zone', 'ServicePoint'].map(kind => ({...item, method: 'findEnabled' + kind,
+            variables: {table: kind === 'Zone' ? 'delivery_zones' : 'service_points'}}));
+    }
+    if (item.method === 'updateOrder' && item.delegatingMethods) {
+        return item.delegatingMethods.map(method => ({...item, method: method.name,
+            variables: {assignment: method.source.match(/updateOrder\("([^"]+)"/)[1]}}));
+    }
+    return [item];
+});
+for (const item of items) {
     const pieces = item.mapper.split('.');
-    const name = pieces.pop();
+    let name = pieces.pop();
     const domain = pieces.pop();
+    let method = item.method;
+    if (name === 'OrderStore') {
+        name = 'OrderReadMapper';
+        method = 'findOrder';
+    }
+    if (name === 'FulfillmentMapper' && method === 'findLocationEvent') {
+        method = 'readLocationEvent';
+    }
     const xmlPath = path.join(backend, 'src/main/resources/mapper/v2', domain, name + '.xml');
     if (!fs.existsSync(xmlPath)) {
         exceptions.push(item.mapper + '.' + item.method + ': 尚未迁移或由共享组件委托');
         continue;
     }
     const xml = fs.readFileSync(xmlPath, 'utf8');
-    const body = xml.match(new RegExp('<(?:select|insert|update|delete) id="' + item.method
+    const body = xml.match(new RegExp('<(?:select|insert|update|delete) id="' + method
         + '"[^>]*>([\\s\\S]*?)</(?:select|insert|update|delete)>'))?.[1];
     if (!body) {
         exceptions.push(item.mapper + '.' + item.method + ': BaseMapper/Wrapper 或受控分表，另行核对');
         continue;
     }
-    for (const flag of [false, true]) {
+    const scenarios = name === 'FulfillmentQueryMapper'
+        ? [[false, false], [false, true], [true, false], [true, true]]
+        : [[false, false], [true, true]];
+    for (const [flag, status] of scenarios) {
         const call = item.originalJdbcCalls[0];
+        const variables = {...item.variables};
+        let dynamicParameters;
+        if (name === 'FulfillmentQueryMapper') {
+            const tasks = method === 'findCourierTasks';
+            // 初始条件、追加条件及顺序取自冻结的 originalMethod，逐一展开四种组合。
+            variables.where = tasks ? item.originalMethod.match(/String where = "([^"]+)"/)[1]
+                : "o.status = 'PENDING_ASSIGNMENT' AND EXISTS (SELECT 1 FROM runrun_v2.payment_orders p WHERE p.order_id = o.id AND p.purpose = 'ORIGINAL' AND p.status = 'PAID')";
+            dynamicParameters = tasks ? ['courierId'] : [];
+            if (tasks && status) {
+                variables.where += ' AND t.status=?';
+                dynamicParameters.push('status');
+            }
+            if (flag) {
+                variables.where += tasks ? ' AND (t.created_at,t.id)<(?,?)' : ' AND (o.created_at,o.id)<(?,?)';
+                dynamicParameters.push('afterCreatedAt', 'afterId');
+            }
+            dynamicParameters.push('limit');
+        }
         let original;
         try {
-            original = expression(call.args[0], item.sqlConstants, flag);
+            original = expression(call.args[0], item.sqlConstants, flag, variables);
         } catch (error) {
             exceptions.push(item.mapper + '.' + item.method + ': ' + error.message);
             break;
         }
         const offset = ['query', 'queryForObject'].includes(call.kind)
             || (call.kind === 'queryForList' && call.args[1]?.java?.endsWith('.class')) ? 2 : 1;
-        const expectedParameters = call.args.slice(offset).map(arg => arg.java);
-        const actual = xmlSql(body, flag);
+        const expectedParameters = dynamicParameters || call.args.slice(offset)
+            .map(arg => arg.java === 'ResourceIds.parse(orderId)' ? 'orderId' : arg.java);
+        const actual = xmlSql(body, flag, status);
         const actualParameters = [...actual.matchAll(/#\{([^,}]+)[^}]*\}/g)].map(match => match[1]);
         const normalized = actual.replace(/#\{[^}]*\}/g, '?');
         if (JSON.stringify(tokens(original)) !== JSON.stringify(tokens(normalized))

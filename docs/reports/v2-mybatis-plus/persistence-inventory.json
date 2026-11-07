@@ -5937,7 +5937,111 @@
       },
       "rowCount": "原更新行数直接返回，调用方判断保持；不得拆成先查后写",
       "plan": "XML；单表普通 CRUD 经实体盘点后优先 BaseMapper；锁/条件更新/函数/聚合保留 XML",
-      "tests": []
+      "tests": [],
+      "delegatingMethods": [
+        {
+          "name": "markOrderAccepted",
+          "type": "int",
+          "public": true,
+          "source": "public int markOrderAccepted(OffsetDateTime updatedAt, Long orderId) {\r\n    return updateOrder(\"status='ACCEPTED'\", updatedAt, orderId);\r\n}",
+          "parameters": [
+            {
+              "type": "OffsetDateTime",
+              "name": "updatedAt"
+            },
+            {
+              "type": "Long",
+              "name": "orderId"
+            }
+          ],
+          "calls": []
+        },
+        {
+          "name": "clearOrderConfirmation",
+          "type": "int",
+          "public": true,
+          "source": "public int clearOrderConfirmation(OffsetDateTime updatedAt, Long orderId) {\r\n    return updateOrder(\"confirm_started_at=NULL,confirm_deadline=NULL\", updatedAt, orderId);\r\n}",
+          "parameters": [
+            {
+              "type": "OffsetDateTime",
+              "name": "updatedAt"
+            },
+            {
+              "type": "Long",
+              "name": "orderId"
+            }
+          ],
+          "calls": []
+        },
+        {
+          "name": "acceptOrderAndClearConfirmation",
+          "type": "int",
+          "public": true,
+          "source": "public int acceptOrderAndClearConfirmation(OffsetDateTime updatedAt, Long orderId) {\r\n    return updateOrder(\"status='ACCEPTED',confirm_started_at=NULL,confirm_deadline=NULL\", updatedAt, orderId);\r\n}",
+          "parameters": [
+            {
+              "type": "OffsetDateTime",
+              "name": "updatedAt"
+            },
+            {
+              "type": "Long",
+              "name": "orderId"
+            }
+          ],
+          "calls": []
+        },
+        {
+          "name": "markOrderPendingAssignment",
+          "type": "int",
+          "public": true,
+          "source": "public int markOrderPendingAssignment(OffsetDateTime updatedAt, Long orderId) {\r\n    return updateOrder(\"status='PENDING_ASSIGNMENT'\", updatedAt, orderId);\r\n}",
+          "parameters": [
+            {
+              "type": "OffsetDateTime",
+              "name": "updatedAt"
+            },
+            {
+              "type": "Long",
+              "name": "orderId"
+            }
+          ],
+          "calls": []
+        },
+        {
+          "name": "advanceOrderVersion",
+          "type": "int",
+          "public": true,
+          "source": "public int advanceOrderVersion(OffsetDateTime updatedAt, Long orderId) {\r\n    return updateOrder(\"status=status\", updatedAt, orderId);\r\n}",
+          "parameters": [
+            {
+              "type": "OffsetDateTime",
+              "name": "updatedAt"
+            },
+            {
+              "type": "Long",
+              "name": "orderId"
+            }
+          ],
+          "calls": []
+        },
+        {
+          "name": "markOrderPickedUp",
+          "type": "int",
+          "public": true,
+          "source": "public int markOrderPickedUp(OffsetDateTime updatedAt, Long orderId) {\r\n    return updateOrder(\"status='PICKED_UP'\", updatedAt, orderId);\r\n}",
+          "parameters": [
+            {
+              "type": "OffsetDateTime",
+              "name": "updatedAt"
+            },
+            {
+              "type": "Long",
+              "name": "orderId"
+            }
+          ],
+          "calls": []
+        }
+      ]
     },
     {
       "mapper": "com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper",

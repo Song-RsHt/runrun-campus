@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentQueryMapper">
+    <resultMap id="CourierTaskResult" type="com.zhangxuan.runrunv2.model.fulfillment.FulfillmentTaskRow">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="version" javaType="_long"/>
+            <arg column="order_id" javaType="java.lang.String"/>
+            <arg column="order_no" javaType="java.lang.String"/>
+            <arg column="order_status" javaType="java.lang.String"/>
+            <arg column="order_version" javaType="_long"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="superseded_at" javaType="_boolean"
+                 typeHandler="com.zhangxuan.runrunv2.config.TaskSupersededTypeHandler"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findCourierTasks" resultMap="CourierTaskResult" useCache="false" flushCache="true">
+        SELECT t.*,
+            o.order_no,
+            o.status AS order_status,
+            o.version AS order_version
+        FROM runrun_v2.fulfillment_tasks t
+        JOIN runrun_v2.v2_orders o
+        ON o.id = t.order_id
+        WHERE t.courier_id = #{courierId,jdbcType=BIGINT}
+        <if test="status != null">
+            AND t.status = #{status,jdbcType=VARCHAR}
+        </if>
+        <if test="afterCreatedAt != null">
+            AND (t.created_at,t.id) &lt; (#{afterCreatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},#{afterId,jdbcType=BIGINT})
+        </if>
+        ORDER BY t.created_at DESC,
+            t.id DESC
+        LIMIT #{limit,jdbcType=INTEGER}
+    </select>
+
+    <select id="findPaidOrderPool" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT o.*
+        FROM runrun_v2.v2_orders o
+        WHERE o.status = 'PENDING_ASSIGNMENT'
+            AND EXISTS (
+                SELECT 1
+                FROM runrun_v2.payment_orders p
+                WHERE p.order_id = o.id
+                    AND p.purpose = 'ORIGINAL'
+                    AND p.status = 'PAID')
+        <if test="afterCreatedAt != null">
+            AND (o.created_at,o.id) &lt; (#{afterCreatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},#{afterId,jdbcType=BIGINT})
+        </if>
+        ORDER BY o.created_at DESC,
+            o.id DESC
+        LIMIT #{limit,jdbcType=INTEGER}
+    </select>
+</mapper>
