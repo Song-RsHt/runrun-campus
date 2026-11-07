@@ -11,7 +11,6 @@ import com.zhangxuan.runrunv2.service.payment.PaymentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.core.env.StandardEnvironment;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 class PaymentEnvironmentTest {
 
@@ -71,17 +70,13 @@ class PaymentEnvironmentTest {
                 IllegalStateException.class,
                 () ->
                         new MockPaymentAdapter(
-                                new MockPaymentMapper(mock(JdbcTemplate.class)),
+                                mock(MockPaymentMapper.class),
                                 "production",
                                 new StandardEnvironment()));
         var environment = new StandardEnvironment();
         environment.setActiveProfiles("production");
         assertThrows(
                 IllegalStateException.class,
-                () ->
-                        new MockPaymentAdapter(
-                                new MockPaymentMapper(mock(JdbcTemplate.class)),
-                                "test",
-                                environment));
+                () -> new MockPaymentAdapter(mock(MockPaymentMapper.class), "test", environment));
     }
 }

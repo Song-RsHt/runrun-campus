@@ -58,7 +58,8 @@ for (const item of inventory.items) {
             exceptions.push(item.mapper + '.' + item.method + ': ' + error.message);
             break;
         }
-        const offset = ['query', 'queryForObject'].includes(call.kind) ? 2 : 1;
+        const offset = ['query', 'queryForObject'].includes(call.kind)
+            || (call.kind === 'queryForList' && call.args[1]?.java?.endsWith('.class')) ? 2 : 1;
         const expectedParameters = call.args.slice(offset).map(arg => arg.java);
         const actual = xmlSql(body, flag);
         const actualParameters = [...actual.matchAll(/#\{([^,}]+)[^}]*\}/g)].map(match => match[1]);
