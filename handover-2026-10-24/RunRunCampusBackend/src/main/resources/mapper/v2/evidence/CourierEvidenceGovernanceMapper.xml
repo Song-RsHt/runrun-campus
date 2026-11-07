@@ -117,7 +117,7 @@
         ),
             'REQUESTED'
         WHERE NOT EXISTS (
-        
+
             SELECT 1
             FROM runrun_v2.evidence_deletion_audits
             WHERE certification_id = #{existingCertificationId,jdbcType=BIGINT}

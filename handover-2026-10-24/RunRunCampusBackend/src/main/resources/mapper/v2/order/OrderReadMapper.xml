@@ -31,7 +31,8 @@
         FROM runrun_v2.v2_orders
         WHERE id = #{orderId,jdbcType=BIGINT}
         <if test="locked">
-            FOR UPDATE
+                FOR UPDATE
+
         </if>
     </select>
 </mapper>

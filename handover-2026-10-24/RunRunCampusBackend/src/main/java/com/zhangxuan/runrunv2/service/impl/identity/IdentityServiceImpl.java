@@ -2,6 +2,7 @@ package com.zhangxuan.runrunv2.service.impl.identity;
 
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.integration.wechat.WechatGateway;
+import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
 import com.zhangxuan.runrunv2.mapper.identity.IdentityMapper;
 import com.zhangxuan.runrunv2.model.identity.IdentityUser;
 import com.zhangxuan.runrunv2.model.identity.InputValidation;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class IdentityServiceImpl implements IdentityService {
 
     private final IdentityMapper mapper;
+    private final CourierCertificationV2Mapper certifications;
     private final IdentitySecrets secrets;
     private final WechatGateway wechat;
     private final String appId;
@@ -38,10 +40,12 @@ public class IdentityServiceImpl implements IdentityService {
 
     public IdentityServiceImpl(
             IdentityMapper mapper,
+            CourierCertificationV2Mapper certifications,
             IdentitySecrets secrets,
             WechatGateway wechat,
             @Value("${rrc.identity.app-id}") String appId) {
         this.mapper = mapper;
+        this.certifications = certifications;
         this.secrets = secrets;
         this.wechat = wechat;
         this.appId = appId;
@@ -93,7 +97,7 @@ public class IdentityServiceImpl implements IdentityService {
         Long id = mapper.insertAccount(phone, requestedRole);
         IdentityUser user = user(id, true);
         if ("COURIER".equals(requestedRole)) {
-            mapper.insertPendingCertification(id);
+            certifications.insertPendingCertification(id);
         }
         active(user);
         if (mapper.countUserWechatBindings(appId, user.id()) > 0) {

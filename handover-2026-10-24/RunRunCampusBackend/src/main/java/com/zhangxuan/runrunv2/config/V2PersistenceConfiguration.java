@@ -38,6 +38,7 @@ public class V2PersistenceConfiguration {
         configuration.setCallSettersOnNulls(true);
         configuration.setReturnInstanceForEmptyRow(true);
         configuration.addInterceptor(new SingleRowInterceptor());
+        configuration.getTypeHandlerRegistry().register(Void.class, new VoidFunctionTypeHandler());
         // null Java 类型只登记处理器实例，不替换 Map/Object 默认映射；仅 XML 显式引用。
         configuration
                 .getTypeHandlerRegistry()

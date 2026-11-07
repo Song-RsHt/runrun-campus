@@ -7,6 +7,11 @@ const inventory = JSON.parse(fs.readFileSync(path.join(root,
     'docs/reports/v2-mybatis-plus/persistence-inventory.json'), 'utf8'));
 let checked = 0;
 const exceptions = [];
+const baseMapperMethods = new Set([
+    'ServiceConfigMapper.findZones', 'ServiceConfigMapper.findEnabledZone',
+    'IdentityMapper.insertAccount', 'IdentityMapper.insertPendingCertification',
+    'CourierCertificationV2Mapper.insertPendingCertification'
+]);
 function expression(value, constants, flags, variables = {}) {
     if (value.text !== undefined) {
         return value.text;
@@ -61,14 +66,16 @@ for (const item of items) {
     }
     const xmlPath = path.join(backend, 'src/main/resources/mapper/v2', domain, name + '.xml');
     if (!fs.existsSync(xmlPath)) {
-        exceptions.push(item.mapper + '.' + item.method + ': 尚未迁移或由共享组件委托');
-        continue;
+        throw new Error('未找到迁移后的 XML: ' + item.mapper);
     }
     const xml = fs.readFileSync(xmlPath, 'utf8');
     const body = xml.match(new RegExp('<(?:select|insert|update|delete) id="' + method
         + '"[^>]*>([\\s\\S]*?)</(?:select|insert|update|delete)>'))?.[1];
     if (!body) {
-        exceptions.push(item.mapper + '.' + item.method + ': BaseMapper/Wrapper 或受控分表，另行核对');
+        if (!baseMapperMethods.has(name + '.' + method)) {
+            throw new Error('缺少 SQL 映射: ' + item.mapper + '.' + item.method);
+        }
+        exceptions.push(item.mapper + '.' + item.method + ': BaseMapper/Wrapper；由真实数据库用例验证项目映射');
         continue;
     }
     const scenarios = name === 'FulfillmentQueryMapper'
@@ -98,8 +105,7 @@ for (const item of items) {
         try {
             original = expression(call.args[0], item.sqlConstants, flag, variables);
         } catch (error) {
-            exceptions.push(item.mapper + '.' + item.method + ': ' + error.message);
-            break;
+            throw new Error(item.mapper + '.' + item.method + ': ' + error.message);
         }
         const offset = ['query', 'queryForObject'].includes(call.kind)
             || (call.kind === 'queryForList' && call.args[1]?.java?.endsWith('.class')) ? 2 : 1;
@@ -115,5 +121,5 @@ for (const item of items) {
         checked++;
     }
 }
-console.log('PASS: ' + checked + ' 个 SQL 分支的 token、参数数量及顺序一致。');
-console.log('单独核对项：\n' + [...new Set(exceptions)].join('\n'));
+console.log('PASS: ' + checked + ' 次 SQL 展开的 token、参数数量及顺序一致。');
+console.log('BaseMapper/Wrapper 项（数据库用例覆盖）：\n' + [...new Set(exceptions)].join('\n'));

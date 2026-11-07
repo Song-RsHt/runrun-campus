@@ -26,10 +26,12 @@
         ON o.id = t.order_id
         WHERE t.courier_id = #{courierId,jdbcType=BIGINT}
         <if test="status != null">
-            AND t.status = #{status,jdbcType=VARCHAR}
+                AND t.status = #{status,jdbcType=VARCHAR}
+
         </if>
         <if test="afterCreatedAt != null">
-            AND (t.created_at,t.id) &lt; (#{afterCreatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},#{afterId,jdbcType=BIGINT})
+                AND (t.created_at,t.id) &lt; (#{afterCreatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},#{afterId,jdbcType=BIGINT})
+
         </if>
         ORDER BY t.created_at DESC,
             t.id DESC
@@ -47,7 +49,8 @@
                     AND p.purpose = 'ORIGINAL'
                     AND p.status = 'PAID')
         <if test="afterCreatedAt != null">
-            AND (o.created_at,o.id) &lt; (#{afterCreatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},#{afterId,jdbcType=BIGINT})
+                AND (o.created_at,o.id) &lt; (#{afterCreatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},#{afterId,jdbcType=BIGINT})
+
         </if>
         ORDER BY o.created_at DESC,
             o.id DESC

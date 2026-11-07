@@ -9,19 +9,6 @@
         FOR UPDATE
     </select>
 
-    <insert id="insertPendingCertification">
-        INSERT INTO runrun_v2.courier_certifications (
-            courier_id,
-            status,
-            submitted_at
-        )
-        VALUES (
-            #{courierId,jdbcType=BIGINT},
-            'PENDING',
-            now()
-        )
-    </insert>
-
     <update id="resubmitCertification">
         UPDATE runrun_v2.courier_certifications
         SET status = 'PENDING',

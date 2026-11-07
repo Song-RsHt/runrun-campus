@@ -1,6 +1,8 @@
 package com.zhangxuan.runrunv2.mapper.courier;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zhangxuan.runrunv2.config.SingleRowRequired;
+import com.zhangxuan.runrunv2.entity.courier.CourierCertificationEntity;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -10,12 +12,16 @@ import java.util.Map;
 
 /** 资质审核持久化映射；事务、锁顺序及业务校验由原调用方保持。 */
 @Mapper
-public interface CourierCertificationV2Mapper {
+public interface CourierCertificationV2Mapper extends BaseMapper<CourierCertificationEntity> {
 
     /** 读取并锁定 runrun_v2.courier_certifications 的匹配行；锁持有至调用方事务结束。 */
     List<Map<String, Object>> lockCourierCertification(@Param("courierId") long courierId);
 
-    int insertPendingCertification(@Param("courierId") long courierId);
+    default int insertPendingCertification(long courierId) {
+        CourierCertificationEntity certification = new CourierCertificationEntity();
+        certification.setCourierId(courierId);
+        return insert(certification);
+    }
 
     int resubmitCertification(@Param("courierId") long courierId);
 

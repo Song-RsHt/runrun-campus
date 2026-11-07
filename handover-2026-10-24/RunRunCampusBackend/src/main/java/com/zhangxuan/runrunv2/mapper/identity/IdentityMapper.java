@@ -39,8 +39,6 @@ public interface IdentityMapper extends BaseMapper<AppUserEntity> {
         return account.getId();
     }
 
-    int insertPendingCertification(@Param("courierId") Long courierId);
-
     @SingleRowRequired
     Long countUserWechatBindings(@Param("appId") String appId, @Param("userId") long userId);
 
