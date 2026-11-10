@@ -19,6 +19,7 @@ import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.security.AdminMfaCrypto;
 import com.zhangxuan.runruncampus.service.auth.AdminMfaService;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 import com.zhangxuan.runruncampus.vo.auth.SessionInfoVO;
 
 import org.flywaydb.core.Flyway;
@@ -26,8 +27,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,8 +48,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -70,7 +71,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         })
 @ActiveProfiles("test")
 @Testcontainers
-class AdminMfaPostgresIntegrationTest {
+class AdminMfaPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     private static final PostgreSQLContainer<?> POSTGRES =

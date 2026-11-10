@@ -11,11 +11,12 @@ import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.order.OrderService;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -35,7 +36,7 @@ import java.util.UUID;
 @ActiveProfiles("test")
 @Testcontainers
 @Transactional
-class OrderMinePostgresIntegrationTest {
+class OrderMinePostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");

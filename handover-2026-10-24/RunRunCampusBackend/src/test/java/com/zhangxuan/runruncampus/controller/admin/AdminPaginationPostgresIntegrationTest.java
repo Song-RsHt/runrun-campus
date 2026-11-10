@@ -26,6 +26,7 @@ import com.zhangxuan.runruncampus.service.admin.AdminFeedbackService;
 import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.admin.AdminUserService;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 import com.zhangxuan.runruncampus.vo.admin.AdminIssueItem;
 
 import jakarta.persistence.EntityManager;
@@ -35,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -60,7 +61,7 @@ import java.util.function.IntFunction;
 @ActiveProfiles("test")
 @Testcontainers
 @Transactional
-class AdminPaginationPostgresIntegrationTest {
+class AdminPaginationPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     private static final PostgreSQLContainer<?> POSTGRES =

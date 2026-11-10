@@ -10,11 +10,12 @@ import com.zhangxuan.runruncampus.exception.BusinessFailure;
 import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -36,7 +37,7 @@ import java.util.Map;
         properties = "app.proof-storage.local-directory=target/test-password-proofs")
 @ActiveProfiles("test")
 @Testcontainers
-class AuthPasswordPostgresIntegrationTest {
+class AuthPasswordPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");

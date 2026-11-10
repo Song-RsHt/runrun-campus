@@ -21,13 +21,14 @@ import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.admin.AdminCommandCenterService;
 import com.zhangxuan.runruncampus.service.admin.AdminDispatchService;
 import com.zhangxuan.runruncampus.service.api.PlatformSettingsService;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 import com.zhangxuan.runruncampus.vo.settings.PlatformSettingsVO;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -48,7 +49,7 @@ import java.util.UUID;
 @ActiveProfiles("test")
 @Testcontainers
 @Transactional
-class AdminCommandCenterPostgresIntegrationTest {
+class AdminCommandCenterPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");

@@ -8,12 +8,13 @@ import com.zhangxuan.runruncampus.entity.user.AppUser;
 import com.zhangxuan.runruncampus.enums.admin.AdminRole;
 import com.zhangxuan.runruncampus.enums.user.UserRole;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,7 +31,7 @@ import java.util.UUID;
         properties = "app.proof-storage.local-directory=target/test-coupon-proofs")
 @ActiveProfiles("test")
 @Testcontainers
-class AdminCouponPostgresIntegrationTest {
+class AdminCouponPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");

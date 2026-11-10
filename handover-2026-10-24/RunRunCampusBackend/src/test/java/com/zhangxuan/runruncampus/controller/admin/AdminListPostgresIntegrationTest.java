@@ -26,6 +26,7 @@ import com.zhangxuan.runruncampus.service.admin.AdminIssueService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderLifecycleService;
 import com.zhangxuan.runruncampus.service.admin.AdminOrderService;
 import com.zhangxuan.runruncampus.service.admin.AdminUserService;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 import com.zhangxuan.runruncampus.vo.admin.AdminCourierOrderItem;
 import com.zhangxuan.runruncampus.vo.admin.AdminCourierPageResponse;
 import com.zhangxuan.runruncampus.vo.admin.AdminCourierPerformanceResponse;
@@ -35,8 +36,8 @@ import jakarta.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -54,7 +55,7 @@ import java.util.stream.Collectors;
         properties = "app.proof-storage.local-directory=target/test-order-proofs")
 @ActiveProfiles("test")
 @Testcontainers
-class AdminListPostgresIntegrationTest {
+class AdminListPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     private static final PostgreSQLContainer<?> POSTGRES =

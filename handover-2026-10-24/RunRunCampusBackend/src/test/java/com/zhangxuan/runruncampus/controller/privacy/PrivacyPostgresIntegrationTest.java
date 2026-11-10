@@ -18,11 +18,12 @@ import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
 import com.zhangxuan.runruncampus.service.auth.AuthService;
 import com.zhangxuan.runruncampus.service.privacy.PrivacyService;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -36,7 +37,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
         properties = "app.proof-storage.local-directory=target/test-privacy-proofs")
 @ActiveProfiles("test")
 @Testcontainers
-class PrivacyPostgresIntegrationTest {
+class PrivacyPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");

@@ -13,11 +13,12 @@ import com.zhangxuan.runruncampus.model.message.OrderPushRequested;
 import com.zhangxuan.runruncampus.repository.message.PushDeliveryRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -40,7 +41,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
         })
 @ActiveProfiles("test")
 @Testcontainers
-class PushDeliveryPostgresIntegrationTest {
+class PushDeliveryPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine");

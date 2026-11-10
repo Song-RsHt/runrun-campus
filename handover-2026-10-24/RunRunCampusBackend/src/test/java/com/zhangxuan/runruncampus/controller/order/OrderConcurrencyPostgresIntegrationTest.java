@@ -27,12 +27,13 @@ import com.zhangxuan.runruncampus.repository.order.OrderEventRepository;
 import com.zhangxuan.runruncampus.repository.order.OrderRepository;
 import com.zhangxuan.runruncampus.repository.payment.WechatPaymentRepository;
 import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.support.PostgresSpringContextTest;
 
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -65,7 +66,7 @@ import java.util.function.IntFunction;
         properties = "app.proof-storage.local-directory=target/test-order-proofs")
 @ActiveProfiles("test")
 @Testcontainers
-class OrderConcurrencyPostgresIntegrationTest {
+class OrderConcurrencyPostgresIntegrationTest extends PostgresSpringContextTest {
 
     @Container
     private static final PostgreSQLContainer<?> POSTGRES =
