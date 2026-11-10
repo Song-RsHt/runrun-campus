@@ -252,7 +252,7 @@ class BackendLayeringTest {
                 }
             }
         }
-        assertEquals(47, contracts, "新增业务契约时须核对对应实现和边界");
+        assertEquals(48, contracts, "新增业务契约时须核对对应实现和边界");
         assertEquals(contracts, implementations);
     }
 

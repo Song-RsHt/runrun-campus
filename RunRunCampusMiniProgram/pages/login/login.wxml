@@ -45,6 +45,8 @@
       <scroll-view class="privacy-content" scroll-y="{{true}}" wx:if="{{privacyExpanded}}">{{privacyPolicy.content}}</scroll-view>
     </view>
 
+    <button wx:if="{{!privacyPolicy}}" bindtap="loadPrivacyPolicy">重新加载隐私政策</button>
+
     <view class="captcha" wx:if="{{mode === 'login' && captcha}}">
       <text class="field-label">安全验证</text>
       <image class="captcha-image" mode="aspectFit" src="{{captcha.imageDataUrl}}" bindtap="refreshCaptcha" />

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.privacy.PrivacyMapper">
+    <insert id="recordConsent">
+        INSERT INTO runrun_v2.idempotency_requests
+            (actor_id, scope, key, request_hash, status, resource_type, resource_id, response_snapshot)
+        VALUES (#{userId}, 'PRIVACY_CONSENT', #{version}, #{version}, 'SUCCEEDED',
+            'PRIVACY_POLICY', #{version}, jsonb_build_object('version', CAST(#{version} AS text), 'accepted', true))
+        ON CONFLICT (actor_id, scope, key) DO NOTHING
+    </insert>
+</mapper>

@@ -13,12 +13,41 @@ async function v2Request<T>(path: string, token?: string, init?: RequestInit): P
     const payload = await response.json().catch(() => null) as { message?: string; code?: string } | null
     throw new V2ApiError(payload?.message ?? (response.status === 401 ? '会话已失效，请重新登录' : response.status === 403 ? '当前账号无权执行此操作' : '请求失败，请稍后重试'), response.status, payload?.code)
   }
-  return response.status === 204 ? undefined as T : await response.json() as T
+  if (response.status === 204) return undefined as T
+  try {
+    return await response.json() as T
+  } catch {
+    throw new V2ApiError('服务端响应格式异常，请重试或重新登录', 502, 'INVALID_RESPONSE')
+  }
 }
 
 export type V2AdminAccount = { id: string; role: 'ADMIN'; status: string; adminEnabled: boolean; securityVersion: number; courierEligible: boolean; permissions: string[] }
-export function loginV2Admin(phone: string, password: string) { return v2Request<{ token: string | null; account: V2AdminAccount | null }>('/api/v2/auth/password/login', undefined, { method: 'POST', body: JSON.stringify({ phone, password }) }) }
-export function getV2AdminSession(token: string) { return v2Request<V2AdminAccount>('/api/v2/auth/session', token) }
+// 服务端权限缺失时拒绝建立会话，不能推断或补授权限。
+export function validateV2AdminAccount(value: unknown): asserts value is V2AdminAccount {
+  const account = value as Partial<V2AdminAccount> | null
+  if (!account || typeof account.id !== 'string' || !/^\d+$/.test(account.id)
+    || account.role !== 'ADMIN' || account.status !== 'ACTIVE' || account.adminEnabled !== true
+    || !Number.isSafeInteger(account.securityVersion) || typeof account.courierEligible !== 'boolean'
+    || !Array.isArray(account.permissions) || !account.permissions.every(item => typeof item === 'string')) {
+    throw new V2ApiError('管理员会话信息异常或资格已停用，请重新登录；如持续出现请联系管理员', 401, 'INVALID_ADMIN_SESSION')
+  }
+}
+export async function loginV2Admin(phone: string, password: string) {
+  const result = await v2Request<{ token: string | null; account: V2AdminAccount | null }>('/api/v2/auth/password/login', undefined, { method: 'POST', body: JSON.stringify({ phone, password }) })
+  try {
+    validateV2AdminAccount(result?.account)
+    if (typeof result.token !== 'string' || !result.token) throw new V2ApiError('登录响应异常，请重新登录', 401)
+    return result
+  } catch (reason) {
+    if (result?.token) await logoutV2Admin(result.token).catch(() => undefined)
+    throw reason
+  }
+}
+export async function getV2AdminSession(token: string) {
+  const account = await v2Request<unknown>('/api/v2/auth/session', token)
+  validateV2AdminAccount(account)
+  return account
+}
 export function logoutV2Admin(token: string, allSessions = false) { return v2Request<{ revoked: boolean }>('/api/v2/auth/logout', token, { method: 'POST', headers: { 'Idempotency-Key': `admin-v2-${crypto.randomUUID?.() ?? Date.now()}` }, body: JSON.stringify({ allSessions }) }) }
 export function getV2Couriers(token: string, filters: { query: string; status: CourierCertificationStatus | ''; page: number; size: number }) { const params = new URLSearchParams({ page: String(filters.page), size: String(filters.size) }); if (filters.query) params.set('query', filters.query); if (filters.status) params.set('status', filters.status); return v2Request<AdminCourierPage>(`/api/v2/courier/certification/admin?${params}`, token) }
 export function getV2CourierPerformance(token: string, courierId: number, page: number, size: number) { return v2Request<AdminCourierPerformance>(`/api/v2/courier/certification/admin/${courierId}/performance?page=${page}&size=${size}`, token) }

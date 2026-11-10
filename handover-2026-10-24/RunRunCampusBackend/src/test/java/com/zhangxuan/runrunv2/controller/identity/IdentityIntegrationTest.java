@@ -163,6 +163,93 @@ class IdentityIntegrationTest {
     }
 
     @Test
+    void adminLoginAndRestoredSessionSerializeSamePermissions() throws Exception {
+        long actor = deployer();
+        long id = Long.parseLong(admin(actor).account().id());
+        deployment.changeAccess(
+                actor, id, true, 1, "synthetic enable", "ENABLE " + id, "enable-json");
+        var enabled = identity.login("admin");
+        identity.setPassword(enabled.token(), "synthetic-contract-password", "set-json-password");
+        var login =
+                http.perform(
+                                post("/api/v2/auth/password/login")
+                                        .contentType("application/json")
+                                        .content(
+                                                "{\"phone\":\"13800000003\",\"password\":\"synthetic-contract-password\"}"))
+                        .andExpect(status().isOk())
+                        .andExpect(jsonPath("$.account.permissions").isArray())
+                        .andExpect(
+                                jsonPath("$.account.permissions")
+                                        .value(org.hamcrest.Matchers.hasItem("COURIER_VIEW")))
+                        .andReturn();
+        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+        var payload = json.readTree(login.getResponse().getContentAsString());
+        String token = payload.get("token").asText();
+        var restored =
+                http.perform(get("/api/v2/auth/session").header("Authorization", "Bearer " + token))
+                        .andExpect(status().isOk())
+                        .andReturn();
+        assertEquals(
+                payload.get("account"), json.readTree(restored.getResponse().getContentAsString()));
+        var ordinary = register("permission-user", "13800000009", "USER");
+        http.perform(
+                        get("/api/v2/auth/session")
+                                .header("Authorization", "Bearer " + ordinary.token()))
+                .andExpect(jsonPath("$.permissions").isEmpty());
+        deployment.changeAccess(
+                actor, id, false, 2, "synthetic disable", "DISABLE " + id, "disable-json");
+        http.perform(get("/api/v2/auth/session").header("Authorization", "Bearer " + token))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void privacyIsAnonymousButConsentIsAuthenticatedVersionedAndDurable() throws Exception {
+        http.perform(get("/api/v2/privacy/policy"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.version").value("2026-10-24"))
+                .andExpect(jsonPath("$.title").value("跑跑代取隐私政策"))
+                .andExpect(jsonPath("$.content").isNotEmpty());
+        http.perform(get("/api/v2/auth/session")).andExpect(status().isUnauthorized());
+        http.perform(
+                        post("/api/v2/privacy/consent")
+                                .contentType("application/json")
+                                .content("{\"version\":\"2026-10-24\"}"))
+                .andExpect(status().isUnauthorized());
+        http.perform(get("/api/v2/privacy/unmapped")).andExpect(status().isForbidden());
+        var user = register("privacy-user", "13800000008", "USER");
+        for (int i = 0; i < 2; i++) {
+            http.perform(
+                            post("/api/v2/privacy/consent")
+                                    .header("Authorization", "Bearer " + user.token())
+                                    .contentType("application/json")
+                                    .content("{\"version\":\"2026-10-24\"}"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.accepted").value(true));
+        }
+        assertEquals(
+                1L,
+                db.queryForObject(
+                        "SELECT count(*) FROM runrun_v2.idempotency_requests WHERE"
+                                + " scope='PRIVACY_CONSENT' AND actor_id=? AND"
+                                + " resource_id='2026-10-24'",
+                        Long.class,
+                        Long.valueOf(user.account().id())));
+        http.perform(
+                        post("/api/v2/privacy/consent")
+                                .header("Authorization", "Bearer " + user.token())
+                                .contentType("application/json")
+                                .content("{\"version\":\"stale\"}"))
+                .andExpect(status().isBadRequest());
+        identity.revoke(user.token(), false, "privacy-logout");
+        http.perform(
+                        post("/api/v2/privacy/consent")
+                                .header("Authorization", "Bearer " + user.token())
+                                .contentType("application/json")
+                                .content("{\"version\":\"2026-10-24\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     void userRegistersAndWechatLoginUsesTheExistingNewBinding() {
         var created = register("user", "13800000001", "USER");
         assertEquals("USER", created.account().role());

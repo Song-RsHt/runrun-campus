@@ -28,9 +28,12 @@ Page({
       const privacyPolicy = await request('/api/v2/privacy/policy', {
         keepSessionOnUnauthorized: true
       })
-      this.setData({ privacyPolicy })
+      if (!privacyPolicy || !privacyPolicy.version || !privacyPolicy.title || !privacyPolicy.content) {
+        throw new Error('协议响应不完整，请重试')
+      }
+      this.setData({ privacyPolicy, privacyAccepted: false, error: '' })
     } catch (error) {
-      this.setData({ error: `隐私政策加载失败：${error.message}` })
+      this.setData({ privacyPolicy: null, privacyAccepted: false, error: `隐私政策加载失败：${error.message}` })
     }
   },
 
@@ -128,6 +131,9 @@ Page({
   },
 
   async bindWechatPhone(event) {
+    if (!this.data.privacyAccepted || !this.data.privacyPolicy) {
+      this.setData({ error: '请先阅读并同意当前隐私政策' }); return
+    }
     if (!this.data.loginTicket || !event.detail || event.detail.errMsg !== 'getPhoneNumber:ok') {
       this.setData({ error: '需要微信手机号授权才能注册' }); return
     }
@@ -141,11 +147,19 @@ Page({
   },
 
   async finishLogin(response) {
-    const user = response.account || response.user
+    if (!this.data.privacyAccepted || !this.data.privacyPolicy) throw new Error('请先阅读并同意当前隐私政策')
+    const user = response.account
+    if (!response.token || !user) throw new Error('登录响应异常，请重新登录')
     saveSession({ token: response.token, user })
-    if (user && user.privacyPolicyVersion !== this.data.privacyPolicy.version) {
+    try {
       await request('/api/v2/privacy/consent', { method: 'POST', data: { version: this.data.privacyPolicy.version } })
+      wx.reLaunch({ url: '/pages/home/home' })
+    } catch (error) {
+      // 同意回执失败不能留下可复用的客户端会话。
+      await request('/api/v2/auth/logout', { method: 'POST', data: { allSessions: false },
+        header: { 'Idempotency-Key': 'privacy-failed-' + Date.now() }, keepSessionOnUnauthorized: true }).catch(() => {})
+      clearSession()
+      throw new Error('协议同意记录失败，请重新登录：' + error.message)
     }
-    wx.reLaunch({ url: '/pages/home/home' })
   }
 })

@@ -216,17 +216,23 @@ function readSession(): AuthResponse | null {
     const value = sessionStorage.getItem(SESSION_KEY)
     if (!value) return null
     const session = JSON.parse(value) as AuthResponse
-    return session.user.role === 'ADMIN' && Array.isArray(session.user.permissions) ? session : null
+    if (typeof session.token === 'string' && session.token && session.user?.role === 'ADMIN' && Array.isArray(session.user.permissions)) return session
+    sessionStorage.removeItem(SESSION_KEY)
+    return null
   } catch {
+    sessionStorage.removeItem(SESSION_KEY)
     return null
   }
 }
 
 export default function App() {
   const [session, setSession] = useState<AuthResponse | null>(readSession)
+  const [checkingSession, setCheckingSession] = useState(() => readSession() !== null)
+  const [sessionError, setSessionError] = useState('')
 
   const handleLogin = (value: AuthResponse) => {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(value))
+    setSessionError('')
     setSession(value)
   }
 
@@ -235,6 +241,7 @@ export default function App() {
     if (token) void logoutV2Admin(token).catch(() => undefined)
     sessionStorage.removeItem(SESSION_KEY)
     setSession(null)
+    setCheckingSession(false)
   }
 
   useEffect(() => {
@@ -249,16 +256,20 @@ export default function App() {
         const account = await getV2AdminSession(token)
         if (!active || readSession()?.token !== token) return
         if (account.role !== 'ADMIN' || !account.adminEnabled) { handleLogout(); return }
-        const user: AuthUser = { id: Number(account.id), phone: '', displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: 'SUPER_ADMIN', permissions: account.permissions as AuthUser['permissions'] }
+        const user: AuthUser = { id: Number(account.id), phone: '', displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: null, permissions: account.permissions as AuthUser['permissions'] }
         if (JSON.stringify(readSession()?.user) !== JSON.stringify(user)) {
           const updated = { token, user }
           sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated))
           setSession(current => current?.token === token ? updated : current)
         }
       } catch (reason) {
-        if (active && readSession()?.token === token && isSessionFailure(reason)) handleLogout()
+        if (active && readSession()?.token === token) {
+          handleLogout()
+          setSessionError(reason instanceof Error ? reason.message : '会话恢复失败，请重新登录')
+        }
       } finally {
         checking = false
+        if (active) setCheckingSession(false)
       }
     }
     const onVisible = () => { if (!document.hidden) void refresh() }
@@ -274,18 +285,20 @@ export default function App() {
     }
   }, [session?.token])
 
+  if (checkingSession) return <main><p role="status">正在验证管理员会话…</p></main>
+
   return session
     ? <V2AdminConsole session={session} onLogout={handleLogout} />
-    : <LoginPage onLogin={handleLogin} />
+    : <LoginPage onLogin={handleLogin} initialError={sessionError} />
 }
 
-function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
+function LoginPage({ onLogin, initialError = '' }: { onLogin: (session: AuthResponse) => void; initialError?: string }) {
   // Synthetic IDs are accepted only in an explicitly local build against the isolated API.
   const localFixture = import.meta.env.VITE_V2_LOCAL_TEST === 'true'
     && /^http:\/\/(localhost|127\.0\.0\.1):8082$/.test(import.meta.env.VITE_API_BASE_URL ?? '')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState(initialError)
   const [submitting, setSubmitting] = useState(false)
 
   const submit = async (event: FormEvent) => {
@@ -295,7 +308,7 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
     try {
       const result = await loginV2Admin(phone.trim(), password)
       if (!result.token || !result.account || result.account.role !== 'ADMIN' || !result.account.adminEnabled) throw new Error('v2 管理员未启用或凭证无效')
-      onLogin({ token: result.token, user: { id: Number(result.account.id), phone: phone.trim(), displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: 'SUPER_ADMIN', permissions: result.account.permissions as AuthUser['permissions'] } })
+      onLogin({ token: result.token, user: { id: Number(result.account.id), phone: phone.trim(), displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: null, permissions: result.account.permissions as AuthUser['permissions'] } })
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : '登录失败')
     } finally {
@@ -322,7 +335,7 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
           <div>
             <p className="eyebrow accent">运营工作台</p>
             <h2>管理员登录</h2>
-            <p className="muted">{localFixture ? '使用本机初始化的测试账号和密码登录。' : '使用管理员密码登录，然后完成认证器验证。'}</p>
+            <p className="muted">{localFixture ? '使用本机初始化的测试账号和密码登录。' : '使用已启用的 v2 管理员账号和密码登录。'}</p>
           </div>
           <label>
             {localFixture ? '测试账号' : '手机号'}
@@ -381,7 +394,8 @@ function V2AdminConsole({ session, onLogout }: { session: AuthResponse; onLogout
     </aside>
     {view === 'home' && <main className="content"><header className="page-header"><div><p className="eyebrow accent">ADMIN V2 HOME</p><h1>管理端 v2 首页</h1><p className="muted">独立 v2 管理员工作台。当前仅开放通知和骑手资质审核。</p></div></header><section className="summary-row"><article><span>身份</span><strong className="text-value">ADMIN</strong><small>唯一 v2 管理员角色</small></article><article><span>会话</span><strong className="text-value">已恢复</strong><small>runrun_admin_session_v2</small></article><article><span>未读通知</span><strong>{unread}</strong><small>按当前管理员隔离</small></article></section><section className="orders-card"><p className="readonly-note">订单、用户、工单、反馈和审计仍保留在 legacy 页面，未加入 v2 导航，也不参与 v2 验收。</p></section></main>}
     {view === 'notifications' && <NotificationManagement session={session} onSessionExpired={onLogout} />}
-    {view === 'couriers' && <CourierManagement session={session} onSessionExpired={onLogout} />}
+    {view === 'couriers' && !hasPermission(session, 'COURIER_VIEW') && <main><p role="alert">当前账号无权查看骑手资质</p></main>}
+    {view === 'couriers' && hasPermission(session, 'COURIER_VIEW') && <CourierManagement session={session} onSessionExpired={onLogout} />}
   </div>
 }
 type AdminView = 'dashboard' | 'orders' | 'couriers' | 'users' | 'risk' | 'issues' | 'feedback' | 'accounts' | 'notifications' | 'audit'
@@ -404,7 +418,7 @@ function isSessionFailure(reason: unknown): boolean {
 }
 
 function hasPermission(session: AuthResponse, permission: AdminPermission) {
-  return session.user.permissions.includes(permission)
+  return Array.isArray(session.user.permissions) && session.user.permissions.includes(permission)
 }
 
 function LegacyAdminConsole({ session, onLogout, onSessionChange }: { session: AuthResponse; onLogout: () => void; onSessionChange: (session: AuthResponse) => void }) {

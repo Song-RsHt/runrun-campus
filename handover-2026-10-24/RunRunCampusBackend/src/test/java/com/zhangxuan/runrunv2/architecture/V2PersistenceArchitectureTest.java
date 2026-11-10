@@ -40,8 +40,8 @@ class V2PersistenceArchitectureTest {
         var resources =
                 new PathMatchingResourcePatternResolver()
                         .getResources("classpath*:mapper/v2/**/*.xml");
-        assertEquals(16, resources.length, "新增 Mapper 必须同步核对 XML 制品清单");
-        assertEquals(16, mybatis.getMapperRegistry().getMappers().size());
+        assertEquals(17, resources.length, "新增 Mapper 必须同步核对 XML 制品清单");
+        assertEquals(17, mybatis.getMapperRegistry().getMappers().size());
         for (Class<?> mapper : mybatis.getMapperRegistry().getMappers()) {
             assertTrue(mapper.getName().startsWith("com.zhangxuan.runrunv2.mapper."));
             for (var method : mapper.getDeclaredMethods()) {
