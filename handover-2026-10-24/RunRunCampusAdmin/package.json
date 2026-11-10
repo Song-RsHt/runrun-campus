@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check:v2-shell": "node tools/v2-shell-scan.cjs",
+    "qa:v2-api": "node tools/v2-admin-qa.cjs"
   },
   "dependencies": {
     "qrcode": "1.5.4",

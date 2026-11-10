@@ -1,3 +1,8 @@
+target
 secrets/
-.env
-.env.production
+uploads
+logs
+backups
+.env*
+.git
+node_modules

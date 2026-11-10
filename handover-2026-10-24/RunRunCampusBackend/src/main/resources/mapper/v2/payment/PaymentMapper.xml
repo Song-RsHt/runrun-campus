@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.payment.PaymentMapper">
+    <resultMap id="PaymentOrderVOResult" type="com.zhangxuan.runrunv2.vo.payment.PaymentOrderVO">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="order_id" javaType="java.lang.String"/>
+            <arg column="adjustment_id" javaType="java.lang.String"/>
+            <arg column="purpose" javaType="java.lang.String"/>
+            <arg column="amount_cents" javaType="_long"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="deadline" javaType="java.time.OffsetDateTime"/>
+            <arg column="paid_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="version" javaType="_long"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="PaymentAttemptVOResult" type="com.zhangxuan.runrunv2.vo.payment.PaymentAttemptVO">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="payment_order_id" javaType="java.lang.String"/>
+            <arg column="attempt_no" javaType="_int"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="version" javaType="_long"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="RefundOrderVOResult" type="com.zhangxuan.runrunv2.vo.payment.RefundOrderVO">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="order_id" javaType="java.lang.String"/>
+            <arg column="payment_order_id" javaType="java.lang.String"/>
+            <arg column="adjustment_id" javaType="java.lang.String"/>
+            <arg column="amount_cents" javaType="_long"/>
+            <arg column="purpose" javaType="java.lang.String"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="succeeded_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="version" javaType="_long"/>
+        </constructor>
+    </resultMap>
+
+    <select id="insertOriginalPayment" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.payment_orders (
+            order_id,
+            purpose,
+            amount_cents,
+            deadline
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            'ORIGINAL',
+            #{amountCents,jdbcType=BIGINT},
+            #{deadline,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        )
+        RETURNING id::text
+    </select>
+
+    <select id="findNextAttemptNumber" resultType="java.lang.Integer" useCache="false" flushCache="true">
+        SELECT coalesce(max(attempt_no), 0) + 1
+        FROM runrun_v2.payment_attempts
+        WHERE payment_order_id = #{paymentOrderId,jdbcType=BIGINT}
+    </select>
+
+    <select id="insertPaymentAttempt" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.payment_attempts (
+            payment_order_id,
+            attempt_no,
+            status,
+            channel_reference
+        )
+        VALUES (
+            #{paymentOrderId,jdbcType=BIGINT},
+            #{attemptNo,jdbcType=INTEGER},
+            'PROCESSING',
+            #{channelReference,jdbcType=VARCHAR}
+        )
+        RETURNING id::text
+    </select>
+
+    <update id="cancelPendingAdjustments">
+        UPDATE runrun_v2.payment_adjustments
+        SET status = 'CANCELLED',
+            resolved_at = #{resolvedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND status IN ('PENDING_SUPPLEMENT', 'PENDING_REFUND')
+    </update>
+
+    <update id="markRefundProcessing">
+        UPDATE runrun_v2.refund_orders
+        SET status = 'PROCESSING',
+            version = version + 1
+        WHERE id = #{refundId,jdbcType=BIGINT}
+    </update>
+
+    <select id="countAdjustmentById" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.payment_adjustments
+        WHERE id = #{adjustmentId,jdbcType=BIGINT}
+    </select>
+
+    <select id="countPendingAdjustments" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.payment_adjustments
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND status IN ('PENDING_SUPPLEMENT', 'PENDING_REFUND')
+    </select>
+
+    <insert id="insertApprovedAdjustment">
+        INSERT INTO runrun_v2.payment_adjustments (
+            id,
+            order_id,
+            delta_cents,
+            status,
+            approved_by,
+            reason,
+            approved_at
+        )
+        VALUES (
+            #{adjustmentId,jdbcType=BIGINT},
+            #{orderId,jdbcType=BIGINT},
+            #{deltaCents,jdbcType=BIGINT},
+            #{status,jdbcType=VARCHAR},
+            #{approvedBy,jdbcType=BIGINT},
+            #{reason,jdbcType=VARCHAR},
+            #{approvedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        )
+    </insert>
+
+    <update id="updateEffectiveFeeAndClearConfirmation">
+        UPDATE runrun_v2.v2_orders
+        SET effective_fee_cents = #{effectiveFeeCents,jdbcType=BIGINT},
+            confirm_started_at = NULL,
+            confirm_deadline = NULL,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <select id="insertSupplementPayment" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.payment_orders (
+            order_id,
+            adjustment_id,
+            purpose,
+            amount_cents,
+            deadline
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{adjustmentId,jdbcType=BIGINT},
+            'SUPPLEMENT',
+            #{amountCents,jdbcType=BIGINT},
+            #{deadline,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        )
+        RETURNING id::text
+    </select>
+
+    <select id="findExpiredUnpaidOrderIds" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT id::text
+        FROM runrun_v2.v2_orders
+        WHERE status = 'PENDING_PAYMENT'
+            AND pending_payment_deadline &lt;= #{deadlineCutoff,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        ORDER BY id
+        LIMIT 100
+    </select>
+
+    <update id="closeUnpaidOriginalPayments">
+        UPDATE runrun_v2.payment_orders
+        SET status = 'CLOSED',
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND purpose = 'ORIGINAL'
+            AND status NOT IN ('PAID', 'CLOSED')
+    </update>
+
+    <update id="updateAttemptResult">
+        UPDATE runrun_v2.payment_attempts
+        SET status = #{status,jdbcType=VARCHAR},
+            result_received_at = #{resultReceivedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE id = #{attemptId,jdbcType=BIGINT}
+    </update>
+
+    <update id="markPaymentPaid">
+        UPDATE runrun_v2.payment_orders
+        SET status = 'PAID',
+            paid_at = #{paidAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            credited_attempt_id = #{creditedAttemptId,jdbcType=BIGINT},
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{paymentOrderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="markOrderPendingAssignment">
+        UPDATE runrun_v2.v2_orders
+        SET status = 'PENDING_ASSIGNMENT',
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateRefundResult">
+        UPDATE runrun_v2.refund_orders
+        SET status = #{status,jdbcType=VARCHAR},
+            succeeded_at = #{succeededAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE id = #{refundId,jdbcType=BIGINT}
+    </update>
+
+    <select id="countUnfinishedAdjustmentRefunds" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.refund_orders
+        WHERE adjustment_id = #{adjustmentId,jdbcType=BIGINT}
+            AND status &lt;&gt; 'SUCCEEDED'
+    </select>
+
+    <select id="findRefundIdsByBusinessKey" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT id::text
+        FROM runrun_v2.refund_orders
+        WHERE business_key = #{businessKey,jdbcType=VARCHAR}
+    </select>
+
+    <select id="insertRefund" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.refund_orders (
+            order_id,
+            payment_order_id,
+            source_attempt_id,
+            adjustment_id,
+            amount_cents,
+            purpose,
+            reason,
+            business_key,
+            channel_reference
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{paymentOrderId,jdbcType=BIGINT},
+            #{sourceAttemptId,jdbcType=BIGINT},
+            #{adjustmentId,jdbcType=BIGINT},
+            #{amountCents,jdbcType=BIGINT},
+            #{purpose,jdbcType=VARCHAR},
+            #{reason,jdbcType=VARCHAR},
+            #{businessKey,jdbcType=VARCHAR},
+            #{channelReference,jdbcType=VARCHAR}
+        )
+        RETURNING id::text
+    </select>
+
+    <update id="completePendingAdjustment">
+        UPDATE runrun_v2.payment_adjustments
+        SET status = 'COMPLETED',
+            resolved_at = #{resolvedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE id = #{adjustmentId,jdbcType=BIGINT}
+            AND status IN ('PENDING_SUPPLEMENT', 'PENDING_REFUND')
+    </update>
+
+    <select id="findAdjustmentOrderId" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT order_id::text
+        FROM runrun_v2.payment_adjustments
+        WHERE id = #{adjustmentId,jdbcType=BIGINT}
+    </select>
+
+    <select id="isSupplementPending" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT status = 'PENDING_SUPPLEMENT'
+        FROM runrun_v2.payment_adjustments
+        WHERE id = #{adjustmentId,jdbcType=BIGINT}
+    </select>
+
+    <select id="sumReservedRefundCents" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT coalesce(sum(amount_cents), 0)
+        FROM runrun_v2.refund_orders
+        WHERE source_attempt_id = #{sourceAttemptId,jdbcType=BIGINT}
+    </select>
+
+    <select id="findCreditedAttemptId" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT credited_attempt_id::text
+        FROM runrun_v2.payment_orders
+        WHERE id = #{paymentOrderId,jdbcType=BIGINT}
+    </select>
+
+    <update id="cancelOrderAndClearConfirmation">
+        UPDATE runrun_v2.v2_orders
+        SET status = 'CANCELLED',
+            cancelled_at = #{cancelledAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            confirm_started_at = NULL,
+            confirm_deadline = NULL,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <select id="lockOrderNotificationRecipient" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT id
+        FROM runrun_v2.app_users
+        WHERE id = (
+            SELECT user_id
+            FROM runrun_v2.v2_orders
+            WHERE id = #{orderId,jdbcType=BIGINT})
+        FOR KEY SHARE
+    </select>
+
+    <update id="updatePaymentStatusIfDifferent">
+        UPDATE runrun_v2.payment_orders
+        SET status = #{status,jdbcType=VARCHAR},
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{paymentOrderId,jdbcType=BIGINT}
+            AND status &lt;&gt; #{excludedStatus,jdbcType=VARCHAR}
+    </update>
+
+    <select id="findPayment" resultMap="PaymentOrderVOResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.payment_orders
+        WHERE id = #{paymentOrderId,jdbcType=BIGINT}
+
+        <if test="lock">
+            FOR UPDATE
+
+        </if>
+    </select>
+
+    <select id="findAttempt" resultMap="PaymentAttemptVOResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.payment_attempts
+        WHERE id = #{attemptId,jdbcType=BIGINT}
+    </select>
+
+    <select id="findRefund" resultMap="RefundOrderVOResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.refund_orders
+        WHERE id = #{refundId,jdbcType=BIGINT}
+    </select>
+
+    <select id="findAttemptIds" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT id::text
+        FROM runrun_v2.payment_attempts
+        WHERE payment_order_id = #{paymentOrderId,jdbcType=BIGINT}
+        ORDER BY attempt_no
+    </select>
+
+    <select id="findPaymentIdsByOrder" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT id::text
+        FROM runrun_v2.payment_orders
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+        ORDER BY id
+    </select>
+
+    <select id="findRefundIdsByOrder" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT id::text
+        FROM runrun_v2.refund_orders
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+        ORDER BY id
+    </select>
+
+    <insert id="insertResultEvent">
+        INSERT INTO runrun_v2.payment_result_events (
+            event_id,
+            resource_type,
+            resource_id,
+            result
+        )
+        VALUES (
+            #{eventId,jdbcType=VARCHAR},
+            #{resourceType,jdbcType=VARCHAR},
+            #{resourceId,jdbcType=BIGINT},
+            #{result,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="lockResultEvent" resultType="java.lang.Void" useCache="false" flushCache="true">
+        SELECT pg_advisory_xact_lock(hashtextextended(#{eventId,jdbcType=VARCHAR}, 0))
+    </select>
+
+    <select id="findResultEvent" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT resource_type,
+            resource_id,
+            result
+        FROM runrun_v2.payment_result_events
+        WHERE event_id = #{eventId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="findRefundSourceAttemptId" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT source_attempt_id::text
+        FROM runrun_v2.refund_orders
+        WHERE id = #{refundId,jdbcType=BIGINT}
+    </select>
+
+    <select id="sumSucceededRefundCents" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT sum(amount_cents)
+        FROM runrun_v2.refund_orders
+        WHERE source_attempt_id = #{sourceAttemptId,jdbcType=BIGINT}
+            AND status = 'SUCCEEDED'
+    </select>
+
+    <select id="sumRecordedPlatformRefundCents" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT coalesce(sum(platform_cents), 0)
+        FROM runrun_v2.payment_financial_events
+        WHERE payload -&gt;&gt; 'sourceAttemptId' = #{sourceAttemptId,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="insertRefundFinancialEvent">
+        INSERT INTO runrun_v2.payment_financial_events (
+            order_id,
+            event_key,
+            kind,
+            amount_cents,
+            platform_cents,
+            courier_cents,
+            payload
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{eventKey,jdbcType=VARCHAR},
+            #{kind,jdbcType=VARCHAR},
+            #{amountCents,jdbcType=BIGINT},
+            #{platformCents,jdbcType=BIGINT},
+            #{courierCents,jdbcType=BIGINT},
+            #{payload,jdbcType=VARCHAR}::jsonb
+        )
+    </insert>
+
+    <insert id="insertOrderEventIfAbsent">
+        INSERT INTO runrun_v2.v2_order_events (
+            order_id,
+            actor_id,
+            event_type,
+            request_id,
+            payload
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{actorId,jdbcType=BIGINT},
+            #{eventType,jdbcType=VARCHAR},
+            #{requestId,jdbcType=VARCHAR},
+            #{payload,jdbcType=VARCHAR}::jsonb
+        )
+        ON CONFLICT DO NOTHING
+    </insert>
+
+    <insert id="insertFinancialEventIfAbsent">
+        INSERT INTO runrun_v2.payment_financial_events (
+            order_id,
+            event_key,
+            kind,
+            amount_cents,
+            platform_cents,
+            courier_cents,
+            payload
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{eventKey,jdbcType=VARCHAR},
+            #{kind,jdbcType=VARCHAR},
+            #{amountCents,jdbcType=BIGINT},
+            #{platformCents,jdbcType=BIGINT},
+            #{courierCents,jdbcType=BIGINT},
+            #{payload,jdbcType=VARCHAR}::jsonb
+        )
+        ON CONFLICT DO NOTHING
+    </insert>
+
+    <insert id="insertOrderNotificationIfAbsent">
+        INSERT INTO runrun_v2.notification_outbox (
+            recipient_id,
+            event_key,
+            channel,
+            payload
+        )
+        SELECT user_id,
+            #{eventKey,jdbcType=VARCHAR},
+            'IN_APP',
+            #{payload,jdbcType=VARCHAR}::jsonb
+        FROM runrun_v2.v2_orders
+        WHERE id = #{orderId,jdbcType=BIGINT}
+        ON CONFLICT DO NOTHING
+    </insert>
+
+    <insert id="insertAdminAudit">
+        INSERT INTO runrun_v2.payment_admin_audit (
+            actor_id,
+            action,
+            resource_id,
+            request_id,
+            reason
+        )
+        VALUES (
+            #{actorId,jdbcType=BIGINT},
+            #{action,jdbcType=VARCHAR},
+            #{resourceId,jdbcType=BIGINT},
+            #{requestId,jdbcType=VARCHAR},
+            #{reason,jdbcType=VARCHAR}
+        )
+    </insert>
+</mapper>

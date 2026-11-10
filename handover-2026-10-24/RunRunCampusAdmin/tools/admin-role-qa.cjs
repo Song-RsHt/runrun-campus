@@ -163,7 +163,7 @@ async function main() {
     const issue = await api(`/api/v1/orders/${order.id}/issues`,customer.token,'POST',{type:'OTHER',description:'QA_' + role});
     const feedback = await api('/api/v1/feedback',customer.token,'POST',{type:'OTHER',content:'QA_' + role});
     const courier = await api('/api/v1/auth/register',null,'POST',{phone:`1990300020${roles.indexOf(role)}`,password:PASSWORD,displayName:'QA_COURIER_' + role,role:'COURIER'});
-    const cert = await api('/api/v1/courier-certification/apply',courier.token,'POST',{realName:'QA Rider',studentId:'QA' + roles.indexOf(role),campus:'QA Campus'});
+    const cert = await api('/api/v2/courier/certification/apply',courier.token,'POST',{realName:'QA Rider',studentId:'QA' + roles.indexOf(role),campus:'QA Campus'});
     fixtures[role] = {order,issue,feedback,courierId:courier.user.id,certId:cert.id};
   }
   for (const role of roles.slice(1)) await login(role);
@@ -175,7 +175,7 @@ async function main() {
       check(`${role}: ${label} navigation`, Boolean(visible) === permits(permission));
       await api('/api/v1/admin/' + endpoint,token,'GET',null,permits(permission)?200:403);
     }
-    for (const [url,permission] of [[`/api/v1/admin/orders/${fixtures[role].order.id}`,'ORDER_VIEW'],[`/api/v1/admin/couriers/${fixtures[role].courierId}/performance`,'COURIER_VIEW'],['/api/v1/admin/orders/export','ORDER_EXPORT'],['/api/v1/courier-certification/pending','COURIER_REVIEW']]) {
+    for (const [url,permission] of [[`/api/v1/admin/orders/${fixtures[role].order.id}`,'ORDER_VIEW'],[`/api/v1/admin/couriers/${fixtures[role].courierId}/performance`,'COURIER_VIEW'],['/api/v1/admin/orders/export','ORDER_EXPORT'],['/api/v2/courier/certification/pending','COURIER_REVIEW']]) {
       await api(url,token,'GET',null,permits(permission)?200:403);
     }
     await nav(page,'运营总览'); await shot(page,role.toLowerCase()+'-dashboard');
@@ -195,7 +195,7 @@ async function main() {
       await nav(page,'骑手管理'); await detail(page,'QA_COURIER_' + role);
       check(`${role}: review buttons`, Boolean(await page.getByRole('button',{name:'通过认证',exact:true}).count()) === permits('COURIER_REVIEW'));
       if (permits('COURIER_REVIEW')) {
-        await action(page,'通过认证',`/api/v1/courier-certification/${fixtures[role].certId}/approve`);
+        await action(page,'通过认证',`/api/v2/courier/certification/${fixtures[role].certId}/approve`);
         await page.getByRole('dialog').waitFor({state:'hidden'});
         await detail(page,'QA_COURIER_' + role);
         check(`${role}: approve courier through UI`, true);
@@ -222,8 +222,8 @@ async function main() {
       ['USER_MANAGE',`/api/v1/admin/users/${customer.user.id}/suspend`,'POST'],
       ['USER_MANAGE',`/api/v1/admin/users/${customer.user.id}/restore`,'POST'],
       ['USER_MANAGE',`/api/v1/admin/users/${customer.user.id}/unlock-login`,'POST'],
-      ['COURIER_REVIEW',`/api/v1/courier-certification/${f.certId}/approve`,'POST'],
-      ['COURIER_REVIEW',`/api/v1/courier-certification/${f.certId}/reject`,'POST',{reason:'QA denied'}],
+      ['COURIER_REVIEW',`/api/v2/courier/certification/${f.certId}/approve`,'POST'],
+      ['COURIER_REVIEW',`/api/v2/courier/certification/${f.certId}/reject`,'POST',{reason:'QA denied'}],
       ['ISSUE_MANAGE',`/api/v1/admin/issues/${f.issue.id}/claim`,'POST'],
       ['ISSUE_MANAGE',`/api/v1/admin/issues/${f.issue.id}/resolve`,'POST',{resolution:'QA denied'}],
       ['FEEDBACK_MANAGE',`/api/v1/admin/feedback/${f.feedback.id}/claim`,'POST'],
@@ -362,3 +362,4 @@ main().catch(async error => {
   fs.writeFileSync(path.join(OUT,'acceptance.json'),JSON.stringify(result,null,2));
   console.log(JSON.stringify({success:result.success,checks:result.checks.length,requests:result.requests.length}));
 });
+

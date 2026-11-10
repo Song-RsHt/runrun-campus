@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.order.OrderReadMapper">
+    <resultMap id="OrderSnapshotResult" type="com.zhangxuan.runrunv2.vo.order.OrderVO">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="order_no" javaType="java.lang.String"/>
+            <arg column="order_flow_version" javaType="_int"/>
+            <arg column="user_id" javaType="java.lang.String"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="service_type" javaType="com.zhangxuan.runrunv2.enums.order.ServiceType" typeHandler="org.apache.ibatis.type.EnumTypeHandler"/>
+            <arg column="zone_id" javaType="java.lang.String"/>
+            <arg column="service_point_id" javaType="java.lang.String"/>
+            <arg column="address_snapshot" javaType="com.zhangxuan.runrunv2.model.order.OrderAddress" typeHandler="com.zhangxuan.runrunv2.config.OrderAddressTypeHandler"/>
+            <arg column="pricing_snapshot" javaType="com.zhangxuan.runrunv2.model.order.OrderPricing" typeHandler="com.zhangxuan.runrunv2.config.OrderPricingTypeHandler"/>
+            <arg column="policy_snapshot" javaType="java.util.Map" typeHandler="com.zhangxuan.runrunv2.config.OrderPolicyTypeHandler"/>
+            <arg column="original_fee_cents" javaType="_long"/>
+            <arg column="effective_fee_cents" javaType="_long"/>
+            <arg column="pending_payment_deadline" javaType="java.time.OffsetDateTime"/>
+            <arg column="version" javaType="_long"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="updated_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="delivered_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="confirm_started_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="confirm_deadline" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findOrder" resultMap="OrderSnapshotResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.v2_orders
+        WHERE id = #{orderId,jdbcType=BIGINT}
+        <if test="locked">
+                FOR UPDATE
+
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.payment.MockPaymentMapper">
+
+    <insert id="insertProcessingResult">
+        INSERT INTO runrun_v2.mock_channel_results (
+            resource_type,
+            resource_id,
+            result
+        )
+        VALUES (
+            #{resourceType,jdbcType=VARCHAR},
+            #{resourceId,jdbcType=BIGINT},
+            'PROCESSING'
+        )
+    </insert>
+
+    <select id="findResult" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT result
+        FROM runrun_v2.mock_channel_results
+        WHERE resource_type = #{resourceType,jdbcType=VARCHAR}
+            AND resource_id = #{resourceId,jdbcType=BIGINT}
+    </select>
+
+    <select id="findResultVersion" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT version
+        FROM runrun_v2.mock_channel_results
+        WHERE resource_type = #{resourceType,jdbcType=VARCHAR}
+            AND resource_id = #{resourceId,jdbcType=BIGINT}
+    </select>
+
+    <update id="updateResultUnlessSuccessful">
+        UPDATE runrun_v2.mock_channel_results
+        SET result = #{result,jdbcType=VARCHAR},
+            version = version + 1
+        WHERE resource_type = #{resourceType,jdbcType=VARCHAR}
+            AND resource_id = #{resourceId,jdbcType=BIGINT}
+            AND result &lt;&gt; 'SUCCESS'
+    </update>
+
+    <update id="retryFailedRefund">
+        UPDATE runrun_v2.mock_channel_results
+        SET result = 'PROCESSING',
+            version = version + 1
+        WHERE resource_type = 'REFUND'
+            AND resource_id = #{refundId,jdbcType=BIGINT}
+            AND result = 'FAILED'
+    </update>
+</mapper>

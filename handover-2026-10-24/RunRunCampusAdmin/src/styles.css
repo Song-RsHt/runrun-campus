@@ -384,3 +384,5 @@ tbody tr:hover { background: #fffdfb; }
   .dispatch-dialog > footer span { grid-column: 1 / -1; margin-right: 0; }
   .dispatch-dialog > footer button { min-height: 42px; white-space: nowrap; }
 }
+
+.legacy-banner { margin: 12px 18px; padding: 8px 10px; border: 1px solid rgba(239,100,52,.35); border-radius: 8px; color: var(--muted); font-size: 12px; }

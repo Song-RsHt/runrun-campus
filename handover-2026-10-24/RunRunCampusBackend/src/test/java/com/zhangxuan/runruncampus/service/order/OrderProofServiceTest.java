@@ -1,0 +1,304 @@
+package com.zhangxuan.runruncampus.service.order;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.zhangxuan.runruncampus.entity.order.CampusOrder;
+import com.zhangxuan.runruncampus.entity.order.OrderProof;
+import com.zhangxuan.runruncampus.entity.user.AppUser;
+import com.zhangxuan.runruncampus.enums.order.OrderProofType;
+import com.zhangxuan.runruncampus.enums.order.ServiceType;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
+import com.zhangxuan.runruncampus.integration.storage.LocalOrderProofStorage;
+import com.zhangxuan.runruncampus.integration.storage.OrderProofStorage;
+import com.zhangxuan.runruncampus.integration.web.MultipartUploads;
+import com.zhangxuan.runruncampus.repository.order.OrderProofRepository;
+import com.zhangxuan.runruncampus.repository.order.OrderRepository;
+import com.zhangxuan.runruncampus.service.impl.order.OrderProofServiceImpl;
+import com.zhangxuan.runruncampus.vo.order.OrderProofVO;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+
+@ExtendWith(MockitoExtension.class)
+class OrderProofServiceTest {
+
+    private static final byte[] JPEG_BYTES =
+            new byte[] {(byte) 0xff, (byte) 0xd8, (byte) 0xff, 0x00};
+
+    private static final byte[] PNG_BYTES =
+            new byte[] {(byte) 0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00};
+
+    @TempDir Path storageDirectory;
+
+    @Mock private OrderRepository orderRepository;
+
+    @Mock private OrderProofRepository proofRepository;
+
+    private OrderProofService proofService;
+
+    private AppUser courier;
+
+    private CampusOrder order;
+
+    @BeforeEach
+    void setUp() {
+        AppUser customer = user(1L, "13800000001", UserRole.CUSTOMER);
+        courier = user(2L, "13800000002", UserRole.COURIER);
+        order =
+                new CampusOrder(
+                        "RP-TEST-002", customer, "测试商家", "5678", "东门", "4号楼", ServiceType.LOBBY);
+        ReflectionTestUtils.setField(order, "id", 11L);
+        order.assignCourier(courier);
+        proofService =
+                new OrderProofServiceImpl(
+                        orderRepository,
+                        proofRepository,
+                        new LocalOrderProofStorage(storageDirectory.toString()));
+    }
+
+    @Test
+    void courierCanUploadPickupProofForAcceptedOrder() throws Exception {
+        MockMultipartFile image =
+                new MockMultipartFile("file", "pickup.jpg", "image/jpeg", JPEG_BYTES);
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        when(proofRepository.existsByOrderAndType(order, OrderProofType.PICKUP)).thenReturn(false);
+        when(proofRepository.save(any(OrderProof.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        OrderProofVO response =
+                proofService.upload(
+                        courier, 11L, OrderProofType.PICKUP, MultipartUploads.adapt(image));
+        assertEquals(OrderProofType.PICKUP, response.type());
+        assertEquals("pickup.jpg", response.originalFileName());
+        try (var files = Files.list(storageDirectory)) {
+            assertTrue(files.findAny().isPresent());
+        }
+    }
+
+    @Test
+    void courierCanUploadPngProofWhenHeaderExtensionAndSignatureMatch() throws Exception {
+        MockMultipartFile image =
+                new MockMultipartFile("file", "pickup.png", "image/png", PNG_BYTES);
+        allowPickupProofUpload();
+        when(proofRepository.save(any(OrderProof.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        OrderProofVO response =
+                proofService.upload(
+                        courier, 11L, OrderProofType.PICKUP, MultipartUploads.adapt(image));
+        assertEquals("image/png", response.contentType());
+        assertEquals("pickup.png", response.originalFileName());
+        try (var files = Files.list(storageDirectory)) {
+            assertTrue(files.allMatch(file -> file.getFileName().toString().endsWith(".png")));
+        }
+    }
+
+    @Test
+    void rejectsSpoofedJpegContent() {
+        MockMultipartFile image =
+                new MockMultipartFile(
+                        "file", "pickup.jpg", "image/jpeg", "<script>alert(1)</script>".getBytes());
+        allowPickupProofUpload();
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                proofService.upload(
+                                        courier,
+                                        11L,
+                                        OrderProofType.PICKUP,
+                                        MultipartUploads.adapt(image)));
+        assertEquals(400, exception.status());
+        verify(proofRepository, never()).save(any(OrderProof.class));
+    }
+
+    @Test
+    void rejectsContentTypeThatDoesNotMatchImageSignature() {
+        MockMultipartFile image =
+                new MockMultipartFile("file", "pickup.jpg", "image/jpeg", PNG_BYTES);
+        allowPickupProofUpload();
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                proofService.upload(
+                                        courier,
+                                        11L,
+                                        OrderProofType.PICKUP,
+                                        MultipartUploads.adapt(image)));
+        assertEquals(400, exception.status());
+        verify(proofRepository, never()).save(any(OrderProof.class));
+    }
+
+    @Test
+    void rejectsExecutableExtensionEvenWhenMimeAndSignatureLookValid() {
+        MockMultipartFile image =
+                new MockMultipartFile("file", "pickup.jpg.php", "image/jpeg", JPEG_BYTES);
+        allowPickupProofUpload();
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                proofService.upload(
+                                        courier,
+                                        11L,
+                                        OrderProofType.PICKUP,
+                                        MultipartUploads.adapt(image)));
+        assertEquals(400, exception.status());
+        verify(proofRepository, never()).save(any(OrderProof.class));
+    }
+
+    @Test
+    void rejectsFileLargerThanEightMegabytesBeforeReadingIt() {
+        MultipartFile image = mock(MultipartFile.class);
+        when(image.isEmpty()).thenReturn(false);
+        when(image.getSize()).thenReturn(8L * 1024 * 1024 + 1);
+        allowPickupProofUpload();
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                proofService.upload(
+                                        courier,
+                                        11L,
+                                        OrderProofType.PICKUP,
+                                        MultipartUploads.adapt(image)));
+        assertEquals(400, exception.status());
+        verify(proofRepository, never()).save(any(OrderProof.class));
+    }
+
+    @Test
+    void packagePickupProofRequiresConfirmedSize() {
+        CampusOrder packageOrder =
+                new CampusOrder(
+                        "RP-PACKAGE-002",
+                        order.getCustomer(),
+                        "菜鸟驿站",
+                        "5678",
+                        "校内快递驿站",
+                        "4号楼",
+                        ServiceType.PACKAGE_SMALL);
+        ReflectionTestUtils.setField(packageOrder, "id", 12L);
+        packageOrder.assignCourier(courier);
+        MockMultipartFile image =
+                new MockMultipartFile("file", "pickup.jpg", "image/jpeg", JPEG_BYTES);
+        when(orderRepository.findLockedById(12L)).thenReturn(Optional.of(packageOrder));
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                proofService.upload(
+                                        courier,
+                                        12L,
+                                        OrderProofType.PICKUP,
+                                        MultipartUploads.adapt(image)));
+        assertEquals(409, exception.status());
+        verify(proofRepository, never()).save(any(OrderProof.class));
+    }
+
+    @Test
+    void courierCanUploadSizeReviewProofBeforePackageSizeIsConfirmed() throws Exception {
+        CampusOrder packageOrder =
+                new CampusOrder(
+                        "RP-PACKAGE-003",
+                        order.getCustomer(),
+                        "菜鸟驿站",
+                        "5678",
+                        "校内快递驿站",
+                        "4号楼",
+                        ServiceType.PACKAGE_SMALL);
+        ReflectionTestUtils.setField(packageOrder, "id", 12L);
+        packageOrder.assignCourier(courier);
+        MockMultipartFile image =
+                new MockMultipartFile("file", "size-review.jpg", "image/jpeg", JPEG_BYTES);
+        when(orderRepository.findLockedById(12L)).thenReturn(Optional.of(packageOrder));
+        when(proofRepository.existsByOrderAndType(packageOrder, OrderProofType.SIZE_REVIEW))
+                .thenReturn(false);
+        when(proofRepository.save(any(OrderProof.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        OrderProofVO response =
+                proofService.upload(
+                        courier, 12L, OrderProofType.SIZE_REVIEW, MultipartUploads.adapt(image));
+        assertEquals(OrderProofType.SIZE_REVIEW, response.type());
+        assertEquals("size-review.jpg", response.originalFileName());
+        try (var files = Files.list(storageDirectory)) {
+            assertTrue(files.findAny().isPresent());
+        }
+    }
+
+    @Test
+    void sizeReviewProofIsOnlyAvailableForUnconfirmedPackageOrders() {
+        MockMultipartFile image =
+                new MockMultipartFile("file", "size-review.jpg", "image/jpeg", JPEG_BYTES);
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                proofService.upload(
+                                        courier,
+                                        11L,
+                                        OrderProofType.SIZE_REVIEW,
+                                        MultipartUploads.adapt(image)));
+        assertEquals(409, exception.status());
+        verify(proofRepository, never()).save(any(OrderProof.class));
+    }
+
+    @Test
+    void storageFailureDoesNotCreateProofRecord() throws Exception {
+        MockMultipartFile image =
+                new MockMultipartFile("file", "pickup.jpg", "image/jpeg", JPEG_BYTES);
+        OrderProofStorage failingStorage = mock(OrderProofStorage.class);
+        OrderProofService service =
+                new OrderProofServiceImpl(orderRepository, proofRepository, failingStorage);
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        when(proofRepository.existsByOrderAndType(order, OrderProofType.PICKUP)).thenReturn(false);
+        doThrow(new IOException("storage unavailable"))
+                .when(failingStorage)
+                .store(anyString(), anyString(), anyLong(), any(InputStream.class));
+        BusinessFailure exception =
+                assertThrows(
+                        BusinessFailure.class,
+                        () ->
+                                service.upload(
+                                        courier,
+                                        11L,
+                                        OrderProofType.PICKUP,
+                                        MultipartUploads.adapt(image)));
+        assertEquals(500, exception.status());
+        verify(proofRepository, never()).save(any(OrderProof.class));
+    }
+
+    private void allowPickupProofUpload() {
+        when(orderRepository.findLockedById(11L)).thenReturn(Optional.of(order));
+        when(proofRepository.existsByOrderAndType(order, OrderProofType.PICKUP)).thenReturn(false);
+    }
+
+    private AppUser user(Long id, String phone, UserRole role) {
+        AppUser user = new AppUser(phone, "password-hash", "测试账号", role);
+        ReflectionTestUtils.setField(user, "id", id);
+        return user;
+    }
+}

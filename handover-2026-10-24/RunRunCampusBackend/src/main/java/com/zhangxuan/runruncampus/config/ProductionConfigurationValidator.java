@@ -1,23 +1,25 @@
 package com.zhangxuan.runruncampus.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+/** 生产配置校验器组件；保持当前应用的配置与协作边界。 */
 @Component
 @Profile("prod")
 @Order(0)
 public class ProductionConfigurationValidator implements ApplicationRunner {
+
     private static final Pattern PHONE = Pattern.compile("1\\d{10}");
     private static final Pattern VERIFIED_SSL = Pattern.compile("[?&]sslmode=verify-full(?:&|$)");
-    private static final Pattern RDS_CA = Pattern.compile(
-            "[?&]sslrootcert=/run/secrets/RDS_CA_CERTIFICATE(?:&|$)");
+    private static final Pattern RDS_CA =
+            Pattern.compile("[?&]sslrootcert=/run/secrets/RDS_CA_CERTIFICATE(?:&|$)");
 
     private final String datasourceUrl;
     private final String datasourceUsername;
@@ -58,7 +60,8 @@ public class ProductionConfigurationValidator implements ApplicationRunner {
         require(datasourceUrl.startsWith("jdbc:postgresql://"), "生产数据库必须使用 PostgreSQL JDBC 地址");
         require(VERIFIED_SSL.matcher(datasourceUrl).find(), "生产数据库必须启用 sslmode=verify-full");
         require(RDS_CA.matcher(datasourceUrl).find(), "生产数据库必须使用挂载的 RDS CA 证书");
-        require(!datasourceUsername.isBlank() && !datasourceUsername.equalsIgnoreCase("postgres"),
+        require(
+                !datasourceUsername.isBlank() && !datasourceUsername.equalsIgnoreCase("postgres"),
                 "生产数据库必须使用非 postgres 的最小权限账号");
         requireSecretLength(datasourcePassword, 32, 32, "生产数据库密码");
         require(PHONE.matcher(adminPhone).matches(), "初始管理员手机号格式无效");
@@ -71,15 +74,18 @@ public class ProductionConfigurationValidator implements ApplicationRunner {
         require(useInternalEndpoint, "生产 ECS 必须通过 OSS 内网端点访问");
     }
 
-    private void requireSecretLength(String value, int minimumLength, int maximumLength, String name) {
-        require(value.length() >= minimumLength && value.length() <= maximumLength,
+    private void requireSecretLength(
+            String value, int minimumLength, int maximumLength, String name) {
+        require(
+                value.length() >= minimumLength && value.length() <= maximumLength,
                 name + "长度必须为 " + minimumLength + " 至 " + maximumLength + " 位");
         requireValidValue(value, name);
     }
 
     private void requireValidValue(String value, String name) {
         String normalized = value.toLowerCase(Locale.ROOT);
-        require(!value.isBlank()
+        require(
+                !value.isBlank()
                         && !normalized.contains("replace-with")
                         && !normalized.contains("change-this")
                         && !normalized.contains("example"),

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper">
+
+    <select id="lockCourierCertification" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.courier_certifications
+        WHERE courier_id = #{courierId,jdbcType=BIGINT}
+        FOR UPDATE
+    </select>
+
+    <update id="resubmitCertification">
+        UPDATE runrun_v2.courier_certifications
+        SET status = 'PENDING',
+            rejection_reason = NULL,
+            submitted_at = now(),
+            version = version + 1,
+            updated_at = now()
+        WHERE courier_id = #{courierId,jdbcType=BIGINT}
+    </update>
+
+    <select id="findCertificationId" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT id
+        FROM runrun_v2.courier_certifications
+        WHERE courier_id = #{courierId,jdbcType=BIGINT}
+    </select>
+
+    <update id="updateSubmittedPhoto">
+        UPDATE runrun_v2.courier_certifications
+        SET submitted_photo_resource_id = #{resourceId,jdbcType=VARCHAR},
+            submitted_photo_storage_key = #{storageKey,jdbcType=VARCHAR},
+            version = version + 1,
+            updated_at = now()
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+            AND version = #{expectedVersion,jdbcType=BIGINT}
+    </update>
+
+    <update id="touchCertificationIfVersionMatches">
+        UPDATE runrun_v2.courier_certifications
+        SET updated_at = now()
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+            AND version = #{expectedVersion,jdbcType=BIGINT}
+    </update>
+
+    <update id="approveCertification">
+        UPDATE runrun_v2.courier_certifications
+        SET status = 'APPROVED',
+            eligible = TRUE,
+            approved_photo_resource_id = submitted_photo_resource_id,
+            approved_photo_storage_key = submitted_photo_storage_key,
+            approved_photo_at = now(),
+            submitted_photo_resource_id = NULL,
+            submitted_photo_storage_key = NULL,
+            reviewed_at = now(),
+            version = version + 1,
+            updated_at = now()
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+            AND version = #{expectedVersion,jdbcType=BIGINT}
+    </update>
+
+    <update id="rejectCertification">
+        UPDATE runrun_v2.courier_certifications
+        SET status = 'REJECTED',
+            rejection_reason = #{reason,jdbcType=VARCHAR},
+            reviewed_at = now(),
+            version = version + 1,
+            updated_at = now()
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+            AND version = #{expectedVersion,jdbcType=BIGINT}
+    </update>
+
+    <select id="countPhotoDeletionsInProgress" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.evidence_deletion_audits
+        WHERE certification_id = #{certificationId,jdbcType=BIGINT}
+            AND resource_id = #{resourceId,jdbcType=VARCHAR}
+            AND status = 'DELETING'
+    </select>
+
+    <insert id="insertPhotoReadAudit">
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            #{administratorId,jdbcType=BIGINT},
+            'COURIER_CERTIFICATION_PHOTO_READ',
+            'COURIER_CERTIFICATION',
+            #{certificationId,jdbcType=BIGINT},
+            #{requestId,jdbcType=VARCHAR},
+            #{reason,jdbcType=VARCHAR},
+            jsonb_build_object('photoResourceId', #{resourceId,jdbcType=VARCHAR})
+        )
+        ON CONFLICT (
+            administrator_id,
+            action,
+            request_id
+        ) DO NOTHING
+    </insert>
+
+    <select id="countCertifications" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.app_users u
+        JOIN runrun_v2.courier_certifications c
+        ON c.courier_id = u.id
+        WHERE u.role = 'COURIER'
+            AND (CAST(#{statusFilter,jdbcType=VARCHAR} AS text) IS NULL
+                OR c.status = #{status,jdbcType=VARCHAR})
+            AND (CAST(#{phoneFilter,jdbcType=VARCHAR} AS text) IS NULL
+                OR u.phone ILIKE #{phonePattern,jdbcType=VARCHAR})
+    </select>
+
+    <select id="pageCertifications" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT u.id AS "courierId",
+            u.phone,
+            u.created_at AS "registeredAt",
+            c.id AS "certificationId",
+            c.status,
+            c.version,
+            c.submitted_at AS "submittedAt",
+            c.reviewed_at AS "reviewedAt",
+            c.rejection_reason AS "rejectionReason",
+            c.submitted_photo_resource_id,
+            c.approved_photo_resource_id
+        FROM runrun_v2.app_users u
+        JOIN runrun_v2.courier_certifications c
+        ON c.courier_id = u.id
+        WHERE u.role = 'COURIER'
+            AND (CAST(#{statusFilter,jdbcType=VARCHAR} AS text) IS NULL
+                OR c.status = #{status,jdbcType=VARCHAR})
+            AND (CAST(#{phoneFilter,jdbcType=VARCHAR} AS text) IS NULL
+                OR u.phone ILIKE #{phonePattern,jdbcType=VARCHAR})
+         ORDER BY u.id
+        LIMIT #{limit,jdbcType=INTEGER}
+        OFFSET #{offset,jdbcType=BIGINT}
+    </select>
+
+    <select id="countDeliveredTasks" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.fulfillment_tasks t
+        JOIN runrun_v2.v2_orders o
+        ON o.id = t.order_id
+        WHERE t.courier_id = #{courierId,jdbcType=BIGINT}
+            AND t.status = 'DELIVERED'
+    </select>
+
+    <select id="summarizeDeliveredTasks" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT count(*) FILTER (
+            WHERE t.delivered_at &gt;= current_date) today,
+            count(*) FILTER (
+            WHERE t.delivered_at &gt;= current_date - interval '7 days') week,
+            count(*) FILTER (
+            WHERE t.delivered_at &gt;= date_trunc('month', now())) AS month_count,
+            count(*) total,
+            count(*) FILTER (
+            WHERE o.service_type = 'PACKAGE_SMALL') small,
+            count(*) FILTER (
+            WHERE o.service_type = 'PACKAGE_MEDIUM') medium,
+            count(*) FILTER (
+            WHERE o.service_type = 'PACKAGE_MEDIUM_LARGE') mediumLarge,
+            count(*) FILTER (
+            WHERE o.service_type = 'PACKAGE_LARGE') large,
+            count(*) FILTER (
+            WHERE o.service_type = 'PACKAGE_EXTRA_LARGE') extraLarge,
+            count(*) FILTER (
+            WHERE o.service_type = 'PACKAGE_XL') xl
+        FROM runrun_v2.fulfillment_tasks t
+        JOIN runrun_v2.v2_orders o
+        ON o.id = t.order_id
+        WHERE t.courier_id = #{courierId,jdbcType=BIGINT}
+            AND t.status = 'DELIVERED'
+    </select>
+
+    <select id="pageDeliveredTasks" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT o.id,
+            o.order_no,
+            o.status,
+            o.service_type,
+            o.effective_fee_cents fee_cents,
+            t.delivered_at
+        FROM runrun_v2.fulfillment_tasks t
+        JOIN runrun_v2.v2_orders o
+        ON o.id = t.order_id
+        WHERE t.courier_id = #{courierId,jdbcType=BIGINT}
+            AND t.status = 'DELIVERED'
+         ORDER BY t.delivered_at DESC
+        LIMIT #{limit,jdbcType=INTEGER}
+        OFFSET #{offset,jdbcType=BIGINT}
+    </select>
+
+    <select id="findCourierCertification" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.courier_certifications
+        WHERE courier_id = #{courierId,jdbcType=BIGINT}
+    </select>
+
+    <select id="lockCertification" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.courier_certifications
+        WHERE id = #{certificationId,jdbcType=BIGINT}
+        FOR UPDATE
+    </select>
+
+    <select id="lockActor" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT id
+        FROM runrun_v2.app_users
+        WHERE id = #{actorId,jdbcType=BIGINT}
+        FOR UPDATE
+    </select>
+
+    <insert id="insertCertificationEvent">
+        INSERT INTO runrun_v2.courier_certification_events (
+            certification_id,
+            actor_id,
+            actor_kind,
+            event_type,
+            request_id,
+            certification_version
+        )
+        SELECT #{certificationId,jdbcType=BIGINT},
+            #{actorId,jdbcType=BIGINT},
+            #{actorKind,jdbcType=VARCHAR},
+            #{eventType,jdbcType=VARCHAR},
+            #{requestId,jdbcType=VARCHAR},
+            version
+        FROM runrun_v2.courier_certifications
+        WHERE id = #{versionSourceCertificationId,jdbcType=BIGINT}
+    </insert>
+</mapper>

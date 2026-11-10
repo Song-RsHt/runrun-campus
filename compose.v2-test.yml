@@ -1,0 +1,76 @@
+name: rrc-v2-local-test
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: rrc_v2_test
+      POSTGRES_USER: ${RRC_V2_DB_USERNAME:?Set local database username}
+      POSTGRES_PASSWORD: ${RRC_V2_DB_PASSWORD:?Set local database password}
+    volumes:
+      - v2_database:/var/lib/postgresql/data
+    networks: [v2_isolated]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d rrc_v2_test']
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  migrate:
+    image: postgres:16-alpine
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST: postgres
+      PGDATABASE: rrc_v2_test
+      PGUSER: ${RRC_V2_DB_USERNAME:?Set local database username}
+      PGPASSWORD: ${RRC_V2_DB_PASSWORD:?Set local database password}
+    entrypoint: [sh, /scripts/migrate.sh]
+    volumes:
+      - ./deploy/v2-test/migrate.sh:/scripts/migrate.sh:ro
+      - ./deploy/v2-test/migrations.txt:/scripts/migrations.txt:ro
+      - ./deploy/v2-test/verify-receipts.sh:/scripts/verify-receipts.sh:ro
+      - ./server/db/migrations/up:/migrations:ro
+      - v2_migration_state:/state
+    networks: [v2_isolated]
+  backend:
+    build:
+      context: ./handover-2026-10-24/RunRunCampusBackend
+      dockerfile: Dockerfile.v2-test
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    ports: ["127.0.0.1:8082:8082"]
+    volumes:
+      - ./deploy/v2-test/backend-entrypoint.sh:/scripts/backend-entrypoint.sh:ro
+      - v2_evidence:/app/evidence
+    environment:
+      SPRING_PROFILES_ACTIVE: local-v2-test
+      SERVER_ADDRESS: 0.0.0.0
+      SERVER_PORT: 8082
+      MANAGEMENT_ENDPOINT_HEALTH_GROUP_READINESS_INCLUDE: readinessState,db
+      RRC_V2_JDBC_URL: ${RRC_V2_JDBC_URL:?Use jdbc:postgresql://postgres:5432/rrc_v2_test}
+      RRC_V2_DB_USERNAME: ${RRC_V2_DB_USERNAME:?Set local database username}
+      RRC_V2_DB_PASSWORD: ${RRC_V2_DB_PASSWORD:?Set local database password}
+      RRC_V2_ENVIRONMENT: ${RRC_V2_ENVIRONMENT:?Use test}
+      RRC_IDENTITY_ENCRYPTION_KEY: ${RRC_IDENTITY_ENCRYPTION_KEY:?Generate independent base64 key}
+      RRC_IDENTITY_HASH_KEY: ${RRC_IDENTITY_HASH_KEY:?Generate independent base64 key}
+      RRC_PAYMENT_MOCK_ENABLED: ${RRC_PAYMENT_MOCK_ENABLED:?Use true}
+      RRC_V2_ADMIN_PHONE: ${RRC_V2_ADMIN_PHONE:?Use test-admin}
+      RRC_V2_ADMIN_PASSWORD: ${RRC_V2_ADMIN_PASSWORD:?Generate local fixture password}
+      RRC_V2_BOOTSTRAP_CONFIRM: ${RRC_V2_BOOTSTRAP_CONFIRM:?Confirm isolated fixture initialization}
+      RRC_LOCAL_ADMIN_ORIGIN: ${RRC_LOCAL_ADMIN_ORIGIN:-http://127.0.0.1:5173}
+      RRC_EVIDENCE_ROOT: /app/evidence
+    networks: [v2_isolated]
+    healthcheck:
+      test: [CMD, wget, -q, --spider, http://127.0.0.1:8082/actuator/health/readiness]
+      interval: 5s
+      timeout: 3s
+      start_period: 30s
+      retries: 24
+networks:
+  v2_isolated:
+    driver: bridge
+volumes:
+  v2_database:
+  v2_migration_state:
+  v2_evidence:

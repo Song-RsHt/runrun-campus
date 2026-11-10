@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.identity.DeploymentIdentityMapper">
+
+    <select id="deploymentIdentityExists" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.app_users
+            WHERE controlled_identity)
+    </select>
+
+    <select id="insertDeploymentIdentity" resultType="java.lang.Long" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.app_users (
+            phone,
+            role,
+            controlled_identity
+        )
+        VALUES (
+            'deployment:' || gen_random_uuid(),
+            'ADMIN',
+            true
+        )
+        RETURNING id
+    </select>
+
+    <select id="hasWechatBinding" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.wechat_identities
+            WHERE user_id = #{userId,jdbcType=BIGINT})
+    </select>
+
+    <update id="promoteToDisabledAdmin">
+        UPDATE runrun_v2.app_users
+        SET role = 'ADMIN',
+            v2_admin_enabled = false,
+            v2_admin_security_version = #{next,jdbcType=BIGINT},
+            version = version + 1,
+            updated_at = now()
+        WHERE id = #{userId,jdbcType=BIGINT}
+    </update>
+
+    <select id="settingsInstalled" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT to_regclass('runrun_v2.platform_settings') IS NOT NULL
+    </select>
+
+    <select id="isReviewOwner" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.platform_settings
+            WHERE review_owner_id = #{userId,jdbcType=BIGINT})
+    </select>
+
+    <update id="updateAdminAccess">
+        UPDATE runrun_v2.app_users
+        SET v2_admin_enabled = #{enabled,jdbcType=BOOLEAN},
+            v2_admin_security_version = #{next,jdbcType=BIGINT},
+            version = version + 1,
+            updated_at = now()
+        WHERE id = #{userId,jdbcType=BIGINT}
+    </update>
+
+    <update id="invalidateAdminSessions">
+        UPDATE runrun_v2.user_sessions
+        SET invalidated_at = now()
+        WHERE user_id = #{id,jdbcType=BIGINT}
+            AND invalidated_at IS NULL
+    </update>
+
+    <insert id="insertAccessAudit">
+        INSERT INTO runrun_v2.admin_audit_logs (
+            administrator_id,
+            action,
+            target_type,
+            target_id,
+            request_id,
+            reason,
+            metadata
+        )
+        VALUES (
+            #{administratorId,jdbcType=BIGINT},
+            #{action,jdbcType=VARCHAR},
+            'APP_USER',
+            #{targetId,jdbcType=BIGINT},
+            #{requestId,jdbcType=VARCHAR},
+            #{reason,jdbcType=VARCHAR},
+            #{metadata,jdbcType=VARCHAR}::jsonb
+        )
+    </insert>
+
+    <select id="findAccessAudit" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT target_id,
+            reason,
+            metadata::text AS data
+        FROM runrun_v2.admin_audit_logs
+        WHERE administrator_id = #{actor,jdbcType=BIGINT}
+            AND action = #{action,jdbcType=VARCHAR}
+            AND request_id = #{requestId,jdbcType=VARCHAR}
+    </select>
+</mapper>

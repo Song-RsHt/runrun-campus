@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.identity.LocalTestMapper">
+
+    <select id="initializeIsolatedFixtures" resultType="java.lang.Object" useCache="false" flushCache="true">
+        SELECT pg_advisory_xact_lock(7082001)
+    </select>
+
+    <select id="findLocalTestAdmin" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT password_hash,
+            role,
+            v2_admin_enabled
+        FROM runrun_v2.app_users
+        WHERE phone = 'test-admin'
+    </select>
+
+    <select id="hasLocalTestEnableAudit" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.admin_audit_logs
+            WHERE request_id = 'local-test-enable'
+                AND reason = 'Isolated synthetic local test fixture')
+    </select>
+
+    <select id="countUsers" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.app_users
+    </select>
+
+    <select id="insertLocalTestAdmin" resultType="java.lang.Long" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.app_users (
+            phone,
+            role,
+            password_hash
+        )
+        VALUES (
+            'test-admin',
+            'USER',
+            #{passwordHash,jdbcType=VARCHAR}
+        )
+        RETURNING id
+    </select>
+
+    <insert id="insertWechatIdentity">
+        INSERT INTO runrun_v2.wechat_identities (
+            user_id,
+            app_id,
+            openid_hash,
+            openid_ciphertext
+        )
+        VALUES (
+            #{userId,jdbcType=BIGINT},
+            #{appId,jdbcType=VARCHAR},
+            #{openidHash,jdbcType=VARCHAR},
+            #{openidCiphertext,jdbcType=VARCHAR}
+        )
+    </insert>
+</mapper>

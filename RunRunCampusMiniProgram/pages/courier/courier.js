@@ -32,13 +32,13 @@ Page({
   async load() {
     this.setData({ loading: true, error: '' })
     try {
-      const certification = await request('/api/v1/courier-certification/me')
+      const certification = await request('/api/v2/courier/certification')
       certification.statusText = CERTIFICATION_TEXT[certification.status] || certification.status
       this.setData({ certification })
       if (certification.status === 'APPROVED') {
         const [operations, orders] = await Promise.all([
-          request('/api/v1/courier/operations/me'),
-          request('/api/v1/orders/available')
+          request('/api/v2/courier/tasks'),
+          request('/api/v2/courier/order-pool')
         ])
         operations.todayGrossText = money(operations.todayGrossServiceFeeCents)
         operations.totalGrossText = money(operations.totalGrossServiceFeeCents)
@@ -57,7 +57,7 @@ Page({
     if (this.data.acting) return
     this.setData({ acting: true, error: '' })
     try {
-      const certification = await request('/api/v1/courier-certification/apply', {
+      const certification = await request('/api/v2/courier/certification/applications', {
         method: 'POST',
         data: {}
       })
@@ -87,7 +87,9 @@ Page({
       const file = result.tempFiles && result.tempFiles[0]
       if (!file) return
       this.setData({ acting: true, error: '' })
-      await upload(`/api/v1/courier-certification/${certification.id}/student-card`, file.tempFilePath)
+      await upload(`/api/v2/courier/certification/applications/${certification.id}/student-card`, file.tempFilePath, {
+        expectedVersion: String(certification.version || 0)
+      })
       wx.showToast({ title: '认证材料已上传', icon: 'success' })
       await this.load()
     } catch (error) {
@@ -100,22 +102,9 @@ Page({
   },
 
   async toggleAvailability(event) {
-    if (this.data.acting) return
-    this.setData({ acting: true, error: '' })
-    try {
-      const operations = await request('/api/v1/courier/operations/me/availability', {
-        method: 'PUT',
-        data: { acceptingOrders: event.detail.value }
-      })
-      operations.todayGrossText = money(operations.todayGrossServiceFeeCents)
-      operations.totalGrossText = money(operations.totalGrossServiceFeeCents)
-      this.setData({ operations })
-    } catch (error) {
-      this.setData({ error: error.message })
-      await this.load()
-    } finally {
-      this.setData({ acting: false })
-    }
+    // Availability writes are intentionally absent from the current v2 contract.
+    // Do not fall back to the removed v1 operations endpoint from this page.
+    this.setData({ error: '当前 v2 契约未开放接单状态写入，请由后台任务分配控制。' })
   },
 
   async acceptOrder(event) {
@@ -130,7 +119,7 @@ Page({
     if (!confirmed || this.data.acting) return
     this.setData({ acting: true, error: '' })
     try {
-      await request(`/api/v1/orders/${id}/accept`, { method: 'POST' })
+      await request(`/api/v2/orders/${id}/accept`, { method: 'POST' })
       wx.navigateTo({ url: `/pages/order-detail/order-detail?id=${id}` })
     } catch (error) {
       this.setData({ error: error.message })
@@ -144,3 +133,4 @@ Page({
     wx.navigateTo({ url: `/pages/order-detail/order-detail?id=${event.currentTarget.dataset.id}` })
   }
 })
+

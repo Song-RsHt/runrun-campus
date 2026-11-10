@@ -1,0 +1,118 @@
+{
+  "date": "2026-11-06",
+  "timezone": "Asia/Shanghai",
+  "baseline": "5f17d0c0ba0c345705d0cfc5d4ca9bdc10c322ab",
+  "sourceCommit": "676633450c7558634f3e17400ad72b1449426649",
+  "sourceTree": "480440c5b62ab10cad5f8251c4671e2ed1884503",
+  "inventory": {
+    "baselineMain": 216,
+    "finalMain": 384,
+    "v2Main": 107,
+    "legacyMain": 277,
+    "baselineTests": 77,
+    "finalTests": 78
+  },
+  "tests": {
+    "baseline": {
+      "tests": 483,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "finalFull": {
+      "suites": 78,
+      "tests": 487,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    "finalV2Isolated": {
+      "suites": 15,
+      "tests": 124,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exitCode": 0
+    }
+  },
+  "v2Package": {
+    "exitCode": 0,
+    "profile": "v2-identity"
+  },
+  "contractAudit": {
+    "baselineDeclarationsRetained": 434,
+    "finalDeclarations": 435,
+    "additionalDeclaration": "PushDeliveryProcessorTask copies the existing app.push.enabled=true gate",
+    "baselineRecordEnumShapesRetained": 245,
+    "typeAliases": {
+      "v2:User": "v2:IdentityUser",
+      "legacy:Overview": "legacy:PushDeliveryOverview",
+      "v2:CourierCertificationV2Controller.Decision": "v2:CertificationDecisionRequest"
+    },
+    "scheduledRegistrations": 8,
+    "staticClassDependencyCycles": []
+  },
+  "fixedMigrationChain": {
+    "files": 12,
+    "applyDuplicateRefusalRollbackProtectionLegacySentinelBackupRestore": "passed",
+    "migrationDiff": []
+  },
+  "cleanClone": {
+    "commit": "676633450c7558634f3e17400ad72b1449426649",
+    "trackedStatusBeforeAndAfter": "clean",
+    "composeProject": "rrc-refactor-qa-20261106",
+    "build": "passed",
+    "environmentVerifierExitCode": 0,
+    "checksPassed": 41,
+    "v2Tables": 44,
+    "legacyHealthRouteStatus": 404,
+    "cleanup": "project stopped; named volumes retained",
+    "clientBuilds": "not run; outside scope"
+  },
+  "protectedPathChanges": [],
+  "logSha256": {
+    "full": "8a349f67977672fb5dad2be2602ce3e1c6473100f7a9698cca8d30fb26a506a8",
+    "isolated": "4923a65b32b3f8a012bee6682fed226c896aebe342a9e0ee1c54e13c72d14578",
+    "package": "856974265f35e53c6c8787d2ca0068cdc54233f939c595526bb667e6285f9b9e",
+    "migrations": "75388d3f60fa72e0efbb8313194f743044f5661fec40c27ce5dbe427082bcbc5",
+    "compose": "b9e734e320c3ad1850dd2b14083879bf757304e6eacf33067b5953f1dd738541",
+    "environment": "917e5b544ad09f95f77d88393f89087ba3da42dc6f65f3f1a7c0f9bde54992b0",
+    "cleanup": "86a99acbfa1b795adf5d62cba05d2c87ae2b2f81ca55a3a1c5a591152dce45a7"
+  },
+  "mapperRemediation": {
+    "date": "2026-11-06",
+    "status": "pending-independent-reinspection",
+    "sourceCommit": "4577164dfd2276a6e3d80b9c34a9e8a585b5ab56",
+    "sourceTree": "d54097248bc0cbd5b3403e0ad79ca5483bfda178",
+    "reviewedMapperFiles": 22,
+    "renamedMethods": 144,
+    "narrowedObjectParameters": 11,
+    "affected": {
+      "tests": 154,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": 20,
+      "exitCode": 0,
+      "logSha256": "72bf620ea6f8fc133b2250b12f7c12e3c6f7671ead746ad382c5778ee0545b46",
+      "surefireExitWaitWarning": false
+    },
+    "full": {
+      "tests": 488,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "suites": 78,
+      "exitCode": 0,
+      "logSha256": "b04926a96abbf8e99755dece660e9fed2863c17c9143ec92cf926b1647994c51",
+      "surefireExitWaitWarning": true
+    },
+    "detail": "mapper-cleanup.json",
+    "protectedPathChanges": [],
+    "notRerunOnThisCommit": [
+      "cold Compose build/environment verifier",
+      "standalone fixed migration chain and backup/restore exercise"
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-export type UserRole = 'CUSTOMER' | 'COURIER' | 'ADMIN'
+export type UserRole = 'USER' | 'COURIER' | 'ADMIN'
 export type OrderStatus = 'PENDING_ASSIGNMENT' | 'PENDING_REASSIGNMENT' | 'ACCEPTED' | 'PICKED_UP' | 'COMPLETED' | 'CANCELLED'
 export type ServiceType = 'LOBBY' | 'DOOR' | 'EXPRESS' | 'PACKAGE_SMALL' | 'PACKAGE_MEDIUM' | 'PACKAGE_MEDIUM_LARGE' | 'PACKAGE_LARGE' | 'PACKAGE_EXTRA_LARGE' | 'PACKAGE_XL'
 export type CourierCertificationStatus = 'NOT_APPLIED' | 'PENDING' | 'APPROVED' | 'REJECTED'
@@ -15,7 +15,6 @@ export type AdminPermission =
   | 'ORDER_EXPORT'
   | 'USER_VIEW'
   | 'USER_MANAGE'
-  | 'COUPON_ISSUE'
   | 'COURIER_VIEW'
   | 'COURIER_REVIEW'
   | 'ISSUE_VIEW'
@@ -48,23 +47,14 @@ export interface PlatformSettings {
   issueProcessingMinutes: number
 }
 
-export type PushDeliveryStatus = 'PENDING' | 'PROCESSING' | 'SENT' | 'DEAD'
-export interface PushDeliveryOverview {
-  dead: number
-  pending: number
-  processing: number
-  deliveries: {
-    items: Array<{
-      id: number; recipientId: number; orderId: number | null; title: string
-      destination: 'COURIER_CERTIFICATION' | null
-      status: PushDeliveryStatus; attempts: number; nextAttemptAt: string
-      lastError: string | null; createdAt: string; updatedAt: string; sentAt: string | null
-    }>
-    page: number
-    size: number
-    totalElements: number
-    totalPages: number
-  }
+export type V2NotificationType = 'PAYMENT_SUCCEEDED' | 'DELIVERY_COMPLETED' | 'SUPPLEMENT_REQUIRED' | 'REFUND_UPDATED' | 'AFTER_SALES_UPDATED' | 'REVIEW_REMINDER' | 'REVIEW_ESCALATED' | 'CERTIFICATION_UPDATED'
+export interface V2Notification {
+  id: number
+  orderId: number | null
+  type: V2NotificationType
+  content: Record<string, unknown>
+  createdAt: string
+  readAt: string | null
 }
 
 export interface MfaChallenge {
@@ -180,11 +170,9 @@ export interface AdminOrderListItem {
   merchant: string
   destination: string
   feeCents: number
-  paymentMethod: 'WECHAT_APP' | 'CASH_ON_DELIVERY' | 'PERSONAL_QR_MANUAL'
+  paymentMethod: 'MOCK' | 'WECHAT_APP'
   paymentStatus: 'UNPAID' | 'PAID' | 'REFUNDING' | 'REFUNDED'
   paidCents: number
-  manualPaymentStatus: 'NOT_REQUESTED' | 'AWAITING_PAYMENT' | 'SUBMITTED' | 'CONFIRMED' | 'REJECTED'
-  courierSettlementStatus: 'NOT_APPLICABLE' | 'PENDING' | 'SETTLED'
   customer: UserSummary
   courier: UserSummary | null
   createdAt: string
@@ -202,13 +190,8 @@ export interface AdminOrderPage {
 
 export interface AdminOrderDetail {
   order: AdminOrderListItem
-  pickupCode: string
   pickupLocation: string
   originalFeeCents: number
-  discountCents: number
-  couponTitle: string | null
-  membershipUsed: boolean
-  membershipPlanTitle: string | null
   ratingScore: number | null
   ratingComment: string | null
   ratedAt: string | null
@@ -267,6 +250,8 @@ export interface AdminCourierItem {
   validUntil: string | null
   approvedValidUntil: string | null
   photoUploaded: boolean
+  version?: number
+  photoResourceId?: string | null
 }
 
 export interface AdminCourierPage {
@@ -383,16 +368,6 @@ export interface RiskSignalPage {
   totalPages: number
 }
 
-export interface AdminCouponGrant {
-  couponId: number
-  userId: number
-  displayName: string
-  title: string
-  discountCents: number
-  minimumOrderCents: number
-  expiresAt: string
-}
-
 export type OrderIssueType = 'MISSING_ITEM' | 'WRONG_ORDER' | 'CANNOT_CONTACT' | 'DELIVERY_DELAY' | 'OTHER'
 export type OrderIssueHandlingStatus = 'PENDING' | 'PROCESSING' | 'RESOLVED'
 
@@ -484,7 +459,7 @@ export type AdminAuditAction =
   | 'ORDER_ARCHIVED'
   | 'ORDER_UNARCHIVED'
   | 'PLATFORM_SETTINGS_UPDATED'
-  | 'COUPON_ISSUED'
+
   | 'CREDIT_ADJUSTED'
   | 'CREDIT_EVENT_REVERSED'
   | 'RISK_SIGNAL_CONFIRMED'

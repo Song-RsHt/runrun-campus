@@ -18,8 +18,21 @@
         <admin.frontend.directory>../RunRunCampusAdmin/dist</admin.frontend.directory>
         <httpcore5.version>5.4.3</httpcore5.version>
         <postgresql.version>42.7.12</postgresql.version>
+        <start-class>com.zhangxuan.runruncampus.RunRunCampusBackendApplication</start-class>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <version>3.5.12</version>
+            <exclusions>
+                <!-- 工厂仅在 v2 命名空间装配，legacy 不创建 MyBatis 会话或扫描 XML。 -->
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-spring-boot-autoconfigure</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -106,4 +119,12 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>v2-identity</id>
+            <properties>
+                <start-class>com.zhangxuan.runrunv2.IdentityApplication</start-class>
+            </properties>
+        </profile>
+    </profiles>
 </project>

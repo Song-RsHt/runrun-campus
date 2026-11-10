@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.fulfillment.FulfillmentMapper">
+    <!-- order_flow_version 由原表 CHECK 固定为 2；展示状态仍重复取原 status。 -->
+    <resultMap id="FulfillmentOrderResult" type="com.zhangxuan.runrunv2.vo.fulfillment.FulfillmentOrderVO">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="order_no" javaType="java.lang.String"/>
+            <arg column="order_flow_version" javaType="_int"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="version" javaType="_long"/>
+            <arg column="original_fee_cents" javaType="_long"/>
+            <arg column="effective_fee_cents" javaType="_long"/>
+            <arg column="delivered_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="confirm_started_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="confirm_deadline" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <resultMap id="LocationEventResult" type="com.zhangxuan.runrunv2.model.fulfillment.LocationEventRow">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="received_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="accepted" javaType="_boolean"/>
+        </constructor>
+    </resultMap>
+    <resultMap id="FulfillmentTaskVOResult" type="com.zhangxuan.runrunv2.vo.fulfillment.FulfillmentTaskVO">
+        <constructor>
+            <arg column="id" javaType="java.lang.String"/>
+            <arg column="order_id" javaType="java.lang.String"/>
+            <arg column="courier_id" javaType="java.lang.String"/>
+            <arg column="status" javaType="java.lang.String"/>
+            <arg column="version" javaType="_long"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <select id="insertActiveTask" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.fulfillment_tasks (
+            order_id,
+            courier_id,
+            status,
+            accepted_at,
+            created_at
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{courierId,jdbcType=BIGINT},
+            'ACTIVE',
+            #{acceptedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            #{createdAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        )
+        RETURNING id::text
+    </select>
+
+    <select id="lockActiveCourier" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT id
+        FROM runrun_v2.app_users
+        WHERE id = #{courierId,jdbcType=BIGINT}
+            AND role = 'COURIER'
+            AND status = 'ACTIVE'
+        FOR KEY SHARE
+    </select>
+
+    <select id="countActiveTasksForInvitation" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.fulfillment_tasks
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND status = 'ACTIVE'
+    </select>
+
+    <select id="findLatestTaskId" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT max(id)::text
+        FROM runrun_v2.fulfillment_tasks
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+    </select>
+
+    <select id="insertTaskOffer" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.fulfillment_tasks (
+            order_id,
+            courier_id,
+            status,
+            source_task_id,
+            created_at
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{courierId,jdbcType=BIGINT},
+            'OFFERED',
+            #{sourceTaskId,jdbcType=BIGINT},
+            #{createdAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        )
+        RETURNING id::text
+    </select>
+
+    <select id="countActiveTasksForResponse" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.fulfillment_tasks
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND status = 'ACTIVE'
+    </select>
+
+    <update id="acceptTaskOffer">
+        UPDATE runrun_v2.fulfillment_tasks
+        SET status = 'ACTIVE',
+            accepted_at = #{acceptedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE id = #{taskId,jdbcType=BIGINT}
+    </update>
+
+    <select id="countPickupProofs" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.v2_order_proofs
+        WHERE task_id = #{taskId,jdbcType=BIGINT}
+            AND kind = 'PICKUP'
+    </select>
+
+    <select id="countTaskProofs" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.v2_order_proofs
+        WHERE task_id = #{taskId,jdbcType=BIGINT}
+            AND kind = #{kind,jdbcType=VARCHAR}
+    </select>
+
+    <select id="countProofsByStorageKey" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.v2_order_proofs
+        WHERE storage_key = #{storageKey,jdbcType=VARCHAR}
+    </select>
+
+    <select id="insertOrderProof" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.v2_order_proofs (
+            order_id,
+            task_id,
+            uploaded_by,
+            kind,
+            storage_key,
+            storage_status
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{taskId,jdbcType=BIGINT},
+            #{uploadedBy,jdbcType=BIGINT},
+            #{kind,jdbcType=VARCHAR},
+            #{storageKey,jdbcType=VARCHAR},
+            'AVAILABLE'
+        )
+        RETURNING id::text
+    </select>
+
+    <select id="findLocationRequest" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.location_events
+        WHERE task_id = #{taskId,jdbcType=BIGINT}
+            AND event_type = #{eventType,jdbcType=VARCHAR}
+            AND request_id = #{requestId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="countAcceptedDeliveryLocations" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.location_events
+        WHERE task_id = #{taskId,jdbcType=BIGINT}
+            AND event_type = 'DELIVERY'
+            AND accepted
+    </select>
+
+    <select id="insertLocationEvent" resultType="java.lang.String" useCache="false" flushCache="true" affectData="true">
+        INSERT INTO runrun_v2.location_events (
+            order_id,
+            task_id,
+            courier_id,
+            event_type,
+            latitude,
+            longitude,
+            coordinate_system,
+            received_at,
+            request_id,
+            accepted,
+            decision_reason
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{taskId,jdbcType=BIGINT},
+            #{courierId,jdbcType=BIGINT},
+            #{eventType,jdbcType=VARCHAR},
+            #{latitude,jdbcType=NUMERIC},
+            #{longitude,jdbcType=NUMERIC},
+            #{coordinateSystem,jdbcType=VARCHAR},
+            #{receivedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            #{requestId,jdbcType=VARCHAR},
+            #{accepted,jdbcType=BOOLEAN},
+            #{decisionReason,jdbcType=VARCHAR}
+        )
+        RETURNING id::text
+    </select>
+
+    <update id="markTaskPickedUp">
+        UPDATE runrun_v2.fulfillment_tasks
+        SET picked_up_at = #{pickedUpAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE id = #{taskId,jdbcType=BIGINT}
+    </update>
+
+    <select id="countValidDeliveryLocations" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.location_events
+        WHERE id = #{locationEventId,jdbcType=BIGINT}
+            AND order_id = #{orderId,jdbcType=BIGINT}
+            AND task_id = #{taskId,jdbcType=BIGINT}
+            AND courier_id = #{actorId,jdbcType=BIGINT}
+            AND event_type = 'DELIVERY'
+            AND accepted
+            AND deleted_at IS NULL
+    </select>
+
+    <update id="markTaskDelivered">
+        UPDATE runrun_v2.fulfillment_tasks
+        SET status = 'DELIVERED',
+            delivered_at = #{deliveredAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            ended_at = #{endedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE id = #{taskId,jdbcType=BIGINT}
+    </update>
+
+    <update id="markOrderDelivered">
+        UPDATE runrun_v2.v2_orders
+        SET status = 'DELIVERED_PENDING_CONFIRMATION',
+            delivered_at = coalesce(delivered_at, #{deliveredAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}),
+            confirm_started_at = #{confirmStartedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            confirm_deadline = #{confirmDeadline,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <select id="findOrdersDueForConfirmation" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT id::text
+        FROM runrun_v2.v2_orders
+        WHERE status = 'DELIVERED_PENDING_CONFIRMATION'
+            AND confirm_deadline &lt;= #{deadlineCutoff,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        ORDER BY id
+        LIMIT 100
+    </select>
+
+    <insert id="insertCompletionBlock">
+        INSERT INTO runrun_v2.fulfillment_completion_blocks
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{sourceType,jdbcType=VARCHAR},
+            #{sourceId,jdbcType=VARCHAR}
+        )
+        ON CONFLICT DO NOTHING
+    </insert>
+
+    <delete id="deleteCompletionBlock">
+        DELETE
+        FROM runrun_v2.fulfillment_completion_blocks
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND source_type = #{sourceType,jdbcType=VARCHAR}
+            AND source_id = #{sourceId,jdbcType=VARCHAR}
+    </delete>
+
+    <update id="restartConfirmationWindow">
+        UPDATE runrun_v2.v2_orders
+        SET confirm_started_at = #{confirmStartedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            confirm_deadline = #{confirmDeadline,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="markOrderCompleted">
+        UPDATE runrun_v2.v2_orders
+        SET status = 'COMPLETED',
+            completed_at = #{completedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <select id="hasAdjustmentCompletionBlock" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.fulfillment_completion_blocks
+            WHERE order_id = #{blockedOrderId,jdbcType=BIGINT}
+                AND source_type = 'ADJUSTMENT')
+            OR EXISTS (
+            SELECT 1
+            FROM runrun_v2.payment_adjustments
+            WHERE order_id = #{adjustmentOrderId,jdbcType=BIGINT}
+                AND status IN ('PENDING_SUPPLEMENT', 'PENDING_REFUND'))
+    </select>
+
+    <select id="hasAfterSalesCompletionBlock" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.fulfillment_completion_blocks
+            WHERE order_id = #{orderId,jdbcType=BIGINT}
+                AND source_type = 'AFTER_SALES')
+    </select>
+
+    <select id="countActiveCourierTasks" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.fulfillment_tasks
+        WHERE courier_id = #{courierId,jdbcType=BIGINT}
+            AND status = 'ACTIVE'
+    </select>
+
+    <select id="lockOrderUser" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+        SELECT id
+        FROM runrun_v2.app_users
+        WHERE id = (
+            SELECT user_id
+            FROM runrun_v2.v2_orders
+            WHERE id = #{orderId,jdbcType=BIGINT})
+        FOR KEY SHARE
+    </select>
+
+    <select id="findLatestCourierTaskId" resultType="java.lang.String" useCache="false" flushCache="true">
+        SELECT id::text
+        FROM runrun_v2.fulfillment_tasks
+        WHERE courier_id = #{courierId,jdbcType=BIGINT}
+            AND order_id = #{orderId,jdbcType=BIGINT}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <select id="findTask" resultMap="FulfillmentTaskVOResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.fulfillment_tasks
+        WHERE id = #{taskId,jdbcType=BIGINT}
+    </select>
+
+    <select id="isTaskUnsuperseded" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT superseded_at IS NULL
+        FROM runrun_v2.fulfillment_tasks
+        WHERE id = #{taskId,jdbcType=BIGINT}
+    </select>
+
+    <select id="isLatestOrderTask" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT id = #{taskId,jdbcType=BIGINT}
+        FROM runrun_v2.fulfillment_tasks
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <select id="countAvailableTaskProofs" resultType="java.lang.Long" useCache="false" flushCache="true">
+        SELECT count(*)
+        FROM runrun_v2.v2_order_proofs
+        WHERE id = #{proofId,jdbcType=BIGINT}
+            AND order_id = #{orderId,jdbcType=BIGINT}
+            AND task_id = #{taskId,jdbcType=BIGINT}
+            AND kind = #{kind,jdbcType=VARCHAR}
+            AND storage_status = 'AVAILABLE'
+            AND deleted_at IS NULL
+    </select>
+
+    <update id="supersedeOtherTasks">
+        UPDATE runrun_v2.fulfillment_tasks
+        SET superseded_at = #{supersededAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND id &lt;&gt; #{retainedTaskId,jdbcType=BIGINT}
+            AND superseded_at IS NULL
+    </update>
+
+    <update id="cancelOtherOffers">
+        UPDATE runrun_v2.fulfillment_tasks
+        SET status = 'CANCELLED',
+            ended_at = #{endedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE order_id = #{orderId,jdbcType=BIGINT}
+            AND status = 'OFFERED'
+            AND (#{retainedTaskId,jdbcType=BIGINT}::bigint IS NULL
+                OR id &lt;&gt; #{excludedTaskId,jdbcType=BIGINT}::bigint)
+    </update>
+
+    <update id="endTask">
+        UPDATE runrun_v2.fulfillment_tasks
+        SET status = #{status,jdbcType=VARCHAR},
+            ended_at = #{endedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE},
+            version = version + 1
+        WHERE id = #{taskId,jdbcType=BIGINT}
+    </update>
+
+    <select id="findOrder" resultMap="FulfillmentOrderResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.v2_orders
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </select>
+
+    <select id="hasPendingSupplement" resultType="java.lang.Boolean" useCache="false" flushCache="true">
+        SELECT EXISTS (
+            SELECT 1
+            FROM runrun_v2.payment_adjustments
+            WHERE order_id = #{orderId,jdbcType=BIGINT}
+                AND status = 'PENDING_SUPPLEMENT')
+    </select>
+
+    <select id="readLocationEvent" resultMap="LocationEventResult" useCache="false" flushCache="true">
+        SELECT *
+        FROM runrun_v2.location_events
+        WHERE id = #{eventId,jdbcType=BIGINT}
+    </select>
+
+    <insert id="insertOrderEvent">
+        INSERT INTO runrun_v2.v2_order_events (
+            order_id,
+            task_id,
+            actor_id,
+            event_type,
+            request_id,
+            payload
+        )
+        VALUES (
+            #{orderId,jdbcType=BIGINT},
+            #{taskId,jdbcType=BIGINT},
+            #{actorId,jdbcType=BIGINT},
+            #{eventType,jdbcType=VARCHAR},
+            #{requestId,jdbcType=VARCHAR},
+            #{payload,jdbcType=VARCHAR}::jsonb
+        )
+    </insert>
+
+    <insert id="insertNotificationIfAbsent">
+        INSERT INTO runrun_v2.notification_outbox (
+            recipient_id,
+            event_key,
+            channel,
+            payload
+        )
+        VALUES (
+            #{recipientId,jdbcType=BIGINT},
+            #{eventKey,jdbcType=VARCHAR},
+            'IN_APP',
+            #{payload,jdbcType=VARCHAR}::jsonb
+        )
+        ON CONFLICT DO NOTHING
+    </insert>
+
+    <update id="markOrderAccepted">
+        UPDATE runrun_v2.v2_orders
+        SET
+        status='ACCEPTED' ,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="clearOrderConfirmation">
+        UPDATE runrun_v2.v2_orders
+        SET
+        confirm_started_at=NULL,confirm_deadline=NULL ,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="acceptOrderAndClearConfirmation">
+        UPDATE runrun_v2.v2_orders
+        SET
+        status='ACCEPTED',confirm_started_at=NULL,confirm_deadline=NULL ,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="markOrderPendingAssignment">
+        UPDATE runrun_v2.v2_orders
+        SET
+        status='PENDING_ASSIGNMENT' ,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="advanceOrderVersion">
+        UPDATE runrun_v2.v2_orders
+        SET
+        status=status ,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+
+    <update id="markOrderPickedUp">
+        UPDATE runrun_v2.v2_orders
+        SET
+        status='PICKED_UP' ,
+            version = version + 1,
+            updated_at = #{updatedAt,jdbcType=TIMESTAMP_WITH_TIMEZONE}
+        WHERE id = #{orderId,jdbcType=BIGINT}
+    </update>
+</mapper>

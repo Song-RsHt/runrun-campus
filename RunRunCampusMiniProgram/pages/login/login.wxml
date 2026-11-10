@@ -30,7 +30,7 @@
       <view class="field">
         <text class="field-label">注册身份</text>
         <view class="role-row">
-          <button class="role-button {{role === 'CUSTOMER' ? 'role-active' : ''}}" data-role="CUSTOMER" bindtap="selectRole">用户</button>
+          <button class="role-button {{role === 'USER' ? 'role-active' : ''}}" data-role="USER" bindtap="selectRole">用户</button>
           <button class="role-button {{role === 'COURIER' ? 'role-active' : ''}}" data-role="COURIER" bindtap="selectRole">骑手</button>
         </view>
       </view>
@@ -45,6 +45,8 @@
       <scroll-view class="privacy-content" scroll-y="{{true}}" wx:if="{{privacyExpanded}}">{{privacyPolicy.content}}</scroll-view>
     </view>
 
+    <button wx:if="{{!privacyPolicy}}" bindtap="loadPrivacyPolicy">重新加载隐私政策</button>
+
     <view class="captcha" wx:if="{{mode === 'login' && captcha}}">
       <text class="field-label">安全验证</text>
       <image class="captcha-image" mode="aspectFit" src="{{captcha.imageDataUrl}}" bindtap="refreshCaptcha" />
@@ -53,6 +55,7 @@
     </view>
 
     <text class="error" wx:if="{{error}}">{{error}}</text>
-    <button class="primary" loading="{{loading}}" disabled="{{loading}}" bindtap="submit">{{loading ? '处理中…' : (mode === 'login' ? '登录' : '注册并登录')}}</button>
+    <button class="primary" loading="{{loading}}" disabled="{{loading}}" bindtap="submit">{{loading ? '处理中…' : (mode === 'login' ? '登录' : '获取微信手机号')}}</button>
+    <button class="secondary" wx:if="{{mode === 'register' && loginTicket}}" open-type="getPhoneNumber" bindgetphonenumber="bindWechatPhone">授权微信手机号并注册</button>
   </view>
 </view>

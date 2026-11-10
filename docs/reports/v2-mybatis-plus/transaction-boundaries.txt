@@ -1,0 +1,60 @@
+PASS: 59 transactional/scheduled method declarations unchanged
+com.zhangxuan.runrunv2.service.impl.configuration.ServiceConfigServiceImpl.java#config(String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.configuration.ServiceConfigServiceImpl.java#patch(String, String, ServiceConfigChangeRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.configuration.ServiceConfigServiceImpl.java#quote(String, OrderQuoteRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl.java#adminList(String, String, String, int, int)@Transactional	@Transactional(readOnly = true)
+com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl.java#apply(String, IdentityService, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl.java#decide(String, IdentityService, long, long, String, String, String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl.java#performance(String, long, int, int)@Transactional	@Transactional(readOnly = true)
+com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl.java#read(String, IdentityService, long, String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.courier.CourierCertificationV2ServiceImpl.java#upload(String, IdentityService, long, long, String, UploadSource)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.evidence.CourierEvidenceGovernanceServiceImpl.java#cleanupDue()@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.evidence.CourierEvidenceGovernanceServiceImpl.java#hold(String, Long, Long, String, Instant, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.evidence.CourierEvidenceGovernanceServiceImpl.java#release(String, long, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.evidence.CourierEvidenceGovernanceServiceImpl.java#requestCertificationDeletion(long, String, String, Instant)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentQueryServiceImpl.java#pool(String, String, Integer)@Transactional	@Transactional(readOnly = true)
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentQueryServiceImpl.java#tasks(String, String, Integer, String)@Transactional	@Transactional(readOnly = true)
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#accept(String, String, String, FulfillmentVersionRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#authorizeSpecification(String, String, String, long, String)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#autoComplete()@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#blockCompletion(String, String, String)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#confirm(String, String, String, FulfillmentVersionRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#deliver(String, String, String, FulfillmentDeliverRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#invite(String, String, String, long, String, String)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#location(String, String, String, FulfillmentLocationRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#pickup(String, String, String, FulfillmentPickupRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#proof(String, String, String, RegisterFulfillmentProofRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#release(String, String, String, FulfillmentReleaseRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#respond(String, String, String, FulfillmentRespondRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#restartWindow(String)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#unblockCompletion(String, String, String)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.fulfillment.FulfillmentServiceImpl.java#upload(String, String, String, FulfillmentUploadRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.DeploymentIdentityServiceImpl.java#bootstrap(String, String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.DeploymentIdentityServiceImpl.java#changeAccess(long, long, boolean, long, String, String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.DeploymentIdentityServiceImpl.java#provisionAdmin(long, long, long, String, String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.IdentityServiceImpl.java#bindPhone(String, String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.IdentityServiceImpl.java#login(String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.IdentityServiceImpl.java#passwordLogin(String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.IdentityServiceImpl.java#revoke(String, boolean, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.identity.IdentityServiceImpl.java#setPassword(String, String, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.notification.NotificationServiceImpl.java#claim(int)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.notification.NotificationServiceImpl.java#complete(long, boolean, String)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.notification.NotificationServiceImpl.java#list(String)@Transactional	@Transactional(readOnly = true)
+com.zhangxuan.runrunv2.service.impl.notification.NotificationServiceImpl.java#markRead(String, long)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.order.OrderServiceImpl.java#create(String, String, CreateOrderRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.order.OrderServiceImpl.java#get(String, String)@Transactional	@Transactional(readOnly = true)
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#approvedAdjustment(String, String, String, long, long, String, String)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#cancel(String, String, String, CancelRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#closeExpired()@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#create(String, long, OffsetDateTime)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#get(String, String)@Transactional	@Transactional(readOnly = true)
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#paymentResult(String, String, String, PaymentResultRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#queryPayment(String, String, String, PaymentVersionRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#queryRefund(String, String, String, PaymentVersionRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#refundResult(String, String, String, PaymentResultRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#retryRefund(String, String, long, String, String)@Transactional	@Transactional(propagation = Propagation.MANDATORY)
+com.zhangxuan.runrunv2.service.impl.payment.PaymentServiceImpl.java#start(String, String, String, PaymentVersionRequest)@Transactional	@Transactional
+com.zhangxuan.runrunv2.task.evidence.CourierEvidenceGovernanceServiceTask.java#cleanupDue()@Scheduled	@Scheduled(fixedDelayString = "${rrc.evidence.cleanup-delay-ms:60000}", initialDelayString = "${rrc.evidence.cleanup-delay-ms:60000}")
+com.zhangxuan.runrunv2.task.fulfillment.FulfillmentCompletionJob.java#complete()@Scheduled	@Scheduled(fixedDelayString = "${rrc.fulfillment.completion-delay-ms:15000}", initialDelayString = "${rrc.fulfillment.completion-delay-ms:15000}")
+com.zhangxuan.runrunv2.task.notification.NotificationDeliveryTask.java#deliver()@Scheduled	@Scheduled(fixedDelayString = "${rrc.notifications.worker-delay-ms:15000}")
+com.zhangxuan.runrunv2.task.payment.PaymentExpiryJob.java#expire()@Scheduled	@Scheduled(fixedDelayString = "${rrc.payment.expiry-delay-ms:15000}", initialDelayString = "${rrc.payment.expiry-delay-ms:15000}")

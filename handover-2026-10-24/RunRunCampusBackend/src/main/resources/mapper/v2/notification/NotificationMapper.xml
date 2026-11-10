@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhangxuan.runrunv2.mapper.notification.NotificationMapper">
+
+    <!-- 仅此查询使用明确的通知构造映射，不改变其他 Map 查询或 outbox 的驱动语义。 -->
+    <resultMap id="NotificationResult" type="com.zhangxuan.runrunv2.vo.notification.NotificationVO">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="order_id" javaType="java.lang.Long"/>
+            <arg column="type" javaType="java.lang.String"/>
+            <arg column="content" javaType="java.util.Map" typeHandler="com.zhangxuan.runrunv2.config.OutboxPayloadTypeHandler"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="read_at" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findUserNotifications" resultMap="NotificationResult" useCache="false" flushCache="true">
+        SELECT id,
+            order_id,
+            type,
+            content,
+            created_at,
+            read_at
+        FROM runrun_v2.user_notifications
+        WHERE user_id = #{userId,jdbcType=BIGINT}
+        ORDER BY created_at DESC,
+            id DESC
+        LIMIT 100
+    </select>
+
+    <update id="markNotificationRead">
+        UPDATE runrun_v2.user_notifications
+        SET read_at = COALESCE(read_at, now())
+        WHERE id = #{notificationId,jdbcType=BIGINT}
+            AND user_id = #{userId,jdbcType=BIGINT}
+    </update>
+
+    <select id="claimOutboxDeliveries" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true" affectData="true">
+        SELECT *
+        FROM runrun_v2.claim_notification_outbox(#{limit,jdbcType=INTEGER})
+    </select>
+
+    <select id="completeDelivery" resultType="java.lang.Object" useCache="false" flushCache="true" affectData="true">
+        SELECT runrun_v2.complete_notification_outbox(#{id,jdbcType=BIGINT}, #{success,jdbcType=BOOLEAN}, #{error,jdbcType=VARCHAR})
+    </select>
+</mapper>

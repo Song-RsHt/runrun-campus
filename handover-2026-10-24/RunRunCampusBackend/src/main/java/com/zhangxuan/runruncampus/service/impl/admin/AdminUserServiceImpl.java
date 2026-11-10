@@ -1,0 +1,159 @@
+package com.zhangxuan.runruncampus.service.impl.admin;
+
+import com.zhangxuan.runruncampus.entity.user.AppUser;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditAction;
+import com.zhangxuan.runruncampus.enums.admin.AdminAuditTargetType;
+import com.zhangxuan.runruncampus.enums.user.UserRole;
+import com.zhangxuan.runruncampus.exception.BusinessFailure;
+import com.zhangxuan.runruncampus.repository.auth.SessionRepository;
+import com.zhangxuan.runruncampus.repository.user.UserRepository;
+import com.zhangxuan.runruncampus.service.admin.AdminAuditService;
+import com.zhangxuan.runruncampus.service.admin.AdminUserService;
+import com.zhangxuan.runruncampus.vo.admin.AdminUserItem;
+import com.zhangxuan.runruncampus.vo.admin.AdminUserPageResponse;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/** 管理员用户维护业务实现；通过注入的业务契约及数据访问组件执行，事务边界保留在本类。 */
+@Service
+public class AdminUserServiceImpl implements AdminUserService {
+
+    private final UserRepository userRepository;
+    private final SessionRepository sessionRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AdminAuditService auditService;
+
+    public AdminUserServiceImpl(
+            UserRepository userRepository,
+            SessionRepository sessionRepository,
+            PasswordEncoder passwordEncoder,
+            AdminAuditService auditService) {
+        this.userRepository = userRepository;
+        this.sessionRepository = sessionRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.auditService = auditService;
+    }
+
+    @Transactional
+    @Override
+    public AdminUserItem suspend(AppUser administrator, Long id) {
+        AppUser user = mutableUser(id);
+        if (!user.isEnabled()) {
+            return item(user);
+        }
+        user.suspend();
+        sessionRepository.deleteByUser(user);
+        auditService.record(
+                administrator,
+                AdminAuditAction.USER_SUSPENDED,
+                AdminAuditTargetType.USER,
+                user.getId(),
+                "停用用户账号：" + user.getDisplayName());
+        return item(user);
+    }
+
+    @Transactional
+    @Override
+    public AdminUserItem restore(AppUser administrator, Long id) {
+        AppUser user = mutableUser(id);
+        if (user.isEnabled()) {
+            return item(user);
+        }
+        user.restore();
+        auditService.record(
+                administrator,
+                AdminAuditAction.USER_RESTORED,
+                AdminAuditTargetType.USER,
+                user.getId(),
+                "恢复用户账号：" + user.getDisplayName());
+        return item(user);
+    }
+
+    @Transactional
+    @Override
+    public AdminUserItem unlockLogin(AppUser administrator, Long id) {
+        AppUser user = mutableUser(id);
+        if (user.getFailedLoginAttempts() == 0 && user.getLoginLockedUntil() == null) {
+            return item(user);
+        }
+        user.clearLoginFailures();
+        auditService.record(
+                administrator,
+                AdminAuditAction.USER_LOGIN_UNLOCKED,
+                AdminAuditTargetType.USER,
+                user.getId(),
+                "解除用户登录锁定：" + user.getDisplayName());
+        return item(user);
+    }
+
+    @Transactional
+    @Override
+    public AdminUserItem resetPassword(AppUser administrator, Long id, String password) {
+        AppUser user = mutableUser(id);
+        user.changePasswordHash(passwordEncoder.encode(password));
+        user.clearLoginFailures();
+        sessionRepository.deleteByUser(user);
+        auditService.record(
+                administrator,
+                AdminAuditAction.USER_PASSWORD_RESET,
+                AdminAuditTargetType.USER,
+                user.getId(),
+                "重置用户密码：" + user.getDisplayName() + "（" + user.getRole().name() + "）");
+        return item(user);
+    }
+
+    private AppUser mutableUser(Long id) {
+        AppUser user =
+                userRepository
+                        .findLockedById(id)
+                        .orElseThrow(() -> new BusinessFailure(404, "用户不存在"));
+        if (user.getRole() == UserRole.ADMIN) {
+            throw new BusinessFailure(403, "管理员账号不能在用户目录中管理");
+        }
+        return user;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public AdminUserPageResponse list(String query, UserRole role, int page, int size) {
+        String normalizedQuery = normalize(query);
+        PageRequest pageable =
+                PageRequest.of(page, size, Sort.by(Direction.DESC, "createdAt", "id"));
+        Page<AppUser> users =
+                normalizedQuery == null
+                        ? userRepository.filterForAdmin(role, pageable)
+                        : userRepository.searchForAdmin(normalizedQuery, role, pageable);
+        return new AdminUserPageResponse(
+                users.getContent().stream().map(this::item).toList(),
+                users.getNumber(),
+                users.getSize(),
+                users.getTotalElements(),
+                users.getTotalPages());
+    }
+
+    private AdminUserItem item(AppUser user) {
+        return new AdminUserItem(
+                user.getId(),
+                user.getDisplayName(),
+                user.getPhone(),
+                user.getRole(),
+                user.isEnabled(),
+                user.isCourierApproved(),
+                user.getCreatedAt(),
+                user.getFailedLoginAttempts(),
+                user.getLoginLockedUntil());
+    }
+
+    private String normalize(String query) {
+        if (query == null || query.isBlank()) {
+            return null;
+        }
+        return query.trim();
+    }
+}

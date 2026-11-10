@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { V2ApiError, loginV2Admin, getV2AdminSession, logoutV2Admin, getV2Couriers, getV2CourierPerformance, decideV2CourierCertification, getV2StudentCardPhoto, getV2Notifications, markV2NotificationRead } from './v2Api'
 import type { FormEvent, ReactNode } from 'react'
 import { AdminMfaChallenge, AdminMfaSettings } from './AdminMfa'
 import { CommandCenter } from './CommandCenter'
 import {
   ApiError,
-  approveCourierCertification,
   changeAdminRole,
   changeOwnAdminPassword,
   claimIssue,
@@ -13,11 +13,7 @@ import {
   exportOrders,
   getAuditLogs,
   getAdminAccounts,
-  getCourierPerformance,
-  getStudentCardPhoto,
-  getCouriers,
   getCurrentUser,
-  getPushDeliveries,
   getDashboard,
   getFeedback,
   getIssues,
@@ -31,17 +27,12 @@ import {
   reverseCreditEvent,
   getRiskSignals,
   confirmRiskSignal,
-  confirmManualPayment,
-  rejectManualPayment,
-  confirmCourierSettlement,
   forceCompleteOrder,
   archiveOrder,
   unarchiveOrder,
   dismissRiskSignal,
   login,
-  issueOneYuanCoupon,
   logoutCurrentSession,
-  rejectCourierCertification,
   restoreUser,
   resolveIssue,
   resolveFeedback,
@@ -79,6 +70,7 @@ import type {
   RiskSignalPage,
   RiskSignalStatus,
   AuthResponse,
+  AuthUser,
   MfaChallenge,
   LoginSession,
   CourierCertificationStatus,
@@ -89,11 +81,10 @@ import type {
   UserRole,
   FeedbackHandlingStatus,
   FeedbackType,
-  PushDeliveryOverview,
-  PushDeliveryStatus,
+  V2Notification,
 } from './types'
 
-const SESSION_KEY = 'runrun-campus-admin-session'
+const SESSION_KEY = 'runrun_admin_session_v2'
 const PAGE_SIZE = 20
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -108,7 +99,7 @@ const statusLabels: Record<OrderStatus, string> = {
 const serviceLabels: Record<ServiceType, string> = {
   LOBBY: '楼下取餐',
   DOOR: '送到门口',
-  EXPRESS: '夜间急送',
+  EXPRESS: '加急配送',
   PACKAGE_SMALL: '快递代取·小件',
   PACKAGE_MEDIUM: '快递代取·中件',
   PACKAGE_MEDIUM_LARGE: '快递代取·中大件',
@@ -125,7 +116,7 @@ const certificationStatusLabels: Record<CourierCertificationStatus, string> = {
 }
 
 const roleLabels: Record<UserRole, string> = {
-  CUSTOMER: '普通用户',
+  USER: '普通用户',
   COURIER: '配送骑手',
   ADMIN: '平台管理员',
 }
@@ -191,7 +182,6 @@ const auditActionLabels: Record<AdminAuditAction, string> = {
   ORDER_ARCHIVED: '归档订单',
   ORDER_UNARCHIVED: '恢复归档订单',
   PLATFORM_SETTINGS_UPDATED: '调整运营设置',
-  COUPON_ISSUED: '发放1元优惠券',
   CREDIT_ADJUSTED: '人工调整信用分',
   CREDIT_EVENT_REVERSED: '撤销信用记录',
   RISK_SIGNAL_CONFIRMED: '确认风险信号',
@@ -226,23 +216,32 @@ function readSession(): AuthResponse | null {
     const value = sessionStorage.getItem(SESSION_KEY)
     if (!value) return null
     const session = JSON.parse(value) as AuthResponse
-    return session.user.role === 'ADMIN' && Array.isArray(session.user.permissions) ? session : null
+    if (typeof session.token === 'string' && session.token && session.user?.role === 'ADMIN' && Array.isArray(session.user.permissions)) return session
+    sessionStorage.removeItem(SESSION_KEY)
+    return null
   } catch {
+    sessionStorage.removeItem(SESSION_KEY)
     return null
   }
 }
 
 export default function App() {
   const [session, setSession] = useState<AuthResponse | null>(readSession)
+  const [checkingSession, setCheckingSession] = useState(() => readSession() !== null)
+  const [sessionError, setSessionError] = useState('')
 
   const handleLogin = (value: AuthResponse) => {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify(value))
+    setSessionError('')
     setSession(value)
   }
 
   const handleLogout = () => {
+    const token = readSession()?.token
+    if (token) void logoutV2Admin(token).catch(() => undefined)
     sessionStorage.removeItem(SESSION_KEY)
     setSession(null)
+    setCheckingSession(false)
   }
 
   useEffect(() => {
@@ -254,19 +253,23 @@ export default function App() {
       if (checking) return
       checking = true
       try {
-        const user = await getCurrentUser(token)
+        const account = await getV2AdminSession(token)
         if (!active || readSession()?.token !== token) return
-        if (user.role !== 'ADMIN') { handleLogout(); return }
+        if (account.role !== 'ADMIN' || !account.adminEnabled) { handleLogout(); return }
+        const user: AuthUser = { id: Number(account.id), phone: '', displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: null, permissions: account.permissions as AuthUser['permissions'] }
         if (JSON.stringify(readSession()?.user) !== JSON.stringify(user)) {
           const updated = { token, user }
           sessionStorage.setItem(SESSION_KEY, JSON.stringify(updated))
           setSession(current => current?.token === token ? updated : current)
         }
       } catch (reason) {
-        if (active && readSession()?.token === token && reason instanceof ApiError &&
-          (reason.status === 401 || reason.status === 403)) handleLogout()
+        if (active && readSession()?.token === token) {
+          handleLogout()
+          setSessionError(reason instanceof Error ? reason.message : '会话恢复失败，请重新登录')
+        }
       } finally {
         checking = false
+        if (active) setCheckingSession(false)
       }
     }
     const onVisible = () => { if (!document.hidden) void refresh() }
@@ -282,16 +285,20 @@ export default function App() {
     }
   }, [session?.token])
 
+  if (checkingSession) return <main><p role="status">正在验证管理员会话…</p></main>
+
   return session
-    ? <AdminConsole session={session} onLogout={handleLogout} onSessionChange={handleLogin} />
-    : <LoginPage onLogin={handleLogin} />
+    ? <V2AdminConsole session={session} onLogout={handleLogout} />
+    : <LoginPage onLogin={handleLogin} initialError={sessionError} />
 }
 
-function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
-  const [challenge, setChallenge] = useState<MfaChallenge | null>(null)
+function LoginPage({ onLogin, initialError = '' }: { onLogin: (session: AuthResponse) => void; initialError?: string }) {
+  // Synthetic IDs are accepted only in an explicitly local build against the isolated API.
+  const localFixture = import.meta.env.VITE_V2_LOCAL_TEST === 'true'
+    && /^http:\/\/(localhost|127\.0\.0\.1):8082$/.test(import.meta.env.VITE_API_BASE_URL ?? '')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError] = useState(initialError)
   const [submitting, setSubmitting] = useState(false)
 
   const submit = async (event: FormEvent) => {
@@ -299,8 +306,9 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
     setError('')
     setSubmitting(true)
     try {
-      setChallenge(await login(phone.trim(), password))
-      setPassword('')
+      const result = await loginV2Admin(phone.trim(), password)
+      if (!result.token || !result.account || result.account.role !== 'ADMIN' || !result.account.adminEnabled) throw new Error('v2 管理员未启用或凭证无效')
+      onLogin({ token: result.token, user: { id: Number(result.account.id), phone: phone.trim(), displayName: 'v2 ADMIN', role: 'ADMIN', adminRole: null, permissions: result.account.permissions as AuthUser['permissions'] } })
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : '登录失败')
     } finally {
@@ -323,20 +331,20 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
       </section>
 
       <section className="login-panel">
-        {challenge ? <AdminMfaChallenge challenge={challenge} onComplete={onLogin} onCancel={() => setChallenge(null)} /> : <form className="login-card" onSubmit={submit}>
+        <form className="login-card" onSubmit={submit}>
           <div>
             <p className="eyebrow accent">运营工作台</p>
             <h2>管理员登录</h2>
-            <p className="muted">使用管理员密码登录，然后完成认证器验证。</p>
+            <p className="muted">{localFixture ? '使用本机初始化的测试账号和密码登录。' : '使用已启用的 v2 管理员账号和密码登录。'}</p>
           </div>
           <label>
-            手机号
+            {localFixture ? '测试账号' : '手机号'}
             <input
               autoComplete="username"
-              inputMode="numeric"
-              maxLength={11}
-              pattern="1[0-9]{10}"
-              placeholder="请输入 11 位手机号"
+              inputMode={localFixture ? 'text' : 'numeric'}
+              maxLength={localFixture ? 32 : 11}
+              pattern={localFixture ? 'test-admin' : '1[0-9]{10}'}
+              placeholder={localFixture ? 'test-admin' : '请输入 11 位手机号'}
               required
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
@@ -359,13 +367,38 @@ function LoginPage({ onLogin }: { onLogin: (session: AuthResponse) => void }) {
             {submitting ? '正在验证…' : '登录运营后台'}
           </button>
           <p className="security-note">仅管理员可访问。请勿在公共设备保存或共享账号。</p>
-        </form>}
+        </form>
       </section>
     </main>
   )
 }
 
-type AdminView = 'dashboard' | 'orders' | 'couriers' | 'users' | 'risk' | 'issues' | 'feedback' | 'accounts' | 'push' | 'audit'
+function V2AdminConsole({ session, onLogout }: { session: AuthResponse; onLogout: () => void }) {
+  const [view, setView] = useState<'home' | 'notifications' | 'couriers'>('home')
+  const [unread, setUnread] = useState(0)
+  useEffect(() => {
+    let active = true
+    getV2Notifications(session.token).then(items => { if (active) setUnread(items.filter(item => !item.readAt).length) }).catch(reason => { if (reason instanceof V2ApiError && (reason.status === 401 || reason.status === 403)) onLogout() })
+    return () => { active = false }
+  }, [session.token, onLogout, view])
+  return <div className="admin-layout">
+    <aside className="sidebar">
+      <div className="sidebar-brand"><span className="brand-mark small">跑</span><span><strong>跑跑代取</strong><small>管理端 v2</small></span></div>
+      <p className="legacy-banner">V2 ADMIN · 独立会话</p>
+      <nav aria-label="v2 管理功能">
+        <button className={`nav-item ${view === 'home' ? 'active' : ''}`} onClick={() => setView('home')}><span>总</span>首页</button>
+        <button className={`nav-item ${view === 'notifications' ? 'active' : ''}`} onClick={() => setView('notifications')}><span>信</span>通知{unread > 0 ? ` (${unread})` : ''}</button>
+        {hasPermission(session, 'COURIER_VIEW') && <button className={`nav-item ${view === 'couriers' ? 'active' : ''}`} onClick={() => setView('couriers')}><span>骑</span>骑手资质</button>}
+      </nav>
+      <div className="sidebar-user"><span className="avatar">管</span><span><strong>v2 管理员</strong><small>ADMIN · 独立会话</small></span><button onClick={() => { onLogout() }} title="退出登录">退出</button></div>
+    </aside>
+    {view === 'home' && <main className="content"><header className="page-header"><div><p className="eyebrow accent">ADMIN V2 HOME</p><h1>管理端 v2 首页</h1><p className="muted">独立 v2 管理员工作台。当前仅开放通知和骑手资质审核。</p></div></header><section className="summary-row"><article><span>身份</span><strong className="text-value">ADMIN</strong><small>唯一 v2 管理员角色</small></article><article><span>会话</span><strong className="text-value">已恢复</strong><small>runrun_admin_session_v2</small></article><article><span>未读通知</span><strong>{unread}</strong><small>按当前管理员隔离</small></article></section><section className="orders-card"><p className="readonly-note">订单、用户、工单、反馈和审计仍保留在 legacy 页面，未加入 v2 导航，也不参与 v2 验收。</p></section></main>}
+    {view === 'notifications' && <NotificationManagement session={session} onSessionExpired={onLogout} />}
+    {view === 'couriers' && !hasPermission(session, 'COURIER_VIEW') && <main><p role="alert">当前账号无权查看骑手资质</p></main>}
+    {view === 'couriers' && hasPermission(session, 'COURIER_VIEW') && <CourierManagement session={session} onSessionExpired={onLogout} />}
+  </div>
+}
+type AdminView = 'dashboard' | 'orders' | 'couriers' | 'users' | 'risk' | 'issues' | 'feedback' | 'accounts' | 'notifications' | 'audit'
 
 const viewPermissions: Record<AdminView, AdminPermission> = {
   dashboard: 'DASHBOARD_VIEW',
@@ -376,15 +409,19 @@ const viewPermissions: Record<AdminView, AdminPermission> = {
   issues: 'ISSUE_VIEW',
   feedback: 'FEEDBACK_VIEW',
   accounts: 'ADMIN_MANAGE',
-  push: 'PUSH_DELIVERY_VIEW',
+  notifications: 'AUDIT_VIEW',
   audit: 'AUDIT_VIEW',
 }
 
-function hasPermission(session: AuthResponse, permission: AdminPermission) {
-  return session.user.permissions.includes(permission)
+function isSessionFailure(reason: unknown): boolean {
+  return reason instanceof ApiError || reason instanceof V2ApiError ? (reason.status === 401 || reason.status === 403) : false
 }
 
-function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthResponse; onLogout: () => void; onSessionChange: (session: AuthResponse) => void }) {
+function hasPermission(session: AuthResponse, permission: AdminPermission) {
+  return Array.isArray(session.user.permissions) && session.user.permissions.includes(permission)
+}
+
+function LegacyAdminConsole({ session, onLogout, onSessionChange }: { session: AuthResponse; onLogout: () => void; onSessionChange: (session: AuthResponse) => void }) {
   const [mfaSettingsOpen, setMfaSettingsOpen] = useState(false)
   const [sessionsOpen, setSessionsOpen] = useState(false)
   const [activeView, setActiveView] = useState<AdminView>('dashboard')
@@ -422,7 +459,7 @@ function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthRes
   const visibleView = hasPermission(session, viewPermissions[activeView]) ? activeView : 'dashboard'
 
   const expireSession = (reason: unknown) => {
-    if (reason instanceof ApiError && reason.status === 401) {
+    if (isSessionFailure(reason)) {
       onLogout()
       return true
     }
@@ -531,7 +568,7 @@ function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthRes
           {hasPermission(session, 'ISSUE_VIEW') && <button className={`nav-item ${activeView === 'issues' ? 'active' : ''}`} onClick={() => setActiveView('issues')}><span>异</span>异常工单</button>}
           {hasPermission(session, 'FEEDBACK_VIEW') && <button className={`nav-item ${activeView === 'feedback' ? 'active' : ''}`} onClick={() => setActiveView('feedback')}><span>馈</span>意见反馈</button>}
           {hasPermission(session, 'ADMIN_MANAGE') && <button className={`nav-item ${activeView === 'accounts' ? 'active' : ''}`} onClick={() => setActiveView('accounts')}><span>管</span>管理员账号</button>}
-          {hasPermission(session, 'PUSH_DELIVERY_VIEW') && <button className={`nav-item ${activeView === 'push' ? 'active' : ''}`} onClick={() => setActiveView('push')}><span>推</span>推送告警</button>}
+          {hasPermission(session, 'AUDIT_VIEW') && <button className={`nav-item ${activeView === 'notifications' ? 'active' : ''}`} onClick={() => setActiveView('notifications')}><span>信</span>站内消息</button>}
           {hasPermission(session, 'AUDIT_VIEW') && <button className={`nav-item ${activeView === 'audit' ? 'active' : ''}`} onClick={() => setActiveView('audit')}><span>审</span>操作日志</button>}
         </nav>
         <div className="sidebar-user">
@@ -632,11 +669,7 @@ function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthRes
                       <td><strong>{order.customer.displayName}</strong><small>{maskPhone(order.customer.phone)}</small></td>
                       <td>{order.courier ? <><strong>{order.courier.displayName}</strong><small>{maskPhone(order.courier.phone)}</small></> : <span className="muted">未分配</span>}</td>
                       <td>{order.destination}</td>
-                      <td className="money">{order.paymentMethod === 'CASH_ON_DELIVERY'
-                        ? `${order.paymentStatus === 'PAID' ? '到付已结清' : '到付'} ${formatMoney(order.feeCents)}`
-                        : order.paymentMethod === 'PERSONAL_QR_MANUAL'
-                          ? `${manualPaymentStatusLabel(order.manualPaymentStatus)} ${formatMoney(order.feeCents)}`
-                          : `${order.paymentStatus === 'PAID' ? '线上已支付' : '线上待支付'} ${formatMoney(order.feeCents)}`}</td>
+                      <td className="money">{order.paymentStatus === 'PAID' ? '已支付' : order.paymentStatus === 'REFUNDED' ? '已退款' : '待支付'} {formatMoney(order.feeCents)}</td>
                       <td>{formatDate(order.createdAt)}</td>
                       <td><button className="text-button" onClick={() => setSelectedId(order.id)}>查看详情</button></td>
                     </tr>
@@ -676,8 +709,8 @@ function AdminConsole({ session, onLogout, onSessionChange }: { session: AuthRes
               ? <FeedbackManagement key={dashboardFilter} initialStatus={dashboardFilter as FeedbackHandlingStatus | ''} session={session} onSessionExpired={onLogout} />
               : visibleView === 'accounts'
                 ? <AdminAccountManagement session={session} onSessionExpired={onLogout} />
-                : visibleView === 'push'
-                  ? <PushDeliveryManagement session={session} onSessionExpired={onLogout} />
+                : visibleView === 'notifications'
+                  ? <NotificationManagement session={session} onSessionExpired={onLogout} />
                   : <AuditManagement session={session} onSessionExpired={onLogout} />}
 
       {selectedId !== null && hasPermission(session, 'ORDER_VIEW') && (
@@ -736,7 +769,7 @@ function DashboardManagement({ session, onNavigate, onOpenOrder, onSessionExpire
       .then((result) => active && setDashboard(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -825,7 +858,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
   const [actionError, setActionError] = useState('')
 
   const handleError = (reason: unknown, fallback: string) => {
-    if (reason instanceof ApiError && reason.status === 401) {
+    if (isSessionFailure(reason)) {
       onSessionExpired()
       return ''
     }
@@ -836,7 +869,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     let active = true
     setLoading(true)
     setError('')
-    getCouriers(session.token, { query, status, page, size: PAGE_SIZE })
+    getV2Couriers(session.token, { query, status, page, size: PAGE_SIZE })
       .then((result) => active && setCouriers(result))
       .catch((reason: unknown) => {
         if (!active) return
@@ -856,7 +889,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     let active = true
     setPerformanceLoading(true)
     setPerformanceError('')
-    getCourierPerformance(session.token, selectedCourierId, performancePage, 10)
+    getV2CourierPerformance(session.token, selectedCourierId, performancePage, 10)
       .then((result) => active && setPerformance(result))
       .catch((reason: unknown) => {
         if (!active) return
@@ -882,11 +915,13 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
   }
 
   const approve = async () => {
-    if (!selected?.certificationId || !window.confirm(`确认通过 ${selected.displayName} 的骑手认证？`)) return
+    if (!selected?.certificationId || selected.version === undefined || !selected.photoResourceId || !window.confirm(`确认通过 ${selected.displayName} 的骑手认证？`)) return
     setActionLoading(true)
     setActionError('')
     try {
-      await approveCourierCertification(session.token, selected.certificationId)
+      await decideV2CourierCertification(session.token, selected.certificationId, {
+        decision: 'APPROVE', expectedVersion: selected.version, photoResourceId: selected.photoResourceId, reason: '管理员审核通过',
+      })
       setSelected(null)
       setReloadKey((value) => value + 1)
     } catch (reason) {
@@ -902,7 +937,10 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
     setActionLoading(true)
     setActionError('')
     try {
-      await rejectCourierCertification(session.token, selected.certificationId, rejectionReason.trim())
+      if (selected.version === undefined) throw new Error('当前资质缺少版本号，不能安全审核')
+      await decideV2CourierCertification(session.token, selected.certificationId, {
+        decision: 'REJECT', expectedVersion: selected.version, photoResourceId: null, reason: rejectionReason.trim(),
+      })
       setSelected(null)
       setRejecting(false)
       setRejectionReason('')
@@ -1023,7 +1061,7 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
                 ]} />
                 {selected.photoUploaded && selected.certificationId && hasPermission(session, 'COURIER_REVIEW') &&
                   <StudentCardPreview key={selected.certificationId} token={session.token}
-                    certificationId={selected.certificationId} />}
+                    certificationId={selected.certificationId} photoResourceId={selected.photoResourceId} />}
               </DetailSection>
               <DetailSection title="快递配送统计">
                 {performanceError && <ErrorState message={performanceError} onRetry={() => setPerformanceReloadKey((value) => value + 1)} />}
@@ -1088,9 +1126,10 @@ function CourierManagement({ session, onSessionExpired, initialStatus = '' }: {
               {selected.status === 'PENDING' && selected.certificationId && hasPermission(session, 'COURIER_REVIEW') && (
                 <DetailSection title="审核操作">
                   {actionError && <p className="form-error">{actionError}</p>}
+                  {selected.version === undefined && <p className="readonly-note">当前列表未返回资质版本号，已禁用审核操作，请刷新后重试。</p>}
                   {!rejecting ? (
                     <div className="review-actions">
-                      <button className="primary-button" disabled={actionLoading || !selected.photoUploaded}
+                      <button className="primary-button" disabled={actionLoading || !selected.photoUploaded || selected.version === undefined || !selected.photoResourceId}
                         onClick={approve}>通过认证</button>
                       <button className="danger-button" disabled={actionLoading} onClick={() => setRejecting(true)}>驳回申请</button>
                     </div>
@@ -1133,7 +1172,7 @@ function RiskManagement({ session, onSessionExpired }: {
       .then((result) => active && setSignals(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+        if (isSessionFailure(reason)) onSessionExpired()
         else setError(reason instanceof Error ? reason.message : '风险信号加载失败')
       })
       .finally(() => active && setLoading(false))
@@ -1163,7 +1202,7 @@ function RiskManagement({ session, onSessionExpired }: {
       else await dismissRiskSignal(session.token, signal.id, reason)
       setReloadKey((value) => value + 1)
     } catch (reasonValue) {
-      if (reasonValue instanceof ApiError && reasonValue.status === 401) onSessionExpired()
+      if (isSessionFailure(reasonValue)) onSessionExpired()
       else setError(reasonValue instanceof Error ? reasonValue.message : '风险信号处理失败')
     } finally {
       setActionId(null)
@@ -1254,7 +1293,7 @@ function UserManagement({ session, onSessionExpired }: {
       .then((result) => active && setUsers(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -1276,7 +1315,7 @@ function UserManagement({ session, onSessionExpired }: {
       .then((result) => active && setCredit(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+        if (isSessionFailure(reason)) onSessionExpired()
         else setCreditError(reason instanceof Error ? reason.message : '信用档案加载失败')
       })
       .finally(() => active && setCreditLoading(false))
@@ -1309,7 +1348,7 @@ function UserManagement({ session, onSessionExpired }: {
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) {
+      if (isSessionFailure(reason)) {
         onSessionExpired()
       } else {
         setActionError(reason instanceof Error ? reason.message : '账号状态修改失败')
@@ -1329,7 +1368,7 @@ function UserManagement({ session, onSessionExpired }: {
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '登录解锁失败')
     } finally {
       setActionLoading(false)
@@ -1359,27 +1398,10 @@ function UserManagement({ session, onSessionExpired }: {
       setPasswordTarget(null)
       window.alert(`${passwordTarget.displayName} 的密码已重置，原有登录会话已失效。`)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setPasswordError(reason instanceof Error ? reason.message : '密码重置失败')
     } finally {
       setPasswordSubmitting(false)
-    }
-  }
-
-  const grantCoupon = async () => {
-    if (!selected || selected.role !== 'CUSTOMER') return
-    if (!window.confirm(`确认向 ${selected.displayName} 发放一张1元优惠券？`)) return
-    setActionLoading(true)
-    setActionError('')
-    setCouponMessage('')
-    try {
-      const granted = await issueOneYuanCoupon(session.token, selected.id)
-      setCouponMessage(`已发放“${granted.title}”，有效期至 ${formatDate(granted.expiresAt)}`)
-    } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
-      else setActionError(reason instanceof Error ? reason.message : '优惠券发放失败')
-    } finally {
-      setActionLoading(false)
     }
   }
 
@@ -1390,7 +1412,7 @@ function UserManagement({ session, onSessionExpired }: {
     try {
       setCredit(await getUserCredit(session.token, selected.id))
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setCreditError(reason instanceof Error ? reason.message : '信用档案加载失败')
     } finally {
       setCreditLoading(false)
@@ -1418,7 +1440,7 @@ function UserManagement({ session, onSessionExpired }: {
       setCreditReason('')
       await reloadCredit()
     } catch (reasonValue) {
-      if (reasonValue instanceof ApiError && reasonValue.status === 401) onSessionExpired()
+      if (isSessionFailure(reasonValue)) onSessionExpired()
       else setCreditError(reasonValue instanceof Error ? reasonValue.message : '信用分调整失败')
     } finally {
       setActionLoading(false)
@@ -1436,7 +1458,7 @@ function UserManagement({ session, onSessionExpired }: {
       await reverseCreditEvent(session.token, selected.id, eventId, reason)
       await reloadCredit()
     } catch (reasonValue) {
-      if (reasonValue instanceof ApiError && reasonValue.status === 401) onSessionExpired()
+      if (isSessionFailure(reasonValue)) onSessionExpired()
       else setCreditError(reasonValue instanceof Error ? reasonValue.message : '信用记录撤销失败')
     } finally {
       setActionLoading(false)
@@ -1589,13 +1611,6 @@ function UserManagement({ session, onSessionExpired }: {
                   <button className="secondary-button account-action-button" disabled={actionLoading} onClick={() => openPasswordReset(selected)}>重置登录密码</button>
                 </div>
               )}
-              {selected.role === 'CUSTOMER' && hasPermission(session, 'COUPON_ISSUE') && (
-                <DetailSection title="优惠券发放">
-                  <p className="readonly-note">固定发放一张1元优惠券，满2元可用，30天内有效。每次操作都会写入审计日志。</p>
-                  {couponMessage && <p className="form-success" role="status">{couponMessage}</p>}
-                  <button className="primary-button account-action-button" disabled={actionLoading || !selected.enabled} onClick={grantCoupon}>{!selected.enabled ? '账号停用，无法发放' : actionLoading ? '正在发放…' : '发放1元优惠券'}</button>
-                </DetailSection>
-              )}
             </div>
           </aside>
         </div>
@@ -1651,7 +1666,7 @@ function IssueManagement({ session, onSessionExpired, onOpenOrder, initialStatus
       .then((result) => active && setIssues(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -1683,7 +1698,7 @@ function IssueManagement({ session, onSessionExpired, onOpenOrder, initialStatus
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '领取工单失败')
     } finally {
       setActionLoading(false)
@@ -1701,7 +1716,7 @@ function IssueManagement({ session, onSessionExpired, onOpenOrder, initialStatus
       setResolution('')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '解决工单失败')
     } finally {
       setActionLoading(false)
@@ -1889,7 +1904,7 @@ function FeedbackManagement({ session, onSessionExpired, initialStatus = '' }: {
       .then((result) => active && setFeedback(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -1915,7 +1930,7 @@ function FeedbackManagement({ session, onSessionExpired, initialStatus = '' }: {
       setSelected(updated)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '领取反馈失败')
     } finally {
       setActionLoading(false)
@@ -1933,7 +1948,7 @@ function FeedbackManagement({ session, onSessionExpired, initialStatus = '' }: {
       setResolution('')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setActionError(reason instanceof Error ? reason.message : '反馈处理失败')
     } finally {
       setActionLoading(false)
@@ -2056,7 +2071,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       .then((result) => active && setAccounts(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+        if (isSessionFailure(reason)) onSessionExpired()
         else setError(reason instanceof Error ? reason.message : '管理员账号加载失败')
       })
       .finally(() => active && setLoading(false))
@@ -2075,7 +2090,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       setAdminRole('OPERATIONS')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setFormError(reason instanceof Error ? reason.message : '管理员创建失败')
     } finally {
       setSubmitting(false)
@@ -2091,7 +2106,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       await changeAdminRole(session.token, account.id, role)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setError(reason instanceof Error ? reason.message : '岗位调整失败')
     } finally {
       setChangingId(null)
@@ -2109,7 +2124,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       else await restoreAdminAccount(session.token, account.id)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setError(reason instanceof Error ? reason.message : '管理员状态修改失败')
     } finally {
       setChangingId(null)
@@ -2125,7 +2140,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       await unlockAdminLogin(session.token, account.id)
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setError(reason instanceof Error ? reason.message : '管理员登录解锁失败')
     } finally {
       setChangingId(null)
@@ -2143,7 +2158,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       setNewPassword('')
       setReloadKey((value) => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setPasswordError(reason instanceof Error ? reason.message : '密码重置失败')
     } finally {
       setSubmitting(false)
@@ -2159,7 +2174,7 @@ function AdminAccountManagement({ session, onSessionExpired }: {
       setMfaGrant(result.resetGrant)
       setReloadKey(value => value + 1)
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) onSessionExpired()
+      if (isSessionFailure(reason)) onSessionExpired()
       else setMfaError(reason instanceof Error ? reason.message : '认证器重置失败')
     } finally { setSubmitting(false) }
   }
@@ -2250,7 +2265,7 @@ function SessionSecurityDialog({ session, onClose, onSessionExpired }: {
     try {
       setItems(await getLoginSessions(session.token))
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) {
+      if (isSessionFailure(reason)) {
         onSessionExpired()
         return
       }
@@ -2309,68 +2324,39 @@ function SessionSecurityDialog({ session, onClose, onSessionExpired }: {
   </div>
 }
 
-function PushDeliveryManagement({ session, onSessionExpired }: {
+function NotificationManagement({ session, onSessionExpired }: {
   session: AuthResponse
   onSessionExpired: () => void
 }) {
-  const [status, setStatus] = useState<PushDeliveryStatus>('DEAD')
-  const [page, setPage] = useState(0)
-  const [data, setData] = useState<PushDeliveryOverview | null>(null)
+  const [items, setItems] = useState<V2Notification[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [revision, setRevision] = useState(0)
-
   useEffect(() => {
     let active = true
-    setLoading(true)
-    setError('')
-    getPushDeliveries(session.token, status, page, PAGE_SIZE)
-      .then(result => { if (active) setData(result) })
-      .catch((reason: unknown) => {
-        if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) { onSessionExpired(); return }
-        setError(reason instanceof Error ? reason.message : '推送任务加载失败')
-      })
-      .finally(() => { if (active) setLoading(false) })
+    setLoading(true); setError('')
+    getV2Notifications(session.token).then(value => active && setItems(value)).catch(reason => {
+      if (!active) return
+      if (isSessionFailure(reason)) { onSessionExpired(); return }
+      setError(reason instanceof Error ? reason.message : '站内消息加载失败')
+    }).finally(() => active && setLoading(false))
     return () => { active = false }
-  }, [page, revision, session.token, status])
-
-  const deliveries = data?.deliveries
+  }, [onSessionExpired, revision, session.token])
+  const markRead = async (item: V2Notification) => {
+    try { await markV2NotificationRead(session.token, item.id); setItems(current => current.map(value => value.id === item.id ? { ...value, readAt: value.readAt ?? new Date().toISOString() } : value)) }
+    catch (reason) { if (isSessionFailure(reason)) onSessionExpired(); else setError(reason instanceof Error ? reason.message : '消息已读失败') }
+  }
   return <main className="content">
-    <header className="page-header">
-      <div><p className="eyebrow accent">PUSH DELIVERY</p><h1>推送告警</h1>
-        <p className="muted">查看订单与骑手认证通知的自动重试状态；失败不会回滚业务。</p></div>
-      <button className="secondary-button" disabled={loading} onClick={() => setRevision(value => value + 1)}>刷新</button>
-    </header>
-    <section className="metric-grid compact-metrics">
-      <article><span>需人工关注</span><strong>{data?.dead ?? 0}</strong><small>5 次失败</small></article>
-      <article><span>等待重试</span><strong>{data?.pending ?? 0}</strong><small>按退避时间执行</small></article>
-      <article><span>发送处理中</span><strong>{data?.processing ?? 0}</strong><small>超时后自动恢复</small></article>
-    </section>
-    <section className="data-section">
-      <div className="table-toolbar">
-        <label>任务状态<select value={status} onChange={event => { setStatus(event.target.value as PushDeliveryStatus); setPage(0) }}>
-          <option value="DEAD">需人工关注</option><option value="PENDING">等待重试</option>
-          <option value="PROCESSING">发送处理中</option><option value="SENT">发送成功</option>
-        </select></label>
-      </div>
-      {error && <ErrorState message={error} onRetry={() => setRevision(value => value + 1)} />}
-      {loading && !deliveries && <p className="muted">正在读取推送任务…</p>}
-      {!loading && !error && deliveries?.items.length === 0 && <p className="muted">当前状态没有推送任务。</p>}
-      {deliveries && deliveries.items.length > 0 && <div className="table-scroll"><table><thead><tr>
-        <th>任务</th><th>业务目标</th><th>接收账号</th><th>尝试次数</th><th>最近状态</th><th>失败原因</th>
-      </tr></thead><tbody>{deliveries.items.map(item => <tr key={item.id}>
-        <td>#{item.id}<small>{item.title}</small></td><td>{item.orderId ? `订单 #${item.orderId}` : '骑手认证'}</td><td>#{item.recipientId}</td>
-        <td>{item.attempts}/5</td><td>{formatDate(item.updatedAt)}<small>{item.status === 'PENDING' ? `下次 ${formatDate(item.nextAttemptAt)}` : item.status}</small></td>
-        <td>{item.lastError ?? '—'}</td>
-      </tr>)}</tbody></table></div>}
-      <footer className="pagination"><span>共 {deliveries?.totalElements ?? 0} 条</span><div>
-        <button disabled={!deliveries || deliveries.page === 0 || loading} onClick={() => setPage(value => value - 1)}>上一页</button>
-        <span>{deliveries && deliveries.totalPages > 0 ? `${deliveries.page + 1} / ${deliveries.totalPages}` : '0 / 0'}</span>
-        <button disabled={!deliveries || deliveries.page + 1 >= deliveries.totalPages || loading} onClick={() => setPage(value => value + 1)}>下一页</button>
-      </div></footer>
-    </section>
+    <header className="page-header"><div><p className="eyebrow accent">V2 IN-APP NOTIFICATIONS</p><h1>站内消息</h1><p className="muted">读取 v2 可靠落库消息；微信订阅发送失败不影响站内消息。</p></div><button className="secondary-button" onClick={() => setRevision(value => value + 1)}>刷新</button></header>
+    {error && <ErrorState message={error} onRetry={() => setRevision(value => value + 1)} />}
+    {loading && <p className="muted">正在读取站内消息…</p>}
+    {!loading && !error && items.length === 0 && <p className="muted">暂无站内消息。</p>}
+    {!loading && !error && items.length > 0 && <section className="data-section"><div className="table-scroll"><table><thead><tr><th>类型</th><th>内容</th><th>业务对象</th><th>时间</th><th>状态</th></tr></thead><tbody>{items.map(item => <tr key={item.id}><td>{notificationTypeLabel(item.type)}</td><td>{String(item.content.message ?? item.content.status ?? '有新的业务通知')}</td><td>{item.orderId ? `订单 #${item.orderId}` : '—'}</td><td>{formatDate(item.createdAt)}</td><td>{item.readAt ? '已读' : <button className="text-button" onClick={() => void markRead(item)}>标记已读</button>}</td></tr>)}</tbody></table></div></section>}
   </main>
+}
+
+function notificationTypeLabel(type: V2Notification['type']) {
+  return ({ PAYMENT_SUCCEEDED: '支付成功', DELIVERY_COMPLETED: '送达完成', SUPPLEMENT_REQUIRED: '需要补款', REFUND_UPDATED: '退款更新', AFTER_SALES_UPDATED: '售后更新', REVIEW_REMINDER: '审核提醒', REVIEW_ESCALATED: '审核升级', CERTIFICATION_UPDATED: '资质审核' } as Record<string, string>)[type] ?? type
 }
 
 function AuditManagement({ session, onSessionExpired }: {
@@ -2394,7 +2380,7 @@ function AuditManagement({ session, onSessionExpired }: {
       .then((result) => active && setLogs(result))
       .catch((reason: unknown) => {
         if (!active) return
-        if (reason instanceof ApiError && reason.status === 401) {
+        if (isSessionFailure(reason)) {
           onSessionExpired()
           return
         }
@@ -2544,7 +2530,6 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
             <DetailSection title="配送信息">
               <DetailGrid items={[
                 ['取件点', detail.pickupLocation],
-                ['取件码', detail.pickupCode],
                 ['送达位置', detail.order.destination],
                 ['创建时间', formatDate(detail.order.createdAt)],
               ]} />
@@ -2558,51 +2543,10 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
             <DetailSection title="费用明细">
               <DetailGrid items={[
                 ['原始服务费', formatMoney(detail.originalFeeCents)],
-                ['优惠金额', `-${formatMoney(detail.discountCents)}`],
-                ['付款方式', detail.order.paymentMethod === 'CASH_ON_DELIVERY'
-                  ? '货到付款'
-                  : detail.order.paymentMethod === 'PERSONAL_QR_MANUAL' ? '个人收款码·人工核款' : '微信 APP 支付'],
-                ['结清状态', detail.order.paymentStatus === 'PAID'
-                  ? `已结清 ${formatMoney(detail.order.paidCents)}`
-                  : `待结清 ${formatMoney(detail.order.feeCents - detail.order.paidCents)}`],
-                ['优惠券', detail.couponTitle ?? '未使用'],
-                ['月卡抵扣', detail.membershipUsed ? (detail.membershipPlanTitle ?? '已使用') : '未使用'],
+                ['支付状态', detail.order.paymentStatus === 'PAID' ? '已支付' : detail.order.paymentStatus === 'REFUNDED' ? '已退款' : '待支付'],
+                ['服务端应付金额', formatMoney(detail.order.feeCents)],
               ]} />
             </DetailSection>
-
-            {detail.order.paymentMethod === 'PERSONAL_QR_MANUAL' && <DetailSection title="人工核款与骑手结算">
-              <DetailGrid items={[
-                ['核款状态', manualPaymentStatusLabel(detail.order.manualPaymentStatus)],
-                ['付款人备注', detail.payerReference ?? '—'],
-                ['通知付款', detail.paymentRequestedAt ? formatDate(detail.paymentRequestedAt) : '—'],
-                ['用户提交', detail.paymentSubmittedAt ? formatDate(detail.paymentSubmittedAt) : '—'],
-                ['核款人员', detail.paymentReviewerName ?? '—'],
-                ['核款时间', detail.paymentReviewedAt ? formatDate(detail.paymentReviewedAt) : '—'],
-                ['核款说明', detail.paymentReviewNote ?? '—'],
-                ['骑手结算', courierSettlementStatusLabel(detail.order.courierSettlementStatus)],
-                ['结算登记', detail.courierSettledAt ? `${formatDate(detail.courierSettledAt)} · ${detail.courierSettlementReviewerName ?? '管理员'}` : '—'],
-              ]} />
-              {hasPermission(session, 'PAYMENT_REVIEW') && detail.order.manualPaymentStatus === 'SUBMITTED' && <>
-                <button className="primary-button open-order-button" disabled={actionLoading} onClick={() => {
-                  if (window.confirm(`确认已收到 ${formatMoney(detail.order.feeCents)} 吗？确认后用户才能查看收货码。`)) {
-                    void runOrderAction(() => confirmManualPayment(session.token, detail.order.id))
-                  }
-                }}>{actionLoading ? '处理中…' : '确认到账'}</button>
-                <form className="rejection-form" onSubmit={(event) => {
-                  event.preventDefault()
-                  void runOrderAction(() => rejectManualPayment(session.token, detail.order.id, rejectReason.trim()))
-                }}>
-                  <label>驳回原因<textarea required maxLength={200} value={rejectReason} onChange={(event) => setRejectReason(event.target.value)} /></label>
-                  <button className="danger-button" disabled={actionLoading || !rejectReason.trim()} type="submit">驳回付款申报</button>
-                </form>
-              </>}
-              {hasPermission(session, 'PAYMENT_REVIEW') && detail.order.courierSettlementStatus === 'PENDING' &&
-                <button className="secondary-button open-order-button" disabled={actionLoading} onClick={() => {
-                  if (window.confirm(`确认已向骑手结算 ${formatMoney(detail.order.feeCents)} 吗？此操作只登记结果，不会自动转账。`)) {
-                    void runOrderAction(() => confirmCourierSettlement(session.token, detail.order.id))
-                  }
-                }}>{actionLoading ? '处理中…' : '登记为已结算给骑手'}</button>}
-            </DetailSection>}
 
             <DetailSection title={`订单进度 · ${detail.events.length}`}>
               {detail.events.length === 0 ? <p className="empty-inline">暂无状态记录</p> : (
@@ -2636,13 +2580,11 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
 
             {hasPermission(session, 'ORDER_FORCE_COMPLETE') && detail.order.status === 'PICKED_UP' && !detail.order.archivedAt &&
               <DetailSection title="管理员人工完成">
-                <p className="readonly-note">仅在已核对送达凭证和确认收款后使用；此操作跳过收货码，不会自动收款或退款，完成后计入已完成订单。</p>
+                <p className="readonly-note">仅在已核对送达凭证和确认收款后使用；此操作跳过服务端确认，不会自动收款或退款，完成后计入已完成订单。</p>
                 {detail.proofs.some((proof) => proof.type === 'DELIVERY')
                   && detail.order.paymentStatus === 'PAID'
                   && detail.order.paidCents >= detail.order.feeCents
                   && detail.order.courier
-                  && (detail.order.paymentMethod !== 'PERSONAL_QR_MANUAL' || detail.order.feeCents === 0
-                    || detail.order.manualPaymentStatus === 'CONFIRMED')
                   ? <form className="rejection-form" onSubmit={(event) => {
                       event.preventDefault()
                       if (window.confirm(`确认人工完成订单 ${detail.order.orderNo}？请确保送达和收款均已核实。`)) {
@@ -2650,13 +2592,13 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
                       }
                     }}>
                       <label>操作原因<textarea required minLength={5} maxLength={200} value={completionReason}
-                        onChange={(event) => setCompletionReason(event.target.value)} placeholder="填写核实情况及无法使用收货码的原因" /></label>
+                        onChange={(event) => setCompletionReason(event.target.value)} placeholder="填写核实情况及无法使用服务端确认的原因" /></label>
                       <button className="primary-button open-order-button" type="submit"
                         disabled={actionLoading || completionReason.trim().length < 5}>
                         {actionLoading ? '处理中…' : '确认人工完成'}
                       </button>
                     </form>
-                  : <p className="empty-inline">暂不可操作：需有送达凭证、已确认收款且订单已有骑手；货到付款未确认收款时不能人工完成。</p>}
+                  : <p className="empty-inline">暂不可操作：需有送达凭证、已确认收款且订单已有骑手；服务端支付状态未满足时不能人工完成。</p>}
               </DetailSection>}
 
             {hasPermission(session, 'ORDER_ARCHIVE') && (detail.order.status === 'COMPLETED'
@@ -2670,7 +2612,6 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
                     {actionLoading ? '处理中…' : '恢复到未归档列表'}
                   </button>
                 </> : detail.order.paymentStatus === 'REFUNDING'
-                  || detail.order.courierSettlementStatus === 'PENDING'
                   || detail.order.status === 'COMPLETED' && detail.order.paymentStatus !== 'PAID'
                   ? <p className="empty-inline">仍有待处理的收款、退款或骑手结算，暂不能归档。</p>
                   : <form className="rejection-form" onSubmit={(event) => {
@@ -2703,20 +2644,20 @@ function OrderDrawer({ detail, error, loading, onClose, onRetry, session }: {
   )
 }
 
-function StudentCardPreview({ token, certificationId }: { token: string; certificationId: number }) {
+function StudentCardPreview({ token, certificationId, photoResourceId }: { token: string; certificationId: number; photoResourceId?: string | null }) {
   const [url, setUrl] = useState<string | null>(null)
   const [error, setError] = useState('')
   useEffect(() => {
     const controller = new AbortController()
     let objectUrl: string | undefined
-    void getStudentCardPhoto(token, certificationId, controller.signal).then((blob) => {
+    void getV2StudentCardPhoto(token, certificationId, photoResourceId, controller.signal).then((blob) => {
       if (controller.signal.aborted) return
       objectUrl = URL.createObjectURL(blob); setUrl(objectUrl); setError('')
     }).catch((reason) => {
       if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : '照片加载失败')
     })
     return () => { controller.abort(); if (objectUrl) URL.revokeObjectURL(objectUrl) }
-  }, [token, certificationId])
+  }, [token, certificationId, photoResourceId])
   if (error) return <p className="form-error">{error}</p>
   return url ? <img src={url} alt="骑手提交的学生证照片" style={{ maxWidth: '100%', maxHeight: 320 }} />
     : <p className="muted">正在加载学生证照片…</p>
@@ -2761,24 +2702,6 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
 
 function formatMoney(cents: number) {
   return new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(cents / 100)
-}
-
-function manualPaymentStatusLabel(status: AdminOrderDetail['order']['manualPaymentStatus']) {
-  return {
-    NOT_REQUESTED: '待骑手到达',
-    AWAITING_PAYMENT: '待用户付款',
-    SUBMITTED: '待管理员核款',
-    CONFIRMED: '已确认到账',
-    REJECTED: '核款未通过',
-  }[status]
-}
-
-function courierSettlementStatusLabel(status: AdminOrderDetail['order']['courierSettlementStatus']) {
-  return {
-    NOT_APPLICABLE: '尚未生成结算',
-    PENDING: '待人工结算',
-    SETTLED: '已登记结算',
-  }[status]
 }
 
 function formatDate(value: string) {

@@ -14,7 +14,7 @@ const PACKAGE_SERVICES = [
 const SERVICE_TEXT = {
   LOBBY: '楼下取餐',
   DOOR: '送到门口',
-  EXPRESS: '夜间急送',
+  EXPRESS: '加急配送',
   PACKAGE_SMALL: '小件',
   PACKAGE_MEDIUM: '中件',
   PACKAGE_MEDIUM_LARGE: '中大件',
@@ -29,9 +29,6 @@ Page({
     session: null,
     order: null,
     events: [],
-    deliveryCode: '',
-    completionCode: '',
-    payerReference: '',
     packageServices: PACKAGE_SERVICES,
     packageIndex: 0,
     unableReason: '',
@@ -59,18 +56,14 @@ Page({
   async load() {
     this.setData({ loading: true, error: '' })
     try {
-      const [order, events] = await Promise.all([
-        request(`/api/v1/orders/${this.data.id}`),
-        request(`/api/v1/orders/${this.data.id}/events`)
-      ])
+      const order = await request(`/api/v2/orders/${this.data.id}`)
+      const events = Array.isArray(order.events) ? order.events : []
       const view = orderView(order)
       view.updatedAtText = dateTime(order.updatedAt)
       view.isPackageOrder = String(order.serviceType || '').startsWith('PACKAGE_')
       view.serviceText = SERVICE_TEXT[order.serviceType] || order.serviceType
       view.proposedPackageServiceText = SERVICE_TEXT[order.proposedPackageServiceType] || order.proposedPackageServiceType
-      view.paymentText = order.paymentMethod === 'PERSONAL_QR_MANUAL'
-        ? (order.paymentStatus === 'PAID' ? '平台已确认到账' : '人工扫码待确认')
-        : (order.paymentStatus === 'PAID' ? '已支付' : '待支付')
+      view.paymentText = order.paymentStatus === 'PAID' ? '已支付' : '待支付'
       const packageIndex = Math.max(0, PACKAGE_SERVICES.findIndex(item => item.code === order.serviceType))
       this.setData({
         order: view,
@@ -113,13 +106,13 @@ Page({
 
   acceptOrder() {
     this.confirmAction('确认接单', '接单后请按订单信息完成取件与配送。', () =>
-      request(`/api/v1/orders/${this.data.id}/accept`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/accept`, { method: 'POST', data: { expectedVersion: this.data.order.version } })
     )
   },
 
   cancelOrder() {
     this.confirmAction('取消订单', '确认取消这笔尚未完成的订单？', () =>
-      request(`/api/v1/orders/${this.data.id}/cancel`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/cancel`, { method: 'POST', data: { expectedVersion: this.data.order.version, reason: '用户取消订单' } })
     )
   },
 
@@ -129,7 +122,7 @@ Page({
       return
     }
     this.confirmAction('确认已取件', '状态更新后，用户将看到订单进入配送中。', () =>
-      request(`/api/v1/orders/${this.data.id}/pickup`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/pickup`, { method: 'POST', data: { expectedVersion: this.data.order.version, taskId: this.data.order.taskId, pickupProofId: this.data.order.pickupProofId } })
     )
   },
 
@@ -141,22 +134,22 @@ Page({
       return
     }
     this.confirmAction('确认包裹规格', `现场规格：${selected.label}`, () =>
-      request(`/api/v1/orders/${this.data.id}/package-size`, {
+      request(`/api/v2/orders/${this.data.id}/adjustments`, {
         method: 'POST',
-        data: { serviceType: selected.code }
+        data: { expectedVersion: this.data.order.version, toServiceType: selected.code, reason: '现场规格与原下单规格不一致', specProofId: this.data.order.packageSizeReviewProofId }
       })
     )
   },
 
   approvePackageSize() {
     this.confirmAction('同意规格调整', '同意后将按调整后的规格继续履约。', () =>
-      request(`/api/v1/orders/${this.data.id}/package-size/approve`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/confirm`, { method: 'POST', data: { expectedVersion: this.data.order.version } })
     )
   },
 
   rejectPackageSize() {
     this.confirmAction('拒绝规格调整', '拒绝后订单将取消，确认继续？', () =>
-      request(`/api/v1/orders/${this.data.id}/package-size/reject`, { method: 'POST' })
+      request(`/api/v2/orders/${this.data.id}/cancel`, { method: 'POST', data: { expectedVersion: this.data.order.version, reason: '拒绝规格调整' } })
     )
   },
 
@@ -165,33 +158,15 @@ Page({
       this.setData({ error: '请先上传送达凭证' })
       return
     }
-    if (!/^\d{6}$/.test(this.data.completionCode)) {
-      this.setData({ error: '请输入用户提供的 6 位收货码' })
-      return
-    }
     this.confirmAction('确认完成配送', '请确保包裹已交付给用户。', () =>
-      request(`/api/v1/orders/${this.data.id}/complete`, {
+      request(`/api/v2/orders/${this.data.id}/deliver`, {
         method: 'POST',
-        data: { deliveryCode: this.data.completionCode }
-      })
-    )
-  },
-
-  requestManualPayment() {
-    this.confirmAction('通知用户付款', '请确认已经到达交付地点，再通知用户扫码付款。', () =>
-      request(`/api/v1/orders/${this.data.id}/manual-payment/request`, { method: 'POST' })
-    )
-  },
-
-  async submitManualPayment() {
-    if (!this.data.payerReference.trim()) {
-      this.setData({ error: '请输入付款微信昵称或手机号后四位' })
-      return
-    }
-    await this.confirmAction('提交核款', '提交后需等待管理员确认到账，请勿提前向骑手提供收货码。', () =>
-      request(`/api/v1/orders/${this.data.id}/manual-payment/submit`, {
-        method: 'POST',
-        data: { payerReference: this.data.payerReference.trim() }
+        data: {
+          expectedVersion: this.data.order.version,
+          taskId: this.data.order.taskId,
+          deliveryProofId: this.data.order.deliveryProofId,
+          locationEventId: this.data.order.deliveryLocationEventId
+        }
       })
     )
   },
@@ -202,9 +177,8 @@ Page({
       return
     }
     this.confirmAction('申请重新派单', '提交后订单会释放给其他骑手。', () =>
-      request(`/api/v1/orders/${this.data.id}/unable`, {
-        method: 'POST',
-        data: { reason: this.data.unableReason.trim() }
+      request(`/api/v2/orders/${this.data.id}/release`, {
+        method: 'POST', data: { expectedVersion: this.data.order.version, taskId: this.data.order.taskId, reason: this.data.unableReason.trim() }
       })
     )
   },
@@ -222,7 +196,10 @@ Page({
       const file = result.tempFiles && result.tempFiles[0]
       if (!file) return
       this.setData({ acting: true, error: '' })
-      await upload(`/api/v1/orders/${this.data.id}/proofs/${type}`, file.tempFilePath)
+      await upload(`/api/v2/orders/${this.data.id}/uploads`, file.tempFilePath, {
+        kind: type === 'SIZE_REVIEW' ? 'SPECIFICATION' : type,
+        taskId: this.data.order.taskId || ''
+      })
       await this.load()
     } catch (error) {
       if (!String(error.errMsg || error.message).includes('cancel')) {
@@ -238,9 +215,9 @@ Page({
     this.setData({ acting: true, error: '' })
     try {
       const location = await wx.getLocation({ type: 'gcj02' })
-      await request(`/api/v1/orders/${this.data.id}/location`, {
+      await request(`/api/v2/orders/${this.data.id}/locations`, {
         method: 'POST',
-        data: { latitude: location.latitude, longitude: location.longitude }
+        data: { expectedVersion: this.data.order.version, taskId: this.data.order.taskId, eventType: 'DELIVERY', latitude: location.latitude, longitude: location.longitude, coordinateSystem: 'GCJ02', requestId: `${Date.now()}` }
       })
       wx.showToast({ title: '位置已更新', icon: 'success' })
     } catch (error) {
@@ -252,12 +229,4 @@ Page({
     }
   },
 
-  async showDeliveryCode() {
-    try {
-      const result = await request(`/api/v1/orders/${this.data.id}/delivery-code`)
-      this.setData({ deliveryCode: result.deliveryCode })
-    } catch (error) {
-      this.setData({ error: error.message })
-    }
-  }
 })

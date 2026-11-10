@@ -1,0 +1,26 @@
+package com.zhangxuan.runruncampus.task.message;
+
+import com.zhangxuan.runruncampus.integration.push.PushDeliveryProcessor;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+/** 通过 Spring 代理执行推送处理；任务只注册调度，发送与重试留在处理器。 */
+@Component()
+@ConditionalOnProperty(name = "app.push.enabled", havingValue = "true")
+public class PushDeliveryProcessorTask {
+
+    private final PushDeliveryProcessor service;
+
+    public PushDeliveryProcessorTask(PushDeliveryProcessor service) {
+        this.service = service;
+    }
+
+    @Scheduled(
+            fixedDelayString = "${app.push.retry-poll-millis:30000}",
+            initialDelayString = "${app.push.retry-initial-delay-millis:30000}")
+    public void process() {
+        service.process();
+    }
+}

@@ -30,7 +30,7 @@ Page({
     if (!confirmed) return
     this.setData({ loading: true, error: '' })
     try {
-      await request('/api/v1/auth/logout', { method: 'POST' })
+      await request('/api/v2/auth/logout', { method: 'POST' })
     } catch (error) {
       if (error.statusCode !== 401) this.setData({ error: error.message })
     } finally {
