@@ -66,11 +66,13 @@ try {
     finally { $request.Dispose() }
   }
   $preflight=New-Object Net.Http.HttpRequestMessage([Net.Http.HttpMethod]::Options,($ApiBaseUrl+'/api/v2/auth/session'))
-  $preflight.Headers.Add('Origin','http://127.0.0.1:5173')
+  $adminOrigin=$e.RRC_LOCAL_ADMIN_ORIGIN
+  if (!$adminOrigin) { $adminOrigin='http://127.0.0.1:5173' }
+  $preflight.Headers.Add('Origin',$adminOrigin)
   $preflight.Headers.Add('Access-Control-Request-Method','GET')
   $preflight.Headers.Add('Access-Control-Request-Headers','authorization,idempotency-key')
   $preflightResponse=$client.SendAsync($preflight).GetAwaiter().GetResult()
-  Check ([int]$preflightResponse.StatusCode -eq 200 -and $preflightResponse.Headers.GetValues('Access-Control-Allow-Origin') -contains 'http://127.0.0.1:5173') 'local admin browser CORS preflight accepted'
+  Check ([int]$preflightResponse.StatusCode -eq 200 -and $preflightResponse.Headers.GetValues('Access-Control-Allow-Origin') -contains $adminOrigin) 'local admin browser CORS preflight accepted'
   $preflightResponse.Dispose(); $preflight.Dispose()
   foreach ($route in @(@('GET','/api/v2/auth/session'),@('POST','/api/v2/auth/logout'),@('GET','/api/v2/notifications'),@('GET','/api/v2/courier/certification'))) {
     $r=Http $route[0] $route[1] '{}'
@@ -78,9 +80,18 @@ try {
   }
   $login=Http POST '/api/v2/auth/password/login' (@{phone=$e.RRC_V2_ADMIN_PHONE;password=$e.RRC_V2_ADMIN_PASSWORD}|ConvertTo-Json -Compress)
   Check ($login.Code -eq 200) 'synthetic administrator password login succeeds'
-  $token=($login.Body|ConvertFrom-Json).token
+  $loginPayload=$login.Body|ConvertFrom-Json
+  Check ($loginPayload.account.permissions -is [array] -and $loginPayload.account.permissions -contains 'COURIER_VIEW') 'login account contains server-issued permissions array'
+  $policy=Http GET '/api/v2/privacy/policy'
+  Check ($policy.Code -eq 200) 'anonymous v2 privacy policy reachable'
+  $policyPayload=$policy.Body|ConvertFrom-Json
+  Check ($policyPayload.version -eq '2026-10-24' -and ![string]::IsNullOrWhiteSpace($policyPayload.content)) 'approved privacy version and content returned'
+  $token=$loginPayload.token
   Check (![string]::IsNullOrWhiteSpace($token)) 'independent v2 session issued (not printed)'
-  Check ((Http GET '/api/v2/auth/session' '' $token).Code -eq 200) 'v2 session authenticates'
+  $restored=Http GET '/api/v2/auth/session' '' $token
+  Check ($restored.Code -eq 200) 'v2 session authenticates'
+  $restoredAccount=$restored.Body|ConvertFrom-Json
+  Check ($restoredAccount.permissions -is [array] -and ($restoredAccount.permissions -join ',') -eq ($loginPayload.account.permissions -join ',')) 'session permissions match login account'
   Check ((Http GET '/api/v2/notifications' '' $token).Code -eq 200) 'authenticated notifications reachable'
   foreach ($suffix in @('?page=0&size=20','?status=PENDING&page=0&size=20','?query=test-courier&page=0&size=20')) {
     $list=Http GET ('/api/v2/courier/certification/admin'+$suffix) '' $token

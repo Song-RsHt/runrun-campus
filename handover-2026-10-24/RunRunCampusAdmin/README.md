@@ -1,3 +1,13 @@
+## 当前 v2 本地入口（2026-11-10）
+
+本轮交付使用独立 `/v2-admin`、单一 ADMIN、服务端权限数组和 v2 Bearer，不使用下文 legacy 五岗位或 MFA 流程作为 v2 登录步骤。当前开放首页、通知和骑手资质；全业务功能仍待后续验收。
+
+从仓库根目录运行 `tools/build-v2-clients.ps1 -ApiBaseUrl http://127.0.0.1:8082`，然后运行 `tools/start-v2-admin.ps1 -Mode preview -Port 5186`。浏览器打开 `http://127.0.0.1:5186/v2-admin`。先核对本机端口空闲；占用时 Vite 返回错误，不自动换端口。直接 pnpm dev/preview 仍默认 5173，也可设置 `RRC_ADMIN_PORT`。在原有 `.env.v2-test` 中保留所有密码/密钥，仅设置 `RRC_LOCAL_ADMIN_ORIGIN` 为实际完整 Origin，并用原 Compose 项目重建 backend。
+
+默认 CORS 只允许 `http://127.0.0.1:5173`；使用 localhost 或其他端口须精确配置。不要将 API 地址、管理端 Origin 和微信开发者工具地址混为一项。完整更新/回滚步骤见仓库 `docs/v2-甲方更新与复验说明.md`。
+
+以下内容为 legacy 历史功能说明，不作为本轮 v2 验收结论。
+
 # 跑跑代取运营后台
 
 当前后台包含管理员登录、运营总览、订单管理、骑手管理、用户目录、异常工单中心、意见反馈和操作日志：

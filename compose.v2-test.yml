@@ -58,6 +58,7 @@ services:
       RRC_V2_ADMIN_PHONE: ${RRC_V2_ADMIN_PHONE:?Use test-admin}
       RRC_V2_ADMIN_PASSWORD: ${RRC_V2_ADMIN_PASSWORD:?Generate local fixture password}
       RRC_V2_BOOTSTRAP_CONFIRM: ${RRC_V2_BOOTSTRAP_CONFIRM:?Confirm isolated fixture initialization}
+      RRC_LOCAL_ADMIN_ORIGIN: ${RRC_LOCAL_ADMIN_ORIGIN:-http://127.0.0.1:5173}
       RRC_EVIDENCE_ROOT: /app/evidence
     networks: [v2_isolated]
     healthcheck:

@@ -1,5 +1,6 @@
 package com.zhangxuan.runrunv2.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +18,16 @@ import java.util.List;
 public class LocalTestCors {
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> localTestCorsFilter() {
+    public FilterRegistrationBean<CorsFilter> localTestCorsFilter(
+            @Value("${rrc.local.admin-origin:http://127.0.0.1:5173}") String origin) {
+        if (!origin.matches("http://(127[.]0[.]0[.]1|localhost):[0-9]{1,5}")
+                || Integer.parseInt(origin.substring(origin.lastIndexOf(':') + 1)) > 65535
+                || Integer.parseInt(origin.substring(origin.lastIndexOf(':') + 1)) < 1) {
+            throw new IllegalArgumentException(
+                    "Local admin origin must be one exact loopback HTTP origin");
+        }
         var cors = new CorsConfiguration();
-        cors.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
+        cors.setAllowedOrigins(List.of(origin));
         cors.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cors.setAllowedHeaders(
                 List.of("Authorization", "Content-Type", "Idempotency-Key", "X-Request-Id"));
