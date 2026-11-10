@@ -1,6 +1,14 @@
 const { request } = require('../../utils/api')
 const { clearSession, saveSession } = require('../../utils/session')
 
+function isCompletePrivacyPolicy(policy) {
+  const fields = ['version', 'title', 'effectiveDate', 'operatorName', 'contact', 'content']
+  if (!policy || Array.isArray(policy) || !fields.every(field => typeof policy[field] === 'string' && policy[field].trim())) return false
+  const date = policy.effectiveDate
+  // 日期必须是实际存在的日历日期，避免 Date.parse 将二月三十日自动归一化。
+  return /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(Date.parse(date)) && new Date(date).toISOString().slice(0, 10) === date
+}
+
 Page({
   data: {
     mode: 'login',
@@ -28,7 +36,7 @@ Page({
       const privacyPolicy = await request('/api/v2/privacy/policy', {
         keepSessionOnUnauthorized: true
       })
-      if (!privacyPolicy || !privacyPolicy.version || !privacyPolicy.title || !privacyPolicy.content) {
+      if (!isCompletePrivacyPolicy(privacyPolicy)) {
         throw new Error('协议响应不完整，请重试')
       }
       this.setData({ privacyPolicy, privacyAccepted: false, error: '' })
@@ -147,12 +155,17 @@ Page({
   },
 
   async finishLogin(response) {
-    if (!this.data.privacyAccepted || !this.data.privacyPolicy) throw new Error('请先阅读并同意当前隐私政策')
+    if (!this.data.privacyAccepted || !isCompletePrivacyPolicy(this.data.privacyPolicy)) throw new Error('请先阅读并同意当前隐私政策')
+    const acceptedVersion = this.data.privacyPolicy.version
     const user = response.account
     if (!response.token || !user) throw new Error('登录响应异常，请重新登录')
     saveSession({ token: response.token, user })
     try {
-      await request('/api/v2/privacy/consent', { method: 'POST', data: { version: this.data.privacyPolicy.version } })
+      const receipt = await request('/api/v2/privacy/consent', { method: 'POST', data: { version: acceptedVersion } })
+      // HTTP 成功不能代替同意已落库的确认，回执须对应用户刚刚勾选的版本。
+      if (!receipt || Array.isArray(receipt) || receipt.accepted !== true || receipt.version !== acceptedVersion) {
+        throw new Error('协议同意回执异常或版本不一致')
+      }
       wx.reLaunch({ url: '/pages/home/home' })
     } catch (error) {
       // 同意回执失败不能留下可复用的客户端会话。
