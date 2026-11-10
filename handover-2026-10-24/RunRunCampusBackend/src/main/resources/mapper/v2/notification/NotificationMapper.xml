@@ -2,7 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zhangxuan.runrunv2.mapper.notification.NotificationMapper">
 
-    <select id="findUserNotifications" resultType="org.springframework.util.LinkedCaseInsensitiveMap" useCache="false" flushCache="true">
+    <!-- 仅此查询使用明确的通知构造映射，不改变其他 Map 查询或 outbox 的驱动语义。 -->
+    <resultMap id="NotificationResult" type="com.zhangxuan.runrunv2.vo.notification.NotificationVO">
+        <constructor>
+            <arg column="id" javaType="_long"/>
+            <arg column="order_id" javaType="java.lang.Long"/>
+            <arg column="type" javaType="java.lang.String"/>
+            <arg column="content" javaType="java.util.Map" typeHandler="com.zhangxuan.runrunv2.config.OutboxPayloadTypeHandler"/>
+            <arg column="created_at" javaType="java.time.OffsetDateTime"/>
+            <arg column="read_at" javaType="java.time.OffsetDateTime"/>
+        </constructor>
+    </resultMap>
+
+    <select id="findUserNotifications" resultMap="NotificationResult" useCache="false" flushCache="true">
         SELECT id,
             order_id,
             type,

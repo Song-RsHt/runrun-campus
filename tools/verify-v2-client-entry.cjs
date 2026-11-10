@@ -62,10 +62,44 @@ async function request(url, token, init = {}) {
         check(response.headers.get('access-control-allow-origin') === origin, 'authenticated response exact CORS');
         check((await request('/api/v2/courier/certification', stored.token)).status === 403, 'ADMIN denied courier API');
         check((await request('/api/v2/admin/access/1', stored.token, { method: 'PATCH' })).status === 403, 'ADMIN cannot grant admin access');
+        assert.match(account.id, /^\d+$/);
+        const notificationEventKey = 'entry-nonempty-regression-' + Date.now();
+        const notificationMessage = 'Entry synthetic notification ' + Date.now();
+        sql(`INSERT INTO runrun_v2.user_notifications(user_id,type,content)
+            VALUES (${account.id},'CERTIFICATION_UPDATED','{"eventKey":"${notificationEventKey}","message":"${notificationMessage}"}'::jsonb)
+            ON CONFLICT DO NOTHING;`);
+        const notices = await (await request('/api/v2/notifications', stored.token)).json();
+        const notice = notices.find(item => item.content?.eventKey === notificationEventKey);
+        check(notice && notice.content.message === notificationMessage && notice.orderId === null
+            && Number.isFinite(Date.parse(notice.createdAt)) && notice.readAt === null
+            && !('created_at' in notice) && !('value' in notice.content), 'real nonempty notification has camelCase fields, plain JSON and ISO date');
         await page.reload(); await home(); check(true, 'real refresh restores server session');
         if (evidence) await page.screenshot({ path: path.join(evidence, 'admin-home.png') });
         await page.getByRole('button', { name: /通知/ }).first().click();
         await page.getByRole('heading', { name: '站内消息', exact: true }).waitFor(); check(true, 'notification page renders');
+        await page.getByText(notificationMessage, { exact: true }).waitFor();
+        check(true, 'real nonempty message and creation date render without white screen');
+        await page.getByRole('button', { name: '标记已读', exact: true }).first().click();
+        await page.getByText('已读', { exact: true }).first().waitFor();
+        await page.getByRole('button', { name: '刷新', exact: true }).click();
+        await page.getByText(notificationMessage, { exact: true }).waitFor();
+        const readNotices = await (await request('/api/v2/notifications', stored.token)).json();
+        check(readNotices.find(item => item.id === notice.id)?.readAt, 'mark read persists and notification refresh restores state');
+        await page.reload(); await home();
+        await page.getByRole('button', { name: /通知/ }).first().click();
+        await page.getByText(notificationMessage, { exact: true }).waitFor();
+        await page.getByText('已读', { exact: true }).first().waitFor();
+        if (evidence) await page.screenshot({ path: path.join(evidence, 'admin-nonempty-notifications.png') });
+        for (const bad of [{ ...notice, createdAt: undefined }, { ...notice, createdAt: 'invalid' },
+            { ...notice, readAt: 'invalid' }, { ...notice, content: null }]) {
+            await page.route('**/api/v2/notifications', route => route.fulfill({ json: [bad] }));
+            await page.getByRole('button', { name: '刷新', exact: true }).click();
+            await page.getByText('站内消息响应异常，请刷新重试；如持续出现请联系管理员', { exact: true }).waitFor();
+            check(true, 'malformed notification displays understandable error: ' + JSON.stringify({ createdAt: bad.createdAt, readAt: bad.readAt, nullContent: bad.content === null }));
+            await page.unroute('**/api/v2/notifications');
+        }
+        await page.getByRole('button', { name: '刷新', exact: true }).click();
+        await page.getByText(notificationMessage, { exact: true }).waitFor();
         await page.getByRole('button', { name: /骑手资质/ }).first().click();
         await page.getByRole('heading', { name: /骑手/ }).first().waitFor();
         await page.waitForTimeout(300);

@@ -1,6 +1,7 @@
 package com.zhangxuan.runrunv2.mapper.notification;
 
 import com.zhangxuan.runrunv2.config.SingleRowRequired;
+import com.zhangxuan.runrunv2.vo.notification.NotificationVO;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -12,7 +13,7 @@ import java.util.Map;
 @Mapper
 public interface NotificationMapper {
 
-    List<Map<String, Object>> findUserNotifications(@Param("userId") long userId);
+    List<NotificationVO> findUserNotifications(@Param("userId") long userId);
 
     int markNotificationRead(
             @Param("notificationId") long notificationId, @Param("userId") long userId);

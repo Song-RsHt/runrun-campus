@@ -3,6 +3,7 @@ package com.zhangxuan.runrunv2.controller.notification;
 import com.zhangxuan.runrunv2.exception.IdentityFailure;
 import com.zhangxuan.runrunv2.security.IdentityPermission;
 import com.zhangxuan.runrunv2.service.notification.NotificationService;
+import com.zhangxuan.runrunv2.vo.notification.NotificationVO;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,7 +28,7 @@ public class NotificationController {
     }
 
     @GetMapping
-    public List<Map<String, Object>> list(@RequestHeader("Authorization") String auth) {
+    public List<NotificationVO> list(@RequestHeader("Authorization") String auth) {
         return service.list(token(auth));
     }
 

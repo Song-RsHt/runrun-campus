@@ -1,5 +1,7 @@
 package com.zhangxuan.runrunv2.service.notification;
 
+import com.zhangxuan.runrunv2.vo.notification.NotificationVO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +14,7 @@ public interface NotificationService {
      * @param token 当前访问凭证；仅用于校验，不得记录原值
      * @return 按创建时间倒序的最近 100 条站内通知
      */
-    List<Map<String, Object>> list(String token);
+    List<NotificationVO> list(String token);
 
     /**
      * 标记当前账号有权读取的指定消息为已读。

@@ -53,6 +53,18 @@ export function getV2Couriers(token: string, filters: { query: string; status: C
 export function getV2CourierPerformance(token: string, courierId: number, page: number, size: number) { return v2Request<AdminCourierPerformance>(`/api/v2/courier/certification/admin/${courierId}/performance?page=${page}&size=${size}`, token) }
 export function decideV2CourierCertification(token: string, id: number, input: { decision: 'APPROVE' | 'REJECT'; expectedVersion: number; photoResourceId: string | null; reason: string }, idempotencyKey = crypto.randomUUID?.() ?? `${Date.now()}-${id}`) { return v2Request(`/api/v2/courier/certification/${id}/decision`, token, { method: 'POST', headers: { 'Idempotency-Key': idempotencyKey }, body: JSON.stringify(input) }) }
 export async function getV2StudentCardPhoto(token: string, id: number, photoResourceId: string | null | undefined, signal: AbortSignal) { const resource = encodeURIComponent(photoResourceId ?? ''); const response = await fetch(`${API_BASE}/api/v2/courier/certification/${id}/student-card?photoResourceId=${resource}`, { headers: { Authorization: `Bearer ${token}`, Accept: 'image/jpeg, image/png' }, signal }); if (!response.ok) throw new V2ApiError(response.status === 401 ? '会话已失效，请重新登录' : '学生证照片读取失败', response.status); return response.blob() }
-export function getV2Notifications(token: string) { return v2Request<V2Notification[]>('/api/v2/notifications', token) }
+export async function getV2Notifications(token: string): Promise<V2Notification[]> {
+  const value = await v2Request<unknown>('/api/v2/notifications', token)
+  const validDate = (date: unknown) => typeof date === 'string' && date.trim() !== '' && Number.isFinite(Date.parse(date))
+  // TypeScript 类型不能校验 HTTP 响应；异常数据交给页面错误态，避免日期渲染抛异常。
+  if (!Array.isArray(value) || !value.every(item => item && Number.isSafeInteger(item.id) && item.id > 0
+    && (item.orderId === null || (Number.isSafeInteger(item.orderId) && item.orderId > 0))
+    && typeof item.type === 'string' && item.type.trim() !== ''
+    && item.content && typeof item.content === 'object' && !Array.isArray(item.content)
+    && validDate(item.createdAt) && (item.readAt === null || validDate(item.readAt)))) {
+    throw new V2ApiError('站内消息响应异常，请刷新重试；如持续出现请联系管理员', 502, 'INVALID_NOTIFICATIONS')
+  }
+  return value as V2Notification[]
+}
 export function markV2NotificationRead(token: string, id: number) { return v2Request<{ id: number; read: boolean }>(`/api/v2/notifications/${id}/read`, token, { method: 'POST' }) }
 

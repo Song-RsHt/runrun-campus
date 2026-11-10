@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
-/** 仅供 outbox XML 的 JSONB 构造映射使用，沿用应用 JSON 配置与快照结构。 */
+/** 仅供 outbox 与站内通知 XML 的显式 JSONB 构造映射使用，不改变普通 Map 查询。 */
 public class OutboxPayloadTypeHandler extends BaseTypeHandler<Map<String, Object>> {
     private final ObjectMapper json;
 

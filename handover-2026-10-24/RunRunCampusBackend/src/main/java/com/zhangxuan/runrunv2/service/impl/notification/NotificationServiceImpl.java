@@ -3,6 +3,7 @@ package com.zhangxuan.runrunv2.service.impl.notification;
 import com.zhangxuan.runrunv2.mapper.notification.NotificationMapper;
 import com.zhangxuan.runrunv2.service.identity.IdentityService;
 import com.zhangxuan.runrunv2.service.notification.NotificationService;
+import com.zhangxuan.runrunv2.vo.notification.NotificationVO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Map<String, Object>> list(String token) {
+    public List<NotificationVO> list(String token) {
         long user = Long.parseLong(identity.authenticate(token).id());
         return mapper.findUserNotifications(user);
     }

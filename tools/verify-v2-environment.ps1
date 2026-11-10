@@ -1,4 +1,4 @@
-param([switch]$BuildClients, [string]$ApiBaseUrl='http://localhost:8082', [ValidateRange(0,600)][int]$WaitSeconds=180)
+param([switch]$BuildClients, [string]$ApiBaseUrl='http://localhost:8082', [ValidateRange(0,600)][int]$WaitSeconds=180, [string]$EnvFile='.env.v2-test')
 $ErrorActionPreference='Stop'
 if ($ApiBaseUrl -notin @('http://localhost:8082','http://127.0.0.1:8082')) { throw 'Verifier only permits the isolated loopback API on port 8082.' }
 $root=Split-Path $PSScriptRoot -Parent
@@ -6,7 +6,7 @@ Push-Location $root
 try {
   function Check([bool]$ok,[string]$label) { if (!$ok) { throw "FAIL: $label" }; Write-Output "PASS: $label" }
   function Compose([string[]]$arguments) {
-    $result=& docker compose --env-file .env.v2-test -f compose.v2-test.yml @arguments
+    $result=& docker compose --env-file $EnvFile -f compose.v2-test.yml @arguments
     if ($LASTEXITCODE -ne 0) { throw 'Compose failed. Check postgres/migrate/backend logs locally; do not share secrets.' }
     return $result
   }

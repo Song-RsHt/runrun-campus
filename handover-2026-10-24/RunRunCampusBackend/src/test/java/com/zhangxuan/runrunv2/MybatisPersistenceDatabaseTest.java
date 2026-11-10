@@ -14,6 +14,7 @@ import com.zhangxuan.runrunv2.mapper.configuration.ServiceConfigMapper;
 import com.zhangxuan.runrunv2.mapper.courier.CourierCertificationV2Mapper;
 import com.zhangxuan.runrunv2.mapper.evidence.CourierEvidenceGovernanceMapper;
 import com.zhangxuan.runrunv2.mapper.identity.IdentityMapper;
+import com.zhangxuan.runrunv2.mapper.notification.NotificationMapper;
 import com.zhangxuan.runrunv2.mapper.notification.NotificationOutboxMapper;
 import com.zhangxuan.runrunv2.mapper.order.OrderMapper;
 import com.zhangxuan.runrunv2.mapper.order.OrderReadMapper;
@@ -57,6 +58,50 @@ class MybatisPersistenceDatabaseTest {
     static TransactionTemplate tx;
     static final ObjectMapper JSON = new ObjectMapper().findAndRegisterModules();
 
+    @Test
+    void nonemptyNotificationsExposeCamelCaseJsonAndPreserveReadOwnership() throws Exception {
+        var identities = session.getMapper(IdentityMapper.class);
+        long owner = identities.insertAccount(UUID.randomUUID().toString(), "USER");
+        long other = identities.insertAccount(UUID.randomUUID().toString(), "USER");
+        var created = OffsetDateTime.parse("2030-01-02T12:34:56.123456+05:30");
+        long id =
+                db.queryForObject(
+                        "INSERT INTO runrun_v2.user_notifications(user_id,type,content,created_at)"
+                                + " VALUES (?, 'CERTIFICATION_UPDATED', ?::jsonb, ?) RETURNING id",
+                        Long.class,
+                        owner,
+                        "{\"message\":\"合成通知\",\"nested\":{\"count\":2}}",
+                        created);
+        var notifications = session.getMapper(NotificationMapper.class);
+        var json =
+                JSON.readTree(JSON.writeValueAsString(notifications.findUserNotifications(owner)));
+        assertEquals(1, json.size());
+        var notice = json.get(0);
+        assertEquals(id, notice.get("id").asLong());
+        assertEquals("合成通知", notice.path("content").path("message").asText());
+        assertEquals(2, notice.path("content").path("nested").path("count").asInt());
+        assertTrue(notice.has("orderId") && notice.get("orderId").isNull());
+        assertTrue(notice.has("readAt") && notice.get("readAt").isNull());
+        assertTrue(!notice.has("created_at") && !notice.has("order_id") && !notice.has("read_at"));
+        // 应用 HTTP 使用 ISO 时间；此处直接核对强类型时间，避免 ObjectMapper 默认数字日期影响断言。
+        var first = notifications.findUserNotifications(owner).get(0);
+        assertEquals(created.toInstant(), first.createdAt().toInstant());
+        assertEquals(123456000, first.createdAt().getNano());
+        assertTrue(notifications.findUserNotifications(other).isEmpty());
+        assertEquals(0, notifications.markNotificationRead(id, other));
+        assertNull(notifications.findUserNotifications(owner).get(0).readAt());
+        assertEquals(1, notifications.markNotificationRead(id, owner));
+        var readAt = notifications.findUserNotifications(owner).get(0).readAt();
+        assertTrue(readAt != null);
+        assertEquals(1, notifications.markNotificationRead(id, owner));
+        assertEquals(readAt, notifications.findUserNotifications(owner).get(0).readAt());
+        assertTrue(
+                db.queryForObject(
+                        "SELECT read_at IS NOT NULL FROM runrun_v2.user_notifications WHERE id=?",
+                        Boolean.class,
+                        id));
+    }
+
     @BeforeAll
     static void initialize() throws Exception {
         var dataSource =
@@ -90,7 +135,7 @@ class MybatisPersistenceDatabaseTest {
         var mapper = session.getMapper(IdentityMapper.class);
         db.queryForObject(
                 "SELECT setval(pg_get_serial_sequence('runrun_v2.app_users','id'), 2147483648,"
-                    + " false)",
+                        + " false)",
                 Long.class);
         String phone = UUID.randomUUID().toString();
         Long id =
@@ -270,7 +315,7 @@ class MybatisPersistenceDatabaseTest {
             long expired = claims.iterator().next();
             db.update(
                     "UPDATE runrun_v2.notification_outbox SET locked_until=now()-interval '1"
-                        + " second' WHERE id=?",
+                            + " second' WHERE id=?",
                     expired);
             var retry = tx.execute(s -> mapper.claimOutboxDeliveries(1));
             assertEquals(expired, retry.get(0).id());
@@ -286,7 +331,7 @@ class MybatisPersistenceDatabaseTest {
             assertTrue(tx.execute(s -> mapper.claimOutboxDeliveries(10)).isEmpty());
             db.update(
                     "UPDATE runrun_v2.notification_outbox SET next_attempt_at=now()-interval '1"
-                        + " second' WHERE id=?",
+                            + " second' WHERE id=?",
                     expired);
             assertEquals(3, tx.execute(s -> mapper.claimOutboxDeliveries(1)).get(0).attemptCount());
             tx.executeWithoutResult(s -> mapper.completeDelivery(expired, true, null));
